@@ -17,6 +17,10 @@
             <h2>Servicio Social</h2>
             <a href="common/login.php?modulos=ss" class="btn btn-ss">Ingresar</a>
         </div>
+        <div class="card">
+            <h2>Estudiante</h2>
+            <a href="common/login.php?modulos=ss" class="btn btn-est">Ingresar</a>
+        </div>
     </div>
 </body>
 </html>
