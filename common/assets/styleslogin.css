@@ -20,6 +20,23 @@
       margin-bottom: 30px;
       color: #333;
     }
+    .module-hint {
+      margin: -10px 0 20px;
+      color: #666;
+      font-size: 14px;
+    }
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      text-align: left;
+    }
+    .alert-error {
+      background: #fdecea;
+      border: 1px solid #f5c2c7;
+      color: #b71c1c;
+    }
     .form-group {
       margin-bottom: 20px;
       text-align: left;

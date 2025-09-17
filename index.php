@@ -11,15 +11,15 @@
     <div class="container">
         <div class="card">
             <h2>Residencia / Vinculación</h2>
-            <a href="common/login.php?modulo=recidencia" class="btn btn-rec">Ingresar</a>
+            <a href="common/login.php?module=recidencia" class="btn btn-rec">Ingresar</a>
         </div>
         <div class="card">
             <h2>Servicio Social</h2>
-            <a href="common/login.php?modulos=ss" class="btn btn-ss">Ingresar</a>
+            <a href="common/login.php?module=serviciosocial" class="btn btn-ss">Ingresar</a>
         </div>
         <div class="card">
             <h2>Estudiante</h2>
-            <a href="common/login.php?modulos=ss" class="btn btn-est">Ingresar</a>
+            <a href="common/login.php?module=estudiante" class="btn btn-est">Ingresar</a>
         </div>
     </div>
 </body>
