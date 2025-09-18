@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use Common\Model\Database;
 use Common\Model\UserModel;
 
-require_once __DIR__ . '/../model/db.php';
 require_once __DIR__ . '/../model/UserModel.php';
 require_once __DIR__ . '/../../config/session.php';
 
@@ -22,7 +20,12 @@ if ($email === '' || $password === '') {
 }
 
 try {
-    $pdo = Database::getConnection();
+    $pdo = require __DIR__ . '/../model/db.php';
+
+    if (!$pdo instanceof PDO) {
+        throw new PDOException('No se pudo establecer la conexión a la base de datos.');
+    }
+
     $userModel = new UserModel($pdo);
     $user = $userModel->findActiveByEmail($email);
 } catch (PDOException | Throwable $exception) {
