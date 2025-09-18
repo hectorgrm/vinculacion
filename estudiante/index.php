@@ -1,74 +1,27 @@
+<?php
+
+declare(strict_types=1);
+require_once __DIR__ . '/../config/session.php';
+
+$user = $_SESSION['user'] ?? null;
+$allowedRoles = ['estudiante'];
+
+if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $allowedRoles, true)) {
+    header('Location: ../common/login.php?module=estudiante&error=unauthorized');
+    exit;
+
+}
+
+$userName = (string)($user['name'] ?? '');
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Portal Estudiante</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f4f6f9;
-    }
-    header {
-      background: #6f42c1;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    nav {
-      background: #fff;
-      padding: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-    nav a {
-      text-decoration: none;
-      color: #6f42c1;
-      font-weight: bold;
-      transition: color 0.3s;
-    }
-    nav a:hover {
-      color: #4e2d89;
-    }
-    main {
-      padding: 30px;
-    }
-    .card-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 20px;
-      text-align: center;
-      transition: transform 0.3s;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-    }
-    .card h3 {
-      margin-bottom: 15px;
-      color: #333;
-    }
-    .card a {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: #6f42c1;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      transition: background 0.3s;
-    }
-    .card a:hover {
-      background: #4e2d89;
-    }
-  </style>
+ <link rel="stylesheet" href="assets/estudiantestyles.css">
 </head>
 <body>
   <header>
@@ -80,8 +33,9 @@
     <a href="../common/logout.php">Cerrar sesión</a>
   </nav>
   <main>
-    <h2>Bienvenido, estudiante</h2>
-    <p>Aquí puedes consultar tu información y descargar los formatos necesarios.</p>
+    <h2>Bienvenido, <?php echo 
+    htmlspecialchars($userName, ENT_QUOTES, 'UTF-8'); ?></h2>
+  <p>Aquí puedes consultar tu información y descargar los formatos necesarios.</p>
     <div class="card-container">
       <div class="card" id="expediente">
         <h3>Mi Expediente</h3>
