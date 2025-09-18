@@ -62,3 +62,65 @@
     .card a:hover {
       background: #1e7e34;
     }
+
+    /* Tabla estilizada */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.styled-table th, 
+.styled-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.styled-table th {
+  background: #28A745;
+  color: white;
+  font-weight: bold;
+}
+
+.styled-table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.styled-table tr:hover {
+  background: #f1f1f1;
+}
+
+/* Acciones */
+.actions a {
+  margin-right: 10px;
+  text-decoration: none;
+  color: #007BFF;
+  font-weight: bold;
+}
+
+.actions a:hover {
+  text-decoration: underline;
+}
+
+/* Botón de alta */
+.top-actions {
+  margin: 15px 0;
+}
+
+.btn-add {
+  display: inline-block;
+  padding: 10px 15px;
+  background: #28a745;
+  color: #fff;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.btn-add:hover {
+  background: #1e7e34;
+}
