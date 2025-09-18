@@ -10,7 +10,7 @@
     <h1>Bienvenido a Vinculación</h1>
     <div class="container">
         <div class="card">
-            <h2>Residencia / Vinculación</h2>
+            <h2>Residencia </h2>
             <a href="common/login.php?module=recidencia" class="btn btn-rec">Ingresar</a>
         </div>
         <div class="card">
