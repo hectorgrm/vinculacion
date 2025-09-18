@@ -18,12 +18,12 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Residencia / Vinculación</title>
+    <title>Dashboard Residencia</title>
     <link rel="stylesheet" href="assets/stylesrecidencia.css">
 </head>
 <body>
     <header>
-        <h1>Dashboard Residencia / Vinculación</h1>
+        <h1>Dashboard Residencia</h1>
         <p class="welcome">Hola, <?php echo htmlspecialchars((string)($user['name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
     </header>
     <nav>

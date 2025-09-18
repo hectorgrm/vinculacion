@@ -5,7 +5,7 @@ declare(strict_types=1);
 $module = strtolower(trim((string)($_GET['module'] ?? '')));
 
 $moduleTitles = [
-    'recidencia' => 'Residencia / Vinculación',
+    'recidencia' => 'Residencia',
     'serviciosocial' => 'Servicio Social',
     'estudiante' => 'Estudiante',
 ];

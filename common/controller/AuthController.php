@@ -87,6 +87,7 @@ function isAuthorizedForModule(string $module, string $role): bool
     $permissions = [
         'serviciosocial' => ['ss_admin', 'admin_ss'],
         'recidencia' => ['res_admin'],
+        'estudiante' => ['estudiante'],
     ];
 
     if (!isset($permissions[$module])) {
@@ -103,6 +104,9 @@ function resolveModuleRedirect(string $module): ?string
             return '../../serviciosocial/index.php';
         case 'recidencia':
             return '../../recidencia/index.php';
+        case 'estudiante':
+            return '../../estudiante/index.php';
+        
         default:
             return null;
     }
