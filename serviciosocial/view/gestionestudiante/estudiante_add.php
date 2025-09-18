@@ -15,7 +15,7 @@ $user = $_SESSION['user'] ?? null;
 $allowedRoles = ['ss_admin'];
 
 if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $allowedRoles, true)) {
-    header('Location: ../../common/login.php?module=serviciosocial&error=unauthorized');
+    header('Location: ../../../common/login.php?module=serviciosocial&error=unauthorized');
     exit;
 }
 
