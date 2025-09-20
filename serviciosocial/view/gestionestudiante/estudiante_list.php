@@ -20,6 +20,8 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
 // Obtener estudiantes desde el modelo
 $error = '';
 $estudiantes = [];
+$feedbackMessage = '';
+$feedbackClass = 'alert-success';
 
 try {
     $pdo = Database::getConnection();
@@ -27,6 +29,24 @@ try {
     $estudiantes = $model->getAll();
 } catch (Throwable $exception) {
     $error = 'No fue posible obtener la lista de estudiantes: ' . $exception->getMessage();
+}
+
+if (isset($_GET['success'])) {
+    $feedbackMessage = 'El estudiante fue registrado correctamente.';
+    $feedbackClass = 'alert-success';
+} elseif (isset($_GET['updated'])) {
+    $feedbackMessage = 'La información del estudiante se actualizó correctamente.';
+    $feedbackClass = 'alert-success';
+} elseif (isset($_GET['error'])) {
+    if ($_GET['error'] === 'invalid') {
+        $feedbackMessage = 'La solicitud para editar el estudiante no es válida.';
+    } elseif ($_GET['error'] === 'notfound') {
+        $feedbackMessage = 'El estudiante solicitado no se encontró en el sistema.';
+    }
+
+    if ($feedbackMessage !== '') {
+        $feedbackClass = 'alert-error';
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -43,8 +63,11 @@ try {
   </header>
   
   <main>
+    <?php if ($feedbackMessage !== ''): ?>
+      <div class="alert <?php echo $feedbackClass; ?>" role="alert"><?php echo htmlspecialchars($feedbackMessage, ENT_QUOTES, 'UTF-8'); ?></div>
+    <?php endif; ?>
     <?php if ($error !== ''): ?>
-      <div class="alert-error"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
+      <div class="alert alert-error" role="alert"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
     <?php endif; ?>
 
     <div class="top-actions">

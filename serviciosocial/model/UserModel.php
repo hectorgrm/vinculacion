@@ -38,4 +38,21 @@ class UserModel
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ?: null;
     }
+
+    /** Actualizar datos básicos del usuario vinculado al estudiante */
+    public function updateByEstudianteId(int $estudianteId, array $data): bool
+    {
+        $sql = "UPDATE usuario
+                SET nombre = :nombre,
+                    email = :email
+                WHERE estudiante_id = :estudiante_id";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute([
+            ':estudiante_id' => $estudianteId,
+            ':nombre'        => $data['nombre'],
+            ':email'         => $data['email'],
+        ]);
+    }
 }

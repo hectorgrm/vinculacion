@@ -45,4 +45,27 @@ class EstudianteModel
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ?: null;
     }
+
+    /** Actualizar la información de un estudiante */
+    public function update(int $id, array $data): bool
+    {
+        $sql = "UPDATE estudiante
+                SET nombre = :nombre,
+                    matricula = :matricula,
+                    carrera = :carrera,
+                    email = :email,
+                    telefono = :telefono
+                WHERE id = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute([
+            ':id'        => $id,
+            ':nombre'    => $data['nombre'],
+            ':matricula' => $data['matricula'],
+            ':carrera'   => $data['carrera'] !== '' ? $data['carrera'] : null,
+            ':email'     => $data['email'],
+            ':telefono'  => $data['telefono'] !== '' ? $data['telefono'] : null,
+        ]);
+    }
 }
