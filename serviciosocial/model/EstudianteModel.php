@@ -68,4 +68,12 @@ class EstudianteModel
             ':telefono'  => $data['telefono'] !== '' ? $data['telefono'] : null,
         ]);
     }
+
+    /** Eliminar un estudiante por su ID */
+    public function delete(int $id): bool
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM estudiante WHERE id = :id');
+
+        return $stmt->execute([':id' => $id]);
+    }
 }

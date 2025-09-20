@@ -65,9 +65,23 @@ try {
 
         case 'delete':
             $id = (int)($_GET['id'] ?? 0);
-            if ($id > 0) {
-                $pdo->prepare("DELETE FROM usuario WHERE estudiante_id = :id")->execute([':id' => $id]);
-                $pdo->prepare("DELETE FROM estudiante WHERE id = :id")->execute([':id' => $id]);
+            if ($id <= 0) {
+                throw new Exception('Solicitud para eliminar no válida.');
+            }
+
+            try {
+                $pdo->beginTransaction();
+
+                $userModel->deleteByEstudianteId($id);
+                $estudianteModel->delete($id);
+
+                $pdo->commit();
+            } catch (Throwable $deleteException) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+
+                throw $deleteException;
             }
             header('Location: ../view/gestionestudiante/estudiante_list.php?deleted=1');
             exit;

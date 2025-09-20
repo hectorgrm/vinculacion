@@ -37,6 +37,9 @@ if (isset($_GET['success'])) {
 } elseif (isset($_GET['updated'])) {
     $feedbackMessage = 'La información del estudiante se actualizó correctamente.';
     $feedbackClass = 'alert-success';
+} elseif (isset($_GET['deleted'])) {
+    $feedbackMessage = 'El estudiante fue eliminado correctamente.';
+    $feedbackClass = 'alert-success';
 } elseif (isset($_GET['error'])) {
     if ($_GET['error'] === 'invalid') {
         $feedbackMessage = 'La solicitud para editar el estudiante no es válida.';

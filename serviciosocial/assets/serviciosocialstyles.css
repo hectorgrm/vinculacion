@@ -232,6 +232,23 @@
   color: #343a40;
 }
 
+.btn-danger {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: #dc3545;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
 .btn-add {
   border-radius: 8px;
   padding: 10px 24px;

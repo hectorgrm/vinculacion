@@ -55,4 +55,12 @@ class UserModel
             ':email'         => $data['email'],
         ]);
     }
+
+    /** Eliminar usuarios asociados a un estudiante */
+    public function deleteByEstudianteId(int $estudianteId): bool
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM usuario WHERE estudiante_id = :estudiante_id');
+
+        return $stmt->execute([':estudiante_id' => $estudianteId]);
+    }
 }
