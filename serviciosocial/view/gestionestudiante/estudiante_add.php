@@ -21,6 +21,11 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
 
 // Manejar formulario
 $message = '';
+$nombre = '';
+$matricula = '';
+$carrera = '';
+$email = '';
+$telefono = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre    = trim($_POST['nombre'] ?? '');
     $matricula = trim($_POST['matricula'] ?? '');
@@ -76,40 +81,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <header>
     <h1>Dar de Alta Estudiante</h1>
   </header>
-  <main>
+  <main class="page-wrapper">
     <?php if ($message): ?>
-      <div class="alert-error"><?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?></div>
+      <div class="alert alert-error" role="alert"><?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?></div>
     <?php endif; ?>
 
-    <form method="POST">
-      <div class="form-group">
-        <label>Nombre completo *</label>
-        <input type="text" name="nombre" required>
-      </div>
-      <div class="form-group">
-        <label>Matrícula *</label>
-        <input type="text" name="matricula" required>
-      </div>
-      <div class="form-group">
-        <label>Carrera</label>
-        <input type="text" name="carrera">
-      </div>
-      <div class="form-group">
-        <label>Correo electrónico *</label>
-        <input type="email" name="email" required>
-      </div>
-      <div class="form-group">
-        <label>Teléfono</label>
-        <input type="text" name="telefono">
-      </div>
-      <div class="form-group">
-        <label>Contraseña inicial *</label>
-        <input type="password" name="password" required>
-      </div>
-      <button type="submit" class="btn-add">Guardar</button>
-    </form>
+    <section class="form-card">
+      <header class="form-card__header">
+        <h2>Información del Estudiante</h2>
+        <p>Completa los datos para dar de alta al nuevo estudiante dentro del sistema.</p>
+      </header>
 
-    <p><a href="estudiante_list.php">← Volver a la lista</a></p>
+      <form method="POST" class="form-card__body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="nombre">Nombre completo *</label>
+            <input id="nombre" class="form-control" type="text" name="nombre" value="<?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?>" required placeholder="Nombre(s) y apellidos">
+          </div>
+          <div class="form-group">
+            <label for="matricula">Matrícula *</label>
+            <input id="matricula" class="form-control" type="text" name="matricula" value="<?php echo htmlspecialchars($matricula, ENT_QUOTES, 'UTF-8'); ?>" required placeholder="Ej. A01234567">
+          </div>
+          <div class="form-group">
+            <label for="carrera">Carrera</label>
+            <input id="carrera" class="form-control" type="text" name="carrera" value="<?php echo htmlspecialchars($carrera, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Programa académico">
+          </div>
+          <div class="form-group">
+            <label for="email">Correo electrónico *</label>
+            <input id="email" class="form-control" type="email" name="email" value="<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>" required placeholder="correo@ejemplo.com">
+          </div>
+          <div class="form-group">
+            <label for="telefono">Teléfono</label>
+            <input id="telefono" class="form-control" type="tel" name="telefono" value="<?php echo htmlspecialchars($telefono, ENT_QUOTES, 'UTF-8'); ?>" placeholder="10 dígitos">
+          </div>
+          <div class="form-group">
+            <label for="password">Contraseña inicial *</label>
+            <input id="password" class="form-control" type="password" name="password" required placeholder="Mínimo 8 caracteres">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a class="btn-secondary" href="estudiante_list.php">Cancelar</a>
+          <button type="submit" class="btn-add">Guardar estudiante</button>
+        </div>
+      </form>
+    </section>
   </main>
 </body>
 </html>
