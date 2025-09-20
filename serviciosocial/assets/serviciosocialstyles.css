@@ -107,18 +107,33 @@
   text-decoration: underline;
 }
 
-/* Botón de alta */
+/* Botones de acciones superiores */
 .top-actions {
   margin: 15px 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
+.btn-back,
 .btn-add {
   display: inline-block;
   padding: 10px 15px;
-  background: #28a745;
-  color: #fff;
   border-radius: 5px;
   text-decoration: none;
+  color: #fff;
+}
+
+.btn-back {
+  background: #6c757d;
+}
+
+.btn-back:hover {
+  background: #5a6268;
+}
+
+.btn-add {
+  background: #28a745;
 }
 
 .btn-add:hover {

@@ -48,6 +48,7 @@ try {
     <?php endif; ?>
 
     <div class="top-actions">
+      <a href="../../index.php" class="btn-back">⬅ Regresar</a>
       <a href="estudiante_add.php" class="btn-add">➕ Dar de Alta Estudiante</a>
     </div>
 
