@@ -1,13 +1,14 @@
 <?php
 
 return [
-    'host'    => 'localhost',
-    'dbname'  => 'vinculacion',
-    'user'    => 'root',
-    'pass'    => 'root',
+    'host'    => '65.99.225.140',
+    'dbname'  => 'nessuste_vinculacion',   // BD asignada
+    'user'    => 'nessuste_userVinculacion',
+    'pass'    => 'F+R%&lEZdr#BY2E$',
     'charset' => 'utf8mb4',
     'port'    => '3306',
 ];
+
 
 // return [
 //     'host' => getenv('DB_HOST') ?: 'localhost',
