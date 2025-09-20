@@ -60,6 +60,9 @@ try {
         $email = trim($_POST['email'] ?? '');
         $telefono = trim($_POST['telefono'] ?? '');
 
+        $passwordInput = $_POST['password'] ?? '';
+        $password = is_string($passwordInput) ? trim($passwordInput) : '';
+
         if ($nombre !== '' && $matricula !== '' && $email !== '') {
             try {
                 $pdo->beginTransaction();
@@ -72,10 +75,16 @@ try {
                     'telefono'  => $telefono,
                 ]);
 
-                $userModel->updateByEstudianteId($id, [
+                $userData = [
                     'nombre' => $nombre,
                     'email'  => $email,
-                ]);
+                ];
+
+                if ($password !== '') {
+                    $userData['password_hash'] = password_hash($password, PASSWORD_BCRYPT);
+                }
+
+                $userModel->updateByEstudianteId($id, $userData);
 
                 $pdo->commit();
 
@@ -149,6 +158,10 @@ try {
             <div class="form-group">
               <label for="email">Correo electrónico *</label>
               <input id="email" class="form-control" type="email" name="email" value="<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>" required placeholder="correo@ejemplo.com">
+            </div>
+            <div class="form-group">
+              <label for="password">Contraseña (opcional)</label>
+              <input id="password" class="form-control" type="password" name="password" placeholder="Dejar vacío si no desea cambiar">
             </div>
             <div class="form-group">
               <label for="telefono">Teléfono</label>

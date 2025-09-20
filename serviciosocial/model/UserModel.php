@@ -42,18 +42,27 @@ class UserModel
     /** Actualizar datos básicos del usuario vinculado al estudiante */
     public function updateByEstudianteId(int $estudianteId, array $data): bool
     {
-        $sql = "UPDATE usuario
-                SET nombre = :nombre,
-                    email = :email
-                WHERE estudiante_id = :estudiante_id";
+        $fields = [
+            'nombre = :nombre',
+            'email = :email',
+        ];
+
+        $params = [
+            ':estudiante_id' => $estudianteId,
+            ':nombre'        => $data['nombre'] ?? '',
+            ':email'         => $data['email'] ?? '',
+        ];
+
+        if (isset($data['password_hash']) && $data['password_hash'] !== '') {
+            $fields[] = 'password_hash = :password_hash';
+            $params[':password_hash'] = $data['password_hash'];
+        }
+
+        $sql = 'UPDATE usuario SET ' . implode(', ', $fields) . ' WHERE estudiante_id = :estudiante_id';
 
         $stmt = $this->pdo->prepare($sql);
 
-        return $stmt->execute([
-            ':estudiante_id' => $estudianteId,
-            ':nombre'        => $data['nombre'],
-            ':email'         => $data['email'],
-        ]);
+        return $stmt->execute($params);
     }
 
     /** Eliminar usuarios asociados a un estudiante */
