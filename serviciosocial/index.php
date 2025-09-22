@@ -45,7 +45,7 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
             </div>
             <div class="card" id="plazas">
                 <h3>Gestión de Plazas</h3>
-                <a href="plaza_list.php">Entrar</a>
+                <a href="view/gestionplaza/plaza_list.php">Entrar</a>
             </div>
             <div class="card" id="servicios">
                 <h3>Expediente de Servicio</h3>

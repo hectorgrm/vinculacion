@@ -289,4 +289,41 @@
   .form-actions .btn-secondary {
     text-align: center;
   }
+
 }
+.btn-add:hover { background: #218838; }
+
+
+table {
+width: 95%;
+margin: auto;
+border-collapse: collapse;
+background: white;
+border-radius: 8px;
+overflow: hidden;
+box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+table thead {
+background: #28a745;
+color: #fff;
+}
+table th, table td {
+padding: 12px 15px;
+text-align: left;
+}
+table tbody tr:nth-child(even) {
+background: #f9f9f9;
+}
+table tbody tr:hover {
+background: #f1f9f2;
+}
+.actions a {
+margin-right: 8px;
+font-size: 1rem;
+text-decoration: none;
+}
+.actions a.view { color: #17a2b8; }
+.actions a.edit { color: #ffc107; }
+.actions a.delete { color: #dc3545; }
+.actions a:hover { text-decoration: underline; }
+  
