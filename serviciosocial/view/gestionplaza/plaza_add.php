@@ -1,11 +1,70 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../../../config/session.php';
+require_once __DIR__ . '/../../controller/PlazaAddController.php';
+
+use Serviciosocial\Controller\PlazaAddController;
+
+$user = $_SESSION['user'] ?? null;
+$allowedRoles = ['ss_admin'];
+
+if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $allowedRoles, true)) {
+    header('Location: ../../../common/login.php?module=serviciosocial&error=unauthorized');
+    exit;
+}
+
+$controller = new PlazaAddController();
+
+$formData = [
+    'plaza_nombre'      => '',
+    'dependencia_id'    => '',
+    'programa_id'       => '',
+    'modalidad'         => '',
+    'horario_texto'     => '',
+    'cupo'              => '',
+    'periodo_inicio'    => '',
+    'periodo_fin'       => '',
+    'actividades'       => '',
+    'requisitos'        => '',
+    'responsable_nombre'=> '',
+    'responsable_puesto'=> '',
+    'responsable_email' => '',
+    'responsable_tel'   => '',
+    'direccion'         => '',
+    'ubicacion'         => '',
+    'estado_plaza'      => '',
+    'observaciones'     => '',
+];
+
+$errors = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    foreach ($formData as $key => $defaultValue) {
+        $formData[$key] = trim((string)($_POST[$key] ?? ''));
+    }
+
+    try {
+        $controller->create($_POST);
+        header('Location: plaza_list.php?created=1');
+        exit;
+    } catch (\InvalidArgumentException $invalidArgumentException) {
+        $errors[] = $invalidArgumentException->getMessage();
+    } catch (\Throwable $throwable) {
+        $errors[] = 'No fue posible registrar la plaza: ' . $throwable->getMessage();
+    }
+}
+
+$empresas = $controller->getEmpresas();
+$convenios = $controller->getConvenios();
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Servicio Social - Nueva Plaza</title>
     <link rel="stylesheet" href="../../assets/css/nuevaplazastyles.css">
-    
 </head>
 <body>
 
@@ -27,21 +86,27 @@
   </header>
 
   <main>
+    <?php if (!empty($errors)): ?>
+      <div class="alert error" role="alert">
+        <ul>
+          <?php foreach ($errors as $error): ?>
+            <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+
     <div class="card">
       <header>
         <h2>Registrar Plaza</h2>
         <p>Completa los datos de la plaza que estará disponible para estudiantes de Servicio Social.</p>
       </header>
 
-      <form method="post" action="../../controller/PlazaController.php?action=create" autocomplete="off">
-        <!-- Si usas CSRF, coloca tu token aquí -->
-        <!-- <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf ?? '') ?>"> -->
-
-        <!-- Datos generales -->
+      <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8'); ?>" autocomplete="off">
         <div class="grid cols-2">
           <div class="field">
             <label for="plaza_nombre" class="required">Nombre de la plaza</label>
-            <input id="plaza_nombre" name="plaza_nombre" type="text" required placeholder="Ej. Auxiliar de Soporte TI">
+            <input id="plaza_nombre" name="plaza_nombre" type="text" required placeholder="Ej. Auxiliar de Soporte TI" value="<?php echo htmlspecialchars($formData['plaza_nombre'], ENT_QUOTES, 'UTF-8'); ?>">
             <div class="hint">Nombre corto y claro de la vacante/plaza.</div>
           </div>
 
@@ -49,7 +114,11 @@
             <label for="dependencia_id" class="required">Dependencia / Empresa</label>
             <select id="dependencia_id" name="dependencia_id" required>
               <option value="">Selecciona…</option>
-              <!-- Rellenar con PHP: foreach ($empresas as $e) { echo "<option value='{$e['id']}'>{$e['nombre']}</option>"; } -->
+              <?php foreach ($empresas as $empresa): ?>
+                <option value="<?php echo (int) $empresa['id']; ?>" <?php echo $formData['dependencia_id'] === (string) $empresa['id'] ? 'selected' : ''; ?>>
+                  <?php echo htmlspecialchars((string) $empresa['nombre'], ENT_QUOTES, 'UTF-8'); ?>
+                </option>
+              <?php endforeach; ?>
             </select>
             <div class="hint">Entidad donde se realizará el servicio.</div>
           </div>
@@ -58,7 +127,11 @@
             <label for="programa_id">Programa</label>
             <select id="programa_id" name="programa_id">
               <option value="">Selecciona…</option>
-              <!-- Opcional: lista de programas -->
+              <?php foreach ($convenios as $convenio): ?>
+                <option value="<?php echo (int) $convenio['id']; ?>" <?php echo $formData['programa_id'] === (string) $convenio['id'] ? 'selected' : ''; ?>>
+                  <?php echo htmlspecialchars((string) $convenio['nombre'], ENT_QUOTES, 'UTF-8'); ?>
+                </option>
+              <?php endforeach; ?>
             </select>
           </div>
 
@@ -66,90 +139,91 @@
             <label for="modalidad" class="required">Modalidad</label>
             <select id="modalidad" name="modalidad" required>
               <option value="">Selecciona…</option>
-              <option value="presencial">Presencial</option>
-              <option value="hibrida">Híbrida</option>
-              <option value="remota">Remota</option>
+              <option value="presencial" <?php echo $formData['modalidad'] === 'presencial' ? 'selected' : ''; ?>>Presencial</option>
+              <option value="hibrida" <?php echo $formData['modalidad'] === 'hibrida' ? 'selected' : ''; ?>>Híbrida</option>
+              <option value="remota" <?php echo $formData['modalidad'] === 'remota' ? 'selected' : ''; ?>>Remota</option>
             </select>
           </div>
 
           <div class="field">
             <label for="horario_texto">Horario</label>
-            <input id="horario_texto" name="horario_texto" type="text" placeholder="Ej. L–V 9:00–14:00">
+            <input id="horario_texto" name="horario_texto" type="text" placeholder="Ej. L–V 9:00–14:00" value="<?php echo htmlspecialchars($formData['horario_texto'], ENT_QUOTES, 'UTF-8'); ?>">
           </div>
 
           <div class="field">
             <label for="cupo" class="required">Cupo</label>
-            <input id="cupo" name="cupo" type="number" min="1" step="1" required placeholder="Ej. 3">
+            <input id="cupo" name="cupo" type="number" min="1" step="1" required placeholder="Ej. 3" value="<?php echo htmlspecialchars($formData['cupo'], ENT_QUOTES, 'UTF-8'); ?>">
           </div>
 
           <div class="field">
             <label for="periodo_inicio" class="required">Periodo — Inicio</label>
-            <input id="periodo_inicio" name="periodo_inicio" type="date" required>
+            <input id="periodo_inicio" name="periodo_inicio" type="date" required value="<?php echo htmlspecialchars($formData['periodo_inicio'], ENT_QUOTES, 'UTF-8'); ?>">
           </div>
 
           <div class="field">
             <label for="periodo_fin" class="required">Periodo — Fin</label>
-            <input id="periodo_fin" name="periodo_fin" type="date" required>
+            <input id="periodo_fin" name="periodo_fin" type="date" required value="<?php echo htmlspecialchars($formData['periodo_fin'], ENT_QUOTES, 'UTF-8'); ?>">
           </div>
         </div>
 
-        <!-- Descripción -->
         <div class="section">
           <h3>Descripción y requisitos</h3>
           <div class="grid cols-2">
             <div class="field">
               <label for="actividades" class="required">Actividades a realizar</label>
-              <textarea id="actividades" name="actividades" required placeholder="Describe las tareas principales…"></textarea>
+              <textarea id="actividades" name="actividades" required placeholder="Describe las tareas principales…"><?php echo htmlspecialchars($formData['actividades'], ENT_QUOTES, 'UTF-8'); ?></textarea>
             </div>
             <div class="field">
               <label for="requisitos" class="required">Requisitos</label>
-              <textarea id="requisitos" name="requisitos" required placeholder="Conocimientos, habilidades, documentos…"></textarea>
+              <textarea id="requisitos" name="requisitos" required placeholder="Conocimientos, habilidades, documentos…"><?php echo htmlspecialchars($formData['requisitos'], ENT_QUOTES, 'UTF-8'); ?></textarea>
             </div>
           </div>
         </div>
 
-        <!-- Contacto -->
         <div class="section">
           <h3>Contacto</h3>
           <div class="grid cols-2">
             <div class="field">
               <label for="responsable_nombre" class="required">Responsable</label>
-              <input id="responsable_nombre" name="responsable_nombre" type="text" required placeholder="Nombre completo">
+              <input id="responsable_nombre" name="responsable_nombre" type="text" required placeholder="Nombre completo" value="<?php echo htmlspecialchars($formData['responsable_nombre'], ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="field">
               <label for="responsable_puesto">Puesto</label>
-              <input id="responsable_puesto" name="responsable_puesto" type="text" placeholder="Ej. Jefe de Sistemas">
+              <input id="responsable_puesto" name="responsable_puesto" type="text" placeholder="Ej. Jefe de Sistemas" value="<?php echo htmlspecialchars($formData['responsable_puesto'], ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="field">
               <label for="responsable_email" class="required">Correo</label>
-              <input id="responsable_email" name="responsable_email" type="email" required placeholder="correo@empresa.com">
+              <input id="responsable_email" name="responsable_email" type="email" required placeholder="correo@empresa.com" value="<?php echo htmlspecialchars($formData['responsable_email'], ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="field">
               <label for="responsable_tel">Teléfono</label>
-              <input id="responsable_tel" name="responsable_tel" type="tel" placeholder="Ej. 55 1234 5678">
+              <input id="responsable_tel" name="responsable_tel" type="tel" placeholder="Ej. 55 1234 5678" value="<?php echo htmlspecialchars($formData['responsable_tel'], ENT_QUOTES, 'UTF-8'); ?>">
             </div>
           </div>
         </div>
 
-        <!-- Ubicación y estado -->
         <div class="section">
           <h3>Ubicación y estado</h3>
           <div class="grid cols-2">
             <div class="field">
+              <label for="direccion">Dirección</label>
+              <input id="direccion" name="direccion" type="text" placeholder="Calle y número" value="<?php echo htmlspecialchars($formData['direccion'], ENT_QUOTES, 'UTF-8'); ?>">
+            </div>
+            <div class="field">
               <label for="ubicacion">Ubicación</label>
-              <input id="ubicacion" name="ubicacion" type="text" placeholder="Dirección o ciudad">
+              <input id="ubicacion" name="ubicacion" type="text" placeholder="Dirección o ciudad" value="<?php echo htmlspecialchars($formData['ubicacion'], ENT_QUOTES, 'UTF-8'); ?>">
             </div>
             <div class="field">
               <label for="estado_plaza" class="required">Estado</label>
               <select id="estado_plaza" name="estado_plaza" required>
                 <option value="">Selecciona…</option>
-                <option value="activa">Activa</option>
-                <option value="inactiva">Inactiva</option>
+                <option value="activa" <?php echo $formData['estado_plaza'] === 'activa' ? 'selected' : ''; ?>>Activa</option>
+                <option value="inactiva" <?php echo $formData['estado_plaza'] === 'inactiva' ? 'selected' : ''; ?>>Inactiva</option>
               </select>
             </div>
             <div class="field" style="grid-column:1/-1">
               <label for="observaciones">Observaciones</label>
-              <textarea id="observaciones" name="observaciones" placeholder="Notas internas, consideraciones, etc."></textarea>
+              <textarea id="observaciones" name="observaciones" placeholder="Notas internas, consideraciones, etc."><?php echo htmlspecialchars($formData['observaciones'], ENT_QUOTES, 'UTF-8'); ?></textarea>
             </div>
           </div>
         </div>

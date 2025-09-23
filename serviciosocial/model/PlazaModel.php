@@ -21,10 +21,16 @@ class PlazaModel
      */
     public function getAll(): array
     {
-        $sql = 'SELECT p.id, p.nombre, p.direccion, p.cupo, p.activa, p.ss_empresa_id, e.nombre AS empresa_nombre
+        $sql = 'SELECT p.id,
+                       p.nombre,
+                       p.direccion,
+                       p.cupo,
+                       p.estado,
+                       p.ss_empresa_id,
+                       e.nombre AS empresa_nombre
                 FROM plaza AS p
                 LEFT JOIN ss_empresa AS e ON e.id = p.ss_empresa_id
-                ORDER BY p.nombre ASC';
+                ORDER BY p.creado_en DESC';
 
         $statement = $this->pdo->query($sql);
 

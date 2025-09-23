@@ -15,7 +15,12 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
 }
 
 $error = '';
+$success = '';
 $plazas = [];
+
+if (isset($_GET['created'])) {
+    $success = 'La plaza se registró correctamente.';
+}
 
 try {
     $controller = new PlazaController();
@@ -41,6 +46,8 @@ try {
     <main>
         <?php if ($error !== ''): ?>
             <div class="alert alert-error" role="alert"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
+        <?php elseif ($success !== ''): ?>
+            <div class="alert alert-success" role="status"><?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></div>
         <?php endif; ?>
 
         <div class="top-actions">
@@ -56,7 +63,7 @@ try {
                     <th>Empresa</th>
                     <th>Dirección</th>
                     <th>Cupo</th>
-                    <th>Activa</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -69,7 +76,12 @@ try {
                             <td><?php echo htmlspecialchars($plaza['empresa_nombre'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?php echo htmlspecialchars($plaza['direccion'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?php echo $plaza['cupo'] !== null ? (int)$plaza['cupo'] : '-'; ?></td>
-                            <td><?php echo (int)($plaza['activa'] ?? 0) === 1 ? 'Sí' : 'No'; ?></td>
+                            <td>
+                                <?php
+                                $estado = strtolower((string)($plaza['estado'] ?? ''));
+                                echo $estado === 'activa' ? 'Activa' : ($estado === 'inactiva' ? 'Inactiva' : '-');
+                                ?>
+                            </td>
                             <td class="actions">
                             <a href="plaza_view.php?"> ver </a>    
                             <a href="plaza_edit.php?"> Editar</a>    

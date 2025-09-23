@@ -98,3 +98,15 @@
     .btn.ghost{background:#fff; border-color:var(--border); color:var(--text)}
     .btn.ghost:hover{border-color:#cbd5e1; transform:translateY(-1px)}
     .note{font-size:.9rem;color:var(--muted)}
+
+    .alert{
+      margin:0 0 18px;
+      padding:12px 16px;
+      border-radius:12px;
+      border:1px solid transparent;
+      background:#fff;
+      font-size:.95rem;
+      font-weight:500;
+    }
+    .alert ul{margin:0; padding-left:1.2rem;}
+    .alert.error{background:rgba(225,29,72,.1); border-color:rgba(225,29,72,.35); color:#b91c1c;}
