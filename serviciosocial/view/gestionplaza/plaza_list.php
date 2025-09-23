@@ -70,7 +70,11 @@ try {
                             <td><?php echo htmlspecialchars($plaza['direccion'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?php echo $plaza['cupo'] !== null ? (int)$plaza['cupo'] : '-'; ?></td>
                             <td><?php echo (int)($plaza['activa'] ?? 0) === 1 ? 'Sí' : 'No'; ?></td>
-                            <td class="actions">-</td>
+                            <td class="actions">
+                            <a href="plaza_view.php?"> ver </a>    
+                            <a href="plaza_edit.php?"> Editar</a>    
+                            <a href="plaza_delete.php?"> Eliminar</a>    
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
