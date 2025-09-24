@@ -20,6 +20,8 @@ $plazas = [];
 
 if (isset($_GET['created'])) {
     $success = 'La plaza se registró correctamente.';
+} elseif (isset($_GET['updated'])) {
+    $success = 'La plaza se actualizó correctamente.';
 }
 
 try {
@@ -27,6 +29,14 @@ try {
     $plazas = $controller->listAll();
 } catch (\Throwable $exception) {
     $error = 'No fue posible obtener la lista de plazas: ' . $exception->getMessage();
+}
+
+if ($error === '' && isset($_GET['error'])) {
+    if ($_GET['error'] === 'invalid') {
+        $error = 'La solicitud para editar la plaza no es válida.';
+    } elseif ($_GET['error'] === 'notfound') {
+        $error = 'La plaza solicitada no se encontró en el sistema.';
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -84,7 +94,7 @@ try {
                             </td>
                             <td class="actions">
                             <a href="plaza_view.php?"> ver </a>    
-                            <a href="plaza_edit.php?"> Editar</a>    
+                            <a href="plaza_edit.php?id=<?php echo (int)$plaza['id']; ?>"> Editar</a>
                             <a href="plaza_delete.php?"> Eliminar</a>    
                             </td>
                         </tr>

@@ -57,6 +57,85 @@ class PlazaController
      */
     public function create(array $input): int
     {
+        $data = $this->preparePlazaData($input);
+
+        return $this->plazaModel->create($data);
+    }
+
+    /**
+     * Obtener una plaza por su identificador.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function findById(int $id): ?array
+    {
+        if ($id <= 0) {
+            throw new InvalidArgumentException('El identificador de la plaza no es válido.');
+        }
+
+        return $this->plazaModel->findById($id);
+    }
+
+    /**
+     * @param array<string, mixed> $input
+     */
+    public function update(int $id, array $input): void
+    {
+        if ($id <= 0) {
+            throw new InvalidArgumentException('El identificador de la plaza no es válido.');
+        }
+
+        $data = $this->preparePlazaData($input);
+
+        $this->plazaModel->update($id, $data);
+    }
+
+    private function toNullableInt(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (!is_numeric($value)) {
+            return null;
+        }
+
+        return (int) $value;
+    }
+
+    private function toNullableString(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+
+        return $value === '' ? null : $value;
+    }
+
+    private function validateDate(mixed $value, string $errorMessage): string
+    {
+        $date = $this->toNullableString($value);
+        if ($date === null) {
+            throw new InvalidArgumentException($errorMessage);
+        }
+
+        $dateTime = date_create_from_format('Y-m-d', $date);
+        if ($dateTime === false || $dateTime->format('Y-m-d') !== $date) {
+            throw new InvalidArgumentException('La fecha proporcionada no es válida.');
+        }
+
+        return $date;
+    }
+
+    /**
+     * @param array<string, mixed> $input
+     *
+     * @return array<string, mixed>
+     */
+    private function preparePlazaData(array $input): array
+    {
         $nombre = trim((string)($input['plaza_nombre'] ?? ''));
         if ($nombre === '') {
             throw new InvalidArgumentException('El nombre de la plaza es obligatorio.');
@@ -128,7 +207,7 @@ class PlazaController
                 : $horarioLabel;
         }
 
-        return $this->plazaModel->create([
+        return [
             'nombre'             => $nombre,
             'ss_empresa_id'      => $empresaId,
             'ss_convenio_id'     => $convenioId,
@@ -146,45 +225,6 @@ class PlazaController
             'ubicacion'          => $ubicacion,
             'estado'             => $estado,
             'observaciones'      => $observaciones,
-        ]);
-    }
-
-    private function toNullableInt(mixed $value): ?int
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        if (!is_numeric($value)) {
-            return null;
-        }
-
-        return (int) $value;
-    }
-
-    private function toNullableString(mixed $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        $value = trim((string) $value);
-
-        return $value === '' ? null : $value;
-    }
-
-    private function validateDate(mixed $value, string $errorMessage): string
-    {
-        $date = $this->toNullableString($value);
-        if ($date === null) {
-            throw new InvalidArgumentException($errorMessage);
-        }
-
-        $dateTime = date_create_from_format('Y-m-d', $date);
-        if ($dateTime === false || $dateTime->format('Y-m-d') !== $date) {
-            throw new InvalidArgumentException('La fecha proporcionada no es válida.');
-        }
-
-        return $date;
+        ];
     }
 }

@@ -38,6 +38,27 @@ class PlazaModel
     }
 
     /**
+     * Obtener una plaza específica por su identificador.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function findById(int $id): ?array
+    {
+        $sql = 'SELECT p.*, e.nombre AS empresa_nombre
+                FROM plaza AS p
+                LEFT JOIN ss_empresa AS e ON e.id = p.ss_empresa_id
+                WHERE p.id = :id
+                LIMIT 1';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':id' => $id]);
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result === false ? null : $result;
+    }
+
+    /**
      * Obtener todas las empresas/dependencias disponibles.
      *
      * @return array<int, array<string, mixed>>
@@ -146,5 +167,56 @@ class PlazaModel
         ]);
 
         return (int) $this->pdo->lastInsertId();
+    }
+
+    /**
+     * Actualizar la información de una plaza existente.
+     *
+     * @param array<string, mixed> $data
+     */
+    public function update(int $id, array $data): void
+    {
+        $sql = 'UPDATE plaza
+                SET nombre = :nombre,
+                    ss_empresa_id = :ss_empresa_id,
+                    ss_convenio_id = :ss_convenio_id,
+                    direccion = :direccion,
+                    cupo = :cupo,
+                    periodo_inicio = :periodo_inicio,
+                    periodo_fin = :periodo_fin,
+                    modalidad = :modalidad,
+                    actividades = :actividades,
+                    requisitos = :requisitos,
+                    responsable_nombre = :responsable_nombre,
+                    responsable_puesto = :responsable_puesto,
+                    responsable_email = :responsable_email,
+                    responsable_tel = :responsable_tel,
+                    ubicacion = :ubicacion,
+                    estado = :estado,
+                    observaciones = :observaciones
+                WHERE id = :id';
+
+        $statement = $this->pdo->prepare($sql);
+
+        $statement->execute([
+            ':id'                 => $id,
+            ':nombre'             => $data['nombre'],
+            ':ss_empresa_id'      => $data['ss_empresa_id'],
+            ':ss_convenio_id'     => $data['ss_convenio_id'],
+            ':direccion'          => $data['direccion'],
+            ':cupo'               => $data['cupo'],
+            ':periodo_inicio'     => $data['periodo_inicio'],
+            ':periodo_fin'        => $data['periodo_fin'],
+            ':modalidad'          => $data['modalidad'],
+            ':actividades'        => $data['actividades'],
+            ':requisitos'         => $data['requisitos'],
+            ':responsable_nombre' => $data['responsable_nombre'],
+            ':responsable_puesto' => $data['responsable_puesto'],
+            ':responsable_email'  => $data['responsable_email'],
+            ':responsable_tel'    => $data['responsable_tel'],
+            ':ubicacion'          => $data['ubicacion'],
+            ':estado'             => $data['estado'],
+            ':observaciones'      => $data['observaciones'],
+        ]);
     }
 }
