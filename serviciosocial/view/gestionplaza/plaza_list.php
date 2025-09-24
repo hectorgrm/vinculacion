@@ -22,6 +22,8 @@ if (isset($_GET['created'])) {
     $success = 'La plaza se registró correctamente.';
 } elseif (isset($_GET['updated'])) {
     $success = 'La plaza se actualizó correctamente.';
+} elseif (isset($_GET['deleted'])) {
+    $success = 'La plaza se eliminó correctamente.';
 }
 
 try {
@@ -93,9 +95,9 @@ if ($error === '' && isset($_GET['error'])) {
                                 ?>
                             </td>
                             <td class="actions">
-                            <a href="plaza_view.php?"> ver </a>    
+                            <a href="plaza_view.php?id=<?php echo (int)$plaza['id']; ?>"> ver </a>
                             <a href="plaza_edit.php?id=<?php echo (int)$plaza['id']; ?>"> Editar</a>
-                            <a href="plaza_delete.php?"> Eliminar</a>    
+                            <a href="plaza_delete.php?id=<?php echo (int)$plaza['id']; ?>"> Eliminar</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

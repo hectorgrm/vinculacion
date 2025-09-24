@@ -219,4 +219,15 @@ class PlazaModel
             ':observaciones'      => $data['observaciones'],
         ]);
     }
+
+    /**
+     * Eliminar una plaza de la base de datos.
+     */
+    public function delete(int $id): void
+    {
+        $sql = 'DELETE FROM plaza WHERE id = :id';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':id' => $id]);
+    }
 }

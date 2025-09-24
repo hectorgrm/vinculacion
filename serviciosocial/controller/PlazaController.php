@@ -90,6 +90,15 @@ class PlazaController
         $this->plazaModel->update($id, $data);
     }
 
+    public function delete(int $id): void
+    {
+        if ($id <= 0) {
+            throw new InvalidArgumentException('El identificador de la plaza no es válido.');
+        }
+
+        $this->plazaModel->delete($id);
+    }
+
     private function toNullableInt(mixed $value): ?int
     {
         if ($value === null || $value === '') {
