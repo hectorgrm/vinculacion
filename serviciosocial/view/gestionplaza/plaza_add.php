@@ -2,9 +2,9 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../../config/session.php';
-require_once __DIR__ . '/../../controller/PlazaAddController.php';
+require_once __DIR__ . '/../../controller/PlazaController.php';
 
-use Serviciosocial\Controller\PlazaAddController;
+use Serviciosocial\Controller\PlazaController;
 
 $user = $_SESSION['user'] ?? null;
 $allowedRoles = ['ss_admin'];
@@ -14,7 +14,7 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
     exit;
 }
 
-$controller = new PlazaAddController();
+$controller = new PlazaController();
 
 $formData = [
     'plaza_nombre'      => '',
