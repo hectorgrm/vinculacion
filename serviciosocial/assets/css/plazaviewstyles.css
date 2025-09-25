@@ -40,6 +40,19 @@ main {
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
+.alert {
+    padding: 16px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+.alert.error {
+    background: #fdecea;
+    border: 1px solid #f5c6cb;
+    color: #c82333;
+}
+
 .section {
     margin-bottom: 35px;
 }
@@ -73,13 +86,27 @@ main {
     font-size: 15px;
 }
 
+.field p a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.field p a:hover {
+    text-decoration: underline;
+}
+
+.field p .empty {
+    color: #6c757d;
+    font-style: italic;
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
 
-.action {
+.actions {
     display: flex;
     justify-content: flex-end;
     margin-top: 30px;
@@ -95,6 +122,10 @@ main {
     transition: background 0.3s;
 }
 
+.btn + .btn {
+    margin-left: 10px;
+}
+
 .btn.primary {
     background: #28A745;
     color: #fff;
@@ -108,7 +139,6 @@ main {
 .btn.ghost {
     background: #e9ecef;
     color: #333;
-    margin-right: 10px;
 }
 
 .btn.ghost:hover {

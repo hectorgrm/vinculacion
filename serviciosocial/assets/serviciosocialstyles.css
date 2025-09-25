@@ -99,12 +99,36 @@
 .actions a {
   margin-right: 10px;
   text-decoration: none;
-  color: #007BFF;
   font-weight: bold;
+  transition: color 0.2s ease;
 }
 
-.actions a:hover {
-  text-decoration: underline;
+.actions a:last-child {
+  margin-right: 0;
+}
+
+.actions .link-view {
+  color: #17a2b8;
+}
+
+.actions .link-view:hover {
+  color: #117a8b;
+}
+
+.actions .link-edit {
+  color: #007bff;
+}
+
+.actions .link-edit:hover {
+  color: #0056b3;
+}
+
+.actions .link-delete {
+  color: #dc3545;
+}
+
+.actions .link-delete:hover {
+  color: #a71d2a;
 }
 
 /* Botones de acciones superiores */

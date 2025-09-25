@@ -95,9 +95,9 @@ if ($error === '' && isset($_GET['error'])) {
                                 ?>
                             </td>
                             <td class="actions">
-                            <a href="plaza_view.php?id=<?php echo (int)$plaza['id']; ?>"> ver </a>
-                            <a href="plaza_edit.php?id=<?php echo (int)$plaza['id']; ?>"> Editar</a>
-                            <a href="plaza_delete.php?id=<?php echo (int)$plaza['id']; ?>"> Eliminar</a>
+                                <a class="link-view" href="plaza_view.php?id=<?php echo (int) $plaza['id']; ?>">Ver</a>
+                                <a class="link-edit" href="plaza_edit.php?id=<?php echo (int) $plaza['id']; ?>">Editar</a>
+                                <a class="link-delete" href="plaza_delete.php?id=<?php echo (int) $plaza['id']; ?>">Eliminar</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
