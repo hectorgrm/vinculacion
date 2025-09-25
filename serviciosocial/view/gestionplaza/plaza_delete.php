@@ -90,9 +90,10 @@ $formatEstado = static function (?string $value): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eliminar Plaza</title>
     <link rel="stylesheet" href="../../assets/serviciosocialstyles.css">
+    <link rel="stylesheet" href="../../assets/css/plazadeletestyles.css">
 </head>
-<body>
-    <header>
+<body class="delete-page">
+    <header class="danger-header">
         <h1>Eliminar plaza</h1>
         <p>Confirma si deseas eliminar definitivamente la plaza del catálogo de Servicio Social.</p>
     </header>
@@ -103,14 +104,14 @@ $formatEstado = static function (?string $value): string {
         <?php endif; ?>
 
         <?php if ($plaza !== null && $message === ''): ?>
-            <section class="form-card">
+            <section class="form-card form-card--danger">
                 <header class="form-card__header">
                     <h2>¿Deseas eliminar esta plaza?</h2>
                     <p>Esta acción es permanente y no se puede deshacer.</p>
                 </header>
 
                 <div class="form-card__body">
-                    <dl>
+                    <dl class="plaza-details">
                         <dt>Nombre</dt>
                         <dd><?php echo htmlspecialchars((string)($plaza['nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></dd>
 
@@ -134,7 +135,7 @@ $formatEstado = static function (?string $value): string {
                         <dd><?php echo htmlspecialchars($formatEstado($plaza['estado'] ?? null), ENT_QUOTES, 'UTF-8'); ?></dd>
                     </dl>
 
-                    <form method="post" class="form-actions">
+                    <form method="post" class="form-actions form-actions--danger">
                         <input type="hidden" name="id" value="<?php echo (int) $id; ?>">
                         <a class="btn-secondary" href="plaza_list.php">Cancelar</a>
                         <button type="submit" class="btn-danger">Eliminar plaza</button>
@@ -142,7 +143,7 @@ $formatEstado = static function (?string $value): string {
                 </div>
             </section>
         <?php elseif ($plaza !== null): ?>
-            <div class="form-card">
+            <div class="form-card form-card--fallback">
                 <p>Por favor regresa a la lista de plazas e inténtalo nuevamente.</p>
                 <a class="btn-secondary" href="plaza_list.php">Volver a la lista</a>
             </div>
