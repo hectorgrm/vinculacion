@@ -60,7 +60,7 @@ try {
                 'estudiante_id' => $estudianteId
             ]);
 
-            header('Location: ../view/gestionestudiante/estudiante_list.php?success=1');
+            header('Location: ../view/altaestudiante/estudiante_list.php?success=1');
             exit;
 
         case 'delete':
@@ -83,7 +83,7 @@ try {
 
                 throw $deleteException;
             }
-            header('Location: ../view/gestionestudiante/estudiante_list.php?deleted=1');
+            header('Location: ../view/altaestudiante/estudiante_list.php?deleted=1');
             exit;
 
         case 'edit':
@@ -104,13 +104,13 @@ try {
                     ':id'       => $id
                 ]);
             }
-            header('Location: ../view/gestionestudiante/estudiante_list.php?updated=1');
+            header('Location: ../view/altaestudiante/estudiante_list.php?updated=1');
             exit;
 
         default:
             throw new Exception("Acción no reconocida.");
     }
 } catch (Throwable $e) {
-    header('Location: ../view/gestionestudiante/estudiante_list.php?error=' . urlencode($e->getMessage()));
+    header('Location: ../view/altaestudiante/estudiante_list.php?error=' . urlencode($e->getMessage()));
     exit;
 }

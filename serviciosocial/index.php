@@ -40,8 +40,8 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
         <p>Selecciona una de las opciones para comenzar:</p>
         <div class="card-container">
             <div class="card" id="estudiantes">
-                <h3>Gestión de Estudiantes</h3>
-                <a href="view/gestionestudiante/estudiante_list.php">Entrar</a>
+                <h3>Alta de Estudiantes</h3>
+                <a href="view/altaestudiante/estudiante_list.php">Entrar</a>
             </div>
             <div class="card" id="plazas">
                 <h3>Gestión de Plazas</h3>

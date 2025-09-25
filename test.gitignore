@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Servicio Social - Ver Plaza</title>
+  <title>Servicio Social - Detalle del Estudiante</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -13,7 +13,7 @@
     }
 
     header {
-      background: #28A745;
+      background: #007bff;
       color: #fff;
       padding: 20px 40px;
     }
@@ -29,13 +29,13 @@
     }
 
     nav.breadcrumb a {
-      color: #c8ffd4;
+      color: #cde4ff;
       text-decoration: none;
     }
 
     nav.breadcrumb span.sep {
       margin: 0 5px;
-      color: #b2f3bd;
+      color: #b5d4ff;
     }
 
     main {
@@ -54,8 +54,8 @@
     .section h2 {
       margin-bottom: 15px;
       font-size: 20px;
-      color: #28A745;
-      border-left: 4px solid #28A745;
+      color: #007bff;
+      border-left: 4px solid #007bff;
       padding-left: 10px;
     }
 
@@ -103,12 +103,12 @@
     }
 
     .btn.primary {
-      background: #28A745;
+      background: #007bff;
       color: #fff;
     }
 
     .btn.primary:hover {
-      background: #218838;
+      background: #0056b3;
     }
 
     .btn.ghost {
@@ -125,11 +125,11 @@
 <body>
 
   <header>
-    <h1>Servicio Social · Detalle de Plaza</h1>
+    <h1>Servicio Social · Detalle del Estudiante</h1>
     <nav class="breadcrumb">
       <a href="#">Inicio</a>
       <span class="sep">›</span>
-      <a href="#">Gestión de Plazas</a>
+      <a href="#">Gestión de Estudiantes</a>
       <span class="sep">›</span>
       <span>Detalle</span>
     </nav>
@@ -137,93 +137,78 @@
 
   <main>
 
-    <!-- 🟢 Datos principales -->
+    <!-- 🧑‍🎓 Información personal -->
     <div class="section">
-      <h2>Información general</h2>
+      <h2>Información personal</h2>
       <div class="grid">
         <div class="field">
-          <label>Nombre de la plaza</label>
-          <p>Auxiliar de Soporte TI</p>
+          <label>Nombre completo</label>
+          <p>Juan Carlos Pérez López</p>
         </div>
         <div class="field">
-          <label>Dependencia / Empresa</label>
-          <p>TechSolutions S.A.</p>
+          <label>Matrícula</label>
+          <p>20204567</p>
         </div>
         <div class="field">
-          <label>Modalidad</label>
-          <p>Presencial</p>
-        </div>
-        <div class="field">
-          <label>Cupo</label>
-          <p>3 estudiantes</p>
-        </div>
-        <div class="field">
-          <label>Periodo</label>
-          <p>01/02/2025 – 30/07/2025</p>
-        </div>
-        <div class="field">
-          <label>Horario</label>
-          <p>L–V 9:00 – 14:00</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 📋 Descripción -->
-    <div class="section">
-      <h2>Descripción y requisitos</h2>
-      <div class="field">
-        <label>Actividades a realizar</label>
-        <p>Soporte técnico a usuarios, mantenimiento de equipos, instalación de software, configuración de redes internas.</p>
-      </div>
-      <div class="field">
-        <label>Requisitos</label>
-        <p>Conocimientos en hardware, redes y sistemas operativos. Buena comunicación y actitud proactiva.</p>
-      </div>
-    </div>
-
-    <!-- 👤 Responsable -->
-    <div class="section">
-      <h2>Contacto</h2>
-      <div class="grid">
-        <div class="field">
-          <label>Responsable</label>
-          <p>Ing. Laura Martínez</p>
-        </div>
-        <div class="field">
-          <label>Puesto</label>
-          <p>Jefa de Sistemas</p>
-        </div>
-        <div class="field">
-          <label>Correo</label>
-          <p>laura.martinez@techsolutions.com</p>
+          <label>Correo institucional</label>
+          <p>juan.perez@tectijuana.edu.mx</p>
         </div>
         <div class="field">
           <label>Teléfono</label>
-          <p>55 1234 5678</p>
+          <p>55 9876 5432</p>
+        </div>
+        <div class="field">
+          <label>Programa académico</label>
+          <p>Ingeniería en Informática</p>
+        </div>
+        <div class="field">
+          <label>Semestre actual</label>
+          <p>8º semestre</p>
         </div>
       </div>
     </div>
 
-    <!-- 📍 Ubicación -->
+    <!-- 📚 Información del servicio social -->
     <div class="section">
-      <h2>Ubicación y estado</h2>
+      <h2>Información del servicio social</h2>
       <div class="grid">
         <div class="field">
-          <label>Dirección</label>
-          <p>Calle Reforma #123, Ciudad de México</p>
+          <label>Dependencia asignada</label>
+          <p>Secretaría de Innovación y Tecnología</p>
         </div>
         <div class="field">
-          <label>Ubicación</label>
-          <p>Ciudad de México</p>
+          <label>Nombre del proyecto</label>
+          <p>Desarrollo de sistema de gestión documental</p>
         </div>
         <div class="field">
-          <label>Estado</label>
-          <p>Activa</p>
+          <label>Periodo del servicio</label>
+          <p>01/02/2025 – 30/07/2025</p>
         </div>
         <div class="field">
-          <label>Observaciones</label>
-          <p>Se requiere carta de presentación antes del inicio del servicio.</p>
+          <label>Horas acumuladas</label>
+          <p>320 / 480 horas</p>
         </div>
+        <div class="field">
+          <label>Estado del servicio</label>
+          <p>En curso</p>
+        </div>
+        <div class="field">
+          <label>Asesor interno</label>
+          <p>Ing. Fernando Rodríguez</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📍 Documentación -->
+    <div class="section">
+      <h2>Documentación</h2>
+      <div class="field">
+        <label>Documentos entregados</label>
+        <p>Carta de presentación, carta de aceptación, plan de trabajo</p>
+      </div>
+      <div class="field">
+        <label>Observaciones</label>
+        <p>Falta entregar el reporte intermedio. Fecha límite: 20/05/2025</p>
       </div>
     </div>
 
