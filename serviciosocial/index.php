@@ -43,6 +43,10 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
                 <h3>Alta de Estudiantes</h3>
                 <a href="view/altaestudiante/estudiante_list.php">Entrar</a>
             </div>
+            <div class="card" id="estudiantes">
+                <h3>Gestión de Estudiantes</h3>
+                <a href="view/gestestudiante/gestestudiante_list.php">Entrar</a>
+            </div>
             <div class="card" id="plazas">
                 <h3>Gestión de Plazas</h3>
                 <a href="view/gestionplaza/plaza_list.php">Entrar</a>

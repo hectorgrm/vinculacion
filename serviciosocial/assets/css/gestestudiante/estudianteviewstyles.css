@@ -1,0 +1,116 @@
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #007bff;
+      color: #fff;
+      padding: 20px 40px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    nav.breadcrumb {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    nav.breadcrumb a {
+      color: #cde4ff;
+      text-decoration: none;
+    }
+
+    nav.breadcrumb span.sep {
+      margin: 0 5px;
+      color: #b5d4ff;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px 40px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .section {
+      margin-bottom: 35px;
+    }
+
+    .section h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+      color: #007bff;
+      border-left: 4px solid #007bff;
+      padding-left: 10px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      display: block;
+      font-weight: bold;
+      color: #444;
+      margin-bottom: 4px;
+    }
+
+    .field p {
+      margin: 0;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      color: #333;
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .btn.primary {
+      background: #007bff;
+      color: #fff;
+    }
+
+    .btn.primary:hover {
+      background: #0056b3;
+    }
+
+    .btn.ghost {
+      background: #e9ecef;
+      color: #333;
+      margin-right: 10px;
+    }
+
+    .btn.ghost:hover {
+      background: #d6d8db;
+    }
