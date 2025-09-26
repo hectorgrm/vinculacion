@@ -59,6 +59,8 @@ $estadoLabels = [
 </header>
 
 <main>
+   <a href="../../index.php" class="btn-back">⬅ Regresar</a>
+   
     <div class="search-bar">
         <form method="get" action="">
             <input type="text" name="q" placeholder="Buscar por nombre, matrícula o carrera..." value="<?php echo htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8'); ?>" />

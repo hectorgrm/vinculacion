@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestión de Estudiantes - Servicio Social</title>
+  <title>Servicio Social - Detalle del Estudiante</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -16,9 +16,6 @@
       background: #007bff;
       color: #fff;
       padding: 20px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
     header h1 {
@@ -26,193 +23,200 @@
       font-size: 24px;
     }
 
-    .search-bar {
-      margin: 30px auto;
-      max-width: 900px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    nav.breadcrumb {
+      margin-top: 5px;
+      font-size: 14px;
     }
 
-    .search-bar input {
-      width: 70%;
-      padding: 10px 15px;
-      font-size: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+    nav.breadcrumb a {
+      color: #cde4ff;
+      text-decoration: none;
     }
 
-    .search-bar button {
-      padding: 10px 20px;
-      font-size: 15px;
-      border: none;
-      background: #007bff;
-      color: #fff;
-      border-radius: 8px;
-      cursor: pointer;
+    nav.breadcrumb span.sep {
+      margin: 0 5px;
+      color: #b5d4ff;
     }
 
     main {
-      max-width: 1100px;
-      margin: 0 auto 50px;
+      max-width: 900px;
+      margin: 40px auto;
       background: #fff;
-      padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      padding: 30px 40px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    .section {
+      margin-bottom: 35px;
+    }
+
+    .section h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+      color: #007bff;
+      border-left: 4px solid #007bff;
+      padding-left: 10px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      display: block;
+      font-weight: bold;
+      color: #444;
+      margin-bottom: 4px;
+    }
+
+    .field p {
+      margin: 0;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      color: #333;
       font-size: 15px;
     }
 
-    table th, table td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
     }
-
-    table th {
-      background: #f1f5fb;
-      color: #333;
-      font-weight: bold;
-    }
-
-    table tr:hover {
-      background: #f9fcff;
-    }
-
-    .status {
-      display: inline-block;
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .status.pendiente { background: #ffeeba; color: #856404; }
-    .status.en_curso { background: #cce5ff; color: #004085; }
-    .status.concluido { background: #d4edda; color: #155724; }
-    .status.cancelado { background: #f8d7da; color: #721c24; }
 
     .actions {
       display: flex;
-      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 30px;
     }
 
     .btn {
-      padding: 6px 10px;
-      border: none;
+      padding: 10px 18px;
       border-radius: 6px;
+      border: none;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 15px;
       text-decoration: none;
+      transition: background 0.3s;
     }
 
-    .btn.view { background: #17a2b8; color: #fff; }
-    .btn.edit { background: #28a745; color: #fff; }
-    .btn.delete { background: #dc3545; color: #fff; }
-
-    .btn:hover { opacity: 0.9; }
-
-    .top-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .btn.new {
+    .btn.primary {
       background: #007bff;
       color: #fff;
-      padding: 10px 20px;
-      font-size: 15px;
-      border-radius: 8px;
-      text-decoration: none;
     }
 
-    .btn.new:hover {
+    .btn.primary:hover {
       background: #0056b3;
+    }
+
+    .btn.ghost {
+      background: #e9ecef;
+      color: #333;
+      margin-right: 10px;
+    }
+
+    .btn.ghost:hover {
+      background: #d6d8db;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Gestión de Estudiantes · Servicio Social</h1>
+    <h1>Servicio Social · Detalle del Estudiante</h1>
+    <nav class="breadcrumb">
+      <a href="#">Inicio</a>
+      <span class="sep">›</span>
+      <a href="#">Gestión de Estudiantes</a>
+      <span class="sep">›</span>
+      <span>Detalle</span>
+    </nav>
   </header>
 
-  <div class="search-bar">
-    <input type="text" placeholder="Buscar por nombre, matrícula o carrera..." />
-    <button>Buscar</button>
-  </div>
-
   <main>
-    <div class="top-actions">
-      <h2>Lista de estudiantes registrados</h2>
-      <a href="estudiante_add.html" class="btn new">+ Alta de estudiante</a>
+
+    <!-- 🧑‍🎓 Información personal -->
+    <div class="section">
+      <h2>Información personal</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Nombre completo</label>
+          <p>Juan Carlos Pérez López</p>
+        </div>
+        <div class="field">
+          <label>Matrícula</label>
+          <p>20204567</p>
+        </div>
+        <div class="field">
+          <label>Correo institucional</label>
+          <p>juan.perez@tectijuana.edu.mx</p>
+        </div>
+        <div class="field">
+          <label>Teléfono</label>
+          <p>55 9876 5432</p>
+        </div>
+        <div class="field">
+          <label>Programa académico</label>
+          <p>Ingeniería en Informática</p>
+        </div>
+        <div class="field">
+          <label>Semestre actual</label>
+          <p>8º semestre</p>
+        </div>
+      </div>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Matrícula</th>
-          <th>Carrera</th>
-          <th>Plaza asignada</th>
-          <th>Periodo</th>
-          <th>Horas</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Ana Rodríguez</td>
-          <td>A012345</td>
-          <td>Ing. Informática</td>
-          <td>Secretaría de Innovación</td>
-          <td>01/02/2025 - 31/07/2025</td>
-          <td>120 / 480</td>
-          <td><span class="status en_curso">En curso</span></td>
-          <td class="actions">
-            <a href="estudiante_view.html" class="btn view">Ver</a>
-            <a href="estudiante_edit.html" class="btn edit">Editar</a>
-            <button class="btn delete">Eliminar</button>
-          </td>
-        </tr>
-        <tr>
-          <td>Diego López</td>
-          <td>A067890</td>
-          <td>Ing. Sistemas</td>
-          <td>Ayuntamiento de Tijuana</td>
-          <td>05/03/2025 - 10/08/2025</td>
-          <td>0 / 480</td>
-          <td><span class="status pendiente">Pendiente</span></td>
-          <td class="actions">
-            <a href="estudiante_view.html" class="btn view">Ver</a>
-            <a href="estudiante_edit.html" class="btn edit">Editar</a>
-            <button class="btn delete">Eliminar</button>
-          </td>
-        </tr>
-        <tr>
-          <td>Karla Méndez</td>
-          <td>A045678</td>
-          <td>Ing. Gestión</td>
-          <td>Centro de Innovación</td>
-          <td>15/01/2025 - 30/06/2025</td>
-          <td>480 / 480</td>
-          <td><span class="status concluido">Concluido</span></td>
-          <td class="actions">
-            <a href="estudiante_view.html" class="btn view">Ver</a>
-            <a href="estudiante_edit.html" class="btn edit">Editar</a>
-            <button class="btn delete">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- 📚 Información del servicio social -->
+    <div class="section">
+      <h2>Información del servicio social</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Dependencia asignada</label>
+          <p>Secretaría de Innovación y Tecnología</p>
+        </div>
+        <div class="field">
+          <label>Nombre del proyecto</label>
+          <p>Desarrollo de sistema de gestión documental</p>
+        </div>
+        <div class="field">
+          <label>Periodo del servicio</label>
+          <p>01/02/2025 – 30/07/2025</p>
+        </div>
+        <div class="field">
+          <label>Horas acumuladas</label>
+          <p>320 / 480 horas</p>
+        </div>
+        <div class="field">
+          <label>Estado del servicio</label>
+          <p>En curso</p>
+        </div>
+        <div class="field">
+          <label>Asesor interno</label>
+          <p>Ing. Fernando Rodríguez</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📍 Documentación -->
+    <div class="section">
+      <h2>Documentación</h2>
+      <div class="field">
+        <label>Documentos entregados</label>
+        <p>Carta de presentación, carta de aceptación, plan de trabajo</p>
+      </div>
+      <div class="field">
+        <label>Observaciones</label>
+        <p>Falta entregar el reporte intermedio. Fecha límite: 20/05/2025</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="#" class="btn ghost">Volver</a>
+      <a href="#" class="btn primary">Editar</a>
+    </div>
+
   </main>
 
 </body>
