@@ -83,32 +83,19 @@ $estadoLabels = [
             <th>Nombre</th>
             <th>Matrícula</th>
             <th>Carrera</th>
-            <th>Dependencia / Plaza</th>
-            <th>Periodo</th>
-            <th>Horas</th>
             <th>Estado</th>
+            <th>Horas</th>
             <th>Acciones</th>
         </tr>
         </thead>
         <tbody>
         <?php if (empty($students)): ?>
             <tr>
-                <td colspan="8">No hay estudiantes registrados.</td>
+                <td colspan="6">No hay estudiantes registrados.</td>
             </tr>
         <?php else: ?>
             <?php foreach ($students as $student): ?>
                 <?php
-                $inicio = $formatDate($student['periodo_inicio'] ?? null);
-                $fin = $formatDate($student['periodo_fin'] ?? null);
-                $periodo = '-';
-                if ($inicio !== null && $fin !== null) {
-                    $periodo = $inicio . ' - ' . $fin;
-                } elseif ($inicio !== null) {
-                    $periodo = $inicio . ' - ?';
-                } elseif ($fin !== null) {
-                    $periodo = '? - ' . $fin;
-                }
-
                 $estado = strtolower((string)($student['estado_servicio'] ?? ''));
                 $estadoLabel = $estadoLabels[$estado] ?? 'Desconocido';
                 ?>
@@ -116,14 +103,11 @@ $estadoLabels = [
                     <td><?php echo htmlspecialchars((string) $student['nombre'], ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars((string) $student['matricula'], ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars((string)($student['carrera'] ?? '-'), ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><?php echo htmlspecialchars((string)($student['plaza_nombre'] ?? $student['dependencia_asignada'] ?? '-'), ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><?php echo htmlspecialchars($periodo, ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><?php echo (int)($student['horas_acumuladas'] ?? 0); ?> / <?php echo (int)($student['horas_requeridas'] ?? 0); ?></td>
                     <td><span class="status <?php echo htmlspecialchars($estado, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($estadoLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
+                    <td><?php echo (int)($student['horas_acumuladas'] ?? 0); ?> / <?php echo (int)($student['horas_requeridas'] ?? 0); ?></td>
                     <td class="actions">
-                        <a href="gestestudiente_view.php?id=<?php echo (int) $student['id']; ?>" class="btn view">Ver</a>
+                        <a href="gestestudiante_view.php?id=<?php echo (int) $student['id']; ?>" class="btn view">Ver</a>
                         <a href="gestestudiante_edit.php?id=<?php echo (int) $student['id']; ?>" class="btn edit">Editar</a>
-                        <a href="gestestudiante_delete.php?id=<?php echo (int) $student['id']; ?>" class="btn delete">Eliminar</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
