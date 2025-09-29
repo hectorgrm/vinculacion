@@ -100,19 +100,22 @@ $statusLabels = [
       <?php else: ?>
         <?php foreach ($periodos as $periodo): ?>
           <?php
+          $periodoId = (int) ($periodo['id'] ?? 0);
           $estatus = strtolower((string)($periodo['estatus'] ?? ''));
           $estatusLabel = $statusLabels[$estatus] ?? ucfirst($estatus);
+          $viewUrl = 'periodo_view.php?id=' . rawurlencode((string) $periodoId);
+          $editUrl = 'periodo_edit.php?id=' . rawurlencode((string) $periodoId);
           ?>
           <tr>
-            <td><?php echo (int) ($periodo['id'] ?? 0); ?></td>
+            <td><?php echo $periodoId; ?></td>
             <td><?php echo htmlspecialchars((string)($periodo['servicio_id'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
             <td><?php echo htmlspecialchars((string)($periodo['numero'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
             <td><span class="status <?php echo htmlspecialchars($estatus, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($estatusLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
             <td><?php echo htmlspecialchars($formatDate($periodo['abierto_en'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
             <td><?php echo htmlspecialchars($formatDate($periodo['cerrado_en'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
             <td class="actions">
-              <a href="#" class="btn-view">Ver</a>
-              <a href="#" class="btn-edit">Editar</a>
+              <a href="<?php echo htmlspecialchars($viewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn-view">Ver</a>
+              <a href="<?php echo htmlspecialchars($editUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn-edit">Editar</a>
             </td>
           </tr>
         <?php endforeach; ?>
