@@ -68,4 +68,33 @@ class PeriodoModel
 
         return $result !== false ? $result : null;
     }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function update(int $id, array $data): void
+    {
+        $sql = <<<'SQL'
+            UPDATE periodo
+               SET numero = :numero,
+                   estatus = :estatus,
+                   abierto_en = :abierto_en,
+                   cerrado_en = :cerrado_en
+             WHERE id = :id
+        SQL;
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':numero', (int) ($data['numero'] ?? 0), PDO::PARAM_INT);
+        $stmt->bindValue(':estatus', (string) ($data['estatus'] ?? ''), PDO::PARAM_STR);
+        $stmt->bindValue(':abierto_en', (string) ($data['abierto_en'] ?? ''), PDO::PARAM_STR);
+
+        if (array_key_exists('cerrado_en', $data) && $data['cerrado_en'] !== null && $data['cerrado_en'] !== '') {
+            $stmt->bindValue(':cerrado_en', (string) $data['cerrado_en'], PDO::PARAM_STR);
+        } else {
+            $stmt->bindValue(':cerrado_en', null, PDO::PARAM_NULL);
+        }
+
+        $stmt->execute();
+    }
 }
