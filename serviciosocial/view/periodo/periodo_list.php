@@ -66,7 +66,7 @@ $statusLabels = [
 <main>
   <div class="top-actions">
     <a href="../../index.php" class="btn-back">⬅ Volver</a>
-    <a href="#" class="btn-new">➕ Nuevo Periodo</a>
+    <a href="periodo_add.php" class="btn-new">➕ Nuevo Periodo</a>
   </div>
 
   <div class="search-bar">

@@ -72,6 +72,33 @@ class PeriodoModel
     /**
      * @param array<string, mixed> $data
      */
+    public function create(array $data): int
+    {
+        $sql = <<<'SQL'
+            INSERT INTO periodo (servicio_id, numero, estatus, abierto_en, cerrado_en)
+            VALUES (:servicio_id, :numero, :estatus, :abierto_en, :cerrado_en)
+        SQL;
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':servicio_id', (int) ($data['servicio_id'] ?? 0), PDO::PARAM_INT);
+        $stmt->bindValue(':numero', (int) ($data['numero'] ?? 0), PDO::PARAM_INT);
+        $stmt->bindValue(':estatus', (string) ($data['estatus'] ?? ''), PDO::PARAM_STR);
+        $stmt->bindValue(':abierto_en', (string) ($data['abierto_en'] ?? ''), PDO::PARAM_STR);
+
+        if (array_key_exists('cerrado_en', $data) && $data['cerrado_en'] !== null && $data['cerrado_en'] !== '') {
+            $stmt->bindValue(':cerrado_en', (string) $data['cerrado_en'], PDO::PARAM_STR);
+        } else {
+            $stmt->bindValue(':cerrado_en', null, PDO::PARAM_NULL);
+        }
+
+        $stmt->execute();
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
     public function update(int $id, array $data): void
     {
         $sql = <<<'SQL'
