@@ -1,3 +1,29 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../../../config/session.php';
+require_once __DIR__ . '/../../controller/ServicioController.php';
+
+use Serviciosocial\Controller\ServicioController;
+
+$searchTerm = isset($_GET['q']) ? trim((string) $_GET['q']) : '';
+$error = '';
+$servicios = [];
+
+try {
+    $controller = new ServicioController();
+    $servicios = $controller->listServicios($searchTerm);
+} catch (\Throwable $exception) {
+    $error = 'No fue posible obtener la lista de servicios: ' . $exception->getMessage();
+}
+
+$statusConfig = [
+    'prealta'  => ['label' => 'Pre-alta', 'class' => 'prealta'],
+    'activo'   => ['label' => 'Activo', 'class' => 'activo'],
+    'concluido'=> ['label' => 'Concluido', 'class' => 'concluido'],
+    'cancelado'=> ['label' => 'Cancelado', 'class' => 'cancelado'],
+];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,10 +46,21 @@
   <main>
     <a href="../../index.php" class="btn btn-secondary">⬅ Regresar</a>
 
+    <?php if ($error !== ''): ?>
+      <div class="alert alert-error" role="alert">
+        <?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
+      </div>
+    <?php endif; ?>
+
     <!-- 🔍 Barra de búsqueda -->
     <div class="search-bar">
       <form method="get" action="">
-        <input type="text" name="q" placeholder="Buscar por nombre, matrícula o plaza..." />
+        <input
+          type="text"
+          name="q"
+          placeholder="Buscar por nombre, matrícula o plaza..."
+          value="<?php echo htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8'); ?>"
+        />
         <button type="submit" class="btn btn-primary">Buscar</button>
       </form>
     </div>
@@ -49,50 +86,50 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>Juan Pérez</td>
-          <td>20214567</td>
-          <td>Desarrollo Web</td>
-          <td><span class="status activo">Activo</span></td>
-          <td>320</td>
-          <td>2025-02-01</td>
-          <td class="actions">
-            <a href="servicio_view.php?id=1" class="btn btn-info">Ver</a>
-            <a href="servicio_edit.php?id=1" class="btn btn-warning">Editar</a>
-            <a href="servicio_close.php?id=1" class="btn btn-danger">Cerrar</a>
-          </td>
-        </tr>
-
-        <tr>
-          <td>2</td>
-          <td>María López</td>
-          <td>20214568</td>
-          <td>Soporte Técnico</td>
-          <td><span class="status prealta">Pre-alta</span></td>
-          <td>0</td>
-          <td>2025-03-12</td>
-          <td class="actions">
-            <a href="servicio_view.php?id=2" class="btn btn-info">Ver</a>
-            <a href="servicio_edit.php?id=2" class="btn btn-warning">Editar</a>
-            <a href="servicio_close.php?id=2" class="btn btn-danger">Cerrar</a>
-          </td>
-        </tr>
-
-        <tr>
-          <td>3</td>
-          <td>Pedro Ramírez</td>
-          <td>20214569</td>
-          <td>Investigación de datos</td>
-          <td><span class="status concluido">Concluido</span></td>
-          <td>480</td>
-          <td>2025-01-20</td>
-          <td class="actions">
-            <a href="servicio_view.php?id=3" class="btn btn-info">Ver</a>
-            <a href="servicio_edit.php?id=3" class="btn btn-warning">Editar</a>
-            <a href="servicio_close.php?id=3" class="btn btn-danger">Cerrar</a>
-          </td>
-        </tr>
+        <?php if ($error === '' && !empty($servicios)): ?>
+          <?php foreach ($servicios as $servicio): ?>
+            <tr>
+              <td><?php echo (int) $servicio['id']; ?></td>
+              <td><?php echo htmlspecialchars($servicio['estudiante_nombre'], ENT_QUOTES, 'UTF-8'); ?></td>
+              <td><?php echo htmlspecialchars($servicio['estudiante_matricula'], ENT_QUOTES, 'UTF-8'); ?></td>
+              <td><?php echo htmlspecialchars($servicio['plaza_nombre'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+              <td>
+                <?php
+                $statusKey = strtolower((string) ($servicio['estatus'] ?? ''));
+                $status = $statusConfig[$statusKey] ?? ['label' => ucfirst($statusKey), 'class' => ''];
+                ?>
+                <span class="status <?php echo htmlspecialchars($status['class'], ENT_QUOTES, 'UTF-8'); ?>">
+                  <?php echo htmlspecialchars($status['label'], ENT_QUOTES, 'UTF-8'); ?>
+                </span>
+              </td>
+              <td><?php echo (int) $servicio['horas_acumuladas']; ?></td>
+              <td>
+                <?php
+                $createdAt = $servicio['creado_en'] ?? null;
+                if ($createdAt !== null) {
+                    $date = date_create($createdAt);
+                    echo $date instanceof DateTimeInterface
+                        ? htmlspecialchars($date->format('Y-m-d'), ENT_QUOTES, 'UTF-8')
+                        : htmlspecialchars((string) $createdAt, ENT_QUOTES, 'UTF-8');
+                } else {
+                    echo '-';
+                }
+                ?>
+              </td>
+              <td class="actions">
+                <a href="servicio_view.php?id=<?php echo (int) $servicio['id']; ?>" class="btn btn-info">Ver</a>
+                <a href="servicio_edit.php?id=<?php echo (int) $servicio['id']; ?>" class="btn btn-warning">Editar</a>
+                <a href="servicio_close.php?id=<?php echo (int) $servicio['id']; ?>" class="btn btn-danger">Cerrar</a>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <tr>
+            <td colspan="8">
+              <?php echo $error !== '' ? 'No se pudo cargar la información.' : 'No hay servicios registrados.'; ?>
+            </td>
+          </tr>
+        <?php endif; ?>
       </tbody>
     </table>
   </main>
