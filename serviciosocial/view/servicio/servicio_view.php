@@ -1,3 +1,101 @@
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/../../../config/session.php';
+require_once __DIR__ . '/../../controller/ServicioController.php';
+
+use Serviciosocial\Controller\ServicioController;
+
+$user = $_SESSION['user'] ?? null;
+$allowedRoles = ['ss_admin', 'admin_ss'];
+
+if (!is_array($user) || !in_array(strtolower((string) ($user['role'] ?? '')), $allowedRoles, true)) {
+    header('Location: ../../../common/login.php?module=serviciosocial&error=unauthorized');
+    exit;
+}
+
+$idParam = $_GET['id'] ?? null;
+$servicioId = is_numeric($idParam) ? (int) $idParam : 0;
+
+$error = '';
+$servicio = null;
+
+try {
+    if ($servicioId <= 0) {
+        throw new \RuntimeException('Identificador de servicio inválido.');
+    }
+
+    $controller = new ServicioController();
+    $servicio = $controller->findServicio($servicioId);
+
+    if ($servicio === null) {
+        throw new \RuntimeException('El servicio solicitado no existe.');
+    }
+} catch (\Throwable $exception) {
+    $error = $exception->getMessage();
+}
+
+$formatDate = static function (?string $value, string $format = 'd/m/Y'): string {
+    if ($value === null || $value === '') {
+        return '-';
+    }
+
+    $date = date_create($value);
+    if ($date === false) {
+        return '-';
+    }
+
+    return $date->format($format);
+};
+
+$formatDateTime = static function (?string $value) use ($formatDate): string {
+    return $formatDate($value, 'd/m/Y H:i');
+};
+
+$statusConfig = [
+    'prealta'   => ['label' => 'Pre-alta', 'class' => 'prealta'],
+    'activo'    => ['label' => 'Activo', 'class' => 'activo'],
+    'concluido' => ['label' => 'Concluido', 'class' => 'concluido'],
+    'cancelado' => ['label' => 'Cancelado', 'class' => 'cancelado'],
+];
+
+$horasLabel = '-';
+$estatus = '';
+$estatusClass = '';
+$estatusLabel = '';
+$estudiante = null;
+$plaza = null;
+$periodos = [];
+$observaciones = '';
+
+if ($error === '' && $servicio !== null) {
+    $estudiante = $servicio['estudiante'] ?? null;
+    $plaza = $servicio['plaza'] ?? null;
+    $periodos = $servicio['periodos'] ?? [];
+
+    $horasAcumuladas = $servicio['horas_acumuladas'] ?? 0;
+    $horasRequeridas = $estudiante['horas_requeridas'] ?? null;
+    if ($horasRequeridas !== null) {
+        $horasLabel = sprintf('%d / %d horas', (int) $horasAcumuladas, (int) $horasRequeridas);
+    } else {
+        $horasLabel = sprintf('%d horas registradas', (int) $horasAcumuladas);
+    }
+
+    $estatus = strtolower((string) ($servicio['estatus'] ?? ''));
+    $estatusData = $statusConfig[$estatus] ?? ['label' => ucfirst($estatus), 'class' => ''];
+    $estatusLabel = $estatusData['label'];
+    $estatusClass = $estatusData['class'];
+
+    $observaciones = trim((string) ($servicio['observaciones'] ?? ''));
+}
+
+function escapeWithBreaks(string $value): string
+{
+    $safe = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+    return nl2br($safe, false);
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,127 +120,143 @@
   <main>
     <a href="servicio_list.php" class="btn btn-secondary">⬅ Volver a la lista</a>
 
-    <!-- 🧑‍🎓 Información del estudiante -->
-    <section class="card">
-      <h2>Datos del Estudiante</h2>
-      <div class="grid cols-2">
-        <div class="field">
-          <label>Nombre completo</label>
-          <p>Juan Carlos Pérez López</p>
-        </div>
-        <div class="field">
-          <label>Matrícula</label>
-          <p>20214567</p>
-        </div>
-        <div class="field">
-          <label>Carrera</label>
-          <p>Ingeniería en Informática</p>
-        </div>
-        <div class="field">
-          <label>Correo electrónico</label>
-          <p>juan.perez@tectijuana.edu.mx</p>
-        </div>
-        <div class="field">
-          <label>Teléfono</label>
-          <p>55 1234 5678</p>
-        </div>
+    <?php if ($error !== ''): ?>
+      <div class="alert alert-error" role="alert">
+        <?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
       </div>
-    </section>
+    <?php else: ?>
 
-    <!-- 🏢 Información de la plaza -->
-    <section class="card">
-      <h2>Plaza Asignada</h2>
-      <div class="grid cols-2">
-        <div class="field">
-          <label>Nombre de la plaza</label>
-          <p>Auxiliar de Soporte TI</p>
+      <section class="card">
+        <h2>Datos del Estudiante</h2>
+        <div class="grid cols-2">
+          <div class="field">
+            <label>Nombre completo</label>
+            <p><?php echo htmlspecialchars((string) ($estudiante['nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
+          <div class="field">
+            <label>Matrícula</label>
+            <p><?php echo htmlspecialchars((string) ($estudiante['matricula'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
+          <div class="field">
+            <label>Carrera</label>
+            <p><?php echo htmlspecialchars((string) ($estudiante['carrera'] ?? 'No registrada'), ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
+          <div class="field">
+            <label>Correo electrónico</label>
+            <p><?php echo htmlspecialchars((string) ($estudiante['email'] ?? 'No registrado'), ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
+          <div class="field">
+            <label>Teléfono</label>
+            <p><?php echo htmlspecialchars((string) ($estudiante['telefono'] ?? 'No registrado'), ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
         </div>
-        <div class="field">
-          <label>Dependencia / Empresa</label>
-          <p>Secretaría de Innovación</p>
+      </section>
+
+      <section class="card">
+        <h2>Plaza Asignada</h2>
+        <div class="grid cols-2">
+          <div class="field">
+            <label>Nombre de la plaza</label>
+            <p><?php echo htmlspecialchars((string) ($plaza['nombre'] ?? 'Sin asignar'), ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
+          <div class="field">
+            <label>Dependencia / Empresa</label>
+            <p><?php echo htmlspecialchars((string) ($plaza['empresa'] ?? 'No registrada'), ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
+          <div class="field">
+            <label>Modalidad</label>
+            <p><?php echo htmlspecialchars((string) ($plaza['modalidad'] ?? 'No registrada'), ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
+          <div class="field">
+            <label>Cupo</label>
+            <p><?php echo htmlspecialchars($plaza['cupo'] !== null ? (string) $plaza['cupo'] : 'No registrado', ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
+          <div class="field">
+            <label>Periodo de plaza</label>
+            <p>
+              <?php
+              $inicio = $formatDate($plaza['periodo_inicio'] ?? null);
+              $fin = $formatDate($plaza['periodo_fin'] ?? null);
+              echo htmlspecialchars($inicio . ' – ' . $fin, ENT_QUOTES, 'UTF-8');
+              ?>
+            </p>
+          </div>
         </div>
-        <div class="field">
-          <label>Modalidad</label>
-          <p>Presencial</p>
+      </section>
+
+      <section class="card">
+        <h2>Detalles del Servicio</h2>
+        <div class="grid cols-2">
+          <div class="field">
+            <label>ID del Servicio</label>
+            <p><?php echo (int) ($servicio['id'] ?? 0); ?></p>
+          </div>
+          <div class="field">
+            <label>Estado actual</label>
+            <p><span class="status <?php echo htmlspecialchars($estatusClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($estatusLabel, ENT_QUOTES, 'UTF-8'); ?></span></p>
+          </div>
+          <div class="field">
+            <label>Horas acumuladas</label>
+            <p><?php echo htmlspecialchars($horasLabel, ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
+          <div class="field">
+            <label>Fecha de creación</label>
+            <p><?php echo htmlspecialchars($formatDate($servicio['creado_en'] ?? null), ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
         </div>
-        <div class="field">
-          <label>Cupo</label>
-          <p>3</p>
-        </div>
-        <div class="field">
-          <label>Periodo de plaza</label>
-          <p>01/02/2025 – 30/07/2025</p>
-        </div>
+      </section>
+
+      <section class="card">
+        <h2>Periodos del Servicio</h2>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Estatus</th>
+              <th>Abierto en</th>
+              <th>Cerrado en</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php if (empty($periodos)): ?>
+              <tr>
+                <td colspan="4">Este servicio no cuenta con periodos registrados.</td>
+              </tr>
+            <?php else: ?>
+              <?php foreach ($periodos as $periodo): ?>
+                <?php
+                $periodoStatusKey = strtolower((string) ($periodo['estatus'] ?? ''));
+                $periodoStatus = [
+                    'abierto'     => ['label' => 'Abierto', 'class' => 'activo'],
+                    'en_revision' => ['label' => 'En revisión', 'class' => 'en_revision'],
+                    'completado'  => ['label' => 'Completado', 'class' => 'completado'],
+                ][$periodoStatusKey] ?? ['label' => ucfirst($periodoStatusKey), 'class' => ''];
+                ?>
+                <tr>
+                  <td><?php echo htmlspecialchars((string) ($periodo['numero'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                  <td><span class="status <?php echo htmlspecialchars($periodoStatus['class'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($periodoStatus['label'], ENT_QUOTES, 'UTF-8'); ?></span></td>
+                  <td><?php echo htmlspecialchars($formatDateTime($periodo['abierto_en'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
+                  <td><?php echo htmlspecialchars($formatDateTime($periodo['cerrado_en'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
+                </tr>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2>Observaciones</h2>
+        <p>
+          <?php echo $observaciones !== '' ? escapeWithBreaks($observaciones) : 'Sin observaciones registradas.'; ?>
+        </p>
+      </section>
+
+      <div class="actions">
+        <a href="servicio_edit.php?id=<?php echo rawurlencode((string) $servicioId); ?>" class="btn btn-warning">Editar</a>
+        <a href="servicio_close.php?id=<?php echo rawurlencode((string) $servicioId); ?>" class="btn btn-danger">Finalizar Servicio</a>
       </div>
-    </section>
 
-    <!-- 📅 Información del servicio -->
-    <section class="card">
-      <h2>Detalles del Servicio</h2>
-      <div class="grid cols-2">
-        <div class="field">
-          <label>ID del Servicio</label>
-          <p>12</p>
-        </div>
-        <div class="field">
-          <label>Estado actual</label>
-          <p><span class="status activo">Activo</span></p>
-        </div>
-        <div class="field">
-          <label>Horas acumuladas</label>
-          <p>320 / 480 horas</p>
-        </div>
-        <div class="field">
-          <label>Fecha de creación</label>
-          <p>01/02/2025</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 🧾 Periodos asociados -->
-    <section class="card">
-      <h2>Periodos del Servicio</h2>
-      <table class="styled-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Estatus</th>
-            <th>Abierto en</th>
-            <th>Cerrado en</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td><span class="status completado">Completado</span></td>
-            <td>01/02/2025</td>
-            <td>30/03/2025</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td><span class="status en_revision">En revisión</span></td>
-            <td>01/04/2025</td>
-            <td>-</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <!-- 📌 Observaciones -->
-    <section class="card">
-      <h2>Observaciones</h2>
-      <p>
-        El estudiante ha mostrado excelente desempeño durante el primer periodo.  
-        Se recomienda asignar tareas más complejas en el siguiente módulo.
-      </p>
-    </section>
-
-    <!-- 🔧 Acciones -->
-    <div class="actions">
-      <a href="servicio_edit.php?id=12" class="btn btn-warning">Editar</a>
-      <a href="servicio_close.php?id=12" class="btn btn-danger">Finalizar Servicio</a>
-    </div>
-
+    <?php endif; ?>
   </main>
 
 </body>

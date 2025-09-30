@@ -38,4 +38,18 @@ class ServicioController
 
         return $this->servicioModel->fetchAll($term);
     }
+
+    /**
+     * Obtener la información detallada de un servicio.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function findServicio(int $id): ?array
+    {
+        if ($id <= 0) {
+            throw new \InvalidArgumentException('El identificador del servicio debe ser un número positivo.');
+        }
+
+        return $this->servicioModel->findById($id);
+    }
 }
