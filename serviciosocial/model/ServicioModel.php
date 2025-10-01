@@ -206,6 +206,40 @@ class ServicioModel
     }
 
     /**
+     * Cerrar un servicio actualizando su estatus y observaciones.
+     */
+    public function close(int $id, string $estatus, ?string $observaciones = null): void
+    {
+        $supportsObservaciones = $this->supportsObservacionesColumn();
+
+        $setClauses = ['estatus = :estatus'];
+
+        if ($supportsObservaciones) {
+            $setClauses[] = 'observaciones = :observaciones';
+        }
+
+        $sql = sprintf(
+            'UPDATE servicio SET %s WHERE id = :id',
+            implode(', ', $setClauses)
+        );
+
+        $statement = $this->pdo->prepare($sql);
+
+        $statement->bindValue(':estatus', $estatus, PDO::PARAM_STR);
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+
+        if ($supportsObservaciones) {
+            if ($observaciones === null || $observaciones === '') {
+                $statement->bindValue(':observaciones', null, PDO::PARAM_NULL);
+            } else {
+                $statement->bindValue(':observaciones', $observaciones, PDO::PARAM_STR);
+            }
+        }
+
+        $statement->execute();
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
     private function fetchPeriodosByServicio(int $servicioId): array

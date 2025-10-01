@@ -63,6 +63,21 @@ class ServicioController
     }
 
     /**
+     * Cerrar un servicio actualizando únicamente su estado y observaciones.
+     */
+    public function closeServicio(int $id, string $nuevoEstado, ?string $motivo = null): void
+    {
+        if ($id <= 0) {
+            throw new InvalidArgumentException('El identificador del servicio debe ser un número positivo.');
+        }
+
+        $estadoNormalizado = $this->normalizeCloseStatus($nuevoEstado);
+        $observaciones = $this->toNullableText($motivo);
+
+        $this->servicioModel->close($id, $estadoNormalizado, $observaciones);
+    }
+
+    /**
      * @param array<string, mixed> $input
      */
     public function updateServicio(int $id, array $input): void
@@ -166,5 +181,22 @@ class ServicioController
         $value = trim($value);
 
         return $value === '' ? null : $value;
+    }
+
+    private function normalizeCloseStatus(mixed $value): string
+    {
+        if (!is_string($value)) {
+            throw new InvalidArgumentException('Selecciona un estado válido para cerrar el servicio.');
+        }
+
+        $value = strtolower(trim($value));
+
+        $allowed = ['concluido', 'cancelado'];
+
+        if (!in_array($value, $allowed, true)) {
+            throw new InvalidArgumentException('Selecciona un estado válido para cerrar el servicio.');
+        }
+
+        return $value;
     }
 }
