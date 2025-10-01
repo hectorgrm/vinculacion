@@ -69,6 +69,14 @@ class DocumentosGlobalController
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    public function getDocumentForDeletion(int $documentId): array
+    {
+        return $this->findOrFail($documentId);
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
     public function getDocumentTypeCatalog(): array
@@ -195,5 +203,21 @@ class DocumentosGlobalController
         }
 
         return $this->model->deleteDocument($documentId);
+    }
+
+    public function deleteWithConfirmation(int $documentId, string $confirmation): void
+    {
+        $normalizedConfirmation = trim($confirmation);
+
+        if ($normalizedConfirmation !== 'ELIMINAR') {
+            throw new \InvalidArgumentException('Debes escribir la palabra "ELIMINAR" para confirmar la eliminación.');
+        }
+
+        // Verifica que el documento exista antes de intentar eliminarlo.
+        $this->findOrFail($documentId);
+
+        if (!$this->delete($documentId)) {
+            throw new \RuntimeException('No fue posible eliminar el documento. Verifica que exista e inténtalo de nuevo.');
+        }
     }
 }
