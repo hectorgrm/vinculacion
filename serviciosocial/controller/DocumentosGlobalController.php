@@ -76,6 +76,26 @@ class DocumentosGlobalController
         return $this->model->fetchDocumentTypeCatalog();
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function findDocumentType(int $tipoId): ?array
+    {
+        if ($tipoId <= 0) {
+            return null;
+        }
+
+        return $this->model->fetchDocumentTypeById($tipoId);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function getAllowedStatuses(): array
+    {
+        return self::ALLOWED_STATUSES;
+    }
+
     public function create(array $data): int
     {
         $tipoId = isset($data['tipo_id']) ? (int) $data['tipo_id'] : 0;
@@ -86,6 +106,10 @@ class DocumentosGlobalController
 
         if ($tipoId <= 0) {
             throw new \InvalidArgumentException('Debe seleccionar un tipo de documento válido.');
+        }
+
+        if ($this->model->fetchDocumentTypeById($tipoId) === null) {
+            throw new \InvalidArgumentException('El tipo de documento seleccionado no existe.');
         }
 
         if ($nombre === '') {

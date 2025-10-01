@@ -83,6 +83,23 @@ class DocumentosGlobalModel
         return array_map([$this, 'mapDocumentTypeRow'], $rows);
     }
 
+    public function fetchDocumentTypeById(int $tipoId): ?array
+    {
+        $sql = 'SELECT id, nombre, descripcion FROM ss_doc_tipo WHERE id = :id LIMIT 1';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':id', $tipoId, PDO::PARAM_INT);
+        $statement->execute();
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($row === false) {
+            return null;
+        }
+
+        return $this->mapDocumentTypeRow($row);
+    }
+
     public function createDocument(int $tipoId, string $nombre, ?string $descripcion, string $ruta, string $estatus): int
     {
         $sql = <<<'SQL'
