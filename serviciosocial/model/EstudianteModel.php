@@ -17,14 +17,14 @@ class EstudianteModel
     /** Obtener todos los estudiantes */
     public function getAll(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM estudiante ORDER BY creado_en DESC");
+        $stmt = $this->pdo->query("SELECT * FROM ss_estudiante ORDER BY creado_en DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /** Crear un nuevo estudiante y devolver su ID */
     public function create(array $data): int
     {
-        $sql = "INSERT INTO estudiante (nombre, matricula, carrera, email, telefono) 
+        $sql = "INSERT INTO ss_estudiante (nombre, matricula, carrera, email, telefono)
                 VALUES (:nombre, :matricula, :carrera, :email, :telefono)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -40,7 +40,7 @@ class EstudianteModel
     /** Buscar estudiante por ID */
     public function findById(int $id): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM estudiante WHERE id = :id LIMIT 1");
+        $stmt = $this->pdo->prepare("SELECT * FROM ss_estudiante WHERE id = :id LIMIT 1");
         $stmt->execute([':id' => $id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ?: null;
@@ -49,7 +49,7 @@ class EstudianteModel
     /** Actualizar la información de un estudiante */
     public function update(int $id, array $data): bool
     {
-        $sql = "UPDATE estudiante
+        $sql = "UPDATE ss_estudiante
                 SET nombre = :nombre,
                     matricula = :matricula,
                     carrera = :carrera,
@@ -72,7 +72,7 @@ class EstudianteModel
     /** Eliminar un estudiante por su ID */
     public function delete(int $id): bool
     {
-        $stmt = $this->pdo->prepare('DELETE FROM estudiante WHERE id = :id');
+        $stmt = $this->pdo->prepare('DELETE FROM ss_estudiante WHERE id = :id');
 
         return $stmt->execute([':id' => $id]);
     }

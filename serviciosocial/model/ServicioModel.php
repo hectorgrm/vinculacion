@@ -30,9 +30,9 @@ class ServicioModel
                    e.nombre AS estudiante_nombre,
                    e.matricula AS estudiante_matricula,
                    p.nombre AS plaza_nombre
-            FROM servicio AS s
-            INNER JOIN estudiante AS e ON e.id = s.estudiante_id
-            LEFT JOIN plaza AS p ON p.id = s.plaza_id
+            FROM ss_servicio AS s
+            INNER JOIN ss_estudiante AS e ON e.id = s.estudiante_id
+            LEFT JOIN ss_plaza AS p ON p.id = s.plaza_id
         SQL;
 
         $params = [];
@@ -82,9 +82,9 @@ class ServicioModel
                    p.periodo_inicio AS plaza_periodo_inicio,
                    p.periodo_fin    AS plaza_periodo_fin,
                    emp.nombre       AS plaza_empresa
-            FROM servicio AS s
-            INNER JOIN estudiante AS e ON e.id = s.estudiante_id
-            LEFT JOIN plaza AS p ON p.id = s.plaza_id
+            FROM ss_servicio AS s
+            INNER JOIN ss_estudiante AS e ON e.id = s.estudiante_id
+            LEFT JOIN ss_plaza AS p ON p.id = s.plaza_id
             LEFT JOIN ss_empresa AS emp ON emp.id = p.ss_empresa_id
             WHERE s.id = :id
             LIMIT 1
@@ -145,7 +145,7 @@ class ServicioModel
             SELECT p.id,
                    p.nombre,
                    emp.nombre AS empresa
-            FROM plaza AS p
+            FROM ss_plaza AS p
             LEFT JOIN ss_empresa AS emp ON emp.id = p.ss_empresa_id
             ORDER BY p.nombre ASC
         SQL;
@@ -173,7 +173,7 @@ class ServicioModel
         }
 
         $sql = sprintf(
-            'UPDATE servicio SET %s WHERE id = :id',
+            'UPDATE ss_servicio SET %s WHERE id = :id',
             implode(', ', $setClauses)
         );
 
@@ -219,7 +219,7 @@ class ServicioModel
         }
 
         $sql = sprintf(
-            'UPDATE servicio SET %s WHERE id = :id',
+            'UPDATE ss_servicio SET %s WHERE id = :id',
             implode(', ', $setClauses)
         );
 
@@ -250,7 +250,7 @@ class ServicioModel
                    estatus,
                    abierto_en,
                    cerrado_en
-            FROM periodo
+            FROM ss_periodo
             WHERE servicio_id = :servicio_id
             ORDER BY numero ASC, id ASC
         SQL;
@@ -271,7 +271,7 @@ class ServicioModel
             SELECT COUNT(*)
             FROM INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_SCHEMA = DATABASE()
-              AND TABLE_NAME = 'servicio'
+              AND TABLE_NAME = 'ss_servicio'
               AND COLUMN_NAME = 'observaciones'
         SQL;
 

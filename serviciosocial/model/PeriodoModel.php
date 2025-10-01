@@ -20,7 +20,7 @@ class PeriodoModel
      */
     public function getAll(): array
     {
-        $sql = 'SELECT id, servicio_id, numero, estatus, abierto_en, cerrado_en FROM periodo ORDER BY abierto_en DESC, id DESC';
+        $sql = 'SELECT id, servicio_id, numero, estatus, abierto_en, cerrado_en FROM ss_periodo ORDER BY abierto_en DESC, id DESC';
         $stmt = $this->pdo->query($sql);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -40,7 +40,7 @@ class PeriodoModel
 
         $sql = <<<SQL
             SELECT id, servicio_id, numero, estatus, abierto_en, cerrado_en
-            FROM periodo
+            FROM ss_periodo
             WHERE CAST(servicio_id AS CHAR) LIKE :numericTerm
                OR CAST(numero AS CHAR) LIKE :numericTerm
                OR LOWER(estatus) LIKE :statusTerm
@@ -61,7 +61,7 @@ class PeriodoModel
      */
     public function findById(int $id): ?array
     {
-        $stmt = $this->pdo->prepare('SELECT id, servicio_id, numero, estatus, abierto_en, cerrado_en FROM periodo WHERE id = :id LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT id, servicio_id, numero, estatus, abierto_en, cerrado_en FROM ss_periodo WHERE id = :id LIMIT 1');
         $stmt->execute([':id' => $id]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -75,7 +75,7 @@ class PeriodoModel
     public function create(array $data): int
     {
         $sql = <<<'SQL'
-            INSERT INTO periodo (servicio_id, numero, estatus, abierto_en, cerrado_en)
+            INSERT INTO ss_periodo (servicio_id, numero, estatus, abierto_en, cerrado_en)
             VALUES (:servicio_id, :numero, :estatus, :abierto_en, :cerrado_en)
         SQL;
 
@@ -102,7 +102,7 @@ class PeriodoModel
     public function update(int $id, array $data): void
     {
         $sql = <<<'SQL'
-            UPDATE periodo
+            UPDATE ss_periodo
                SET numero = :numero,
                    estatus = :estatus,
                    abierto_en = :abierto_en,

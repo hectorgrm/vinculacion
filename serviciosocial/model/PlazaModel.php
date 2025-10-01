@@ -28,7 +28,7 @@ class PlazaModel
                        p.estado,
                        p.ss_empresa_id,
                        e.nombre AS empresa_nombre
-                FROM plaza AS p
+                FROM ss_plaza AS p
                 LEFT JOIN ss_empresa AS e ON e.id = p.ss_empresa_id
                 ORDER BY p.creado_en DESC';
 
@@ -45,7 +45,7 @@ class PlazaModel
     public function findById(int $id): ?array
     {
         $sql = 'SELECT p.*, e.nombre AS empresa_nombre
-                FROM plaza AS p
+                FROM ss_plaza AS p
                 LEFT JOIN ss_empresa AS e ON e.id = p.ss_empresa_id
                 WHERE p.id = :id
                 LIMIT 1';
@@ -106,7 +106,7 @@ class PlazaModel
      */
     public function create(array $data): int
     {
-        $sql = 'INSERT INTO plaza (
+        $sql = 'INSERT INTO ss_plaza (
                     nombre,
                     ss_empresa_id,
                     ss_convenio_id,
@@ -176,7 +176,7 @@ class PlazaModel
      */
     public function update(int $id, array $data): void
     {
-        $sql = 'UPDATE plaza
+        $sql = 'UPDATE ss_plaza
                 SET nombre = :nombre,
                     ss_empresa_id = :ss_empresa_id,
                     ss_convenio_id = :ss_convenio_id,
@@ -225,7 +225,7 @@ class PlazaModel
      */
     public function delete(int $id): void
     {
-        $sql = 'DELETE FROM plaza WHERE id = :id';
+        $sql = 'DELETE FROM ss_plaza WHERE id = :id';
 
         $statement = $this->pdo->prepare($sql);
         $statement->execute([':id' => $id]);

@@ -65,8 +65,8 @@ class GestEstudianteModel
                     e.documentos_entregados,
                     e.observaciones,
                     p.nombre AS plaza_nombre
-                FROM estudiante e
-                LEFT JOIN plaza p ON e.plaza_id = p.id';
+                FROM ss_estudiante e
+                LEFT JOIN ss_plaza p ON e.plaza_id = p.id';
     }
 
     /**
@@ -89,7 +89,7 @@ class GestEstudianteModel
      */
     public function updateServicioSocial(int $id, array $data): void
     {
-        $sql = 'UPDATE estudiante
+        $sql = 'UPDATE ss_estudiante
                 SET nombre = :nombre,
                     matricula = :matricula,
                     carrera = :carrera,
@@ -156,7 +156,7 @@ class GestEstudianteModel
      */
     public function fetchPlazas(): array
     {
-        $sql = 'SELECT id, nombre FROM plaza ORDER BY nombre ASC';
+        $sql = 'SELECT id, nombre FROM ss_plaza ORDER BY nombre ASC';
 
         $statement = $this->pdo->query($sql);
 

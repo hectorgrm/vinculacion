@@ -95,7 +95,7 @@ try {
             $telefono  = trim($_POST['telefono'] ?? '');
 
             if ($id > 0) {
-                $sql = "UPDATE estudiante SET nombre=:nombre, carrera=:carrera, telefono=:telefono WHERE id=:id";
+                $sql = "UPDATE ss_estudiante SET nombre=:nombre, carrera=:carrera, telefono=:telefono WHERE id=:id";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
                     ':nombre'   => $nombre,
