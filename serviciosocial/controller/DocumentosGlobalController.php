@@ -116,14 +116,22 @@ class DocumentosGlobalController
         $payload = [];
 
         if (array_key_exists('tipo_id', $data)) {
-            $payload['tipo_id'] = (int) $data['tipo_id'];
+            $tipoId = (int) $data['tipo_id'];
+
+            if ($tipoId <= 0) {
+                throw new \InvalidArgumentException('Debe seleccionar un tipo de documento válido.');
+            }
+
+            $payload['tipo_id'] = $tipoId;
         }
 
         if (array_key_exists('nombre', $data)) {
             $nombre = trim((string) $data['nombre']);
-            if ($nombre !== '') {
-                $payload['nombre'] = $nombre;
+            if ($nombre === '') {
+                throw new \InvalidArgumentException('El nombre del documento es obligatorio.');
             }
+
+            $payload['nombre'] = $nombre;
         }
 
         if (array_key_exists('descripcion', $data)) {
@@ -133,16 +141,20 @@ class DocumentosGlobalController
 
         if (array_key_exists('ruta', $data)) {
             $ruta = trim((string) $data['ruta']);
-            if ($ruta !== '') {
-                $payload['ruta'] = $ruta;
+            if ($ruta === '') {
+                throw new \InvalidArgumentException('La ruta del archivo es obligatoria cuando se actualiza.');
             }
+
+            $payload['ruta'] = $ruta;
         }
 
         if (array_key_exists('estatus', $data)) {
             $estatus = strtolower(trim((string) $data['estatus']));
-            if (in_array($estatus, self::ALLOWED_STATUSES, true)) {
-                $payload['estatus'] = $estatus;
+            if (!in_array($estatus, self::ALLOWED_STATUSES, true)) {
+                throw new \InvalidArgumentException('El estatus seleccionado no es válido.');
             }
+
+            $payload['estatus'] = $estatus;
         }
 
         if ($payload === []) {

@@ -188,7 +188,8 @@ class DocumentosGlobalModel
                    g.estatus,
                    g.creado_en,
                    g.actualizado_en,
-                   t.nombre AS tipo_nombre
+                   t.nombre AS tipo_nombre,
+                   t.descripcion AS tipo_descripcion
             FROM ss_doc_global AS g
             LEFT JOIN ss_doc_tipo AS t ON t.id = g.tipo_id
         SQL;
