@@ -1,3 +1,59 @@
+<?php
+
+declare(strict_types=1);
+
+use Serviciosocial\Controller\DocumentosController;
+
+require_once __DIR__ . '/../../controller/DocumentosController.php';
+
+$searchTerm = isset($_GET['q']) ? (string) $_GET['q'] : '';
+$estatusFilter = isset($_GET['estatus']) ? (string) $_GET['estatus'] : '';
+
+try {
+    $controller = new DocumentosController();
+    $documents = $controller->list($searchTerm, $estatusFilter);
+    $errorMessage = null;
+} catch (\Throwable $exception) {
+    $documents = [];
+    $errorMessage = 'Ocurrió un error al cargar los documentos: ' . $exception->getMessage();
+}
+
+/**
+ * @param string $value
+ */
+function e(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * @param array<string, mixed> $document
+ */
+function statusClass(array $document): string
+{
+    $status = strtolower((string) ($document['estatus'] ?? 'pendiente'));
+
+    return match ($status) {
+        'aprobado'  => 'status aprobado',
+        'rechazado' => 'status rechazado',
+        default     => 'status pendiente',
+    };
+}
+
+/**
+ * @param array<string, mixed> $document
+ */
+function statusLabel(array $document): string
+{
+    $status = strtolower((string) ($document['estatus'] ?? 'pendiente'));
+    return match ($status) {
+        'aprobado'  => 'Aprobado',
+        'rechazado' => 'Rechazado',
+        default     => 'Pendiente',
+    };
+}
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,12 +78,12 @@
     <!-- 🔍 Barra de búsqueda -->
     <div class="search-bar">
       <form action="" method="get" style="display:flex; gap:10px; align-items:center;">
-        <input type="text" name="q" placeholder="Buscar por estudiante o tipo..." />
+        <input type="text" name="q" placeholder="Buscar por estudiante o tipo..." value="<?= e($searchTerm) ?>" />
         <select name="estatus">
           <option value="">-- Filtrar por estado --</option>
-          <option value="pendiente">Pendiente</option>
-          <option value="aprobado">Aprobado</option>
-          <option value="rechazado">Rechazado</option>
+          <option value="pendiente" <?= $estatusFilter === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
+          <option value="aprobado" <?= $estatusFilter === 'aprobado' ? 'selected' : '' ?>>Aprobado</option>
+          <option value="rechazado" <?= $estatusFilter === 'rechazado' ? 'selected' : '' ?>>Rechazado</option>
         </select>
         <button type="submit" class="btn btn-primary">🔎 Buscar</button>
       </form>
@@ -53,46 +109,44 @@
           </tr>
         </thead>
         <tbody>
-          <!-- 📝 Ejemplos de datos (después se llenan dinámicamente con PHP) -->
+<?php if ($errorMessage !== null): ?>
           <tr>
-            <td>1</td>
-            <td>Juan Pérez López</td>
-            <td>Reporte Bimestral</td>
-            <td>Periodo 1</td>
-            <td><span class="status pendiente">Pendiente</span></td>
-            <td>2025-09-20</td>
+            <td colspan="7" class="text-center" style="color:#b00020; font-weight:bold;"><?= e($errorMessage) ?></td>
+          </tr>
+<?php elseif ($documents === []): ?>
+          <tr>
+            <td colspan="7" class="text-center">No se encontraron documentos con los filtros seleccionados.</td>
+          </tr>
+<?php else: ?>
+<?php foreach ($documents as $document): ?>
+<?php
+    $estudiante = $document['estudiante']['nombre'] ?? 'Estudiante sin nombre';
+    $matricula = $document['estudiante']['matricula'] ?? '';
+    $tipoNombre = $document['tipo']['nombre'] ?? 'Tipo desconocido';
+    $periodoNumero = $document['periodo']['numero'] ?? null;
+    $periodoLabel = $periodoNumero !== null ? 'Periodo ' . $periodoNumero : 'Sin periodo';
+    $fecha = $document['actualizado_en'] ?? '';
+?>
+          <tr>
+            <td><?= e((string) $document['id']) ?></td>
             <td>
-              <a href="ss_doc_view.php?id=1" class="btn btn-primary btn-sm">👁️ Ver</a>
-              <a href="ss_doc_edit.php?id=1" class="btn btn-secondary btn-sm">✏️ Editar</a>
-              <a href="ss_doc_delete.php?id=1" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
+              <?= e($estudiante) ?>
+<?php if ($matricula !== ''): ?>
+              <div class="muted">Matrícula: <?= e($matricula) ?></div>
+<?php endif; ?>
+            </td>
+            <td><?= e($tipoNombre) ?></td>
+            <td><?= e($periodoLabel) ?></td>
+            <td><span class="<?= e(statusClass($document)) ?>"><?= e(statusLabel($document)) ?></span></td>
+            <td><?= e($fecha) ?></td>
+            <td>
+              <a href="ss_doc_view.php?id=<?= e((string) $document['id']) ?>" class="btn btn-primary btn-sm">👁️ Ver</a>
+              <a href="ss_doc_edit.php?id=<?= e((string) $document['id']) ?>" class="btn btn-secondary btn-sm">✏️ Editar</a>
+              <a href="ss_doc_delete.php?id=<?= e((string) $document['id']) ?>" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
             </td>
           </tr>
-          <tr>
-            <td>2</td>
-            <td>María López Torres</td>
-            <td>Carta de Terminación</td>
-            <td>Periodo 2</td>
-            <td><span class="status aprobado">Aprobado</span></td>
-            <td>2025-09-15</td>
-            <td>
-              <a href="ss_doc_view.php?id=2" class="btn btn-primary btn-sm">👁️ Ver</a>
-              <a href="ss_doc_edit.php?id=2" class="btn btn-secondary btn-sm">✏️ Editar</a>
-              <a href="ss_doc_delete.php?id=2" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
-            </td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>José Ramírez</td>
-            <td>Evaluación Cualitativa</td>
-            <td>Periodo 1</td>
-            <td><span class="status rechazado">Rechazado</span></td>
-            <td>2025-09-10</td>
-            <td>
-              <a href="ss_doc_view.php?id=3" class="btn btn-primary btn-sm">👁️ Ver</a>
-              <a href="ss_doc_edit.php?id=3" class="btn btn-secondary btn-sm">✏️ Editar</a>
-              <a href="ss_doc_delete.php?id=3" class="btn btn-danger btn-sm">🗑️ Eliminar</a>
-            </td>
-          </tr>
+<?php endforeach; ?>
+<?php endif; ?>
         </tbody>
       </table>
     </section>
