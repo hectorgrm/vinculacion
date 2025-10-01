@@ -1,3 +1,96 @@
+<?php
+
+declare(strict_types=1);
+
+use Serviciosocial\Controller\DocumentosController;
+
+require_once __DIR__ . '/../../controller/DocumentosController.php';
+
+/**
+ * @return string
+ */
+function e(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * @return string
+ */
+function statusClass(string $status): string
+{
+    return match (strtolower($status)) {
+        'aprobado'  => 'status aprobado',
+        'rechazado' => 'status rechazado',
+        default     => 'status pendiente',
+    };
+}
+
+/**
+ * @return string
+ */
+function statusLabel(string $status): string
+{
+    return match (strtolower($status)) {
+        'aprobado'  => 'Aprobado',
+        'rechazado' => 'Rechazado',
+        default     => 'Pendiente',
+    };
+}
+
+$idParam = isset($_GET['id']) ? (string) $_GET['id'] : '';
+$documentId = filter_var($idParam, FILTER_VALIDATE_INT);
+
+$document = null;
+$errorMessage = null;
+
+if ($documentId === false || $documentId === null || $documentId <= 0) {
+    $errorMessage = 'El identificador del documento es inválido.';
+} else {
+    try {
+        $controller = new DocumentosController();
+        $document = $controller->find((int) $documentId);
+
+        if ($document === null) {
+            $errorMessage = 'No se encontró el documento solicitado.';
+        } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $confirmation = isset($_POST['confirmacion']) ? strtoupper(trim((string) $_POST['confirmacion'])) : '';
+
+            if ($confirmation !== 'ELIMINAR') {
+                $errorMessage = 'Para eliminar el documento debes escribir la palabra "ELIMINAR".';
+            } else {
+                $deleted = $controller->delete((int) $documentId);
+
+                if ($deleted) {
+                    header('Location: ss_doc_list.php?deleted=1');
+                    exit;
+                }
+
+                $errorMessage = 'No se pudo eliminar el documento. Es posible que ya haya sido eliminado.';
+                $document = $controller->find((int) $documentId);
+            }
+        }
+    } catch (\Throwable $exception) {
+        $errorMessage = 'Ocurrió un error al procesar la solicitud: ' . $exception->getMessage();
+        $document = null;
+    }
+}
+
+$documentIdLabel = $document !== null ? (string) ($document['id'] ?? '') : '';
+$estudianteNombre = $document !== null ? (string) ($document['estudiante']['nombre'] ?? 'Estudiante sin nombre') : '';
+$matricula = $document !== null ? (string) ($document['estudiante']['matricula'] ?? '') : '';
+$tipoNombre = $document !== null ? (string) ($document['tipo']['nombre'] ?? 'Tipo desconocido') : '';
+$periodoNumero = $document !== null ? ($document['periodo']['numero'] ?? null) : null;
+$periodoLabel = $periodoNumero !== null ? 'Periodo ' . $periodoNumero : 'Sin periodo';
+$estatusActual = $document !== null ? (string) ($document['estatus'] ?? 'pendiente') : 'pendiente';
+$fechaActualizacion = $document !== null ? (string) ($document['actualizado_en'] ?? '') : '';
+
+$estudianteDisplay = $estudianteNombre;
+if ($matricula !== '') {
+    $estudianteDisplay .= ' (' . $matricula . ')';
+}
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,32 +115,40 @@
   <main>
     <a href="ss_doc_list.php" class="btn btn-secondary">⬅ Volver a la lista</a>
 
+<?php if ($errorMessage !== null): ?>
+    <section class="card form-card--danger" style="margin-top:20px;">
+      <h2>⚠️ No se puede eliminar el documento</h2>
+      <p style="color:#b00020; font-weight:bold;">
+        <?= e($errorMessage) ?>
+      </p>
+    </section>
+<?php elseif ($document !== null): ?>
     <section class="card form-card--danger">
       <h2>⚠️ Confirmar eliminación del documento</h2>
       <p>
-        Estás a punto de <strong>eliminar definitivamente</strong> el siguiente documento.  
+        Estás a punto de <strong>eliminar definitivamente</strong> el siguiente documento.
         Esta acción es <strong>irreversible</strong> y no podrás recuperarlo después de confirmar.
       </p>
 
       <!-- 📄 Información del documento a eliminar -->
       <div class="details-list">
         <dt>ID del Documento:</dt>
-        <dd>15</dd>
+        <dd><?= e($documentIdLabel) ?></dd>
 
         <dt>Estudiante:</dt>
-        <dd>Juan Carlos Pérez López (20214567)</dd>
+        <dd><?= e($estudianteDisplay) ?></dd>
 
         <dt>Periodo:</dt>
-        <dd>Periodo 2 - Mayo a Julio</dd>
+        <dd><?= e($periodoLabel) ?></dd>
 
         <dt>Tipo de Documento:</dt>
-        <dd>Reporte Bimestral</dd>
+        <dd><?= e($tipoNombre) ?></dd>
 
         <dt>Estado actual:</dt>
-        <dd><span class="status pendiente">Pendiente</span></dd>
+        <dd><span class="<?= e(statusClass($estatusActual)) ?>"><?= e(statusLabel($estatusActual)) ?></span></dd>
 
-        <dt>Fecha de subida:</dt>
-        <dd>2025-09-15 10:42:00</dd>
+        <dt>Fecha de actualización:</dt>
+        <dd><?= e($fechaActualizacion) ?></dd>
       </div>
 
       <!-- ⚠️ Formulario de confirmación -->
@@ -70,6 +171,7 @@
         </div>
       </form>
     </section>
+<?php endif; ?>
   </main>
 
 </body>

@@ -260,6 +260,17 @@ class DocumentosModel
         return (int) $this->pdo->lastInsertId();
     }
 
+    public function deleteDocument(int $documentId): bool
+    {
+        $sql = 'DELETE FROM ss_doc WHERE id = :id';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':id', $documentId, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->rowCount() > 0;
+    }
+
     private function baseSelectQuery(): string
     {
         return <<<'SQL'

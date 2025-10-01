@@ -137,6 +137,15 @@ class DocumentosController
         return $this->model->createDocument($periodoId, $tipoId, $ruta, $recibido, $observacion, $estatus);
     }
 
+    public function delete(int $documentId): bool
+    {
+        if ($documentId <= 0) {
+            throw new \InvalidArgumentException('El identificador del documento es inválido.');
+        }
+
+        return $this->model->deleteDocument($documentId);
+    }
+
     /**
      * @param array<string, mixed> $data
      */
