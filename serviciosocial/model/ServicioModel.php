@@ -8,6 +8,7 @@ use PDO;
 class ServicioModel
 {
     private PDO $pdo;
+    private ?bool $hasObservacionesColumn = null;
 
     public function __construct(PDO $pdo)
     {
@@ -60,13 +61,15 @@ class ServicioModel
      */
     public function findById(int $id): ?array
     {
-        $sql = <<<'SQL'
+        $observacionesSelect = $this->supportsObservacionesColumn() ? ', s.observaciones' : '';
+
+        $sql = <<<SQL
             SELECT s.id,
                    s.estatus,
                    s.horas_acumuladas,
                    s.creado_en,
                    s.estudiante_id,
-                   s.plaza_id,
+                   s.plaza_id{$observacionesSelect},
                    e.nombre         AS estudiante_nombre,
                    e.matricula      AS estudiante_matricula,
                    e.carrera        AS estudiante_carrera,
@@ -101,7 +104,7 @@ class ServicioModel
             'estatus'          => $row['estatus'],
             'horas_acumuladas' => $row['horas_acumuladas'] !== null ? (int) $row['horas_acumuladas'] : null,
             'creado_en'        => $row['creado_en'],
-            'observaciones'    => null,
+            'observaciones'    => $this->supportsObservacionesColumn() ? ($row['observaciones'] ?? null) : null,
             'estudiante'       => [
                 'id'               => (int) $row['estudiante_id'],
                 'nombre'           => $row['estudiante_nombre'] ?? '',
@@ -136,6 +139,75 @@ class ServicioModel
     /**
      * @return array<int, array<string, mixed>>
      */
+    public function fetchPlazasCatalog(): array
+    {
+        $sql = <<<'SQL'
+            SELECT p.id,
+                   p.nombre,
+                   emp.nombre AS empresa
+            FROM plaza AS p
+            LEFT JOIN ss_empresa AS emp ON emp.id = p.ss_empresa_id
+            ORDER BY p.nombre ASC
+        SQL;
+
+        $statement = $this->pdo->query($sql);
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function update(int $id, array $data): void
+    {
+        $supportsObservaciones = $this->supportsObservacionesColumn();
+
+        $setClauses = [
+            'plaza_id = :plaza_id',
+            'estatus = :estatus',
+            'horas_acumuladas = :horas_acumuladas',
+        ];
+
+        if ($supportsObservaciones) {
+            $setClauses[] = 'observaciones = :observaciones';
+        }
+
+        $sql = sprintf(
+            'UPDATE servicio SET %s WHERE id = :id',
+            implode(', ', $setClauses)
+        );
+
+        $statement = $this->pdo->prepare($sql);
+
+        $plazaId = $data['plaza_id'] ?? null;
+        if ($plazaId === null) {
+            $statement->bindValue(':plaza_id', null, PDO::PARAM_NULL);
+        } else {
+            $statement->bindValue(':plaza_id', $plazaId, PDO::PARAM_INT);
+        }
+
+        $estatus = $data['estatus'] ?? 'prealta';
+        $horasAcumuladas = $data['horas_acumuladas'] ?? 0;
+
+        $statement->bindValue(':estatus', $estatus, PDO::PARAM_STR);
+        $statement->bindValue(':horas_acumuladas', $horasAcumuladas, PDO::PARAM_INT);
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+
+        if ($supportsObservaciones) {
+            $observaciones = $data['observaciones'] ?? null;
+            if ($observaciones === null) {
+                $statement->bindValue(':observaciones', null, PDO::PARAM_NULL);
+            } else {
+                $statement->bindValue(':observaciones', $observaciones, PDO::PARAM_STR);
+            }
+        }
+
+        $statement->execute();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function fetchPeriodosByServicio(int $servicioId): array
     {
         $sql = <<<'SQL'
@@ -153,5 +225,27 @@ class ServicioModel
         $statement->execute([':servicio_id' => $servicioId]);
 
         return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function supportsObservacionesColumn(): bool
+    {
+        if ($this->hasObservacionesColumn !== null) {
+            return $this->hasObservacionesColumn;
+        }
+
+        $sql = <<<'SQL'
+            SELECT COUNT(*)
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = 'servicio'
+              AND COLUMN_NAME = 'observaciones'
+        SQL;
+
+        $statement = $this->pdo->query($sql);
+        $count = $statement !== false ? (int) $statement->fetchColumn() : 0;
+
+        $this->hasObservacionesColumn = $count > 0;
+
+        return $this->hasObservacionesColumn;
     }
 }
