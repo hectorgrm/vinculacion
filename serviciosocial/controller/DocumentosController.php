@@ -46,4 +46,13 @@ class DocumentosController
 
         return $this->model->fetchDocuments($searchTerm, $estatus);
     }
+
+    public function find(int $documentId): ?array
+    {
+        if ($documentId <= 0) {
+            return null;
+        }
+
+        return $this->model->fetchDocumentById($documentId);
+    }
 }

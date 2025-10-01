@@ -1,3 +1,68 @@
+<?php
+
+declare(strict_types=1);
+
+use Serviciosocial\Controller\DocumentosController;
+
+require_once __DIR__ . '/../../controller/DocumentosController.php';
+
+$idParam = isset($_GET['id']) ? (string) $_GET['id'] : '';
+$documentId = filter_var($idParam, FILTER_VALIDATE_INT);
+
+$document = null;
+$errorMessage = null;
+
+if ($documentId === false || $documentId === null || $documentId <= 0) {
+    $errorMessage = 'El identificador del documento es inválido.';
+} else {
+    try {
+        $controller = new DocumentosController();
+        $document = $controller->find((int) $documentId);
+
+        if ($document === null) {
+            $errorMessage = 'No se encontró el documento solicitado.';
+        }
+    } catch (\Throwable $exception) {
+        $errorMessage = 'Ocurrió un error al cargar el documento: ' . $exception->getMessage();
+    }
+}
+
+/**
+ * @param string $value
+ */
+function e(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * @param array<string, mixed> $document
+ */
+function statusClass(array $document): string
+{
+    $status = strtolower((string) ($document['estatus'] ?? 'pendiente'));
+
+    return match ($status) {
+        'aprobado'  => 'status aprobado',
+        'rechazado' => 'status rechazado',
+        default     => 'status pendiente',
+    };
+}
+
+/**
+ * @param array<string, mixed> $document
+ */
+function statusLabel(array $document): string
+{
+    $status = strtolower((string) ($document['estatus'] ?? 'pendiente'));
+
+    return match ($status) {
+        'aprobado'  => 'Aprobado',
+        'rechazado' => 'Rechazado',
+        default     => 'Pendiente',
+    };
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,32 +87,60 @@
   <main>
     <a href="ss_doc_list.php" class="btn btn-secondary">⬅ Volver a la lista</a>
 
+<?php if ($errorMessage !== null): ?>
+    <section class="card" style="margin-top:20px;">
+      <p style="color:#b00020; font-weight:bold;"><?= e($errorMessage) ?></p>
+    </section>
+<?php elseif ($document !== null): ?>
+<?php
+$estudianteNombre = $document['estudiante']['nombre'] ?? '';
+$matricula = $document['estudiante']['matricula'] ?? '';
+$tipoNombre = $document['tipo']['nombre'] ?? '';
+$periodoNumero = $document['periodo']['numero'] ?? null;
+$periodoLabel = $periodoNumero !== null ? 'Periodo ' . $periodoNumero : 'Sin periodo';
+$actualizadoEn = $document['actualizado_en'] ?? '';
+$observacion = $document['observacion'] ?? '';
+$ruta = $document['ruta'] ?? '';
+$recibido = isset($document['recibido']) ? (bool) $document['recibido'] : false;
+?>
     <!-- 📄 Información del documento -->
     <section class="card">
       <h2>Información General</h2>
 
       <dl class="details-list">
         <dt>ID del Documento:</dt>
-        <dd>12</dd>
+        <dd><?= e((string) ($document['id'] ?? '')) ?></dd>
 
         <dt>Tipo de Documento:</dt>
-        <dd>Reporte Bimestral</dd>
+        <dd><?= e($tipoNombre !== '' ? $tipoNombre : 'Tipo desconocido') ?></dd>
 
         <dt>Estudiante:</dt>
-        <dd>Juan Carlos Pérez López (20214567)</dd>
+        <dd>
+          <?= e($estudianteNombre !== '' ? $estudianteNombre : 'Sin nombre') ?>
+<?php if ($matricula !== ''): ?>
+          <div class="muted">Matrícula: <?= e($matricula) ?></div>
+<?php endif; ?>
+        </dd>
 
         <dt>Periodo:</dt>
-        <dd>Periodo 1 (Febrero - Julio 2025)</dd>
+        <dd><?= e($periodoLabel) ?></dd>
 
-        <dt>Fecha de subida:</dt>
-        <dd>2025-09-25</dd>
+        <dt>Última actualización:</dt>
+        <dd><?= e($actualizadoEn) ?></dd>
+
+        <dt>Recibido:</dt>
+        <dd><?= $recibido ? 'Sí' : 'No' ?></dd>
 
         <dt>Estado:</dt>
-        <dd><span class="status pendiente">Pendiente</span></dd>
+        <dd><span class="<?= e(statusClass($document)) ?>"><?= e(statusLabel($document)) ?></span></dd>
 
         <dt>Archivo:</dt>
         <dd>
-          <a href="../../uploads/documentos/reporte_bimestral_juanperez.pdf" target="_blank" class="btn btn-primary">📄 Ver PDF</a>
+<?php if ($ruta !== null && $ruta !== ''): ?>
+          <a href="<?= e($ruta) ?>" target="_blank" class="btn btn-primary">📄 Ver documento</a>
+<?php else: ?>
+          <span class="muted">Sin archivo adjunto</span>
+<?php endif; ?>
         </dd>
       </dl>
     </section>
@@ -55,46 +148,19 @@
     <!-- 📝 Observaciones -->
     <section class="card">
       <h2>Observaciones</h2>
-      <p>
-        El documento fue entregado a tiempo, pero requiere revisión por parte del asesor interno. 
-        Se recomienda verificar que el reporte contenga los apartados de conclusiones y anexos.
-      </p>
-    </section>
-
-    <!-- 📊 Historial o registro de actividad -->
-    <section class="card">
-      <h2>Historial de Cambios</h2>
-      <table class="styled-table">
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Acción</th>
-            <th>Usuario</th>
-            <th>Comentario</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>2025-09-25</td>
-            <td>Documento subido</td>
-            <td>Juan Carlos Pérez López</td>
-            <td>Archivo inicial cargado</td>
-          </tr>
-          <tr>
-            <td>2025-09-28</td>
-            <td>Revisión solicitada</td>
-            <td>Ing. Luis Martínez (SS Admin)</td>
-            <td>Faltan conclusiones en el reporte</td>
-          </tr>
-        </tbody>
-      </table>
+<?php if (trim((string) $observacion) !== ''): ?>
+      <p><?= nl2br(e((string) $observacion)) ?></p>
+<?php else: ?>
+      <p class="muted">Sin observaciones registradas.</p>
+<?php endif; ?>
     </section>
 
     <!-- ✅ Acciones -->
     <div class="actions">
-      <a href="ss_doc_edit.php?id=12" class="btn btn-secondary">✏️ Editar Documento</a>
-      <a href="ss_doc_delete.php?id=12" class="btn btn-danger">🗑️ Eliminar</a>
+      <a href="ss_doc_edit.php?id=<?= e((string) ($document['id'] ?? '')) ?>" class="btn btn-secondary">✏️ Editar Documento</a>
+      <a href="ss_doc_delete.php?id=<?= e((string) ($document['id'] ?? '')) ?>" class="btn btn-danger">🗑️ Eliminar</a>
     </div>
+<?php endif; ?>
 
   </main>
 
