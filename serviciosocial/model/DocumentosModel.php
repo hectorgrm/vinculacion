@@ -70,6 +70,59 @@ class DocumentosModel
         return $this->mapDocumentRow($row);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function updateDocument(int $documentId, array $data): bool
+    {
+        $fields = [];
+        $params = [':id' => $documentId];
+
+        if (array_key_exists('estatus', $data)) {
+            $fields[] = 'estatus = :estatus';
+            $params[':estatus'] = $data['estatus'];
+        }
+
+        if (array_key_exists('observacion', $data)) {
+            $fields[] = 'observacion = :observacion';
+            $params[':observacion'] = $data['observacion'];
+        }
+
+        if (array_key_exists('recibido', $data)) {
+            $fields[] = 'recibido = :recibido';
+            $params[':recibido'] = $data['recibido'] ? 1 : 0;
+        }
+
+        if (array_key_exists('ruta', $data)) {
+            $fields[] = 'ruta = :ruta';
+            $params[':ruta'] = $data['ruta'];
+        }
+
+        if ($fields === []) {
+            return false;
+        }
+
+        $sql = 'UPDATE ss_doc SET ' . implode(', ', $fields) . ' WHERE id = :id';
+
+        $statement = $this->pdo->prepare($sql);
+
+        foreach ($params as $param => $value) {
+            $type = PDO::PARAM_STR;
+
+            if ($param === ':id' || $param === ':recibido') {
+                $type = PDO::PARAM_INT;
+            }
+
+            if ($value === null) {
+                $type = PDO::PARAM_NULL;
+            }
+
+            $statement->bindValue($param, $value, $type);
+        }
+
+        return $statement->execute();
+    }
+
     private function baseSelectQuery(): string
     {
         return <<<'SQL'
