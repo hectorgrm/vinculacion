@@ -123,6 +123,143 @@ class DocumentosModel
         return $statement->execute();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchPeriodCatalog(): array
+    {
+        $sql = <<<'SQL'
+            SELECT p.id          AS periodo_id,
+                   p.numero      AS periodo_numero,
+                   p.estatus     AS periodo_estatus,
+                   p.servicio_id AS servicio_id,
+                   est.id        AS estudiante_id,
+                   est.nombre    AS estudiante_nombre,
+                   est.matricula AS estudiante_matricula
+            FROM ss_periodo AS p
+            INNER JOIN ss_servicio AS srv ON srv.id = p.servicio_id
+            INNER JOIN ss_estudiante AS est ON est.id = srv.estudiante_id
+            ORDER BY est.nombre ASC, p.numero ASC, p.id ASC
+        SQL;
+
+        $statement = $this->pdo->query($sql);
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map([$this, 'mapPeriodRow'], $rows);
+    }
+
+    public function fetchPeriodById(int $periodoId): ?array
+    {
+        $sql = <<<'SQL'
+            SELECT p.id          AS periodo_id,
+                   p.numero      AS periodo_numero,
+                   p.estatus     AS periodo_estatus,
+                   p.servicio_id AS servicio_id,
+                   est.id        AS estudiante_id,
+                   est.nombre    AS estudiante_nombre,
+                   est.matricula AS estudiante_matricula
+            FROM ss_periodo AS p
+            INNER JOIN ss_servicio AS srv ON srv.id = p.servicio_id
+            INNER JOIN ss_estudiante AS est ON est.id = srv.estudiante_id
+            WHERE p.id = :id
+            LIMIT 1
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':id', $periodoId, PDO::PARAM_INT);
+        $statement->execute();
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($row === false) {
+            return null;
+        }
+
+        return $this->mapPeriodRow($row);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchDocumentTypeCatalog(): array
+    {
+        $sql = 'SELECT id, nombre FROM ss_doc_tipo ORDER BY nombre ASC, id ASC';
+
+        $statement = $this->pdo->query($sql);
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map([$this, 'mapDocumentTypeRow'], $rows);
+    }
+
+    public function fetchDocumentTypeById(int $tipoId): ?array
+    {
+        $sql = 'SELECT id, nombre FROM ss_doc_tipo WHERE id = :id LIMIT 1';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':id', $tipoId, PDO::PARAM_INT);
+        $statement->execute();
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($row === false) {
+            return null;
+        }
+
+        return $this->mapDocumentTypeRow($row);
+    }
+
+    public function documentExistsForPeriodAndType(int $periodoId, int $tipoId): bool
+    {
+        $sql = 'SELECT id FROM ss_doc WHERE periodo_id = :periodo_id AND tipo_id = :tipo_id LIMIT 1';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':periodo_id', $periodoId, PDO::PARAM_INT);
+        $statement->bindValue(':tipo_id', $tipoId, PDO::PARAM_INT);
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result !== false;
+    }
+
+    public function createDocument(
+        int $periodoId,
+        int $tipoId,
+        ?string $ruta,
+        bool $recibido,
+        ?string $observacion = null,
+        string $estatus = 'pendiente'
+    ): int {
+        $sql = <<<'SQL'
+            INSERT INTO ss_doc (periodo_id, tipo_id, ruta, recibido, estatus, observacion)
+            VALUES (:periodo_id, :tipo_id, :ruta, :recibido, :estatus, :observacion)
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+
+        $statement->bindValue(':periodo_id', $periodoId, PDO::PARAM_INT);
+        $statement->bindValue(':tipo_id', $tipoId, PDO::PARAM_INT);
+
+        if ($ruta === null) {
+            $statement->bindValue(':ruta', null, PDO::PARAM_NULL);
+        } else {
+            $statement->bindValue(':ruta', $ruta, PDO::PARAM_STR);
+        }
+
+        $statement->bindValue(':recibido', $recibido ? 1 : 0, PDO::PARAM_INT);
+        $statement->bindValue(':estatus', $estatus, PDO::PARAM_STR);
+
+        if ($observacion === null) {
+            $statement->bindValue(':observacion', null, PDO::PARAM_NULL);
+        } else {
+            $statement->bindValue(':observacion', $observacion, PDO::PARAM_STR);
+        }
+
+        $statement->execute();
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
     private function baseSelectQuery(): string
     {
         return <<<'SQL'
@@ -176,6 +313,40 @@ class DocumentosModel
                 'id'     => (int) $row['tipo_id'],
                 'nombre' => $row['tipo_nombre'] ?? '',
             ],
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     *
+     * @return array<string, mixed>
+     */
+    private function mapPeriodRow(array $row): array
+    {
+        return [
+            'id'          => (int) $row['periodo_id'],
+            'numero'      => $row['periodo_numero'] !== null ? (int) $row['periodo_numero'] : null,
+            'estatus'     => $row['periodo_estatus'],
+            'servicio_id' => (int) $row['servicio_id'],
+            'estudiante'  => [
+                'id'        => (int) $row['estudiante_id'],
+                'nombre'    => $row['estudiante_nombre'] ?? '',
+                'matricula' => $row['estudiante_matricula'] ?? '',
+            ],
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     *
+     * @return array<string, mixed>
+     */
+    private function mapDocumentTypeRow(array $row): array
+    {
+        return [
+            'id'          => (int) $row['id'],
+            'nombre'      => $row['nombre'] ?? '',
+            'descripcion' => $row['descripcion'] ?? null,
         ];
     }
 }
