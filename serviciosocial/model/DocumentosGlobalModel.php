@@ -212,6 +212,7 @@ class DocumentosGlobalModel
             'tipo'           => [
                 'id'     => isset($row['tipo_id']) ? (int) $row['tipo_id'] : null,
                 'nombre' => $row['tipo_nombre'] ?? null,
+                'descripcion' => $row['tipo_descripcion'] ?? null,
             ],
         ];
     }

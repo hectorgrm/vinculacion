@@ -1,3 +1,58 @@
+<?php
+
+declare(strict_types=1);
+
+use Serviciosocial\Controller\DocumentosGlobalController;
+
+require_once __DIR__ . '/../../controller/DocumentosGlobalController.php';
+
+/**
+ * @param string|null $value
+ */
+function e(?string $value): string
+{
+    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+}
+
+function statusClass(?string $estatus): string
+{
+    return match (strtolower((string) $estatus)) {
+        'inactivo' => 'status inactivo',
+        default    => 'status activo',
+    };
+}
+
+function statusLabel(?string $estatus): string
+{
+    return match (strtolower((string) $estatus)) {
+        'inactivo' => 'Inactivo',
+        default    => 'Activo',
+    };
+}
+
+function formatDateTime(?string $value): string
+{
+    $value = $value !== null ? trim($value) : '';
+
+    return $value === '' ? 'No disponible' : $value;
+}
+
+$documentId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+try {
+    if ($documentId <= 0) {
+        throw new InvalidArgumentException('No se proporcionó un identificador de documento válido.');
+    }
+
+    $controller = new DocumentosGlobalController();
+    $document = $controller->findOrFail($documentId);
+    $errorMessage = null;
+} catch (Throwable $exception) {
+    $document = null;
+    $errorMessage = $exception->getMessage();
+}
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,42 +77,74 @@
   <main>
     <a href="ss_doc_global_list.php" class="btn btn-secondary">⬅ Volver a la lista</a>
 
+<?php if ($errorMessage !== null): ?>
+    <section class="dg-card">
+      <h2>⚠️ No se pudo cargar el documento</h2>
+      <p class="error-message"><?= e($errorMessage) ?></p>
+    </section>
+<?php elseif ($document !== null): ?>
+<?php
+    $nombre = (string) ($document['nombre'] ?? 'Documento sin nombre');
+    $descripcion = trim((string) ($document['descripcion'] ?? ''));
+    $ruta = (string) ($document['ruta'] ?? '');
+    $estatus = (string) ($document['estatus'] ?? 'activo');
+    $tipoNombre = (string) ($document['tipo']['nombre'] ?? 'Sin tipo asignado');
+    $tipoDescripcion = trim((string) ($document['tipo']['descripcion'] ?? ''));
+    $creadoEn = formatDateTime($document['creado_en'] ?? null);
+    $actualizadoEn = formatDateTime($document['actualizado_en'] ?? null);
+?>
     <section class="dg-card">
       <h2>📄 Información del Documento</h2>
 
       <dl class="details-list">
         <dt>ID del Documento:</dt>
-        <dd>3</dd>
+        <dd><?= e((string) $document['id']) ?></dd>
 
         <dt>Nombre:</dt>
-        <dd>Guía de Reporte Bimestral</dd>
+        <dd><?= e($nombre) ?></dd>
 
         <dt>Tipo de Documento:</dt>
-        <dd><span class="doc-type">Formato Oficial</span></dd>
+        <dd>
+          <span class="doc-type"><?= e($tipoNombre) ?></span>
+<?php if ($tipoDescripcion !== ''): ?>
+          <div class="muted"><?= e($tipoDescripcion) ?></div>
+<?php endif; ?>
+        </dd>
 
         <dt>Descripción:</dt>
-        <dd>Este documento contiene el formato oficial que los estudiantes deben utilizar para la elaboración del reporte bimestral de actividades.</dd>
+        <dd>
+<?php if ($descripcion !== ''): ?>
+          <?= nl2br(e($descripcion)) ?>
+<?php else: ?>
+          <span class="muted">Sin descripción proporcionada.</span>
+<?php endif; ?>
+        </dd>
 
         <dt>Estado:</dt>
-        <dd><span class="status activo">Activo</span></dd>
+        <dd><span class="<?= e(statusClass($estatus)) ?>"><?= e(statusLabel($estatus)) ?></span></dd>
 
         <dt>Fecha de creación:</dt>
-        <dd>2025-09-20 10:32:15</dd>
+        <dd><?= e($creadoEn) ?></dd>
 
         <dt>Última actualización:</dt>
-        <dd>2025-09-30 15:41:27</dd>
+        <dd><?= e($actualizadoEn) ?></dd>
 
         <dt>Archivo:</dt>
         <dd>
-          <a href="../../uploads/documentos/guia_reporte_bimestral.pdf" target="_blank" class="file-link">📥 Descargar PDF</a>
+<?php if ($ruta !== ''): ?>
+          <a href="<?= e($ruta) ?>" target="_blank" class="file-link" rel="noopener noreferrer">📥 Descargar archivo</a>
+<?php else: ?>
+          <span class="muted">No hay archivo disponible.</span>
+<?php endif; ?>
         </dd>
       </dl>
 
       <div class="actions">
-        <a href="ss_doc_global_edit.php?id=3" class="btn btn-primary">✏️ Editar</a>
-        <a href="ss_doc_global_delete.php?id=3" class="btn btn-danger">🗑 Eliminar</a>
+        <a href="ss_doc_global_edit.php?id=<?= e((string) $document['id']) ?>" class="btn btn-primary">✏️ Editar</a>
+        <a href="ss_doc_global_delete.php?id=<?= e((string) $document['id']) ?>" class="btn btn-danger">🗑 Eliminar</a>
       </div>
     </section>
+<?php endif; ?>
   </main>
 
 </body>

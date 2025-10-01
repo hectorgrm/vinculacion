@@ -57,6 +57,17 @@ class DocumentosGlobalController
         return $this->model->fetchDocumentById($documentId);
     }
 
+    public function findOrFail(int $documentId): array
+    {
+        $document = $this->find($documentId);
+
+        if ($document === null) {
+            throw new \RuntimeException('El documento solicitado no existe o no está disponible.');
+        }
+
+        return $document;
+    }
+
     /**
      * @return array<int, array<string, mixed>>
      */
