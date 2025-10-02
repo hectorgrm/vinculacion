@@ -54,6 +54,58 @@ class EmpresaController
     /**
      * @param array<string, mixed> $data
      */
+    public function createEmpresa(array $data): int
+    {
+        $nombre = trim((string) ($data['nombre'] ?? ''));
+        if ($nombre === '') {
+            throw new InvalidArgumentException('El nombre de la empresa es obligatorio.');
+        }
+
+        $contactoNombre = isset($data['contacto_nombre']) ? trim((string) $data['contacto_nombre']) : null;
+        if ($contactoNombre === '') {
+            $contactoNombre = null;
+        }
+
+        $contactoEmail = isset($data['contacto_email']) ? trim((string) $data['contacto_email']) : null;
+        if ($contactoEmail === '') {
+            $contactoEmail = null;
+        }
+
+        if ($contactoEmail !== null && filter_var($contactoEmail, FILTER_VALIDATE_EMAIL) === false) {
+            throw new InvalidArgumentException('El correo electrónico del contacto no es válido.');
+        }
+
+        $telefono = isset($data['telefono']) ? trim((string) $data['telefono']) : null;
+        if ($telefono === '') {
+            $telefono = null;
+        }
+
+        $direccion = isset($data['direccion']) ? trim((string) $data['direccion']) : null;
+        if ($direccion === '') {
+            $direccion = null;
+        }
+
+        $estado = strtolower(trim((string) ($data['estado'] ?? 'activo')));
+        $allowedStates = ['activo', 'inactivo'];
+        if (!in_array($estado, $allowedStates, true)) {
+            $estado = 'activo';
+        }
+
+        $payload = [
+            'nombre' => $nombre,
+            'contacto_nombre' => $contactoNombre,
+            'contacto_email' => $contactoEmail,
+            'telefono' => $telefono,
+            'direccion' => $direccion,
+            'estado' => $estado,
+        ];
+
+        return $this->empresaModel->create($payload);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
     public function updateEmpresa(int $id, array $data): void
     {
         if ($id <= 0) {

@@ -8,7 +8,12 @@ use Serviciosocial\Controller\EmpresaController;
 
 $searchTerm = isset($_GET['q']) ? trim((string) $_GET['q']) : '';
 $error = '';
+$success = '';
 $empresas = [];
+
+if (isset($_GET['created'])) {
+    $success = 'La empresa se registró correctamente.';
+}
 
 try {
     $controller = new EmpresaController();
@@ -44,6 +49,10 @@ $estadoConfig = [
     <?php if ($error !== ''): ?>
       <div class="alert alert-error" role="alert">
         <?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
+      </div>
+    <?php elseif ($success !== ''): ?>
+      <div class="alert alert-success" role="status">
+        <?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?>
       </div>
     <?php endif; ?>
 
