@@ -1,0 +1,159 @@
+/* 🌐 reportesglobalstyles.css - Estilo global para el dashboard de reportes */
+
+:root {
+  --primary-color: #2c7be5;
+  --primary-hover: #1a66d4;
+  --danger-color: #dc3545;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --bg-light: #f8f9fa;
+  --bg-white: #ffffff;
+  --text-dark: #333;
+  --text-muted: #6c757d;
+  --border-color: #dee2e6;
+  --radius: 8px;
+  --transition: all 0.3s ease;
+  --shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: var(--bg-light);
+  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+}
+
+/* HEADER */
+header {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 20px 40px;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+nav.breadcrumb {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+nav.breadcrumb a {
+  color: #dce9ff;
+  text-decoration: none;
+}
+
+nav.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+nav.breadcrumb span {
+  margin: 0 6px;
+  color: #c0d4ff;
+}
+
+/* MAIN */
+main {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* CARDS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.card {
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 25px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+  font-size: 40px;
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.card p {
+  margin: 10px 0 0;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+/* CHART PLACEHOLDER */
+.chart {
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 30px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.chart h3 {
+  margin-bottom: 15px;
+  color: var(--primary-color);
+}
+
+.chart-placeholder {
+  height: 250px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f1f5ff,
+    #f1f5ff 10px,
+    #e8efff 10px,
+    #e8efff 20px
+  );
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 18px;
+  font-style: italic;
+}
+
+/* TABLE */
+.table-wrapper {
+  overflow-x: auto;
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+th, td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+tbody tr:hover {
+  background: #f1f5ff;
+}
