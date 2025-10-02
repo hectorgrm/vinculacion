@@ -1,3 +1,27 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../../../config/session.php';
+require_once __DIR__ . '/../../controller/EmpresaController.php';
+
+use Serviciosocial\Controller\EmpresaController;
+
+$searchTerm = isset($_GET['q']) ? trim((string) $_GET['q']) : '';
+$error = '';
+$empresas = [];
+
+try {
+    $controller = new EmpresaController();
+    $empresas = $controller->listEmpresas($searchTerm);
+} catch (\Throwable $exception) {
+    $error = 'No fue posible obtener la lista de empresas: ' . $exception->getMessage();
+}
+
+$estadoConfig = [
+    'activo' => ['label' => 'Activo', 'class' => 'badge-activo'],
+    'inactivo' => ['label' => 'Inactivo', 'class' => 'badge-inactivo'],
+];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,6 +29,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión de Empresas · Servicio Social</title>
   <link rel="stylesheet" href="../../assets/css/empresas/empresaglobalstyles.css" />
+  <style>
+    .alert {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .alert-error {
+      background: #fdecea;
+      color: #b71c1c;
+      border: 1px solid #f5c6cb;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 15px;
+    }
+  </style>
 </head>
 <body>
 
@@ -16,13 +61,24 @@
 
   <div class="container">
 
+    <?php if ($error !== ''): ?>
+      <div class="alert alert-error" role="alert">
+        <?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
+      </div>
+    <?php endif; ?>
+
     <!-- ===== BARRA DE ACCIONES ===== -->
     <div class="search-bar">
-      <form action="#" method="get">
-        <input type="text" placeholder="Buscar empresa por nombre..." />
+      <form action="" method="get">
+        <input
+          type="text"
+          name="q"
+          placeholder="Buscar empresa por nombre o contacto..."
+          value="<?php echo htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8'); ?>"
+        />
         <button type="submit" class="btn btn-primary">Buscar</button>
       </form>
-      <a href="empresa_add.html" class="btn btn-success">+ Nueva Empresa</a>
+      <a href="empresa_add.php" class="btn btn-success">+ Nueva Empresa</a>
     </div>
 
     <!-- ===== TABLA ===== -->
@@ -40,42 +96,48 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td data-label="ID">1</td>
-            <td data-label="Nombre">Universidad Tecnológica del Centro</td>
-            <td data-label="Contacto">Dra. María López</td>
-            <td data-label="Email">maria.lopez@utc.edu</td>
-            <td data-label="Teléfono">(33) 1234 5678</td>
-            <td data-label="Estado"><span class="badge badge-activo">Activo</span></td>
-            <td data-label="Acciones" class="actions">
-              <a href="empresa_edit.html" class="btn btn-warning btn-sm">Editar</a>
-              <a href="empresa_delete.html" class="btn btn-danger btn-sm">Eliminar</a>
-            </td>
-          </tr>
-          <tr>
-            <td data-label="ID">2</td>
-            <td data-label="Nombre">Hospital General San José</td>
-            <td data-label="Contacto">Dr. Juan Pérez</td>
-            <td data-label="Email">juan.perez@hgsj.mx</td>
-            <td data-label="Teléfono">(55) 9876 5432</td>
-            <td data-label="Estado"><span class="badge badge-inactivo">Inactivo</span></td>
-            <td data-label="Acciones" class="actions">
-              <a href="empresa_edit.html" class="btn btn-warning btn-sm">Editar</a>
-              <a href="empresa_delete.html" class="btn btn-danger btn-sm">Eliminar</a>
-            </td>
-          </tr>
-          <tr>
-            <td data-label="ID">3</td>
-            <td data-label="Nombre">Biblioteca Municipal Central</td>
-            <td data-label="Contacto">Lic. Ana Torres</td>
-            <td data-label="Email">ana.torres@biblio.gob.mx</td>
-            <td data-label="Teléfono">(55) 4567 8901</td>
-            <td data-label="Estado"><span class="badge badge-activo">Activo</span></td>
-            <td data-label="Acciones" class="actions">
-              <a href="empresa_edit.html" class="btn btn-warning btn-sm">Editar</a>
-              <a href="empresa_delete.html" class="btn btn-danger btn-sm">Eliminar</a>
-            </td>
-          </tr>
+          <?php if ($error === '' && !empty($empresas)): ?>
+            <?php foreach ($empresas as $empresa): ?>
+              <tr>
+                <td data-label="ID"><?php echo (int) $empresa['id']; ?></td>
+                <td data-label="Nombre">
+                  <?php echo htmlspecialchars($empresa['nombre'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                </td>
+                <td data-label="Contacto">
+                  <?php echo htmlspecialchars($empresa['contacto_nombre'] ?? '-', ENT_QUOTES, 'UTF-8'); ?>
+                </td>
+                <td data-label="Email">
+                  <?php echo htmlspecialchars($empresa['contacto_email'] ?? '-', ENT_QUOTES, 'UTF-8'); ?>
+                </td>
+                <td data-label="Teléfono">
+                  <?php echo htmlspecialchars($empresa['telefono'] ?? '-', ENT_QUOTES, 'UTF-8'); ?>
+                </td>
+                <td data-label="Estado">
+                  <?php
+                  $estado = strtolower((string) ($empresa['estado'] ?? ''));
+                  $config = $estadoConfig[$estado] ?? ['label' => ucfirst($estado), 'class' => ''];
+                  ?>
+                  <span class="badge <?php echo htmlspecialchars($config['class'], ENT_QUOTES, 'UTF-8'); ?>">
+                    <?php echo htmlspecialchars($config['label'], ENT_QUOTES, 'UTF-8'); ?>
+                  </span>
+                </td>
+                <td data-label="Acciones" class="actions">
+                  <a href="empresa_edit.php?id=<?php echo (int) $empresa['id']; ?>" class="btn btn-warning btn-sm">Editar</a>
+                  <a href="empresa_delete.php?id=<?php echo (int) $empresa['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">
+                  <?php echo $error !== ''
+                      ? 'No se pudo cargar la información de empresas.'
+                      : 'No hay empresas registradas.'; ?>
+                </div>
+              </td>
+            </tr>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
