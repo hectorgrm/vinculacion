@@ -343,3 +343,44 @@ body.danger-mode {
 .btn-secondary:hover {
   background: #bdbdbd;
 }
+
+.alert {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+ .alert-error {
+      background: #fdecea;
+      color: #b71c1c;
+      border: 1px solid #f5c6cb;
+    }
+
+.empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      font-size: 15px;
+    }
+
+
+
+    .alert {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .alert-success {
+      background: #e3f9e5;
+      color: #1e4620;
+      border: 1px solid #c1eac5;
+    }
+
+    .alert-error {
+      background: #fdecea;
+      color: #b71c1c;
+      border: 1px solid #f5c6cb;
+    }

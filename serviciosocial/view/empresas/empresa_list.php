@@ -29,27 +29,7 @@ $estadoConfig = [
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión de Empresas · Servicio Social</title>
   <link rel="stylesheet" href="../../assets/css/empresas/empresaglobalstyles.css" />
-  <style>
-    .alert {
-      margin: 20px 0;
-      padding: 15px;
-      border-radius: 8px;
-      font-size: 14px;
-    }
 
-    .alert-error {
-      background: #fdecea;
-      color: #b71c1c;
-      border: 1px solid #f5c6cb;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #666;
-      font-size: 15px;
-    }
-  </style>
 </head>
 <body>
 
