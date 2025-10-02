@@ -185,4 +185,21 @@ class ConvenioModel
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
         $statement->execute();
     }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchEmpresas(): array
+    {
+        $sql = <<<'SQL'
+            SELECT id,
+                   nombre
+              FROM ss_empresa
+             ORDER BY nombre ASC
+        SQL;
+
+        $statement = $this->pdo->query($sql);
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

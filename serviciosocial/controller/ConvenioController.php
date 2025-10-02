@@ -79,6 +79,14 @@ class ConvenioController
     }
 
     /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function listEmpresas(): array
+    {
+        return $this->convenioModel->fetchEmpresas();
+    }
+
+    /**
      * @param array<string, mixed> $input
      *
      * @return array<string, mixed>
