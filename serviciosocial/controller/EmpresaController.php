@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../common/model/db.php';
 use Common\Model\Database;
 use InvalidArgumentException;
 use PDO;
+use RuntimeException;
 use Serviciosocial\Model\EmpresaModel;
 
 class EmpresaController
@@ -142,5 +143,35 @@ class EmpresaController
         ];
 
         $this->empresaModel->update($id, $payload);
+    }
+
+    public function deleteEmpresa(int $id): void
+    {
+        if ($id <= 0) {
+            throw new InvalidArgumentException('El identificador de la empresa debe ser un número positivo.');
+        }
+
+        try {
+            $this->empresaModel->delete($id);
+        } catch (RuntimeException $exception) {
+            throw new RuntimeException(
+                'No se puede eliminar la empresa porque tiene convenios asociados. ' .
+                'Elimina o reasigna esos convenios e inténtalo nuevamente.',
+                0,
+                $exception
+            );
+        }
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function listConveniosPorEmpresa(int $empresaId): array
+    {
+        if ($empresaId <= 0) {
+            throw new InvalidArgumentException('El identificador de la empresa debe ser un número positivo.');
+        }
+
+        return $this->empresaModel->fetchConveniosPorEmpresa($empresaId);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Serviciosocial\Model;
 
 use PDO;
+use RuntimeException;
 
 class EmpresaModel
 {
@@ -191,5 +192,54 @@ class EmpresaModel
         $statement->bindValue(':estado', (string) $data['estado'], PDO::PARAM_STR);
 
         $statement->execute();
+    }
+
+    public function delete(int $id): void
+    {
+        $sqlCount = 'SELECT COUNT(*) FROM ss_convenio WHERE ss_empresa_id = :id';
+        $countStatement = $this->pdo->prepare($sqlCount);
+        $countStatement->bindValue(':id', $id, PDO::PARAM_INT);
+        $countStatement->execute();
+
+        $conveniosAsociados = (int) $countStatement->fetchColumn();
+
+        if ($conveniosAsociados > 0) {
+            throw new RuntimeException(
+                sprintf(
+                    'La empresa tiene %d convenio(s) asociado(s).',
+                    $conveniosAsociados
+                )
+            );
+        }
+
+        $sql = 'DELETE FROM ss_empresa WHERE id = :id';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->execute();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchConveniosPorEmpresa(int $empresaId): array
+    {
+        $sql = <<<'SQL'
+            SELECT id,
+                   estatus,
+                   fecha_inicio,
+                   fecha_fin,
+                   version_actual,
+                   creado_en
+              FROM ss_convenio
+             WHERE ss_empresa_id = :empresa_id
+          ORDER BY fecha_inicio DESC, id DESC
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':empresa_id', $empresaId, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 }

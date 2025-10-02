@@ -11,8 +11,19 @@ $error = '';
 $success = '';
 $empresas = [];
 
+if (isset($_GET['error'])) {
+    $errorCode = (string) $_GET['error'];
+    if ($errorCode === 'invalid') {
+        $error = 'La empresa seleccionada no es válida.';
+    } elseif ($errorCode === 'notfound') {
+        $error = 'La empresa indicada no existe.';
+    }
+}
+
 if (isset($_GET['created'])) {
     $success = 'La empresa se registró correctamente.';
+} elseif (isset($_GET['deleted'])) {
+    $success = 'La empresa se eliminó correctamente.';
 }
 
 try {
@@ -111,6 +122,7 @@ $estadoConfig = [
                   </span>
                 </td>
                 <td data-label="Acciones" class="actions">
+                  <a href="convenios_list.php?empresa_id=<?php echo (int) $empresa['id']; ?>" class="btn btn-secondary btn-sm">Ver convenios</a>
                   <a href="empresa_edit.php?id=<?php echo (int) $empresa['id']; ?>" class="btn btn-warning btn-sm">Editar</a>
                   <a href="empresa_delete.php?id=<?php echo (int) $empresa['id']; ?>" class="btn btn-danger btn-sm">Eliminar</a>
                 </td>
