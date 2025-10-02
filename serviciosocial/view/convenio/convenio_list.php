@@ -1,3 +1,37 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../../../config/session.php';
+require_once __DIR__ . '/../../controller/ConvenioController.php';
+
+use Serviciosocial\Controller\ConvenioController;
+
+$search = isset($_GET['search']) ? trim((string) $_GET['search']) : '';
+$convenios = [];
+$error = '';
+
+try {
+    $controller = new ConvenioController();
+    $convenios = $controller->listAll($search === '' ? null : $search);
+} catch (\Throwable $exception) {
+    $error = 'No fue posible obtener los convenios registrados: ' . $exception->getMessage();
+}
+
+/**
+ * @param string $value
+ */
+function e(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+$estatusConfig = [
+    'pendiente' => ['label' => 'Pendiente', 'class' => 'pendiente'],
+    'vigente' => ['label' => 'Vigente', 'class' => 'vigente'],
+    'vencido' => ['label' => 'Vencido', 'class' => 'vencido'],
+];
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -24,14 +58,18 @@
         <a href="convenio_add.php" class="btn btn-primary">➕ Nuevo Convenio</a>
       </div>
 
-      <!-- 🔍 Buscador -->
+      <?php if ($error !== ''): ?>
+        <div class="alert alert-error" role="alert" style="margin-top: 20px;">
+          <?php echo e($error); ?>
+        </div>
+      <?php endif; ?>
+
       <form action="" method="get" style="margin: 20px 0; display: flex; gap: 10px;">
-        <input type="text" name="search" placeholder="Buscar por empresa o estado..." style="flex: 1;" />
+        <input type="text" name="search" value="<?php echo e($search); ?>" placeholder="Buscar por empresa o estado..." style="flex: 1;" />
         <button type="submit" class="btn btn-primary">Buscar</button>
         <a href="convenio_list.php" class="btn btn-secondary">Restablecer</a>
       </form>
 
-      <!-- 📋 Tabla de convenios -->
       <div class="table-wrapper">
         <table>
           <thead>
@@ -42,52 +80,45 @@
               <th>Fecha de Inicio</th>
               <th>Fecha de Fin</th>
               <th>Versión</th>
+              <th>Registrado</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <!-- 🔁 Ejemplos estáticos - aquí luego se renderizan con PHP -->
-            <tr>
-              <td>1</td>
-              <td>Universidad Tecnológica del Centro</td>
-              <td><span class="status vigente">Vigente</span></td>
-              <td>2025-01-01</td>
-              <td>2025-12-31</td>
-              <td>v1</td>
-              <td>
-                <a href="convenio_view.php?id=1" class="btn btn-secondary">🔍 Ver</a>
-                <a href="convenio_edit.php?id=1" class="btn btn-primary">✏️ Editar</a>
-                <a href="convenio_delete.php?id=1" class="btn btn-danger">🗑️ Eliminar</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td>2</td>
-              <td>Hospital General San José</td>
-              <td><span class="status pendiente">Pendiente</span></td>
-              <td>2025-02-01</td>
-              <td>2025-12-31</td>
-              <td>v1</td>
-              <td>
-                <a href="convenio_view.php?id=2" class="btn btn-secondary">🔍 Ver</a>
-                <a href="convenio_edit.php?id=2" class="btn btn-primary">✏️ Editar</a>
-                <a href="convenio_delete.php?id=2" class="btn btn-danger">🗑️ Eliminar</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td>3</td>
-              <td>Biblioteca Municipal Central</td>
-              <td><span class="status vencido">Vencido</span></td>
-              <td>2025-03-01</td>
-              <td>2025-08-30</td>
-              <td>v0.9</td>
-              <td>
-                <a href="convenio_view.php?id=3" class="btn btn-secondary">🔍 Ver</a>
-                <a href="convenio_edit.php?id=3" class="btn btn-primary">✏️ Editar</a>
-                <a href="convenio_delete.php?id=3" class="btn btn-danger">🗑️ Eliminar</a>
-              </td>
-            </tr>
+            <?php if (empty($convenios)): ?>
+              <tr>
+                <td colspan="8">
+                  <div class="empty-state">
+                    No hay convenios registrados<?php echo $search !== '' ? ' que coincidan con la búsqueda.' : '.'; ?>
+                  </div>
+                </td>
+              </tr>
+            <?php else: ?>
+              <?php foreach ($convenios as $convenio): ?>
+                <?php
+                $estatus = strtolower((string) ($convenio['estatus'] ?? ''));
+                $estatusInfo = $estatusConfig[$estatus] ?? ['label' => ucfirst($estatus), 'class' => ''];
+                ?>
+                <tr>
+                  <td><?php echo (int) ($convenio['id'] ?? 0); ?></td>
+                  <td><?php echo e((string) ($convenio['empresa_nombre'] ?? '')); ?></td>
+                  <td>
+                    <span class="status <?php echo e($estatusInfo['class']); ?>">
+                      <?php echo e($estatusInfo['label']); ?>
+                    </span>
+                  </td>
+                  <td><?php echo e((string) ($convenio['fecha_inicio'] ?? '-')); ?></td>
+                  <td><?php echo e((string) ($convenio['fecha_fin'] ?? '-')); ?></td>
+                  <td><?php echo e((string) ($convenio['version_actual'] ?? '-')); ?></td>
+                  <td><?php echo e((string) ($convenio['creado_en'] ?? '-')); ?></td>
+                  <td>
+                    <a href="convenio_view.php?id=<?php echo (int) ($convenio['id'] ?? 0); ?>" class="btn btn-secondary">🔍 Ver</a>
+                    <a href="convenio_edit.php?id=<?php echo (int) ($convenio['id'] ?? 0); ?>" class="btn btn-primary">✏️ Editar</a>
+                    <a href="convenio_delete.php?id=<?php echo (int) ($convenio['id'] ?? 0); ?>" class="btn btn-danger">🗑️ Eliminar</a>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            <?php endif; ?>
           </tbody>
         </table>
       </div>
