@@ -1,0 +1,345 @@
+/* ===========================
+   GLOBAL STYLES - EMPRESAS (SS)
+   Autor: Hector Ruiz
+   Proyecto: Sistema de Servicio Social
+   =========================== */
+
+:root {
+  --primary: #0066cc;
+  --primary-dark: #004a99;
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --gray-light: #f4f6f9;
+  --gray-dark: #333;
+  --white: #fff;
+  --radius: 10px;
+  --shadow: 0 2px 6px rgba(0,0,0,0.1);
+  --transition: 0.25s ease-in-out;
+  --font-main: 'Segoe UI', Tahoma, sans-serif;
+}
+
+/* ====== GENERAL ====== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--gray-light);
+  color: var(--gray-dark);
+  line-height: 1.5;
+}
+
+.container {
+  width: 95%;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ====== HEADER ====== */
+header {
+  background: var(--primary);
+  color: var(--white);
+  padding: 20px 40px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+header p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* ====== BUTTONS ====== */
+.btn {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: bold;
+  color: var(--white);
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+}
+
+.btn-primary { background: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); }
+
+.btn-success { background: var(--success); }
+.btn-success:hover { background: #218838; }
+
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: #b52a38; }
+
+.btn-warning { background: var(--warning); color: #000; }
+.btn-warning:hover { background: #e0a800; }
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+/* ====== TABLE ====== */
+.table-wrapper {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+thead {
+  background: var(--primary);
+  color: var(--white);
+}
+
+thead th {
+  text-align: left;
+  padding: 12px;
+  font-size: 14px;
+}
+
+tbody tr {
+  border-bottom: 1px solid #ddd;
+  transition: var(--transition);
+}
+
+tbody tr:hover {
+  background: #f9f9f9;
+}
+
+tbody td {
+  padding: 12px;
+  font-size: 14px;
+}
+
+/* ====== FORMULARIOS ====== */
+form {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  font-size: 15px;
+  transition: var(--transition);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}
+
+/* ====== ACTIONS COLUMN ====== */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions .btn-sm {
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+/* ====== STATUS BADGES ====== */
+.badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.badge-activo {
+  background: var(--success);
+  color: var(--white);
+}
+
+.badge-inactivo {
+  background: var(--danger);
+  color: var(--white);
+}
+
+/* ====== SEARCH BAR ====== */
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.search-bar input {
+  width: 300px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+  font-size: 14px;
+}
+
+.search-bar .btn {
+  font-size: 14px;
+  padding: 8px 14px;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  header h1 {
+    font-size: 20px;
+  }
+
+  table thead {
+    display: none;
+  }
+
+  table tbody tr {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: var(--radius);
+    padding: 10px;
+  }
+
+  table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+  }
+
+  table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: var(--primary);
+  }
+}
+
+/* ===================== */
+/* 🔥 MODO ELIMINACIÓN 🔥 */
+/* ===================== */
+
+/* Cambia fondo general */
+body.danger-mode {
+  background: #fff5f5;
+}
+
+/* Encabezado rojo */
+.danger-header {
+  background: #c62828;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+.danger-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.danger-header p {
+  margin: 8px 0 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* Tarjeta principal en rojo */
+.danger-card {
+  border: 2px solid #c62828;
+  background: #ffebee;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+}
+
+/* Etiquetas de alerta */
+.danger-card h2 {
+  color: #b71c1c;
+}
+
+.danger-card p {
+  color: #5a0e0e;
+}
+
+/* Texto del formulario */
+.danger-card label {
+  color: #7f1d1d;
+}
+
+.danger-card .hint {
+  color: #8b0000;
+  font-size: 0.9rem;
+}
+
+/* Campos de texto en rojo */
+.danger-card input[type="text"] {
+  border: 2px solid #c62828;
+  background: #fff;
+  color: #8b0000;
+}
+
+.danger-card input[type="text"]:focus {
+  border-color: #b71c1c;
+  outline: none;
+  box-shadow: 0 0 5px rgba(183, 28, 28, 0.5);
+}
+
+/* Botón eliminar */
+.btn-danger {
+  background: #c62828;
+  color: #fff;
+  border: none;
+}
+
+.btn-danger:hover {
+  background: #b71c1c;
+}
+
+/* Botón cancelar */
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background: #bdbdbd;
+}
