@@ -39,19 +39,31 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
         <div class="card-container">
             <div class="card" id="empresas">
                 <h3>Gestión de Empresas</h3>
-                <a href="empresa_list.php">Entrar</a>
+                <a href="view/empresa/empresa_list.php">Entrar</a>
             </div>
             <div class="card" id="convenios">
                 <h3>Gestión de Convenios</h3>
-                <a href="convenio_list.php">Entrar</a>
+                <a href="view/convenio/convenio_list.php">Entrar</a>
             </div>
             <div class="card" id="documentos">
                 <h3>Gestión de Documentos</h3>
-                <a href="documento_list.php">Entrar</a>
+                <a href="view/documentos/documento_list.php">Entrar</a>
+            </div>
+            <div class="card" id="machote">
+                <h3>Machote Comentarios</h3>
+                <a href="view/machote/machote_list.php">Entrar</a>
+            </div>
+            <div class="card" id="documento-tipo">
+                <h3>Documento Tipo</h3>
+                <a href="view/documentotipo/documentotipo_list.php">Entrar</a>
+            </div>
+            <div class="card" id="portal">
+                <h3>Portal Acceso</h3>
+                <a href="view/portalacceso/portal_list.php">Entrar</a>
             </div>
             <div class="card" id="reportes">
                 <h3>Reportes</h3>
-                <a href="reportes.php">Entrar</a>
+                <a href="view/reportes/reportes_dashboard.php">Entrar</a>
             </div>
         </div>
     </main>

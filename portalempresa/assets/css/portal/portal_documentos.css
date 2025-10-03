@@ -1,0 +1,199 @@
+/* 🌐 portal_documentos.css - Sección de documentos del portal empresarial */
+
+:root {
+  --primary: #0d6efd;
+  --primary-hover: #0b5ed7;
+  --success: #198754;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --border: #dee2e6;
+  --radius: 10px;
+  --shadow: 0 4px 12px rgba(0,0,0,0.06);
+  --transition: all 0.3s ease;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: var(--light);
+  color: var(--dark);
+}
+
+/* HEADER */
+header {
+  background: var(--primary);
+  color: #fff;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+header a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+header a:hover {
+  text-decoration: underline;
+}
+
+/* MAIN */
+main {
+  padding: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* CARD */
+.card {
+  background: #fff;
+  padding: 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 30px;
+}
+
+.card h2 {
+  margin-top: 0;
+  color: var(--primary);
+  font-size: 24px;
+}
+
+.card p {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* TABLE */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+thead {
+  background: var(--primary);
+  color: #fff;
+}
+
+th, td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+tr:hover {
+  background: #f8f9ff;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+}
+
+.status.pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.aprobado {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.rechazado {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #bb2d3b;
+}
+
+.btn-upload {
+  background: var(--success);
+  color: #fff;
+}
+
+.btn-upload:hover {
+  background: #157347;
+}
+
+/* UPLOAD ZONE */
+.upload-zone {
+  padding: 30px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  background: #f8faff;
+  margin-top: 20px;
+  color: #6c757d;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.upload-zone:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  main {
+    padding: 20px;
+  }
+
+  th, td {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .btn {
+    padding: 8px 16px;
+  }
+}

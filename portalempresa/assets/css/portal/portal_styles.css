@@ -1,0 +1,134 @@
+/* 🌐 portal_styles.css - Estilo global del portal externo de empresas */
+
+:root {
+  --primary-color: #0d47a1;
+  --primary-hover: #0b3b8c;
+  --accent-color: #1976d2;
+  --success-color: #2e7d32;
+  --danger-color: #c62828;
+  --text-dark: #1f2937;
+  --text-muted: #6b7280;
+  --bg-light: #f4f6f9;
+  --bg-white: #ffffff;
+  --radius: 10px;
+  --transition: all 0.3s ease;
+  --shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  --gradient: linear-gradient(135deg, #0d47a1, #1976d2);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: var(--bg-light);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+/* HEADER */
+header {
+  background: var(--gradient);
+  color: #fff;
+  padding: 30px 40px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  font-size: 2.4rem;
+  margin-bottom: 10px;
+}
+
+header p {
+  font-size: 1.1rem;
+  color: #dbeafe;
+}
+
+/* HERO / WELCOME SECTION */
+.hero {
+  max-width: 900px;
+  margin: 60px auto;
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 50px;
+  text-align: center;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.hero h2 {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 30px;
+}
+
+.hero img {
+  max-width: 220px;
+  margin: 20px 0;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-block;
+  padding: 14px 28px;
+  font-size: 1.1rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: var(--transition);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(13, 71, 161, 0.4);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 60px;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    margin: 30px 20px;
+    padding: 30px 20px;
+  }
+
+  .hero h2 {
+    font-size: 1.7rem;
+  }
+}
