@@ -40,28 +40,44 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
         <p>Selecciona una de las opciones para comenzar:</p>
         <div class="card-container">
             <div class="card" id="estudiantes">
+                <h3>Alta de Estudiantes</h3>
+                <a href="view/altaestudiante/estudiante_list.php">Entrar</a>
+            </div>
+            <div class="card" id="estudiantes">
                 <h3>Gestión de Estudiantes</h3>
-                <a href="estudiante_list.php">Entrar</a>
+                <a href="view/gestestudiante/gestestudiante_list.php">Entrar</a>
             </div>
             <div class="card" id="plazas">
                 <h3>Gestión de Plazas</h3>
-                <a href="plaza_list.php">Entrar</a>
+                <a href="view/gestionplaza/plaza_list.php">Entrar</a>
             </div>
             <div class="card" id="servicios">
                 <h3>Expediente de Servicio</h3>
-                <a href="servicio_list.php">Entrar</a>
+                <a href="view/servicio/servicio_list.php">Entrar</a>
             </div>
             <div class="card" id="periodos">
                 <h3>Periodos</h3>
-                <a href="periodo_list.php">Entrar</a>
+                <a href="view/periodo/periodo_list.php">Entrar</a>
             </div>
             <div class="card" id="documentos">
                 <h3>Documentos</h3>
-                <a href="docss_list.php">Entrar</a>
+                <a href="view/documentos/ss_doc_list.php">Entrar</a>
+            </div>
+            <div class="card" id="documentos-globales">
+                <h3>Documentos Globales</h3>
+                <a href="view/documentosglobales/ss_doc_global_list.php">Entrar</a>
             </div>
             <div class="card" id="reportes">
                 <h3>Reportes</h3>
-                <a href="reportes.php">Entrar</a>
+                <a href="view/reportes/reportes_dashboard.php">Entrar</a>
+            </div>
+            <div class="card" id="ss_empresas">
+                <h3>Empresas (SS)</h3>
+                <a href="view/empresas/empresa_list.php">Entrar</a>
+            </div>
+            <div class="card" id="ss_convenios">
+                <h3>Convenios (SS)</h3>
+                <a href="view/convenio/convenio_list.php">Entrar</a>
             </div>
         </div>
     </main>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Servicio Social - Detalle del Estudiante</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #007bff;
+      color: #fff;
+      padding: 20px 40px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    nav.breadcrumb {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    nav.breadcrumb a {
+      color: #cde4ff;
+      text-decoration: none;
+    }
+
+    nav.breadcrumb span.sep {
+      margin: 0 5px;
+      color: #b5d4ff;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px 40px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .section {
+      margin-bottom: 35px;
+    }
+
+    .section h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+      color: #007bff;
+      border-left: 4px solid #007bff;
+      padding-left: 10px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      display: block;
+      font-weight: bold;
+      color: #444;
+      margin-bottom: 4px;
+    }
+
+    .field p {
+      margin: 0;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      color: #333;
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .btn.primary {
+      background: #007bff;
+      color: #fff;
+    }
+
+    .btn.primary:hover {
+      background: #0056b3;
+    }
+
+    .btn.ghost {
+      background: #e9ecef;
+      color: #333;
+      margin-right: 10px;
+    }
+
+    .btn.ghost:hover {
+      background: #d6d8db;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Servicio Social · Detalle del Estudiante</h1>
+    <nav class="breadcrumb">
+      <a href="#">Inicio</a>
+      <span class="sep">›</span>
+      <a href="#">Gestión de Estudiantes</a>
+      <span class="sep">›</span>
+      <span>Detalle</span>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- 🧑‍🎓 Información personal -->
+    <div class="section">
+      <h2>Información personal</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Nombre completo</label>
+          <p>Juan Carlos Pérez López</p>
+        </div>
+        <div class="field">
+          <label>Matrícula</label>
+          <p>20204567</p>
+        </div>
+        <div class="field">
+          <label>Correo institucional</label>
+          <p>juan.perez@tectijuana.edu.mx</p>
+        </div>
+        <div class="field">
+          <label>Teléfono</label>
+          <p>55 9876 5432</p>
+        </div>
+        <div class="field">
+          <label>Programa académico</label>
+          <p>Ingeniería en Informática</p>
+        </div>
+        <div class="field">
+          <label>Semestre actual</label>
+          <p>8º semestre</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📚 Información del servicio social -->
+    <div class="section">
+      <h2>Información del servicio social</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Dependencia asignada</label>
+          <p>Secretaría de Innovación y Tecnología</p>
+        </div>
+        <div class="field">
+          <label>Nombre del proyecto</label>
+          <p>Desarrollo de sistema de gestión documental</p>
+        </div>
+        <div class="field">
+          <label>Periodo del servicio</label>
+          <p>01/02/2025 – 30/07/2025</p>
+        </div>
+        <div class="field">
+          <label>Horas acumuladas</label>
+          <p>320 / 480 horas</p>
+        </div>
+        <div class="field">
+          <label>Estado del servicio</label>
+          <p>En curso</p>
+        </div>
+        <div class="field">
+          <label>Asesor interno</label>
+          <p>Ing. Fernando Rodríguez</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📍 Documentación -->
+    <div class="section">
+      <h2>Documentación</h2>
+      <div class="field">
+        <label>Documentos entregados</label>
+        <p>Carta de presentación, carta de aceptación, plan de trabajo</p>
+      </div>
+      <div class="field">
+        <label>Observaciones</label>
+        <p>Falta entregar el reporte intermedio. Fecha límite: 20/05/2025</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="#" class="btn ghost">Volver</a>
+      <a href="#" class="btn primary">Editar</a>
+    </div>
+
+  </main>
+
+</body>
+</html>

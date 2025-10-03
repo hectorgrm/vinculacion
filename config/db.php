@@ -12,7 +12,7 @@ return [
 
 // return [
 //     'host' => getenv('DB_HOST') ?: 'localhost',
-//     'dbname' => getenv('DB_NAME') ?: 'vinculacion',
+//     'dbname' => getenv('DB_NAME') ?: 'nessuste_vinculacion',
 //     'user' => getenv('DB_USER') ?: 'root',
 //     'pass' => getenv('DB_PASS') ?: 'root',
 //     'charset' => getenv('DB_CHARSET') ?: 'utf8mb4',

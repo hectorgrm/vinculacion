@@ -1,0 +1,129 @@
+:root {
+    --danger-primary: #c0392b;
+    --danger-primary-dark: #96281b;
+    --danger-light: #fde7e5;
+    --neutral-dark: #2f3640;
+}
+
+body.delete-page {
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(180deg, #f6f8fb 0%, #fff 45%, var(--danger-light) 100%);
+    color: var(--neutral-dark);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.danger-header {
+    background: linear-gradient(135deg, var(--danger-primary), var(--danger-primary-dark));
+    color: #fff;
+    padding: 32px 20px;
+    text-align: center;
+    box-shadow: 0 12px 24px rgba(192, 57, 43, 0.25);
+}
+
+.danger-header h1 {
+    margin: 0 0 8px;
+    font-size: 2rem;
+    letter-spacing: 0.02em;
+}
+
+.danger-header p {
+    margin: 0;
+    font-size: 1.05rem;
+    opacity: 0.95;
+}
+
+.page-wrapper {
+    max-width: 780px;
+    padding: 48px 20px 64px;
+}
+
+.form-card--danger {
+    border-top: 6px solid var(--danger-primary);
+    box-shadow: 0 20px 40px rgba(192, 57, 43, 0.15);
+    gap: 28px;
+}
+
+.form-card--fallback {
+    border-top: 4px solid #adb5bd;
+    text-align: center;
+    gap: 16px;
+}
+
+.plaza-details {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px 24px;
+    padding: 0;
+}
+
+.plaza-details dt {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    color: var(--danger-primary-dark);
+}
+
+.plaza-details dd {
+    margin: 4px 0 0;
+    font-size: 1.05rem;
+    color: var(--neutral-dark);
+}
+
+.form-actions--danger {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.form-actions--danger .btn-secondary,
+.form-actions--danger .btn-danger {
+    min-width: 160px;
+    text-align: center;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 12px 22px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-actions--danger .btn-secondary:hover,
+.form-actions--danger .btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.form-actions--danger .btn-danger {
+    background-color: var(--danger-primary);
+    border: none;
+}
+
+.form-actions--danger .btn-danger:hover {
+    background-color: var(--danger-primary-dark);
+}
+
+@media (max-width: 640px) {
+    .danger-header {
+        padding: 24px 16px;
+    }
+
+    .danger-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .page-wrapper {
+        padding-top: 32px;
+    }
+
+    .form-actions--danger {
+        justify-content: stretch;
+    }
+
+    .form-actions--danger .btn-secondary,
+    .form-actions--danger .btn-danger {
+        flex: 1 1 100%;
+    }
+}
