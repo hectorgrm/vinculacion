@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal del Estudiante - Servicio Social</title>
-  <link rel="stylesheet" href="assets/css/welcome_styles.css">
+  <link rel="stylesheet" href="../../assets/css/estudiante/welcome_styles.css">
 </head>
 <body>
 
@@ -12,7 +12,7 @@
     <div class="hero-content">
       <h1>Bienvenido al Portal del Estudiante</h1>
       <p>Accede a tu espacio de Servicio Social, revisa tu progreso, entrega documentos y mantente al tanto de cada etapa del proceso.</p>
-      <a href="view/estudiante_login.php" class="btn btn-primary">Iniciar Sesión</a>
+      <a href="estudiante_login.php" class="btn btn-primary">Iniciar Sesión</a>
     </div>
   </header>
 

@@ -1,0 +1,100 @@
+/* 🎓 Estilo global para portal del estudiante */
+
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1e40af;
+  --text-dark: #1f2937;
+  --text-light: #f9fafb;
+  --bg-light: #f3f4f6;
+  --radius: 10px;
+  --transition: all 0.3s ease;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  margin: 0;
+  background: var(--bg-light);
+  color: var(--text-dark);
+}
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+  color: white;
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 700px;
+  margin: 0 auto 30px;
+}
+
+.hero .btn {
+  padding: 15px 40px;
+  background: #fff;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.hero .btn:hover {
+  background: var(--primary-hover);
+  color: white;
+}
+
+/* FEATURES */
+.info-section {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: white;
+  padding: 30px;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  transition: var(--transition);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.feature-card h2 {
+  margin-top: 0;
+  color: var(--primary-color);
+}
+
+.feature-card p {
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  background: #1e293b;
+  color: #cbd5e1;
+  padding: 20px;
+  margin-top: 60px;
+  font-size: 0.9rem;
+}
