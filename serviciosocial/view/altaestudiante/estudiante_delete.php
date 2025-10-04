@@ -80,7 +80,7 @@ try {
 <head>
   <meta charset="UTF-8">
   <title>Eliminar estudiante</title>
-  <link rel="stylesheet" href="../../assets/serviciosocialstyles.css">
+  <link rel="stylesheet" href="../../assets/css/gestestudiante/estudiantedeletestyles.css">
 </head>
 <body>
   <header>

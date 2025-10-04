@@ -1,0 +1,170 @@
+/* 🎓 Estilo profesional - Eliminar Estudiante */
+:root {
+  --primary: #003366;
+  --danger: #dc3545;
+  --danger-dark: #b52a36;
+  --success: #28a745;
+  --text-dark: #1f2937;
+  --text-muted: #6b7280;
+  --bg-light: #f4f6f9;
+  --bg-white: #ffffff;
+  --border: #e5e7eb;
+  --radius: 10px;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: var(--bg-light);
+  margin: 0;
+  padding: 0;
+  color: var(--text-dark);
+}
+
+/* ===== HEADER ===== */
+header {
+  background: linear-gradient(90deg, var(--danger), var(--danger-dark));
+  color: #fff;
+  padding: 25px 40px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  font-size: 28px;
+  margin: 0;
+}
+
+header p {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-top: 6px;
+}
+
+/* ===== PAGE WRAPPER ===== */
+.page-wrapper {
+  max-width: 700px;
+  margin: 40px auto;
+  background: var(--bg-white);
+  padding: 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ===== FORM CARD ===== */
+.form-card {
+  border: 2px solid var(--danger);
+  border-radius: var(--radius);
+  padding: 25px;
+  background: #fff5f5;
+}
+
+.form-card__header {
+  margin-bottom: 20px;
+  border-left: 5px solid var(--danger);
+  padding-left: 15px;
+}
+
+.form-card__header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--white-dark);
+}
+
+.form-card__header p {
+  margin-top: 5px;
+  font-size: 15px;
+  color: var(--text-white);
+}
+
+/* ===== DL - INFO ===== */
+.form-card__body dl {
+  margin: 20px 0;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  row-gap: 10px;
+  column-gap: 15px;
+}
+
+.form-card__body dt {
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+.form-card__body dd {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+/* ===== ALERTS ===== */
+.alert {
+  padding: 15px 20px;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+}
+
+.alert-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #f5c6cb;
+}
+
+/* ===== BUTTONS ===== */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn-secondary,
+.btn-danger {
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.3s;
+  border: none;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+  font-weight: bold;
+}
+
+.btn-danger:hover {
+  background: var(--danger-dark);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .page-wrapper {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  .form-card__body dl {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-secondary, .btn-danger {
+    width: 100%;
+  }
+}

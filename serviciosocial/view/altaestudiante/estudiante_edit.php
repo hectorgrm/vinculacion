@@ -120,7 +120,7 @@ try {
 <head>
   <meta charset="UTF-8">
   <title>Editar Estudiante</title>
-  <link rel="stylesheet" href="../../assets/serviciosocialstyles.css">
+  <link rel="stylesheet" href="../../assets/css/gestestudiante/estudianteeditstlyes.css">
 </head>
 <body>
   <header>
