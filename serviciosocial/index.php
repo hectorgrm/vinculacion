@@ -12,74 +12,101 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
     exit;
 }
 
+$userName = htmlspecialchars((string)($user['name'] ?? 'Coordinador'), ENT_QUOTES, 'UTF-8');
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Servicio Social</title>
-    <link rel="stylesheet" href="assets/serviciosocialstyles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Institucional - Servicio Social</title>
+  <link rel="stylesheet" href="assets/serviciosocialstyles.css">
 </head>
 <body>
-    <header>
-        <h1>Dashboard Servicio Social</h1>
-        <p class="welcome">Hola, <?php echo htmlspecialchars((string)($user['name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
-    </header>
-    <nav>
-        <a href="#estudiantes">Estudiantes</a>
-        <a href="#plazas">Plazas</a>
-        <a href="#servicios">Servicios</a>
-        <a href="#periodos">Periodos</a>
-        <a href="#documentos">Documentos</a>
-        <a href="#reportes">Reportes</a>
-        <a href="../common/logout.php">Cerrar sesión</a>
-    </nav>
-    <main>
-        <h2>Bienvenido al módulo de Servicio Social</h2>
-        <p>Selecciona una de las opciones para comenzar:</p>
-        <div class="card-container">
-            <div class="card" id="estudiantes">
-                <h3>Alta de Estudiantes</h3>
-                <a href="view/altaestudiante/estudiante_list.php">Entrar</a>
-            </div>
-            <div class="card" id="estudiantes">
-                <h3>Gestión de Estudiantes</h3>
-                <a href="view/gestestudiante/gestestudiante_list.php">Entrar</a>
-            </div>
-            <div class="card" id="plazas">
-                <h3>Gestión de Plazas</h3>
-                <a href="view/gestionplaza/plaza_list.php">Entrar</a>
-            </div>
-            <div class="card" id="servicios">
-                <h3>Expediente de Servicio</h3>
-                <a href="view/servicio/servicio_list.php">Entrar</a>
-            </div>
-            <div class="card" id="periodos">
-                <h3>Periodos</h3>
-                <a href="view/periodo/periodo_list.php">Entrar</a>
-            </div>
-            <div class="card" id="documentos">
-                <h3>Documentos</h3>
-                <a href="view/documentos/ss_doc_list.php">Entrar</a>
-            </div>
-            <div class="card" id="documentos-globales">
-                <h3>Documentos Globales</h3>
-                <a href="view/documentosglobales/ss_doc_global_list.php">Entrar</a>
-            </div>
-            <div class="card" id="reportes">
-                <h3>Reportes</h3>
-                <a href="view/reportes/reportes_dashboard.php">Entrar</a>
-            </div>
-            <div class="card" id="ss_empresas">
-                <h3>Empresas (SS)</h3>
-                <a href="view/empresas/empresa_list.php">Entrar</a>
-            </div>
-            <div class="card" id="ss_convenios">
-                <h3>Convenios (SS)</h3>
-                <a href="view/convenio/convenio_list.php">Entrar</a>
-            </div>
+
+  <header>
+    <h1>Panel Institucional - Servicio Social</h1>
+    <div class="welcome">
+      <div>Bienvenido, <?php echo $userName; ?></div>
+      <a class="logout-link" href="../common/logout.php">Cerrar sesión</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- 🔔 Alertas académicas al inicio -->
+    <section class="alerts">
+      <div class="alert warning">⚠️ 12 documentos requieren revisión antes del cierre de periodo.</div>
+      <div class="alert danger">⏰ 2 convenios expiran en menos de 10 días.</div>
+      <div class="alert info">📅 El periodo Enero-Junio finalizará el 15 de junio.</div>
+    </section>
+
+    <!-- 📊 KPIs institucionales -->
+    <section class="kpi-container">
+      <div class="kpi">
+        <h2>👩‍🎓 248</h2>
+        <p>Estudiantes Registrados</p>
+      </div>
+      <div class="kpi">
+        <h2>🏢 32</h2>
+        <p>Empresas Colaboradoras</p>
+      </div>
+      <div class="kpi">
+        <h2>📑 57</h2>
+        <p>Documentos por Revisar</p>
+      </div>
+      <div class="kpi">
+        <h2>🤝 12</h2>
+        <p>Convenios Vigentes</p>
+      </div>
+      <div class="kpi">
+        <h2>📆 3</h2>
+        <p>Periodos Activos</p>
+      </div>
+    </section>
+
+    <!-- 📚 Módulos principales -->
+    <section class="modules">
+      <h2>📂 Módulos del Sistema</h2>
+      <div class="card-container">
+        <div class="card">
+          <h3>👩‍🎓 Estudiantes</h3>
+          <a href="view/altaestudiante/estudiante_list.php">Gestionar</a>
         </div>
-    </main>
+        <div class="card">
+          <h3>🏢 Empresas</h3>
+          <a href="view/empresas/empresa_list.php">Gestionar</a>
+        </div>
+        <div class="card">
+          <h3>📑 Convenios</h3>
+          <a href="view/convenio/convenio_list.php">Gestionar</a>
+        </div>
+        <div class="card">
+          <h3>📁 Documentos</h3>
+          <a href="view/documentos/ss_doc_list.php">Gestionar</a>
+        </div>
+        <div class="card">
+          <h3>📚 Documentos Globales</h3>
+          <a href="view/documentosglobales/ss_doc_global_list.php">Gestionar</a>
+        </div>
+        <div class="card">
+          <h3>📂 Plazas</h3>
+          <a href="view/gestionplaza/plaza_list.php">Gestionar</a>
+        </div>
+        <div class="card">
+          <h3>📊 Reportes</h3>
+          <a href="view/reportes/reportes_dashboard.php">Visualizar</a>
+        </div>
+        <div class="card">
+          <h3>📆 Periodos</h3>
+          <a href="view/periodo/periodo_list.php">Administrar</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 Sistema Institucional de Servicio Social – Universidad Nacional. Todos los derechos reservados.
+  </footer>
 </body>
 </html>
