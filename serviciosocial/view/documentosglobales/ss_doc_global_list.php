@@ -123,9 +123,9 @@ function statusLabel(string $estatus): string
 <?php else: ?>
               <span class="muted">Sin archivo</span>
 <?php endif; ?>
-              <a href="ss_doc_global_view.php?id=<?= e((string) $document['id']) ?>" class="btn btn-success">👁 Ver</a>
+              <a href="ss_doc_global_view.php?id=<?= e((string) $document['id']) ?>" class="btn btn-success">👁️ Ver</a>
               <a href="ss_doc_global_edit.php?id=<?= e((string) $document['id']) ?>" class="btn btn-primary">✏️ Editar</a>
-              <a href="ss_doc_global_delete.php?id=<?= e((string) $document['id']) ?>" class="btn btn-danger">🗑 Eliminar</a>
+              <a href="ss_doc_global_delete.php?id=<?= e((string) $document['id']) ?>" class="btn btn-danger">🗑️ Eliminar</a>
             </td>
           </tr>
 <?php endforeach; ?>
