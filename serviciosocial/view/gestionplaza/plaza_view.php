@@ -125,7 +125,7 @@ $paginaTitulo = $nombrePlaza !== '' ? $nombrePlaza : 'Detalle de plaza';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Servicio Social - <?php echo htmlspecialchars($paginaTitulo, ENT_QUOTES, 'UTF-8'); ?></title>
-    <link rel="stylesheet" href="../../assets/css/plazaviewstyles.css">
+    <link rel="stylesheet" href="../../assets/css/plaza/plazaviewstyles.css">
 </head>
 <body>
   <header>

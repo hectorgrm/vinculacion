@@ -6,7 +6,7 @@ body{
 }
 
 header{
-    background: #28A745;
+    background: #1f2937;
     color: #fff;
     padding: 20px 40px;
 }
@@ -22,7 +22,7 @@ nav.breadcrumb {
 }
 
 nav.breadcrumb a {
-    color: #c8ffd4;
+    color: #f0f0f0;
     text-decoration: none;
 }
 
@@ -60,8 +60,8 @@ main {
 .section h2 {
     margin-bottom: 15px;
     font-size: 20px;
-    color: #28A745;
-    border-left: 4px solid #28A745;
+    color: #1f2937;
+    border-left: 4px solid #1304ba;
     padding-left: 10px;
 }
 
@@ -127,12 +127,12 @@ main {
 }
 
 .btn.primary {
-    background: #28A745;
+    background: #0f38cd;
     color: #fff;
 }
 
 .btn.primary:hover {
-    background: #218838;
+    background: #032281;
     
 }
 

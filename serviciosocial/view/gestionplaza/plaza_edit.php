@@ -139,7 +139,7 @@ $currentPlazaName = $formData['plaza_nombre'] !== ''
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Servicio Social - Editar Plaza</title>
-    <link rel="stylesheet" href="../../assets/css/nuevaplazastyles.css">
+    <link rel="stylesheet" href="../../assets/css/plaza/plazaeditstyles.css">
 </head>
 <body>
 

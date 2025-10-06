@@ -64,7 +64,7 @@ $convenios = $controller->getConvenios();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Servicio Social - Nueva Plaza</title>
-    <link rel="stylesheet" href="../../assets/css/nuevaplazastyles.css">
+    <link rel="stylesheet" href="../../assets/css/plaza/plazanuevastyles.css">
 </head>
 <body>
 

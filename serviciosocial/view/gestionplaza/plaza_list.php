@@ -47,7 +47,7 @@ if ($error === '' && isset($_GET['error'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Plazas</title>
-    <link rel="stylesheet" href="../../assets/serviciosocialstyles.css">
+    <link rel="stylesheet" href="../../assets/css/plaza/plazaliststyles.css">
 </head>
 <body>
     <header>

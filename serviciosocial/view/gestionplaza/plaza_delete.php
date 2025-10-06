@@ -89,8 +89,8 @@ $formatEstado = static function (?string $value): string {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eliminar Plaza</title>
-    <link rel="stylesheet" href="../../assets/serviciosocialstyles.css">
-    <link rel="stylesheet" href="../../assets/css/plazadeletestyles.css">
+    
+    <link rel="stylesheet" href="../../assets/css/plaza/plazadeletestyles.css">
 </head>
 <body class="delete-page">
     <header class="danger-header">
