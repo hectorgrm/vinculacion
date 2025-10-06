@@ -1,5 +1,5 @@
 /* ===========================
-   GLOBAL STYLES - SERVICIO SOCIAL / VINCULACIÓN
+   GLOBAL STYLES - CONVENIOS
    Autor: Hector Ruiz
    Proyecto: Sistema de Servicio Social
    =========================== */
@@ -20,7 +20,7 @@
   --font-main: 'Open Sans', 'Segoe UI', Tahoma, sans-serif;
 }
 
-/* ====== GENERAL ====== */
+/* ====== GLOBAL ====== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -44,37 +44,6 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* ====== NAVBAR SUPERIOR ====== */
-.navbar {
-  background: var(--primary-dark);
-  padding: 15px 40px;
-  color: var(--white);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: var(--shadow);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.navbar h1 {
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.navbar a {
-  color: #fff;
-  text-decoration: none;
-  margin-left: 20px;
-  transition: var(--transition);
-}
-
-.navbar a:hover {
-  text-decoration: underline;
-}
-
 /* ====== HEADER ====== */
 header {
   background: var(--primary);
@@ -90,13 +59,21 @@ header h1 {
   letter-spacing: 0.5px;
 }
 
-header p {
-  font-size: 15px;
-  opacity: 0.9;
+nav.breadcrumb {
   margin-top: 5px;
+  font-size: 14px;
 }
 
-/* ====== SECTION TITLES ====== */
+nav.breadcrumb a {
+  color: #dce4ff;
+  text-decoration: none;
+}
+
+nav.breadcrumb span {
+  margin: 0 5px;
+}
+
+/* ====== SECTION TITLE ====== */
 h2.section-title {
   font-size: 22px;
   color: var(--primary-dark);
@@ -117,60 +94,40 @@ h2.section-title {
   cursor: pointer;
   border: none;
   transition: var(--transition);
-}
-
-.btn-back {
-  background: var(--accent);
-  padding: 10px 20px;
-  color: #002244;
-  border-radius: var(--radius);
-  text-decoration: none;
-  font-weight: 600;
-  transition: 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  text-align: center;
 }
 
 .btn:hover {
   transform: translateY(-2px);
 }
 
-.btn-primary {
-  background: var(--primary);
-}
-.btn-primary:hover {
-  background: var(--primary-dark);
-}
+.btn-primary { background: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); }
 
-.btn-success {
-  background: var(--success);
-}
-.btn-success:hover {
-  background: #218838;
-}
+.btn-success { background: var(--success); }
+.btn-success:hover { background: #218838; }
 
-.btn-danger {
-  background: var(--danger);
-}
-.btn-danger:hover {
-  background: #b52a38;
-}
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: #b52a38; }
 
 .btn-warning {
   background: var(--warning);
   color: #000;
 }
-.btn-warning:hover {
-  background: #e0a800;
+.btn-warning:hover { background: #e0a800; }
+
+.btn-secondary {
+  background: #6c757d;
+  color: #fff;
 }
+.btn-secondary:hover { background: #555e64; }
 
 .btn-sm {
   padding: 6px 12px;
   font-size: 14px;
 }
 
-/* ====== CARDS ====== */
+/* ====== CARD ====== */
 .card {
   background: #fff;
   border-radius: var(--radius);
@@ -197,6 +154,7 @@ table {
   background: var(--white);
   border-radius: var(--radius);
   overflow: hidden;
+  table-layout: auto;
 }
 
 thead {
@@ -208,6 +166,7 @@ thead th {
   text-align: left;
   padding: 12px;
   font-size: 14px;
+  text-transform: uppercase;
 }
 
 tbody tr {
@@ -223,95 +182,149 @@ tbody td {
   padding: 12px;
   font-size: 14px;
   color: var(--gray-mid);
-}
-
-/* ====== FORMULARIOS ====== */
-form {
-  margin-top: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 6px;
-  color: var(--gray-dark);
-}
-
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-textarea,
-select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: var(--radius);
-  font-size: 15px;
-  transition: var(--transition);
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
-}
-
-/* ====== ACTIONS COLUMN ====== */
-.actions {
-  display: flex;
-  gap: 8px;
-}
-
-.actions .btn-sm {
-  font-size: 13px;
-  padding: 6px 10px;
+  vertical-align: middle;
 }
 
 /* ====== STATUS BADGES ====== */
-.badge {
-  padding: 5px 10px;
+.status {
+  padding: 6px 12px;
   border-radius: 20px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: bold;
   text-align: center;
+  display: inline-block;
+  min-width: 90px;
 }
 
-.badge-activo {
-  background: var(--success);
-  color: var(--white);
+.status.vigente {
+  background: #d4edda;
+  color: #155724;
 }
 
-.badge-inactivo {
-  background: var(--danger);
-  color: var(--white);
+.status.pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.vencido {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* ====== ACTIONS COLUMN FIX ✅ ====== */
+table th:last-child,
+table td:last-child {
+  width: 260px;
+  min-width: 240px;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.actions .btn {
+  flex: 0 1 auto;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* RESPONSIVE BUTTON FIX */
+@media (max-width: 992px) {
+  table th:last-child,
+  table td:last-child {
+    width: auto;
+    min-width: auto;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .actions .btn {
+    flex: 1 1 48%;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 600px) {
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions .btn {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 /* ====== SEARCH BAR ====== */
 .search-bar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  gap: 12px;
+  margin: 20px 0 30px;
+  padding: 14px 20px;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.search-bar input {
-  width: 300px;
-  padding: 8px 12px;
+.search-bar input[type="text"] {
+  flex: 1;
+  padding: 12px 16px;
   border: 1px solid #ccc;
-  border-radius: var(--radius);
-  font-size: 14px;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #f9fafc;
+}
+
+.search-bar input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(4, 99, 201, 0.2);
 }
 
 .search-bar .btn {
-  font-size: 14px;
-  padding: 8px 14px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: var(--transition);
 }
+
+.search-bar .btn:hover {
+  transform: translateY(-2px);
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .search-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-bar input[type="text"] {
+    width: 100%;
+  }
+
+  .search-bar .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 
 /* ====== ALERTS ====== */
 .alert {
@@ -341,7 +354,7 @@ select:focus {
   font-size: 15px;
 }
 
-/* ====== RESPONSIVE ====== */
+/* ====== RESPONSIVE TABLE ====== */
 @media (max-width: 768px) {
   .container {
     width: 100%;
@@ -375,75 +388,4 @@ select:focus {
     font-weight: bold;
     color: var(--primary);
   }
-}
-
-/* ===================== */
-/* 🔥 MODO ELIMINACIÓN 🔥 */
-/* ===================== */
-
-body.danger-mode {
-  background: #fff5f5;
-}
-
-.danger-header {
-  background: #c62828;
-  color: #fff;
-  padding: 20px;
-  text-align: center;
-}
-
-.danger-header h1 {
-  margin: 0;
-  font-size: 2rem;
-}
-
-.danger-header p {
-  margin: 8px 0 0;
-  font-size: 1.1rem;
-  opacity: 0.9;
-}
-
-.danger-card {
-  border: 2px solid #c62828;
-  background: #ffebee;
-  padding: 25px;
-  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
-}
-
-.danger-card h2 {
-  color: #b71c1c;
-}
-
-.danger-card p {
-  color: #5a0e0e;
-}
-
-.danger-card label {
-  color: #7f1d1d;
-}
-
-.danger-card .hint {
-  color: #8b0000;
-  font-size: 0.9rem;
-}
-
-.danger-card input[type="text"] {
-  border: 2px solid #c62828;
-  background: #fff;
-  color: #8b0000;
-}
-
-.danger-card input[type="text"]:focus {
-  border-color: #b71c1c;
-  outline: none;
-  box-shadow: 0 0 5px rgba(183, 28, 28, 0.5);
-}
-
-.btn-secondary {
-  background: #e0e0e0;
-  color: #333;
-}
-
-.btn-secondary:hover {
-  background: #bdbdbd;
 }

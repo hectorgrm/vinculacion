@@ -11,10 +11,10 @@ $convenios = [];
 $error = '';
 
 try {
-    $controller = new ConvenioController();
-    $convenios = $controller->listAll($search === '' ? null : $search);
+  $controller = new ConvenioController();
+  $convenios = $controller->listAll($search === '' ? null : $search);
 } catch (\Throwable $exception) {
-    $error = 'No fue posible obtener los convenios registrados: ' . $exception->getMessage();
+  $error = 'No fue posible obtener los convenios registrados: ' . $exception->getMessage();
 }
 
 /**
@@ -22,24 +22,26 @@ try {
  */
 function e(string $value): string
 {
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+  return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
 $estatusConfig = [
-    'pendiente' => ['label' => 'Pendiente', 'class' => 'pendiente'],
-    'vigente' => ['label' => 'Vigente', 'class' => 'vigente'],
-    'vencido' => ['label' => 'Vencido', 'class' => 'vencido'],
+  'pendiente' => ['label' => 'Pendiente', 'class' => 'pendiente'],
+  'vigente' => ['label' => 'Vigente', 'class' => 'vigente'],
+  'vencido' => ['label' => 'Vencido', 'class' => 'vencido'],
 ];
 
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión de Convenios - Servicio Social</title>
-  <link rel="stylesheet" href="../../assets/css/convenios/conveniostyles.css" />
+  <link rel="stylesheet" href="../../assets/css/convenios/convenioliststyle.css" />
 </head>
+
 <body>
 
   <header>
@@ -64,11 +66,13 @@ $estatusConfig = [
         </div>
       <?php endif; ?>
 
-      <form action="" method="get" style="margin: 20px 0; display: flex; gap: 10px;">
-        <input type="text" name="search" value="<?php echo e($search); ?>" placeholder="Buscar por empresa o estado..." style="flex: 1;" />
+      <form action="" method="get" class="search-bar">
+        <input type="text" name="search" value="<?php echo e($search); ?>"
+          placeholder="🔍 Buscar por empresa o estado..." />
         <button type="submit" class="btn btn-primary">Buscar</button>
         <a href="convenio_list.php" class="btn btn-secondary">Restablecer</a>
       </form>
+
 
       <div class="table-wrapper">
         <table>
@@ -112,9 +116,12 @@ $estatusConfig = [
                   <td><?php echo e((string) ($convenio['version_actual'] ?? '-')); ?></td>
                   <td><?php echo e((string) ($convenio['creado_en'] ?? '-')); ?></td>
                   <td>
-                    <a href="convenio_view.php?id=<?php echo (int) ($convenio['id'] ?? 0); ?>" class="btn btn-secondary">🔍 Ver</a>
-                    <a href="convenio_edit.php?id=<?php echo (int) ($convenio['id'] ?? 0); ?>" class="btn btn-primary">✏️ Editar</a>
-                    <a href="convenio_delete.php?id=<?php echo (int) ($convenio['id'] ?? 0); ?>" class="btn btn-danger">🗑️ Eliminar</a>
+                    <a href="convenio_view.php?id=<?php echo (int) ($convenio['id'] ?? 0); ?>" class="btn btn-secondary">👁️
+                    </a>
+                    <a href="convenio_edit.php?id=<?php echo (int) ($convenio['id'] ?? 0); ?>" class="btn btn-primary">✏️
+                    </a>
+                    <a href="convenio_delete.php?id=<?php echo (int) ($convenio['id'] ?? 0); ?>" class="btn btn-danger">🗑️
+                    </a>
                   </td>
                 </tr>
               <?php endforeach; ?>
@@ -126,4 +133,5 @@ $estatusConfig = [
   </main>
 
 </body>
+
 </html>
