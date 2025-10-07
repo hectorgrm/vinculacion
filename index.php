@@ -18,6 +18,10 @@
             <a href="common/login.php?module=serviciosocial" class="btn btn-ss">Ingresar</a>
         </div>
         <div class="card">
+            <h2>Servicio Social ADMIN</h2>
+            <a href="common/login.php?module=serviciosocial_admin" class="btn btn-ss">Ingresar</a>
+        </div>
+        <div class="card">
             <h2>Estudiante</h2>
             <a href="common/login.php?module=estudiante" class="btn btn-est">Ingresar</a>
         </div>

@@ -7,7 +7,9 @@ $module = strtolower(trim((string)($_GET['module'] ?? '')));
 $moduleTitles = [
     'recidencia' => 'Residencia',
     'serviciosocial' => 'Servicio Social',
+    'serviciosocial_admin' => 'Administracion Servicio Social',
     'estudiante' => 'Estudiante',
+
 ];
 
 $title = $moduleTitles[$module] ?? 'Plataforma de Vinculación';
