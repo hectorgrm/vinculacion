@@ -1,0 +1,155 @@
+:root {
+  --primary: #1f6feb;
+  --primary-600: #1656b8;
+  --success: #2db980;
+  --warning: #ffb400;
+  --danger: #e44848;
+  --muted: #64748b;
+  --bg: #f5f7fb;
+  --panel: #ffffff;
+  --border: #e5e7eb;
+  --radius-xl: 18px;
+  --shadow-sm: 0 2px 10px rgba(2, 6, 23, .05);
+}
+
+body {
+  font-family: Inter, system-ui, sans-serif;
+  background: var(--bg);
+  color: #0f172a;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+  gap: 20px;
+  padding: 20px;
+}
+
+.main {
+  display: grid;
+  gap: 20px;
+}
+
+.topbar h2 {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* === KPIs === */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.kpi-card {
+  background: var(--panel);
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.kpi-card h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.kpi-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* === Card & Table === */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.card header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card .content {
+  padding: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+thead {
+  background: #f1f5f9;
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+}
+
+.badge.vigente { background: var(--success); }
+.badge.en_curso { background: var(--primary); }
+.badge.concluido { background: var(--muted); }
+
+/* === Actions === */
+.actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn {
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn.primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn.danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.docs-list {
+  list-style: none;
+}
+
+.docs-list li {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+}

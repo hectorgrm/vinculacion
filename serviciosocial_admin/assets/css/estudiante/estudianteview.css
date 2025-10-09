@@ -1,0 +1,182 @@
+:root {
+  --primary: #1f6feb;
+  --primary-600: #1656b8;
+  --danger: #e44848;
+  --danger-dark: #c0392b;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --bg: #f5f7fb;
+  --panel: #ffffff;
+  --border: #e5e7eb;
+  --radius-xl: 18px;
+  --shadow-sm: 0 2px 10px rgba(2, 6, 23, .05);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Inter, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.main {
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  gap: 20px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.btn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn.primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.btn.primary:hover {
+  background: var(--primary-600);
+  transform: scale(1.02);
+}
+
+.btn.secondary {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.btn.secondary:hover {
+  background: #cbd5e1;
+}
+
+.btn.danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+
+.btn.danger:hover {
+  background: var(--danger-dark);
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.card header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.card .content {
+  padding: 24px;
+}
+
+.student-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 30px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 6px;
+}
+
+.info-row strong {
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.badge.pendiente {
+  background: #f59e0b;
+}
+
+.badge.en_curso {
+  background: #2db980;
+}
+
+.badge.concluido {
+  background: #3b82f6;
+}
+
+.badge.cancelado {
+  background: #e44848;
+}
+
+.observaciones {
+  font-size: 15px;
+  line-height: 1.6;
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .student-info {
+    grid-template-columns: 1fr;
+  }
+
+  .info-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
