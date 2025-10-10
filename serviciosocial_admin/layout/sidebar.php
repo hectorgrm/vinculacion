@@ -15,7 +15,7 @@
     <a href="../documentos/list.php">📂 Documentos</a>
     <a href="../servicios/list.php">🧾 Servicios</a>
 
-    <!-- 📊 Reportes con submenú -->
+    <!-- 📊 Reportes con submenú
     <div class="submenu">
       <a href="../reportes/index.php" class="submenu-title">📊 Reportes</a>
       <div class="submenu-links">
@@ -25,6 +25,6 @@
         <a href="../reportes/estudiantes.php">👨‍🎓 Por Estudiante</a>
         <a href="../reportes/carreras.php">🎓 Por Carrera</a>
       </div>
-    </div>
+    </div> -->
   </nav>
 </aside>

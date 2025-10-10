@@ -1,93 +1,165 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editar Acceso - Portal de Empresa</title>
-  <link rel="stylesheet" href="../../assets/css/portal/portalglobalstyles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editar Acceso · Residencias</title>
+  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
+  <link rel="stylesheet" href="../../assets/css/portal/portal_view.css" />
+
+  <style>
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .col-span-2 {
+      grid-column: 1/3
+    }
+
+    .field label {
+      display: block;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 6px
+    }
+
+    .field label.required::after {
+      content: " *";
+      color: #e44848;
+      font-weight: 800
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 12px
+    }
+
+    @media (max-width:860px) {
+      .grid {
+        grid-template-columns: 1fr
+      }
+
+      .col-span-2 {
+        grid-column: 1/2
+      }
+    }
+  </style>
 </head>
+
 <body>
-
-  <header>
-    <h1>Editar Acceso al Portal</h1>
-    <nav class="breadcrumb">
-      <a href="../dashboard.php">Inicio</a> <span>›</span>
-      <a href="../empresas/empresa_list.php">Empresas</a> <span>›</span>
-      <a href="../convenios/convenio_list.php">Convenios</a> <span>›</span>
-      <a href="portal_list.php">Portal de Acceso</a> <span>›</span>
-      <span>Editar</span>
-    </nav>
-  </header>
-
-  <main>
-    <div class="card form-container">
-      <h2>Actualizar Datos del Portal</h2>
-      <p>Modifica la información del acceso al portal de la empresa.</p>
-
-      <form action="portal_edit_action.php" method="POST" class="form">
-        <!-- Campo oculto con el ID -->
-        <input type="hidden" name="id" value="1"> <!-- 🧪 Este valor será dinámico -->
-
-        <!-- Empresa -->
-        <div class="field">
-          <label for="empresa_id">Empresa:</label>
-          <select name="empresa_id" id="empresa_id" required>
-            <option value="">-- Selecciona una empresa --</option>
-            <option value="1" selected>Casa del Barrio</option>
-            <option value="2">Tequila ECT</option>
-            <option value="3">Industrias Yakumo</option>
-          </select>
+  <?php
+  $id = isset($_GET['id']) ? (int) $_GET['id'] : 901;
+  // Demostración (reemplazar con DB)
+  $empresaId = 45;
+  $email = 'admin@casadelbarrio.mx';
+  $rol = 'empresa_admin';
+  $estatus = 'activo';
+  $tfa = 0;
+  $pwdExpira = '2026-01-31';
+  $reqChange = 0;
+  $notas = '';
+  ?>
+  <div class="app">
+    <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2>✏️ Editar acceso</h2>
+          <nav class="breadcrumb">
+            <a href="../../index.php">Inicio</a><span>›</span>
+            <a href="portal_list.php">Portal de Acceso</a><span>›</span>
+            <a href="portal_view.php?id=<?php echo $id; ?>">Ver</a><span>›</span>
+            <span>Editar</span>
+          </nav>
         </div>
-
-        <!-- Convenio -->
-        <div class="field">
-          <label for="convenio_id">Convenio asociado (opcional):</label>
-          <select name="convenio_id" id="convenio_id">
-            <option value="">-- Sin convenio asociado --</option>
-            <option value="1" selected>Convenio #1 - v1.2</option>
-            <option value="2">Convenio #2 - v1.0</option>
-            <option value="3">Convenio #3 - pendiente</option>
-          </select>
+        <div class="actions" style="gap:8px;">
+          <a class="btn" href="portal_view.php?id=<?php echo $id; ?>">👁️ Ver</a>
+          <a class="btn" href="portal_reset.php?id=<?php echo $id; ?>">🔁 Reset contraseña</a>
+          <a class="btn danger" href="portal_delete.php?id=<?php echo $id; ?>">🗑️ Eliminar</a>
         </div>
+      </header>
 
-        <!-- Token -->
-        <div class="field">
-          <label for="token">Token de acceso (UUID):</label>
-          <input type="text" name="token" id="token" value="11111111-1111-1111-1111-111111111111" required>
-          <small>Este token puede ser regenerado o modificado si es necesario.</small>
+      <section class="card">
+        <header>🧾 Datos del acceso</header>
+        <div class="content">
+          <form class="form" action="portal_edit_action.php?id=<?php echo $id; ?>" method="post" autocomplete="off">
+            <input type="hidden" name="id" value="<?php echo $id; ?>">
+            <div class="grid">
+              <div class="field">
+                <label for="empresa_id" class="required">Empresa *</label>
+                <select id="empresa_id" name="empresa_id" required>
+                  <option value="">— Selecciona una empresa —</option>
+                  <option value="45" <?php echo $empresaId == 45 ? 'selected' : ''; ?>>Casa del Barrio</option>
+                  <option value="22">Tequila ECT</option>
+                  <option value="31">Industrias Yakumo</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="email" class="required">Correo (usuario) *</label>
+                <input id="email" name="email" type="email" value="<?php echo htmlspecialchars($email); ?>" required>
+              </div>
+
+              <div class="field">
+                <label for="rol" class="required">Rol *</label>
+                <select id="rol" name="rol" required>
+                  <option value="empresa_admin" <?php echo $rol === 'empresa_admin' ? 'selected' : ''; ?>>empresa_admin
+                  </option>
+                  <option value="empresa_user" <?php echo $rol === 'empresa_user' ? 'selected' : ''; ?>>empresa_user</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="estatus" class="required">Estatus *</label>
+                <select id="estatus" name="estatus" required>
+                  <option value="activo" <?php echo $estatus === 'activo' ? 'selected' : ''; ?>>Activo</option>
+                  <option value="inactivo" <?php echo $estatus === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
+                  <option value="bloqueado" <?php echo $estatus === 'bloqueado' ? 'selected' : ''; ?>>Bloqueado</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="tfa" class="required">Autenticación 2FA *</label>
+                <select id="tfa" name="tfa" required>
+                  <option value="0" <?php echo !$tfa ? 'selected' : ''; ?>>Deshabilitado</option>
+                  <option value="1" <?php echo $tfa ? 'selected' : ''; ?>>Habilitado</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="pwd_expires_at">Vencimiento de contraseña</label>
+                <input id="pwd_expires_at" name="pwd_expires_at" type="date"
+                  value="<?php echo htmlspecialchars($pwdExpira); ?>">
+              </div>
+
+              <div class="field">
+                <label style="display:flex; gap:10px; align-items:flex-start;">
+                  <input type="checkbox" name="require_change" value="1" <?php echo $reqChange ? 'checked' : ''; ?>>
+                  <span>Requerir cambio de contraseña al próximo inicio de sesión.</span>
+                </label>
+              </div>
+
+              <div class="field col-span-2">
+                <label for="notas">Notas</label>
+                <textarea id="notas" name="notas" rows="3"
+                  placeholder="Observaciones internas…"><?php echo htmlspecialchars($notas); ?></textarea>
+              </div>
+            </div>
+
+            <div class="actions">
+              <a class="btn" href="portal_view.php?id=<?php echo $id; ?>">Cancelar</a>
+              <button class="btn primary" type="submit">💾 Guardar cambios</button>
+            </div>
+          </form>
         </div>
-
-        <!-- NIP -->
-        <div class="field">
-          <label for="nip">NIP de seguridad:</label>
-          <input type="text" name="nip" id="nip" maxlength="10" value="123456" required>
-          <small>El NIP se utiliza como código de seguridad adicional.</small>
-        </div>
-
-        <!-- Expiración -->
-        <div class="field">
-          <label for="expiracion">Fecha de expiración:</label>
-          <input type="date" name="expiracion" id="expiracion" value="2025-12-31" required>
-        </div>
-
-        <!-- Estado -->
-        <div class="field">
-          <label for="activo">Estado:</label>
-          <select name="activo" id="activo" required>
-            <option value="1" selected>Activo</option>
-            <option value="0">Inactivo</option>
-          </select>
-        </div>
-
-        <!-- Botones -->
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-          <a href="portal_list.php" class="btn btn-secondary">Cancelar</a>
-        </div>
-
-      </form>
-    </div>
-  </main>
-
+      </section>
+    </main>
+  </div>
 </body>
+
 </html>

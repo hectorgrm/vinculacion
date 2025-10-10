@@ -3,79 +3,150 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Editar Empresa · Residencia Profesional</title>
-  <link rel="stylesheet" href="../../assets/css/empresas/empresaglobalstyles.css" />
+  <title>✏️ Editar Empresa · Residencias Profesionales</title>
+
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/empresas/empresaedit.css" />
 </head>
+
 <body>
+  <div class="app">
+    <!-- Sidebar -->
+    <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-  <!-- HEADER -->
-  <header>
-    <h1>Editar Empresa</h1>
-    <nav class="breadcrumb">
-      <a href="../../index.php">Inicio</a>
-      <span>›</span>
-      <a href="empresa_list.php">Empresas</a>
-      <span>›</span>
-      <span>Editar</span>
-    </nav>
-  </header>
-
-  <!-- MAIN -->
-  <main>
-    <div class="card">
-      <h2>✏️ Modificar datos de la empresa</h2>
-      <p>Actualiza la información necesaria y guarda los cambios.</p>
-
-      <!-- ALERTAS -->
-      <div class="alert alert-info">
-        Estás editando la información de <strong>Casa del Barrio</strong> (ID #1)
-      </div>
-
-      <!-- FORMULARIO -->
-      <form class="form" action="" method="post">
-        <!-- NOMBRE -->
-        <div class="field">
-          <label for="nombre" class="required">Nombre de la empresa *</label>
-          <input type="text" id="nombre" name="nombre" value="Casa del Barrio" required />
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2>✏️ Editar Empresa</h2>
+          <p class="subtitle">Actualiza la información institucional y de contacto</p>
         </div>
-
-        <!-- RFC -->
-        <div class="field">
-          <label for="rfc">RFC</label>
-          <input type="text" id="rfc" name="rfc" value="CDB810101AA1" maxlength="20" />
+        <div class="top-actions">
+          <a href="empresa_list.php" class="btn secondary">⬅ Volver</a>
         </div>
+      </header>
 
-        <!-- CONTACTO -->
-        <div class="field">
-          <label for="contacto_nombre">Nombre del contacto</label>
-          <input type="text" id="contacto_nombre" name="contacto_nombre" value="José Manuel Velador" />
+      <!-- Aviso contextual -->
+      <section class="card">
+        <header>📌 Contexto</header>
+        <div class="content">
+          <div class="alert info">
+            Estás editando la empresa <strong>Casa del Barrio</strong> (ID <strong>#45</strong>).
+          </div>
         </div>
+      </section>
 
-        <div class="field">
-          <label for="contacto_email">Correo electrónico del contacto</label>
-          <input type="email" id="contacto_email" name="contacto_email" value="contacto@casadelbarrio.mx" />
-        </div>
+      <form class="form-grid" method="post" action="update.php">
+        <input type="hidden" name="empresa_id" value="45" />
 
-        <!-- TELEFONO -->
-        <div class="field">
-          <label for="telefono">Teléfono</label>
-          <input type="text" id="telefono" name="telefono" value="(33) 1234 5678" />
-        </div>
+        <!-- 📄 Datos generales -->
+        <section class="card">
+          <header>🏢 Datos Generales</header>
+          <div class="content grid">
+            <div class="field">
+              <label for="nombre" class="required">Nombre de la empresa *</label>
+              <input id="nombre" name="nombre" type="text" required placeholder="Ej: Casa del Barrio" value="Casa del Barrio" />
+            </div>
 
-        <!-- ESTADO -->
-        <div class="field">
-          <label for="estado">Estado / Localidad</label>
-          <input type="text" id="estado" name="estado" value="Jalisco" />
-        </div>
+            <div class="field">
+              <label for="rfc">RFC</label>
+              <input id="rfc" name="rfc" type="text" maxlength="20" placeholder="Ej: CDB810101AA1" value="CDB810101AA1" />
+            </div>
 
-        <!-- ACCIONES -->
-        <div class="actions">
-          <a href="empresa_list.php" class="btn btn-secondary">⬅ Cancelar</a>
-          <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
-        </div>
+            <div class="field">
+              <label for="representante">Representante legal</label>
+              <input id="representante" name="representante" type="text" placeholder="Ej: José Manuel Velador" value="José Manuel Velador" />
+            </div>
+
+            <div class="field">
+              <label for="cargo_representante">Cargo del representante</label>
+              <input id="cargo_representante" name="cargo_representante" type="text" placeholder="Ej: Director General" />
+            </div>
+
+            <div class="field">
+              <label for="sector">Sector / Giro</label>
+              <input id="sector" name="sector" type="text" placeholder="Ej: Educación / Social" value="Educación / Social" />
+            </div>
+
+            <div class="field">
+              <label for="sitio_web">Sitio web</label>
+              <input id="sitio_web" name="sitio_web" type="url" placeholder="https://www.empresa.mx" />
+            </div>
+          </div>
+        </section>
+
+        <!-- 📬 Contacto y Dirección -->
+        <section class="card">
+          <header>📬 Contacto y Dirección</header>
+          <div class="content grid">
+            <div class="field">
+              <label for="contacto_nombre">Nombre de contacto</label>
+              <input id="contacto_nombre" name="contacto_nombre" type="text" placeholder="Ej: Responsable RH" value="José Manuel Velador" />
+            </div>
+
+            <div class="field">
+              <label for="contacto_email">Correo electrónico</label>
+              <input id="contacto_email" name="contacto_email" type="email" placeholder="contacto@empresa.mx" value="contacto@casadelbarrio.mx" />
+            </div>
+
+            <div class="field">
+              <label for="telefono">Teléfono</label>
+              <input id="telefono" name="telefono" type="tel" placeholder="(33) 1234 5678" value="(33) 1234 5678" />
+            </div>
+
+            <div class="field">
+              <label for="estado">Estado</label>
+              <input id="estado" name="estado" type="text" placeholder="Ej: Jalisco" value="Jalisco" />
+            </div>
+
+            <div class="field">
+              <label for="municipio">Municipio / Alcaldía</label>
+              <input id="municipio" name="municipio" type="text" placeholder="Ej: Guadalajara" />
+            </div>
+
+            <div class="field">
+              <label for="cp">Código Postal</label>
+              <input id="cp" name="cp" type="text" placeholder="Ej: 44100" />
+            </div>
+
+            <div class="field col-span-2">
+              <label for="direccion">Dirección (calle y número)</label>
+              <input id="direccion" name="direccion" type="text" placeholder="Ej: Calle Independencia 321" />
+            </div>
+          </div>
+        </section>
+
+        <!-- ⚙️ Configuración -->
+        <section class="card">
+          <header>⚙️ Configuración</header>
+          <div class="content grid">
+            <div class="field">
+              <label for="estatus">Estatus</label>
+              <select id="estatus" name="estatus">
+                <option value="activa" selected>Activa</option>
+                <option value="en_revision">En revisión</option>
+                <option value="inactiva">Inactiva</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="regimen_fiscal">Régimen fiscal</label>
+              <input id="regimen_fiscal" name="regimen_fiscal" type="text" placeholder="Opcional" />
+            </div>
+
+            <div class="field col-span-2">
+              <label for="notas">Notas / Observaciones</label>
+              <textarea id="notas" name="notas" rows="4" placeholder="Comentarios internos del área de vinculación..."></textarea>
+            </div>
+          </div>
+
+          <div class="actions">
+            <a href="view.php?id=45" class="btn secondary">Cancelar</a>
+            <button type="submit" class="btn primary">💾 Guardar Cambios</button>
+          </div>
+        </section>
       </form>
-    </div>
-  </main>
-
+    </main>
+  </div>
 </body>
 </html>

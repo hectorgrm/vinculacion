@@ -1,0 +1,67 @@
+  
+  .danger-zone {
+      background: #fff;
+      border: 1px solid #fee2e2;
+      border-radius: 18px;
+      box-shadow: var(--shadow-sm);
+  }
+
+  .danger-zone>header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #fee2e2;
+      font-weight: 700;
+      color: #b91c1c;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+  }
+
+  .danger-zone .content {
+      padding: 20px
+  }
+
+  .danger-list {
+      margin: 10px 0 0 0;
+      padding-left: 18px;
+      color: #334155
+  }
+
+  .danger-list li {
+      margin: 6px 0
+  }
+
+  .checklist {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px dashed #fecaca;
+      border-radius: 12px;
+      background: #fff7f7;
+  }
+
+  .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
+  }
+
+  .btn.danger {
+      background: #e44848;
+      color: #fff;
+      border-color: #e44848
+  }
+
+  .btn.danger:hover {
+      filter: brightness(.95)
+  }
+
+  .links-inline a {
+      margin-right: 10px
+  }
+
+  @media (max-width:768px) {
+      .grid-2 {
+          grid-template-columns: 1fr
+      }
+  }
+
+  

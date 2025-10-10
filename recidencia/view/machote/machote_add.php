@@ -3,82 +3,64 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agregar Comentario - Machote</title>
-  <link rel="stylesheet" href="../../assets/css/machote/machoteglobalstyles.css" />
+  <title>Nuevo Machote · Residencias</title>
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/machote/machote_add.css" />
 </head>
 <body>
+  <div class="app">
+    <!-- Sidebar -->
+    <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-  <!-- HEADER -->
-  <header>
-    <h1>Agregar Nuevo Comentario al Machote</h1>
-    <nav class="breadcrumb">
-      <a href="../dashboard.php">Inicio</a> <span>›</span>
-      <a href="../convenios/convenio_list.php">Convenios</a> <span>›</span>
-      <a href="machote_list.php">Comentarios Machote</a> <span>›</span>
-      <span>Agregar</span>
-    </nav>
-  </header>
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <h2>➕ Registrar nuevo Machote</h2>
+        <p class="subtitle">Crea una nueva revisión de machote para una empresa y da inicio al proceso de aprobación.</p>
+      </header>
 
-  <main>
-    <div class="card form-container">
-      <h2>Registrar Comentario</h2>
-      <p>Llena el siguiente formulario para registrar un comentario sobre una cláusula específica del convenio.</p>
+      <section class="card">
+        <form action="add_action.php" method="post" enctype="multipart/form-data" class="form-grid">
+          
+          <!-- Empresa -->
+          <div class="form-group">
+            <label for="empresa_id">Empresa</label>
+            <select name="empresa_id" id="empresa_id" required>
+              <option value="">-- Selecciona una empresa --</option>
+              <!-- 🔁 Este listado vendrá dinámicamente desde la BD -->
+              <option value="1">Casa del Barrio</option>
+              <option value="2">Tequila ECT</option>
+              <option value="3">Industrias Yakumo</option>
+            </select>
+          </div>
 
-      <form action="machote_add_action.php" method="POST" class="form">
+          <!-- Nombre / Tipo Machote -->
+          <div class="form-group">
+            <label for="nombre_machote">Nombre del machote</label>
+            <input type="text" name="nombre_machote" id="nombre_machote" placeholder="Ej. Machote institucional base" required>
+          </div>
 
-        <!-- Convenio -->
-        <div class="field">
-          <label for="convenio_id">Convenio asociado:</label>
-          <select name="convenio_id" id="convenio_id" required>
-            <option value="">-- Selecciona un convenio --</option>
-            <!-- 🔁 Opciones dinámicas desde BD -->
-            <option value="1">Convenio #1 - v1.2</option>
-            <option value="2">Convenio #2 - v1.0</option>
-            <option value="3">Convenio #3 - pendiente</option>
-          </select>
-        </div>
+          <!-- Versión -->
+          <div class="form-group">
+            <label for="version_machote">Versión</label>
+            <input type="text" name="version_machote" id="version_machote" placeholder="Ej. v1.0" required>
+          </div>
 
-        <!-- Cláusula -->
-        <div class="field">
-          <label for="clausula">Número o nombre de la cláusula:</label>
-          <input type="text" name="clausula" id="clausula" placeholder="Ej: Cláusula 3 - Responsabilidades" required>
-        </div>
+          <!-- Archivo -->
+          <div class="form-group full">
+            <label for="archivo">Archivo inicial</label>
+            <input type="file" name="archivo" id="archivo" required>
+            <small>Formatos permitidos: PDF o DOCX · Máx. 10 MB</small>
+          </div>
 
-        <!-- Comentario -->
-        <div class="field">
-          <label for="comentario">Comentario:</label>
-          <textarea name="comentario" id="comentario" rows="5" placeholder="Escribe el comentario detallado sobre esta cláusula..." required></textarea>
-        </div>
-
-        <!-- Estatus inicial -->
-        <div class="field">
-          <label for="estatus">Estatus inicial:</label>
-          <select name="estatus" id="estatus" required>
-            <option value="pendiente" selected>Pendiente</option>
-            <option value="resuelto">Resuelto</option>
-          </select>
-        </div>
-
-        <!-- Usuario (automático) -->
-        <div class="field">
-          <label for="usuario_id">Usuario que comenta:</label>
-          <select name="usuario_id" id="usuario_id" required>
-            <!-- Este campo se llenará automáticamente desde la sesión en backend -->
-            <option value="1">Admin Residencia</option>
-            <option value="2">Editor Jurídico</option>
-          </select>
-          <small>En el sistema real este valor se asignará automáticamente al usuario que está logueado.</small>
-        </div>
-
-        <!-- Botones -->
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Guardar Comentario</button>
-          <a href="machote_list.php" class="btn btn-secondary">Cancelar</a>
-        </div>
-
-      </form>
-    </div>
-  </main>
-
+          <!-- Acciones -->
+          <div class="form-actions">
+            <button type="submit" class="btn primary">💾 Guardar Machote</button>
+            <a href="machote_list.php" class="btn secondary">Cancelar</a>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
 </body>
 </html>

@@ -1,0 +1,153 @@
+/* =========================================================
+   Empresas · Lista (empresa_list.css)
+   Complemento visual para el listado/buscador/tabla
+   ========================================================= */
+
+/* Migas de pan (breadcrumb) */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.breadcrumb a {
+    color: #1f6feb;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline
+}
+
+/* Formulario de búsqueda */
+.form .field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.form .field input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #fff;
+    transition: all .2s ease;
+}
+
+.form .field input[type="text"]:focus {
+    outline: 2px solid #1f6feb;
+    border-color: #1f6feb;
+    box-shadow: 0 0 0 2px rgba(31, 111, 235, .12);
+}
+
+.form .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* Tabla */
+.table-wrapper {
+    width: 100%;
+    overflow: auto
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+}
+
+thead tr {
+    background: #f8fafc
+}
+
+thead th {
+    text-align: left;
+    font-weight: 700;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+}
+
+tbody tr:hover {
+    background: #f1f5f9
+}
+
+/* Acciones en tabla */
+td.actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+td.actions .btn {
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+/* Chips de estado */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.badge.ok {
+    background: #2db980
+}
+
+/* Activa */
+.badge.warn {
+    background: #ffb400
+}
+
+/* Por vencer / alerta */
+.badge.err {
+    background: #e44848
+}
+
+/* Inactiva / error */
+.badge.secondary {
+    background: #64748b
+}
+
+/* neutro */
+
+/* Ajustes responsive */
+@media (max-width: 920px) {
+
+    thead th:nth-last-child(1),
+    tbody td:nth-last-child(1) {
+        white-space: nowrap;
+        min-width: 260px;
+        /* espacio para botones */
+    }
+}
+
+@media (max-width: 640px) {
+    .form .actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .form .actions .btn {
+        flex: 1
+    }
+}

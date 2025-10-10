@@ -1,95 +1,122 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tipos de Documentos - Residencia Profesional</title>
-  <link rel="stylesheet" href="../../assets/css/documentotipo/documentotipo_globalstyles.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tipos de Documento · Residencias</title>
+
+  <link rel="stylesheet" href="../../assets/stylesrecidencia.css"/>
+  <link rel="stylesheet" href="../../assets/css/documentotipo/documentotipo.css"/>
 </head>
 <body>
+  <div class="app">
+    <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-  <header>
-    <h1>Gestión de Tipos de Documentos</h1>
-    <nav class="breadcrumb">
-      <a href="../dashboard.php">Inicio</a> <span>›</span>
-      <a href="../documentos/documento_list.php">Documentos</a> <span>›</span>
-      <span>Tipos de Documentos</span>
-    </nav>
-  </header>
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2>📂 Tipos de Documento</h2>
+          <nav class="breadcrumb">
+            <a href="../../index.php">Inicio</a><span>›</span>
+            <span>Documento Tipo</span>
+          </nav>
+        </div>
+        <a href="documentotipo_add.php" class="btn primary">➕ Nuevo Tipo</a>
+      </header>
 
-  <main>
-    <div class="card">
-      <h2>Listado de Tipos de Documentos</h2>
-      <p>En este módulo puedes gestionar los tipos de documentos requeridos para el proceso de Residencia Profesional.</p>
+      <section class="card">
+        <header>🔎 Filtros</header>
+        <div class="content">
+          <form class="form">
+            <div class="filters">
+              <div class="field">
+                <label for="q">Buscar</label>
+                <input id="q" name="q" type="text" placeholder="Clave, nombre o descripción">
+              </div>
+              <div class="field">
+                <label for="estatus">Estatus</label>
+                <select id="estatus" name="estatus">
+                  <option value="">Todos</option>
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
+                </select>
+              </div>
+              <div class="actions" style="margin:0">
+                <button class="btn primary" type="submit">Buscar</button>
+                <a class="btn" href="documentotipo_list.php">Limpiar</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
 
-      <!-- 🔎 Buscador y botón -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <form class="search-form" style="display: flex; gap: 10px;">
-          <input type="text" placeholder="Buscar por nombre..." style="flex: 1; padding: 10px;">
-          <button type="submit" class="btn btn-primary">Buscar</button>
-        </form>
-        <a href="documentotipo_add.php" class="btn btn-success">+ Nuevo Tipo</a>
-      </div>
+      <section class="card">
+        <header>📋 Listado</header>
+        <div class="content">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+              <tr>
+                <th>ID</th>
+                <th>Clave</th>
+                <th>Nombre</th>
+                <th>Requiere Convenio</th>
+                <th>Obligatorio</th>
+                <th>Estatus</th>
+                <th style="min-width:240px;">Acciones</th>
+              </tr>
+              </thead>
+              <tbody>
+              <!-- Ejemplos estáticos (luego dinámico) -->
+              <tr>
+                <td>1</td>
+                <td>INE</td>
+                <td>INE Representante</td>
+                <td><span class="badge secondary">No</span></td>
+                <td><span class="badge ok">Sí</span></td>
+                <td><span class="badge ok">Activo</span></td>
+                <td class="actions">
+                  <a class="btn" href="documentotipo_edit.php?id=1">✏️ Editar</a>
+                  <a class="btn danger" href="documentotipo_delete.php?id=1">🗑️ Eliminar</a>
+                </td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>ACTA</td>
+                <td>Acta Constitutiva</td>
+                <td><span class="badge secondary">No</span></td>
+                <td><span class="badge ok">Sí</span></td>
+                <td><span class="badge ok">Activo</span></td>
+                <td class="actions">
+                  <a class="btn" href="documentotipo_edit.php?id=2">✏️ Editar</a>
+                  <a class="btn danger" href="documentotipo_delete.php?id=2">🗑️ Eliminar</a>
+                </td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>ANEXO</td>
+                <td>Anexo Técnico</td>
+                <td><span class="badge ok">Sí</span></td>
+                <td><span class="badge secondary">No</span></td>
+                <td><span class="badge warn">Inactivo</span></td>
+                <td class="actions">
+                  <a class="btn" href="documentotipo_edit.php?id=3">✏️ Editar</a>
+                  <a class="btn danger" href="documentotipo_delete.php?id=3">🗑️ Eliminar</a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
 
-      <!-- 📊 Tabla -->
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Obligatorio</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- 🧪 Ejemplos estáticos (se reemplazarán con datos del backend) -->
-            <tr>
-              <td>1</td>
-              <td>Acta Constitutiva</td>
-              <td>Documento oficial que acredita la existencia legal de la empresa.</td>
-              <td><span class="badge obligatorio">Sí</span></td>
-              <td>
-                <a href="documentotipo_edit.php?id=1" class="btn btn-primary">Editar</a>
-                <a href="documentotipo_delete.php?id=1" class="btn btn-danger">Eliminar</a>
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Comprobante de Domicilio</td>
-              <td>Documento que valida la dirección fiscal de la empresa.</td>
-              <td><span class="badge obligatorio">Sí</span></td>
-              <td>
-                <a href="documentotipo_edit.php?id=2" class="btn btn-primary">Editar</a>
-                <a href="documentotipo_delete.php?id=2" class="btn btn-danger">Eliminar</a>
-              </td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>RFC de la Empresa</td>
-              <td>Registro Federal de Contribuyentes para fines fiscales.</td>
-              <td><span class="badge opcional">No</span></td>
-              <td>
-                <a href="documentotipo_edit.php?id=3" class="btn btn-primary">Editar</a>
-                <a href="documentotipo_delete.php?id=3" class="btn btn-danger">Eliminar</a>
-              </td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>Identificación del Representante</td>
-              <td>Copia oficial de identificación vigente del representante legal.</td>
-              <td><span class="badge obligatorio">Sí</span></td>
-              <td>
-                <a href="documentotipo_edit.php?id=4" class="btn btn-primary">Editar</a>
-                <a href="documentotipo_delete.php?id=4" class="btn btn-danger">Eliminar</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </main>
-
+          <div class="legend">
+            <strong>Leyenda:</strong>
+            <span class="badge ok">Sí / Activo</span>
+            <span class="badge secondary">No</span>
+            <span class="badge warn">Inactivo</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
 </body>
 </html>

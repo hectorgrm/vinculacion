@@ -1,0 +1,230 @@
+/* =========================================================
+   Convenios · Vista (convenio_view.css)
+   Estilos específicos para Detalle de Convenio
+   Depende de variables y base en stylesrecidencia.css
+   ========================================================= */
+
+/* Migas de pan */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.breadcrumb a {
+    color: #1f6feb;
+    text-decoration: none
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline
+}
+
+/* Top actions */
+.top-actions .btn {
+    margin-left: 6px
+}
+
+/* ---------- Info principal ---------- */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 16px;
+}
+
+.field label {
+    display: block;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 4px;
+}
+
+.field .text-muted {
+    color: #64748b
+}
+
+.col-span-2 {
+    grid-column: 1 / 3
+}
+
+/* ---------- Tablas comunes ---------- */
+.table-wrapper {
+    width: 100%;
+    overflow: auto
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+}
+
+thead tr {
+    background: #f8fafc
+}
+
+thead th {
+    text-align: left;
+    font-weight: 700;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+}
+
+tbody tr:hover {
+    background: #f1f5f9
+}
+
+/* Acciones de tabla */
+td.actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap
+}
+
+td.actions .btn {
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 14px
+}
+
+/* ---------- Badges de estatus ---------- */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.badge.ok {
+    background: #2db980
+}
+
+/* Vigente / Aprobado */
+.badge.secondary {
+    background: #64748b
+}
+
+/* En revisión */
+.badge.warn {
+    background: #ffb400
+}
+
+/* Pendiente */
+.badge.err {
+    background: #e44848
+}
+
+/* Vencido / Rechazado */
+
+/* ---------- Botones ---------- */
+.btn {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    font-weight: 700;
+    color: #0f172a;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: background .2s, transform .1s, box-shadow .2s;
+}
+
+.btn:hover {
+    background: #eef2f7;
+    transform: translateY(-1px)
+}
+
+.btn.primary {
+    background: #1f6feb;
+    color: #fff;
+    border-color: #1f6feb
+}
+
+.btn.primary:hover {
+    background: #1656b8
+}
+
+.btn.secondary {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-color: #cbd5e1
+}
+
+.btn.danger {
+    background: #e44848;
+    color: #fff;
+    border-color: #e44848
+}
+
+.btn.small {
+    padding: 8px 10px;
+    font-size: 14px
+}
+
+/* ---------- Historial / Bitácora ---------- */
+.history-list {
+    margin: 0;
+    padding-left: 18px;
+    color: #334155;
+}
+
+.history-list li {
+    margin: 6px 0
+}
+
+/* ---------- Secciones auxiliares ---------- */
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.actions.align-start {
+    justify-content: flex-start
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 920px) {
+    .info-grid {
+        grid-template-columns: 1fr
+    }
+
+    .col-span-2 {
+        grid-column: 1 / 2
+    }
+
+    thead th:nth-last-child(1),
+    tbody td:nth-last-child(1) {
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 640px) {
+    .top-actions {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch
+    }
+}

@@ -1,0 +1,137 @@
+/* =========================================================
+   Machote · Revisar (machote_revisar.css)
+   Estilos para revisión cláusula por cláusula
+   Depende de stylesrecidencia.css
+   ========================================================= */
+
+.breadcrumb {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.breadcrumb a {
+    color: #1f6feb;
+    text-decoration: none
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline
+}
+
+.context-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.badge.secondary {
+    background: #64748b
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow: auto
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff
+}
+
+thead tr {
+    background: #f8fafc
+}
+
+th,
+td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+}
+
+tbody tr:hover {
+    background: #f1f5f9
+}
+
+.inp {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    background: #fff;
+    transition: all .2s ease;
+}
+
+.inp.small {
+    max-width: 64px
+}
+
+.inp:focus {
+    outline: 2px solid #1f6feb;
+    border-color: #1f6feb;
+    box-shadow: 0 0 0 2px rgba(31, 111, 235, .12);
+}
+
+.inp.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
+}
+
+.row-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.btn.small {
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 8px
+}
+
+.btn.small.danger {
+    background: #e44848;
+    color: #fff;
+    border-color: #e44848
+}
+
+.btn.small.danger:hover {
+    filter: brightness(.95)
+}
+
+.history-list {
+    margin: 0;
+    padding-left: 18px;
+    color: #334155
+}
+
+.history-list li {
+    margin: 6px 0
+}
+
+@media (max-width: 900px) {
+    .context-grid {
+        grid-template-columns: 1fr
+    }
+
+    th:nth-last-child(1),
+    td:nth-last-child(1) {
+        white-space: nowrap
+    }
+}

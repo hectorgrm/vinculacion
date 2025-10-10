@@ -1,147 +1,214 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard de Reportes - Residencia Profesional</title>
-  <link rel="stylesheet" href="../../assets/css/reportes/reportes_globalstyles.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📊 Reportes · Residencias Profesionales</title>
+
+  <!-- Estilos globales -->
+  <link rel="stylesheet" href="../../assets/stylesrecidencia.css"/>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Estilos mínimos específicos -->
+  <style>
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .kpi{background:#fff;border:1px solid #e5e7eb;border-radius:18px;box-shadow:var(--shadow-sm);padding:16px}
+    .kpi h3{margin:0 0 6px 0;font-size:14px;color:#64748b;font-weight:700}
+    .kpi .num{font-size:28px;font-weight:800;color:#0f172a}
+    .kpi small{color:#64748b}
+    .charts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .wide{grid-column:1 / -1}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700;color:#fff}
+    .badge.ok{background:#2db980}.badge.warn{background:#ffb400}.badge.err{background:#e44848}.badge.info{background:#1f6feb}
+    .filters{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+    .filters .field label{display:block;font-weight:700;margin-bottom:6px;color:#334155}
+    .filters .field input,.filters .field select{padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px}
+    .table-wrapper{width:100%;overflow:auto}
+    table{width:100%;border-collapse:collapse;background:#fff}
+    thead tr{background:#f8fafc}
+    th,td{border-bottom:1px solid #e5e7eb;padding:12px 14px;text-align:left}
+    tbody tr:hover{background:#f1f5f9}
+    @media (max-width:1100px){.charts{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:680px){.kpis{grid-template-columns:1fr}}
+  </style>
 </head>
 <body>
+  <div class="app">
+    <!-- Sidebar -->
+    <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-  <!-- HEADER -->
-  <header>
-    <h1>📊 Dashboard de Reportes - Residencia Profesional</h1>
-    <nav class="breadcrumb">
-      <a href="../dashboard.php">Inicio</a> <span>›</span>
-      <span>Reportes</span>
-    </nav>
-  </header>
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2>📊 Reportes y Estadísticas · Residencias</h2>
+          <nav class="breadcrumb">
+            <a href="../../index.php">Inicio</a><span>›</span>
+            <span>Reportes</span>
+          </nav>
+        </div>
+        <div class="actions" style="gap:8px;flex-wrap:wrap">
+          <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
+          <button class="btn">⬇️ Exportar CSV</button>
+        </div>
+      </header>
 
-  <main>
+      <!-- Filtros -->
+      <section class="card">
+        <header>🔎 Filtros</header>
+        <div class="content">
+          <form class="filters">
+            <div class="field">
+              <label for="periodo">Periodo</label>
+              <select id="periodo" name="periodo">
+                <option value="actual">Actual (Feb–Jul 2025)</option>
+                <option value="anterior">Ago–Dic 2024</option>
+                <option value="todo">Todo</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="empresa">Empresa</label>
+              <select id="empresa" name="empresa">
+                <option value="">Todas</option>
+                <option value="45">Casa del Barrio</option>
+                <option value="22">Tequila ECT</option>
+                <option value="31">Industrias Yakumo</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="estatus">Estatus de convenio</label>
+              <select id="estatus" name="estatus">
+                <option value="">Todos</option>
+                <option value="vigente">Vigente</option>
+                <option value="en_revision">En revisión</option>
+                <option value="vencido">Vencido</option>
+              </select>
+            </div>
+            <div class="actions" style="margin-left:auto">
+              <button type="submit" class="btn primary">Aplicar</button>
+              <button type="button" class="btn">Limpiar</button>
+            </div>
+          </form>
+        </div>
+      </section>
 
-    <!-- 🔎 TARJETAS RESUMEN -->
-    <section class="dashboard-cards">
-      <div class="card">
-        <h3>Empresas Registradas</h3>
-        <div class="value">42</div>
-      </div>
-      <div class="card success">
-        <h3>Convenios Vigentes</h3>
-        <div class="value">31</div>
-      </div>
-      <div class="card warning">
-        <h3>Convenios por Revisar</h3>
-        <div class="value">7</div>
-      </div>
-      <div class="card danger">
-        <h3>Convenios Vencidos</h3>
-        <div class="value">4</div>
-      </div>
-    </section>
+      <!-- KPIs -->
+      <section class="kpis">
+        <div class="kpi">
+          <h3>🏢 Empresas activas</h3>
+          <div class="num">42</div>
+          <small>+5 vs periodo anterior</small>
+        </div>
+        <div class="kpi">
+          <h3>📑 Convenios vigentes</h3>
+          <div class="num">28</div>
+          <small>3 por vencer</small>
+        </div>
+        <div class="kpi">
+          <h3>📂 Docs validados</h3>
+          <div class="num">1,236</div>
+          <small>92% del total cargado</small>
+        </div>
+        <div class="kpi">
+          <h3>🔐 Accesos activos</h3>
+          <div class="num">37</div>
+          <small>2 bloqueados</small>
+        </div>
+      </section>
 
-    <!-- 📈 SECCIÓN DE GRÁFICOS -->
-    <section class="charts">
-      <div class="chart">
-        <h2>Distribución de Convenios por Estatus</h2>
-        <img src="../../assets/img/charts/convenios_estatus_placeholder.png" alt="Gráfico de convenios por estatus" style="width:100%; border-radius:12px;">
-      </div>
-      <div class="chart">
-        <h2>Documentos Subidos por Mes</h2>
-        <img src="../../assets/img/charts/documentos_mes_placeholder.png" alt="Gráfico de documentos por mes" style="width:100%; border-radius:12px;">
-      </div>
-    </section>
+      <!-- Gráficas -->
+      <section class="charts">
+        <div class="card">
+          <header>📜 Convenios por estatus</header>
+          <div class="content"><canvas id="chartConvenios"></canvas></div>
+        </div>
 
-    <!-- 🏢 TABLA DE EMPRESAS -->
-    <section class="table-section">
-      <h2>Empresas con Convenios Vigentes</h2>
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Empresa</th>
-              <th>Convenios</th>
-              <th>Estado</th>
-              <th>Fecha Registro</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Casa del Barrio</td>
-              <td>3</td>
-              <td><span class="status vigente">Vigente</span></td>
-              <td>2024-03-15</td>
-              <td><a href="../empresas/empresa_edit.php?id=1" class="btn btn-primary">Ver</a></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Tequila ECT</td>
-              <td>2</td>
-              <td><span class="status en_revision">En Revisión</span></td>
-              <td>2024-06-01</td>
-              <td><a href="../empresas/empresa_edit.php?id=2" class="btn btn-primary">Ver</a></td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Industria Yakumo</td>
-              <td>1</td>
-              <td><span class="status vencido">Vencido</span></td>
-              <td>2023-10-22</td>
-              <td><a href="../empresas/empresa_edit.php?id=3" class="btn btn-primary">Ver</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <div class="card">
+          <header>📄 Documentos por tipo</header>
+          <div class="content"><canvas id="chartDocsTipo"></canvas></div>
+        </div>
 
-    <!-- 📑 TABLA DE DOCUMENTOS -->
-    <section class="table-section">
-      <h2>Documentos Recientes</h2>
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Empresa</th>
-              <th>Tipo de Documento</th>
-              <th>Estatus</th>
-              <th>Fecha de Carga</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>15</td>
-              <td>Casa del Barrio</td>
-              <td>Acta Constitutiva</td>
-              <td><span class="status aprobado">Aprobado</span></td>
-              <td>2025-09-15</td>
-              <td><a href="../documentos/documento_edit.php?id=15" class="btn btn-primary">Ver</a></td>
-            </tr>
-            <tr>
-              <td>16</td>
-              <td>Tequila ECT</td>
-              <td>Comprobante de Domicilio</td>
-              <td><span class="status pendiente">Pendiente</span></td>
-              <td>2025-09-20</td>
-              <td><a href="../documentos/documento_edit.php?id=16" class="btn btn-primary">Ver</a></td>
-            </tr>
-            <tr>
-              <td>17</td>
-              <td>Industria Yakumo</td>
-              <td>INE Representante</td>
-              <td><span class="status rechazado">Rechazado</span></td>
-              <td>2025-09-25</td>
-              <td><a href="../documentos/documento_edit.php?id=17" class="btn btn-primary">Ver</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <div class="card wide">
+          <header>🔐 Actividad de accesos (últimos 6 meses)</header>
+          <div class="content"><canvas id="chartAccesos"></canvas></div>
+        </div>
+      </section>
 
-  </main>
+      <!-- Tablas resumen -->
+      <section class="charts">
+        <div class="card">
+          <header>🏆 Top 5 empresas con más residentes</header>
+          <div class="content table-wrapper">
+            <table>
+              <thead>
+                <tr><th>#</th><th>Empresa</th><th>Residentes</th><th>Convenio</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>Secretaría de Innovación</td><td>18</td><td><span class="badge ok">Vigente</span></td></tr>
+                <tr><td>2</td><td>Municipio de Guadalajara</td><td>15</td><td><span class="badge ok">Vigente</span></td></tr>
+                <tr><td>3</td><td>Hospital Civil</td><td>12</td><td><span class="badge warn">Por vencer</span></td></tr>
+                <tr><td>4</td><td>Industrias Yakumo</td><td>11</td><td><span class="badge ok">Vigente</span></td></tr>
+                <tr><td>5</td><td>Tequila ECT</td><td>9</td><td><span class="badge info">En revisión</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
+        <div class="card">
+          <header>⏳ Documentos pendientes de validación</header>
+          <div class="content table-wrapper">
+            <table>
+              <thead>
+                <tr><th>Empresa</th><th>Tipo</th><th>Subido</th><th>Estatus</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Casa del Barrio</td><td>Acta Constitutiva</td><td>2025-09-28</td><td><span class="badge info">En revisión</span></td></tr>
+                <tr><td>Tequila ECT</td><td>Anexo Técnico</td><td>2025-10-01</td><td><span class="badge info">En revisión</span></td></tr>
+                <tr><td>Industrias Yakumo</td><td>Poder Notarial</td><td>2025-09-15</td><td><span class="badge err">Rechazado</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Configuración de gráficas -->
+  <script>
+    // Convenios por estatus
+    new Chart(document.getElementById('chartConvenios'),{
+      type:'doughnut',
+      data:{
+        labels:['Vigente','En revisión','Vencido','Por vencer'],
+        datasets:[{ data:[28,6,3,3], backgroundColor:['#2db980','#1f6feb','#e44848','#ffb400'] }]
+      },
+      options:{ responsive:true, plugins:{legend:{position:'bottom'}} }
+    });
+
+    // Documentos por tipo
+    new Chart(document.getElementById('chartDocsTipo'),{
+      type:'bar',
+      data:{
+        labels:['INE','Acta Constitutiva','Anexo Técnico','Poder Notarial','Carta Compromiso'],
+        datasets:[{ label:'Cargados', data:[260,210,180,95,120], backgroundColor:'#1f6feb' }]
+      },
+      options:{ responsive:true, scales:{ y:{ beginAtZero:true } } }
+    });
+
+    // Actividad de accesos (últimos 6 meses)
+    new Chart(document.getElementById('chartAccesos'),{
+      type:'line',
+      data:{
+        labels:['Mayo','Jun','Jul','Ago','Sep','Oct'],
+        datasets:[
+          { label:'Inicios de sesión', data:[120,150,132,178,165,190], borderColor:'#1f6feb', tension:.2 },
+          { label:'Intentos fallidos', data:[18,22,15,28,24,19], borderColor:'#e44848', tension:.2 }
+        ]
+      },
+      options:{ responsive:true, plugins:{legend:{position:'bottom'}}, scales:{ y:{ beginAtZero:true } } }
+    });
+  </script>
 </body>
 </html>

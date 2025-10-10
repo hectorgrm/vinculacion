@@ -1,57 +1,106 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eliminar Acceso - Portal de Empresa</title>
-  <link rel="stylesheet" href="../../assets/css/portal/portalglobalstyles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eliminar Acceso · Residencias</title>
+  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
+  <link rel="stylesheet" href="../../assets/css/portal/portal_view.css" />
+
+  <style>
+    .danger-zone {
+      background: #fff;
+      border: 1px solid #fee2e2;
+      border-radius: 18px;
+      box-shadow: var(--shadow-sm)
+    }
+
+    .danger-zone>header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #fee2e2;
+      font-weight: 700;
+      color: #b91c1c
+    }
+
+    .danger-zone .content {
+      padding: 20px
+    }
+
+    .btn.danger {
+      background: #e44848;
+      color: #fff;
+      border-color: #e44848
+    }
+
+    .btn.danger:hover {
+      filter: brightness(.95)
+    }
+  </style>
 </head>
+
 <body>
-
-  <header>
-    <h1>Eliminar Acceso al Portal</h1>
-    <nav class="breadcrumb">
-      <a href="../dashboard.php">Inicio</a> <span>›</span>
-      <a href="../empresas/empresa_list.php">Empresas</a> <span>›</span>
-      <a href="../convenios/convenio_list.php">Convenios</a> <span>›</span>
-      <a href="portal_list.php">Portal de Acceso</a> <span>›</span>
-      <span>Eliminar</span>
-    </nav>
-  </header>
-
-  <main>
-    <div class="card danger-zone">
-      <h2>⚠️ Confirmar eliminación</h2>
-      <p>
-        Estás a punto de eliminar el acceso al portal para la siguiente empresa.  
-        Esta acción <strong>no se puede deshacer</strong> y eliminará el token de acceso y el NIP asociado.
-      </p>
-
-      <div class="alert alert-danger">
-        <strong>Importante:</strong> Si la empresa aún tiene acceso activo o el portal está en uso, asegúrate de revocar el acceso antes de continuar.
-      </div>
-
-      <div class="delete-details">
-        <ul>
-          <li><strong>ID:</strong> 1</li>
-          <li><strong>Empresa:</strong> Casa del Barrio</li>
-          <li><strong>Convenio asociado:</strong> #1 (v1.2)</li>
-          <li><strong>Token:</strong> 11111111-1111-1111-1111-111111111111</li>
-          <li><strong>NIP:</strong> 123456</li>
-          <li><strong>Fecha de expiración:</strong> 2025-12-31</li>
-          <li><strong>Estado:</strong> Activo ✅</li>
-        </ul>
-      </div>
-
-      <form action="portal_delete_action.php" method="POST">
-        <input type="hidden" name="id" value="1"> <!-- 🧪 ID dinámico -->
-        <div class="form-actions">
-          <button type="submit" class="btn btn-danger">Eliminar Definitivamente</button>
-          <a href="portal_list.php" class="btn btn-secondary">Cancelar</a>
+  <?php
+  $id = isset($_GET['id']) ? (int) $_GET['id'] : 901;
+  $email = 'admin@casadelbarrio.mx';
+  $empresaId = 45;
+  $empresa = 'Casa del Barrio';
+  ?>
+  <div class="app">
+    <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2>Eliminar acceso</h2>
+          <nav class="breadcrumb">
+            <a href="../../index.php">Inicio</a><span>›</span>
+            <a href="portal_list.php">Portal de Acceso</a><span>›</span>
+            <a href="portal_view.php?id=<?php echo $id; ?>">Ver</a><span>›</span>
+            <span>Eliminar</span>
+          </nav>
         </div>
-      </form>
-    </div>
-  </main>
+        <a class="btn" href="portal_view.php?id=<?php echo $id; ?>">⬅ Volver</a>
+      </header>
 
+      <section class="danger-zone">
+        <header>⚠️ Confirmación requerida</header>
+        <div class="content">
+          <p>
+            Estás a punto de <strong>eliminar definitivamente</strong> el acceso de
+            <strong><?php echo htmlspecialchars($email); ?></strong> asociado a
+            <a class="btn" href="../empresa/empresa_view.php?id=<?php echo $empresaId; ?>">🏢
+              <?php echo htmlspecialchars($empresa); ?></a>.
+            Esta acción <strong>no se puede deshacer</strong>.
+          </p>
+          <p class="text-muted">Nota: esto no elimina la empresa ni sus convenios/documentos; solo las credenciales de
+            acceso al portal.</p>
+
+          <form action="portal_delete_action.php?id=<?php echo $id; ?>" method="post" style="margin-top:12px;">
+            <input type="hidden" name="id" value="<?php echo $id; ?>">
+            <label style="display:flex; gap:10px; align-items:flex-start; margin:10px 0;">
+              <input type="checkbox" name="confirm" required>
+              <span>Confirmo que deseo eliminar permanentemente este acceso.</span>
+            </label>
+            <div class="actions" style="justify-content:flex-end;">
+              <a class="btn" href="portal_view.php?id=<?php echo $id; ?>">Cancelar</a>
+              <button class="btn danger" type="submit">🗑️ Eliminar</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="card">
+        <header>Alternativas sugeridas</header>
+        <div class="content">
+          <ul style="margin:0;padding-left:18px;">
+            <li>Marcar como <strong>Bloqueado</strong> temporalmente.</li>
+            <li>Cambiar estatus a <strong>Inactivo</strong> (mantiene historial).</li>
+            <li>Aplicar <strong>reset de contraseña</strong> y habilitar 2FA.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
 </body>
+
 </html>

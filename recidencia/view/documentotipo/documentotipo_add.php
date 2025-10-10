@@ -1,70 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agregar Tipo de Documento - Residencia Profesional</title>
-  <link rel="stylesheet" href="../../assets/css/documentotipo/documentotipo_globalstyles.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nuevo Tipo de Documento · Residencias</title>
+
+  <link rel="stylesheet" href="../../assets/stylesrecidencia.css"/>
+  <link rel="stylesheet" href="../../assets/css/documentotipo/documentotipo.css"/>
 </head>
 <body>
+  <div class="app">
+    <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-  <header>
-    <h1>Agregar Nuevo Tipo de Documento</h1>
-    <nav class="breadcrumb">
-      <a href="../dashboard.php">Inicio</a> <span>›</span>
-      <a href="../documentos/documento_list.php">Documentos</a> <span>›</span>
-      <a href="documentotipo_list.php">Tipos de Documentos</a> <span>›</span>
-      <span>Agregar</span>
-    </nav>
-  </header>
-
-  <main>
-    <div class="card form-container">
-      <h2>Registrar Nuevo Tipo de Documento</h2>
-      <p>Completa el siguiente formulario para registrar un nuevo tipo de documento en el sistema.</p>
-
-      <form action="documentotipo_add_action.php" method="POST" class="form">
-
-        <!-- Nombre -->
-        <div class="field">
-          <label for="nombre">Nombre del documento <span style="color:red">*</span></label>
-          <input 
-            type="text" 
-            id="nombre" 
-            name="nombre" 
-            placeholder="Ej: Acta Constitutiva" 
-            required 
-          />
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2>➕ Nuevo Tipo de Documento</h2>
+          <nav class="breadcrumb">
+            <a href="../../index.php">Inicio</a><span>›</span>
+            <a href="documentotipo_list.php">Documento Tipo</a><span>›</span>
+            <span>Nuevo</span>
+          </nav>
         </div>
+        <a href="documentotipo_list.php" class="btn">⬅ Volver</a>
+      </header>
 
-        <!-- Descripción -->
-        <div class="field">
-          <label for="descripcion">Descripción</label>
-          <textarea 
-            id="descripcion" 
-            name="descripcion" 
-            rows="4" 
-            placeholder="Describe brevemente el propósito del documento..."></textarea>
+      <section class="card">
+        <header>🧾 Datos</header>
+        <div class="content">
+          <form class="form" method="post" action="documentotipo_add_action.php">
+            <div class="grid">
+              <div class="field">
+                <label class="required" for="clave">Clave *</label>
+                <input id="clave" name="clave" type="text" placeholder="Ej: INE, ACTA, ANEXO" required>
+              </div>
+              <div class="field">
+                <label class="required" for="nombre">Nombre *</label>
+                <input id="nombre" name="nombre" type="text" placeholder="Nombre descriptivo" required>
+              </div>
+
+              <div class="field col-span-2">
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion" rows="3" placeholder="Uso, contexto, notas internas…"></textarea>
+              </div>
+
+              <div class="field">
+                <label class="required" for="requiere_convenio">Requiere convenio *</label>
+                <select id="requiere_convenio" name="requiere_convenio" required>
+                  <option value="0">No</option>
+                  <option value="1">Sí</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="required" for="obligatorio">Obligatorio *</label>
+                <select id="obligatorio" name="obligatorio" required>
+                  <option value="0">No</option>
+                  <option value="1">Sí</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="required" for="estatus">Estatus *</label>
+                <select id="estatus" name="estatus" required>
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="actions">
+              <a class="btn" href="documentotipo_list.php">Cancelar</a>
+              <button class="btn primary" type="submit">💾 Guardar</button>
+            </div>
+          </form>
         </div>
-
-        <!-- Obligatorio -->
-        <div class="field">
-          <label for="obligatorio">¿Es obligatorio?</label>
-          <select name="obligatorio" id="obligatorio" required>
-            <option value="1">Sí, es obligatorio</option>
-            <option value="0">No, es opcional</option>
-          </select>
-        </div>
-
-        <!-- Botones -->
-        <div class="form-actions">
-          <button type="submit" class="btn btn-success">Guardar Tipo</button>
-          <a href="documentotipo_list.php" class="btn btn-secondary">Cancelar</a>
-        </div>
-
-      </form>
-    </div>
-  </main>
-
+      </section>
+    </main>
+  </div>
 </body>
 </html>

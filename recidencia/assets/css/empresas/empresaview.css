@@ -1,0 +1,53 @@
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+.badge.vigente { background: #2db980; }
+.badge.por_vencer { background: #ffb400; }
+.badge.pendiente { background: #f87171; }
+.badge.en_revision { background: #1f6feb; }
+.badge.ok { background: #10b981; }
+.badge.aprobado { background: #4ade80; }
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+thead { background: #f8fafc; }
+tbody tr:hover { background: #f1f5f9; }
+
+.card p {
+  color: #475569;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+h2 { display: flex; align-items: center; gap: 6px; }
+
+@media (max-width:768px) {
+  .info-grid { grid-template-columns: 1fr; }
+  .actions { flex-wrap: wrap; justify-content: center; }
+}
