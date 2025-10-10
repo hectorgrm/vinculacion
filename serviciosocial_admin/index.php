@@ -39,18 +39,19 @@ $userName = htmlspecialchars((string)($user['name'] ?? 'Coordinador'), ENT_QUOTE
         <div class="logo"></div>
         <h1>Servicio Social · Admin</h1>
       </div>
-      <nav class="nav">
-        <a href="index.php" class="active">Dashboard</a>
-        <a href="view/estudiantes/list.php">Gestión de Estudiantes</a>
-        <a href="view/empresas/list.php">Empresas</a>
-        <a href="view/convenios/list.php">Convenios</a>
-        <a href="view/plazas/list.php">Plazas</a>
-        <a href="view/asignaciones/list.php">Asignaciones</a>
-        <a href="view/periodos/list.php">Periodos</a>
-        <a href="view/documentos/list.php">Documentos</a>
-        <a href="view/reportes/index.php">Reportes</a>
-        <a href="view/servicios/list.php">servicios</a>
-      </nav>
+<nav class="nav">
+  <a href="index.php" class="active">🏠 Dashboard</a>
+  <a href="view/estudiantes/list.php">👨‍🎓 Gestión de Estudiantes</a>
+  <a href="view/empresas/list.php">🏢 Empresas</a>
+  <a href="view/convenios/list.php">📑 Convenios</a>
+  <a href="view/plazas/list.php">📌 Plazas</a>
+  <a href="view/asignaciones/list.php">📋 Asignaciones</a>
+  <a href="view/periodos/list.php">📆 Periodos</a>
+  <a href="view/documentos/list.php">📂 Documentos</a>
+  <!-- <a href="view/reportes/index.php">📊 Reportes</a> -->
+  <a href="view/servicios/list.php">🧾 Servicios</a>
+</nav>
+
     </aside>
     <!-- Main -->
     <main class="main">

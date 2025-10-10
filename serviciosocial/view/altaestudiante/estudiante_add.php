@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="../../assets/serviciosocialstyles.css">
 </head>
 <body>
-    <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
+    
   <header>
     <h1>Dar de Alta Estudiante</h1>
   </header>

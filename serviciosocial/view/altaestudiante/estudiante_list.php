@@ -62,7 +62,6 @@ $searchValue = isset($_GET['query']) ? trim((string)$_GET['query']) : '';
   <div class="app">
 
     <!-- 📊 Sidebar -->
-    <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
     <!-- 📜 Contenido Principal -->
     <main class="main">

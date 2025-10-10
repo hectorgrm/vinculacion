@@ -41,7 +41,7 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
         <a href="view/portalacceso/portal_list.php">🔐 Portal Acceso</a>
 
         <!-- Reportes con submenú -->
-        <div class="submenu">
+        <!-- <div class="submenu">
           <a href="view/reportes/reportes_dashboard.php" class="submenu-title">📊 Reportes</a>
           <div class="submenu-links">
             <a href="view/reportes/reportes_dashboard.php">📈 General</a>
@@ -49,7 +49,7 @@ if (!is_array($user) || !in_array(strtolower((string)($user['role'] ?? '')), $al
             <a href="view/reportes/reportes_dashboard.php#documentos">📄 Documentos</a>
             <a href="view/reportes/reportes_dashboard.php#empresas">🏢 Por Empresa</a>
           </div>
-        </div>
+        </div> -->
 
         <a href="../common/logout.php">🚪 Cerrar sesión</a>
       </nav>
