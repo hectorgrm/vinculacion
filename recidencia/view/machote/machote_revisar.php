@@ -1,214 +1,213 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Revisión de Machote · Residencias Profesionales</title>
+  <title>📝 Revisión de Machote · Residencias</title>
 
-  <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <!-- Estilos específicos (abajo te paso el CSS) -->
-  <link rel="stylesheet" href="../../assets/css/residencias/machote_revisar.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/machote/revisar.css">
 </head>
 <body>
-<?php
-  // Parámetros de contexto (ejemplo)
-  $empresaId   = isset($_GET['id_empresa']) ? (int) $_GET['id_empresa'] : 45;
-  $empresaName = 'Casa del Barrio';
-  $convenioId  = isset($_GET['convenio'])   ? (int) $_GET['convenio']   : 12;
-  $convenioStr = '#12 (v1.2)';
-?>
   <div class="app">
-    <!-- Sidebar -->
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-    <!-- Main -->
     <main class="main">
-      <!-- Topbar -->
       <header class="topbar">
         <div>
-          <h2>📝 Revisión de Machote (Cláusulas)</h2>
-          <nav class="breadcrumb">
-            <a href="../../index.php">Inicio</a>
-            <span>›</span>
-            <a href="../convenio/convenio_list.php">Convenios</a>
-            <span>›</span>
-            <a href="../convenio/convenio_view.php?id=<?php echo $convenioId; ?>">Convenio <?php echo $convenioStr; ?></a>
-            <span>›</span>
-            <span>Revisión de Machote</span>
-          </nav>
+          <h2>📝 Revisión de Machote</h2>
+          <p class="subtitle">
+            Empresa: <strong>Casa del Barrio</strong> · Revisión <strong>#123</strong> · Documento: <strong>Institucional v1.2</strong> ·
+            Estado: <span class="badge en_revision">En revisión</span>
+          </p>
         </div>
-        <div class="actions" style="gap:10px; flex-wrap:wrap;">
-          <a class="btn" href="../empresa/empresa_view.php?id=<?php echo $empresaId; ?>">🏢 Empresa</a>
-          <a class="btn" href="../convenio/convenio_view.php?id=<?php echo $convenioId; ?>">📑 Convenio</a>
-          <a class="btn" href="../documentos/documento_list.php?empresa=<?php echo $empresaId; ?>">📂 Documentos</a>
+        <div class="actions">
+          <form action="revision_generate_convenio_action.php" method="post" style="display:inline;">
+            <input type="hidden" name="revision_id" value="123">
+            <button class="btn primary" disabled title="Se habilita cuando no hay comentarios abiertos y ambas aprobaciones están activas">
+              📄 Generar convenio
+            </button>
+          </form>
+          <a href="../empresas/view.php?id=45" class="btn secondary">⬅ Volver a la empresa</a>
         </div>
       </header>
 
-      <!-- Contexto -->
-      <section class="card">
-        <header>📌 Contexto</header>
-        <div class="content">
-          <div class="context-grid">
-            <div><strong>Empresa:</strong> <?php echo htmlspecialchars($empresaName); ?> (ID <?php echo $empresaId; ?>)</div>
-            <div><strong>Convenio:</strong> <?php echo htmlspecialchars($convenioStr); ?></div>
-            <div><strong>Estado actual:</strong> <span class="badge secondary">En revisión</span></div>
-            <div><strong>Última actualización:</strong> 02/10/2025</div>
-          </div>
-          <p class="text-muted" style="margin-top:8px">
-            Registra observaciones por cláusula, su estatus y responsable. Puedes aprobar en bloque cuando todo esté correcto.
-          </p>
-          <div class="actions" style="justify-content:flex-start; gap:8px;">
-            <button class="btn" type="button" onclick="aprobarTodo()">✅ Aprobar todo</button>
-            <button class="btn" type="button" onclick="agregarFila()">➕ Agregar cláusula</button>
-            <a class="btn" href="#" onclick="window.print();return false;">🖨️ Imprimir</a>
-            <a class="btn" href="#" title="Próximamente">⬇️ Exportar PDF</a>
-          </div>
+      <!-- Indicadores y aprobaciones -->
+      <section class="kpis card">
+        <div class="kpi">
+          <h4>Comentarios abiertos</h4>
+          <div class="kpi-num">1</div>
+        </div>
+        <div class="kpi">
+          <h4>Comentarios resueltos</h4>
+          <div class="kpi-num">3</div>
+        </div>
+        <div class="kpi wide">
+          <h4>Avance de la revisión</h4>
+          <div class="progress"><div class="bar" style="width: 75%"></div></div>
+          <small>75% completado</small>
+        </div>
+        <div class="approvals">
+          <form action="revision_toggle_approve_action.php" method="post" class="switch">
+            <input type="hidden" name="revision_id" value="123">
+            <input type="hidden" name="who" value="admin">
+            <input type="checkbox" id="aprob_admin" name="state" disabled>
+            <span class="slider"></span><label class="label" for="aprob_admin">Aprobación del administrador</label>
+          </form>
+
+          <form action="revision_toggle_approve_action.php" method="post" class="switch">
+            <input type="hidden" name="revision_id" value="123">
+            <input type="hidden" name="who" value="empresa">
+            <input type="checkbox" id="aprob_empresa" name="state" disabled>
+            <span class="slider"></span><label class="label" for="aprob_empresa">Aprobación de la empresa</label>
+          </form>
         </div>
       </section>
 
-      <!-- Revisión cláusula por cláusula -->
+      <!-- Nuevo comentario -->
       <section class="card">
-        <header>📖 Cláusulas / Observaciones</header>
-        <div class="content">
-          <form action="revisar_action.php" method="post">
-            <input type="hidden" name="empresa_id" value="<?php echo $empresaId; ?>">
-            <input type="hidden" name="convenio_id" value="<?php echo $convenioId; ?>">
+        <header style="display:flex;justify-content:space-between;align-items:center;">
+          <span>💬 Nuevo comentario</span>
+          <button type="button" class="btn" onclick="toggleNewComment()">➕ Mostrar/Ocultar</button>
+        </header>
+        <div class="content" id="newComment" style="display:none;">
+          <form class="grid-2" action="revision_thread_create_action.php" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="revision_id" value="123">
 
-            <div class="table-wrapper">
-              <table id="tabla-clausulas">
-                <thead>
-                  <tr>
-                    <th style="width:60px;">#</th>
-                    <th style="min-width:220px;">Título de cláusula</th>
-                    <th>Texto del machote</th>
-                    <th>Comentario / Observación</th>
-                    <th style="min-width:140px;">Estatus</th>
-                    <th style="min-width:140px;">Responsable</th>
-                    <th style="width:90px;">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Ejemplos (luego dinámico desde BD) -->
-                  <tr>
-                    <td><input type="number" name="clausulas[0][numero]" value="1" class="inp small" min="1"/></td>
-                    <td><input type="text" name="clausulas[0][titulo]" value="Objeto" class="inp" /></td>
-                    <td>
-                      <textarea name="clausulas[0][texto]" class="inp mono" rows="4">El presente convenio tiene por objeto establecer las bases...</textarea>
-                    </td>
-                    <td>
-                      <textarea name="clausulas[0][comentario]" class="inp" rows="3" placeholder="Ej: Solicitan especificar KPIs y alcance."></textarea>
-                    </td>
-                    <td>
-                      <select name="clausulas[0][estatus]" class="inp">
-                        <option value="en_revision" selected>En revisión</option>
-                        <option value="aprobado">Aprobado</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="rechazado">Rechazado</option>
-                      </select>
-                    </td>
-                    <td><input type="text" name="clausulas[0][responsable]" value="Jurídico" class="inp" /></td>
-                    <td class="row-actions">
-                      <button class="btn small" type="button" onclick="aprobarFila(this)">✔</button>
-                      <button class="btn small danger" type="button" onclick="eliminarFila(this)">🗑️</button>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td><input type="number" name="clausulas[1][numero]" value="2" class="inp small" min="1"/></td>
-                    <td><input type="text" name="clausulas[1][titulo]" value="Confidencialidad" class="inp" /></td>
-                    <td>
-                      <textarea name="clausulas[1][texto]" class="inp mono" rows="4">Las partes acuerdan mantener en estricta confidencialidad...</textarea>
-                    </td>
-                    <td>
-                      <textarea name="clausulas[1][comentario]" class="inp" rows="3" placeholder="Ej: Sin observaciones."></textarea>
-                    </td>
-                    <td>
-                      <select name="clausulas[1][estatus]" class="inp">
-                        <option value="en_revision">En revisión</option>
-                        <option value="aprobado" selected>Aprobado</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="rechazado">Rechazado</option>
-                      </select>
-                    </td>
-                    <td><input type="text" name="clausulas[1][responsable]" value="Vinculación" class="inp" /></td>
-                    <td class="row-actions">
-                      <button class="btn small" type="button" onclick="aprobarFila(this)">✔</button>
-                      <button class="btn small danger" type="button" onclick="eliminarFila(this)">🗑️</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="full">
+              <label for="asunto">Título del comentario</label>
+              <input type="text" id="asunto" name="asunto" placeholder="Ej. Vigencia del convenio" required>
             </div>
 
-            <div class="actions" style="margin-top:12px;">
-              <a href="../convenio/convenio_view.php?id=<?php echo $convenioId; ?>" class="btn">⬅ Cancelar</a>
-              <button type="submit" class="btn primary">💾 Guardar revisión</button>
+            <div class="full">
+              <label for="cuerpo">Descripción</label>
+              <textarea id="cuerpo" name="cuerpo" rows="4" placeholder="Describe el cambio o la aclaración que solicitas…" required></textarea>
+            </div>
+
+            <div>
+              <label for="adjunto">Adjunto (opcional)</label>
+              <input type="file" id="adjunto" name="adjunto" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn primary">Publicar comentario</button>
+              <button type="button" class="btn" onclick="toggleNewComment()">Cancelar</button>
             </div>
           </form>
         </div>
       </section>
 
-      <!-- Bitácora -->
-      <section class="card">
-        <header>🕒 Bitácora</header>
-        <div class="content">
-          <ul class="history-list">
-            <li><strong>02/10/2025</strong> — Se marcó cláusula 2 como “Aprobado”.</li>
-            <li><strong>01/10/2025</strong> — Se agregaron observaciones a cláusula 1.</li>
-            <li><strong>30/09/2025</strong> — Inició revisión de machote.</li>
-          </ul>
+      <!-- Listado (izquierda) + Detalle (derecha) -->
+      <section class="split">
+        <!-- Lista de comentarios -->
+        <div class="card">
+          <header style="display:flex;justify-content:space-between;align-items:center;">
+            <span>💬 Comentarios</span>
+            <div class="filters">
+              <a href="#" class="chip active">Abiertos (1)</a>
+              <a href="#" class="chip">Resueltos (3)</a>
+              <a href="#" class="chip">Todos (4)</a>
+            </div>
+          </header>
+
+          <div class="content threads">
+            <!-- Ejemplo: comentario abierto -->
+            <article class="thread active">
+              <div class="meta">
+                <span class="badge abierto">Abierto</span>
+                <span class="author empresa">Empresa</span>
+                <span class="time">hace 2 días</span>
+              </div>
+              <h4>Ajustar vigencia</h4>
+              <p>Proponemos 18 meses por motivos de calendario…</p>
+              <div class="row-actions">
+                <button class="btn small" onclick="selectComment(101)">👁️ Ver detalle</button>
+                <button class="btn small">📎 Archivos (1)</button>
+                <form action="revision_thread_resolve_action.php" method="post" style="display:inline;" onsubmit="return confirm('¿Marcar como resuelto?');">
+                  <input type="hidden" name="revision_id" value="123">
+                  <input type="hidden" name="hilo_id" value="101">
+                  <button class="btn small danger">✓ Marcar como resuelto</button>
+                </form>
+              </div>
+            </article>
+
+            <!-- Ejemplo: comentario resuelto -->
+            <article class="thread">
+              <div class="meta">
+                <span class="badge resuelto">Resuelto</span>
+                <span class="author admin">Administrador</span>
+                <span class="time">hace 5 días</span>
+              </div>
+              <h4>Confidencialidad</h4>
+              <p>Se integró un anexo de confidencialidad estándar.</p>
+              <div class="row-actions">
+                <button class="btn small" onclick="selectComment(99)">👁️ Ver detalle</button>
+                <button class="btn small">📎 Archivos (0)</button>
+                <form action="revision_thread_reopen_action.php" method="post" style="display:inline;">
+                  <input type="hidden" name="revision_id" value="123">
+                  <input type="hidden" name="hilo_id" value="99">
+                  <button class="btn small">↺ Reabrir comentario</button>
+                </form>
+              </div>
+            </article>
+
+            <!-- Estado vacío (si aplica)
+            <div class="empty">
+              <p>Aún no hay comentarios. Crea el primero.</p>
+              <button class="btn" onclick="toggleNewComment()">➕ Crear comentario</button>
+            </div> -->
+          </div>
+        </div>
+
+        <!-- Detalle del comentario seleccionado -->
+        <div class="card">
+          <header>📌 Detalle del comentario</header>
+          <div class="content thread-detail" id="detailBox" aria-live="polite">
+            <div class="message">
+              <div class="head"><span class="pill empresa">Empresa</span><time>2025-10-01 10:12</time></div>
+              <p>Proponemos 18 meses por calendario de proyectos…</p>
+              <div class="files"><a href="#">borrador_v1.pdf</a></div>
+            </div>
+            <div class="message">
+              <div class="head"><span class="pill admin">Administrador</span><time>2025-10-01 12:20</time></div>
+              <p>Recibido. Prepararemos la versión 2 y la compartimos hoy.</p>
+            </div>
+
+            <!-- Responder -->
+            <form class="reply" action="revision_reply_create_action.php" method="post" enctype="multipart/form-data">
+              <input type="hidden" name="revision_id" value="123">
+              <input type="hidden" name="hilo_id" id="reply_hilo_id" value="101">
+              <label for="respuesta">Responder</label>
+              <textarea id="respuesta" name="cuerpo" rows="3" placeholder="Escribe tu respuesta…" required></textarea>
+
+              <div class="row">
+                <input type="file" name="adjunto" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                <div class="actions">
+                  <button class="btn">Adjuntar</button>
+                  <button class="btn primary">Enviar</button>
+                  <button class="btn danger" formaction="revision_thread_resolve_action.php" onclick="return confirm('¿Marcar como resuelto?');">✓ Marcar como resuelto</button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </section>
+
+      <footer class="hint">
+        <small>El botón “Generar convenio” se habilitará cuando no existan comentarios abiertos y ambas aprobaciones estén activas.</small>
+      </footer>
     </main>
   </div>
 
   <script>
-    function aprobarTodo(){
-      document.querySelectorAll('#tabla-clausulas select').forEach(sel=>{
-        sel.value = 'aprobado';
-      });
+    function toggleNewComment(){
+      const box = document.getElementById('newComment');
+      box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
     }
-    function aprobarFila(btn){
-      const tr = btn.closest('tr');
-      const sel = tr.querySelector('select');
-      if(sel) sel.value = 'aprobado';
-    }
-    function eliminarFila(btn){
-      const tr = btn.closest('tr');
-      tr.parentNode.removeChild(tr);
-      renumerar();
-    }
-    function agregarFila(){
-      const tbody = document.querySelector('#tabla-clausulas tbody');
-      const idx = tbody.querySelectorAll('tr').length;
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><input type="number" name="clausulas[${idx}][numero]" value="${idx+1}" class="inp small" min="1"/></td>
-        <td><input type="text" name="clausulas[${idx}][titulo]" class="inp" placeholder="Título de cláusula" /></td>
-        <td><textarea name="clausulas[${idx}][texto]" class="inp mono" rows="3" placeholder="Texto del machote..."></textarea></td>
-        <td><textarea name="clausulas[${idx}][comentario]" class="inp" rows="3" placeholder="Comentario / ajuste propuesto..."></textarea></td>
-        <td>
-          <select name="clausulas[${idx}][estatus]" class="inp">
-            <option value="en_revision" selected>En revisión</option>
-            <option value="aprobado">Aprobado</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="rechazado">Rechazado</option>
-          </select>
-        </td>
-        <td><input type="text" name="clausulas[${idx}][responsable]" class="inp" placeholder="Área / persona" /></td>
-        <td class="row-actions">
-          <button class="btn small" type="button" onclick="aprobarFila(this)">✔</button>
-          <button class="btn small danger" type="button" onclick="eliminarFila(this)">🗑️</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    }
-    function renumerar(){
-      document.querySelectorAll('#tabla-clausulas tbody tr').forEach((tr,i)=>{
-        const num = tr.querySelector('input[type="number"]');
-        if(num) num.value = i+1;
-      });
+    function selectComment(id){
+      // Aquí puedes cargar por AJAX el detalle del comentario seleccionado.
+      document.getElementById('reply_hilo_id').value = id;
     }
   </script>
 </body>

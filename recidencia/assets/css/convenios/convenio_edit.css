@@ -243,3 +243,68 @@ tbody td {
         align-items: stretch
     }
 }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px 20px;
+}
+
+.field label {
+  font-weight: 600;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.field input[type="text"],
+.field input[type="date"],
+.field input[type="file"],
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.help {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.text-muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.actions .btn.primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+}
+
+.actions .btn.primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card header {
+  font-size: 18px;
+  font-weight: 600;
+}

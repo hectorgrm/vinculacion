@@ -151,3 +151,65 @@ td.actions .btn {
         flex: 1
     }
 }
+
+
+.form .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+
+.field input,
+.field select {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(31, 111, 235, 0.2);
+}
+
+.text-muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.required::after {
+  content: " *";
+  color: var(--danger);
+}
+
+.actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.section-title {
+  grid-column: 1 / -1; /* Hace que ocupe todo el ancho del grid */
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 25px;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 5px;
+}

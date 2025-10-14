@@ -66,3 +66,55 @@ small {
     grid-column: auto;
   }
 }
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-weight: 600;
+  color: #334155;
+}
+
+input[type="text"],
+input[type="file"],
+select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 15px;
+}
+
+input[type="text"]:focus,
+select:focus {
+  border-color: #1f6feb;
+  outline: none;
+}
+
+small {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}

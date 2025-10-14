@@ -96,6 +96,9 @@
 
       <!-- 💬 Observaciones de Machote -->
 <!-- 💬 Revisión de Machote -->
+
+<!-- 🟢 Caso 1: Machote aprobado -->
+
 <section class="card">
   <header>📝 Revisión de Machote</header>
   <div class="content">
@@ -112,6 +115,8 @@
     </div>
   </div>
 </section>
+<!-- 🟡 Caso 2: En revisión -->
+
 
 <section class="card">
   <header>📝 Revisión de Machote</header>
@@ -126,6 +131,8 @@
     </div>
   </div>
 </section>
+<!-- 🔴 Caso 3: Sin revisión activa -->
+
 <section class="card">
   <header>📝 Revisión de Machote</header>
   <div class="content">
@@ -204,10 +211,13 @@
       </section>
 
       <!-- 🔧 Acciones -->
-      <div class="actions">
-        <a href="empresa_edit.php?id=45" class="btn primary">✏️ Editar Empresa</a>
-        <a href="empresa_delete.php?id=45" class="btn danger">🗑️ Eliminar Empresa</a>
-      </div>
+<section class="card">
+  <div class="content actions" style="justify-content:flex-end;">
+    <a href="empresa_edit.php?id=45" class="btn primary">✏️ Editar Empresa</a>
+    <a href="empresa_delete.php?id=45" class="btn danger">🗑️ Eliminar Empresa</a>
+  </div>
+</section>
+
     </main>
   </div>
 </body>

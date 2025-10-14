@@ -153,3 +153,68 @@ td.actions .btn {
         flex: 1
     }
 }
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.badge.ok { background: #16a34a; }          /* Vigente */
+.badge.secondary { background: #3b82f6; }   /* En revisión */
+.badge.warn { background: #f59e0b; }        /* Pendiente */
+.badge.err { background: #dc2626; }         /* Vencido */
+
+.table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-wrapper th,
+.table-wrapper td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.table-wrapper th {
+  background: #f8fafc;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.table-wrapper tr:hover {
+  background: #f1f5f9;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (max-width: 768px) {
+  .table-wrapper table,
+  .table-wrapper thead,
+  .table-wrapper tbody,
+  .table-wrapper th,
+  .table-wrapper td,
+  .table-wrapper tr {
+    display: block;
+  }
+
+  .table-wrapper tr {
+    margin-bottom: 10px;
+    background: var(--panel);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    padding: 10px;
+  }
+
+  .table-wrapper td {
+    border: none;
+    padding: 8px 0;
+  }
+}

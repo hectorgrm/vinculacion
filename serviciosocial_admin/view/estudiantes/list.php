@@ -47,6 +47,17 @@
                 </td>
               </tr>
               <tr>
+                <td>María López</td>
+                <td>2030456</td>
+                <td>Ingeniería en Informática</td>
+                <td><span class="status pendiente">Pendiente</span></td>
+                <td class="actions">
+                  <button class="btn small" onclick="window.location.href='view2.php'">👁️ Ver</button>
+                  <button class="btn small" onclick="window.location.href='edit.php'">✏️ Editar</button>
+                  <button class="btn small danger" onclick="window.location.href='delete.php'">🗑️ Eliminar</button>
+                </td>
+              </tr>
+              <tr>
                 <td>Juan Pérez</td>
                 <td>2049821</td>
                 <td>Ingeniería en Sistemas</td>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/machote/machote_add.css" />
 </head>
+
 <body>
   <div class="app">
     <!-- Sidebar -->
@@ -16,12 +18,13 @@
     <main class="main">
       <header class="topbar">
         <h2>➕ Registrar nuevo Machote</h2>
-        <p class="subtitle">Crea una nueva revisión de machote para una empresa y da inicio al proceso de aprobación.</p>
+        <p class="subtitle">Crea una nueva revisión de machote para una empresa y da inicio al proceso de aprobación.
+        </p>
       </header>
 
       <section class="card">
         <form action="add_action.php" method="post" enctype="multipart/form-data" class="form-grid">
-          
+
           <!-- Empresa -->
           <div class="form-group">
             <label for="empresa_id">Empresa</label>
@@ -37,7 +40,8 @@
           <!-- Nombre / Tipo Machote -->
           <div class="form-group">
             <label for="nombre_machote">Nombre del machote</label>
-            <input type="text" name="nombre_machote" id="nombre_machote" placeholder="Ej. Machote institucional base" required>
+            <input type="text" name="nombre_machote" id="nombre_machote" placeholder="Ej. Machote institucional base"
+              required>
           </div>
 
           <!-- Versión -->
@@ -53,6 +57,15 @@
             <small>Formatos permitidos: PDF o DOCX · Máx. 10 MB</small>
           </div>
 
+          <div class="form-group">
+            <label for="tipo">Tipo de machote</label>
+            <select name="tipo" id="tipo">
+              <option value="institucional">Institucional</option>
+              <option value="empresa">Empresa</option>
+            </select>
+          </div>
+
+
           <!-- Acciones -->
           <div class="form-actions">
             <button type="submit" class="btn primary">💾 Guardar Machote</button>
@@ -63,4 +76,5 @@
     </main>
   </div>
 </body>
+
 </html>

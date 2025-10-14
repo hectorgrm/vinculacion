@@ -1,172 +1,174 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Editar Acceso · Residencias</title>
-    <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-    <link rel="stylesheet" href="../../assets/css/portal/portal_view.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detalle del Acceso · Residencias Profesionales</title>
 
-    <style>
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px
-        }
+  <!-- Estilos globales -->
+  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
 
-        .col-span-2 {
-            grid-column: 1/3
-        }
-
-        .field label {
-            display: block;
-            font-weight: 700;
-            color: #334155;
-            margin-bottom: 6px
-        }
-
-        .field label.required::after {
-            content: " *";
-            color: #e44848;
-            font-weight: 800
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 12px
-        }
-
-        @media (max-width:860px) {
-            .grid {
-                grid-template-columns: 1fr
-            }
-
-            .col-span-2 {
-                grid-column: 1/2
-            }
-        }
-    </style>
+  <!-- Estilos locales -->
+  <style>
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 16px;
+    }
+    .info-item label {
+      font-weight: 700;
+      color: #334155;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+    .badge.ok { background: #2db980; }
+    .badge.warn { background: #ffb400; }
+    .badge.err { background: #e44848; }
+    .badge.secondary { background: #64748b; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    @media (max-width: 860px) {
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 
 <body>
-    <?php
-    $id = isset($_GET['id']) ? (int) $_GET['id'] : 901;
-    // Demostración (reemplazar con DB)
-    $empresaId = 45;
-    $email = 'admin@casadelbarrio.mx';
-    $rol = 'empresa_admin';
-    $estatus = 'activo';
-    $tfa = 0;
-    $pwdExpira = '2026-01-31';
-    $reqChange = 0;
-    $notas = '';
-    ?>
-    <div class="app">
-        <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
-        <main class="main">
-            <header class="topbar">
-                <div>
-                    <h2>✏️ Editar acceso</h2>
-                    <nav class="breadcrumb">
-                        <a href="../../index.php">Inicio</a><span>›</span>
-                        <a href="portal_list.php">Portal de Acceso</a><span>›</span>
-                        <a href="portal_view.php?id=<?php echo $id; ?>">Ver</a><span>›</span>
-                        <span>Editar</span>
-                    </nav>
-                </div>
-                <div class="actions" style="gap:8px;">
-                    <a class="btn" href="portal_view.php?id=<?php echo $id; ?>">👁️ Ver</a>
-                    <a class="btn" href="portal_reset.php?id=<?php echo $id; ?>">🔁 Reset contraseña</a>
-                    <a class="btn danger" href="portal_delete.php?id=<?php echo $id; ?>">🗑️ Eliminar</a>
-                </div>
-            </header>
+<?php
+// === Datos de ejemplo (simular datos reales desde BD) ===
+$id           = $_GET['id'] ?? 901;
+$empresaId    = 45;
+$empresa      = "Casa del Barrio";
+$email        = "admin@casadelbarrio.mx";
+$rol          = "empresa_admin";
+$estatus      = "activo";        // valores: activo | bloqueado | inactivo
+$tfa          = 0;               // 1 = sí, 0 = no
+$ultimoAcceso = "2025-10-01 11:23";
+$pwdExpira    = "2026-01-31";
+$intentos     = 0;
+$notas        = "Acceso principal de la empresa para revisión de convenios y documentos.";
+$creado       = "2025-09-15 09:02";
+$actualizado  = "2025-09-30 14:41";
 
-            <section class="card">
-                <header>🧾 Datos del acceso</header>
-                <div class="content">
-                    <form class="form" action="portal_edit_action.php?id=<?php echo $id; ?>" method="post"
-                        autocomplete="off">
-                        <input type="hidden" name="id" value="<?php echo $id; ?>">
-                        <div class="grid">
-                            <div class="field">
-                                <label for="empresa_id" class="required">Empresa *</label>
-                                <select id="empresa_id" name="empresa_id" required>
-                                    <option value="">— Selecciona una empresa —</option>
-                                    <option value="45" <?php echo $empresaId == 45 ? 'selected' : ''; ?>>Casa del Barrio
-                                    </option>
-                                    <option value="22">Tequila ECT</option>
-                                    <option value="31">Industrias Yakumo</option>
-                                </select>
-                            </div>
+// Badge dinámico
+switch ($estatus) {
+  case 'activo': $badge = '<span class="badge ok">Activo</span>'; break;
+  case 'bloqueado': $badge = '<span class="badge warn">Bloqueado</span>'; break;
+  case 'inactivo': $badge = '<span class="badge secondary">Inactivo</span>'; break;
+  default: $badge = '<span class="badge err">Desconocido</span>';
+}
+?>
+  <div class="app">
+    <!-- Sidebar -->
+    <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-                            <div class="field">
-                                <label for="email" class="required">Correo (usuario) *</label>
-                                <input id="email" name="email" type="email"
-                                    value="<?php echo htmlspecialchars($email); ?>" required>
-                            </div>
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2>👁️ Detalle del Acceso</h2>
+          <nav class="breadcrumb">
+            <a href="../../index.php">Inicio</a>
+            <span>›</span>
+            <a href="portal_list.php">Portal de Acceso</a>
+            <span>›</span>
+            <span>Ver</span>
+          </nav>
+        </div>
 
-                            <div class="field">
-                                <label for="rol" class="required">Rol *</label>
-                                <select id="rol" name="rol" required>
-                                    <option value="empresa_admin" <?php echo $rol === 'empresa_admin' ? 'selected' : ''; ?>>
-                                        empresa_admin</option>
-                                    <option value="empresa_user" <?php echo $rol === 'empresa_user' ? 'selected' : ''; ?>>
-                                        empresa_user</option>
-                                </select>
-                            </div>
+        <div class="actions">
+          <a class="btn" href="portal_edit.php?id=<?php echo $id; ?>">✏️ Editar</a>
+          <a class="btn" href="portal_reset.php?id=<?php echo $id; ?>">🔁 Reset contraseña</a>
+          <?php if ($estatus === 'activo'): ?>
+            <a class="btn" href="portal_toggle.php?id=<?php echo $id; ?>&to=bloquear">🚫 Bloquear</a>
+          <?php elseif ($estatus === 'bloqueado'): ?>
+            <a class="btn" href="portal_toggle.php?id=<?php echo $id; ?>&to=activar">✅ Activar</a>
+          <?php endif; ?>
+          <a class="btn danger" href="portal_delete.php?id=<?php echo $id; ?>">🗑️ Eliminar</a>
+        </div>
+      </header>
 
-                            <div class="field">
-                                <label for="estatus" class="required">Estatus *</label>
-                                <select id="estatus" name="estatus" required>
-                                    <option value="activo" <?php echo $estatus === 'activo' ? 'selected' : ''; ?>>Activo
-                                    </option>
-                                    <option value="inactivo" <?php echo $estatus === 'inactivo' ? 'selected' : ''; ?>>Inactivo
-                                    </option>
-                                    <option value="bloqueado" <?php echo $estatus === 'bloqueado' ? 'selected' : ''; ?>>
-                                        Bloqueado</option>
-                                </select>
-                            </div>
+      <!-- Información principal -->
+      <section class="card">
+        <header>🧾 Información del Acceso</header>
+        <div class="content">
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Empresa</label>
+              <a class="btn" href="../empresa/empresa_view.php?id=<?php echo $empresaId; ?>">🏢 <?php echo $empresa; ?></a>
+            </div>
 
-                            <div class="field">
-                                <label for="tfa" class="required">Autenticación 2FA *</label>
-                                <select id="tfa" name="tfa" required>
-                                    <option value="0" <?php echo !$tfa ? 'selected' : ''; ?>>Deshabilitado</option>
-                                    <option value="1" <?php echo $tfa ? 'selected' : ''; ?>>Habilitado</option>
-                                </select>
-                            </div>
+            <div class="info-item">
+              <label>Correo (usuario)</label>
+              <div><?php echo htmlspecialchars($email); ?></div>
+            </div>
 
-                            <div class="field">
-                                <label for="pwd_expires_at">Vencimiento de contraseña</label>
-                                <input id="pwd_expires_at" name="pwd_expires_at" type="date"
-                                    value="<?php echo htmlspecialchars($pwdExpira); ?>">
-                            </div>
+            <div class="info-item">
+              <label>Rol</label>
+              <div><?php echo htmlspecialchars($rol); ?></div>
+            </div>
 
-                            <div class="field">
-                                <label style="display:flex; gap:10px; align-items:flex-start;">
-                                    <input type="checkbox" name="require_change" value="1" <?php echo $reqChange ? 'checked' : ''; ?>>
-                                    <span>Requerir cambio de contraseña al próximo inicio de sesión.</span>
-                                </label>
-                            </div>
+            <div class="info-item">
+              <label>Estatus</label>
+              <div><?php echo $badge; ?></div>
+            </div>
 
-                            <div class="field col-span-2">
-                                <label for="notas">Notas</label>
-                                <textarea id="notas" name="notas" rows="3"
-                                    placeholder="Observaciones internas…"><?php echo htmlspecialchars($notas); ?></textarea>
-                            </div>
-                        </div>
+            <div class="info-item">
+              <label>Autenticación 2FA</label>
+              <div><?php echo $tfa ? 'Habilitado' : 'Deshabilitado'; ?></div>
+            </div>
 
-                        <div class="actions">
-                            <a class="btn" href="portal_view.php?id=<?php echo $id; ?>">Cancelar</a>
-                            <button class="btn primary" type="submit">💾 Guardar cambios</button>
-                        </div>
-                    </form>
-                </div>
-            </section>
-        </main>
-    </div>
+            <div class="info-item">
+              <label>Último acceso</label>
+              <div><?php echo $ultimoAcceso ?: '<em>Sin registro</em>'; ?></div>
+            </div>
+
+            <div class="info-item">
+              <label>Intentos fallidos</label>
+              <div><?php echo $intentos; ?></div>
+            </div>
+
+            <div class="info-item">
+              <label>Expiración de contraseña</label>
+              <div><?php echo $pwdExpira ?: '<em>No establecido</em>'; ?></div>
+            </div>
+
+            <div class="info-item">
+              <label>Fecha de creación</label>
+              <div><?php echo $creado; ?></div>
+            </div>
+
+            <div class="info-item">
+              <label>Última actualización</label>
+              <div><?php echo $actualizado; ?></div>
+            </div>
+
+            <div class="info-item col-span-2">
+              <label>Notas</label>
+              <div><?php echo $notas ?: '<em>Sin notas registradas</em>'; ?></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Accesos rápidos -->
+      <section class="card">
+        <header>⚡ Accesos rápidos</header>
+        <div class="content" style="display:flex; gap:8px; flex-wrap:wrap;">
+          <a class="btn" href="../empresa/empresa_view.php?id=<?php echo $empresaId; ?>">🏢 Ver empresa</a>
+          <a class="btn" href="portal_edit.php?id=<?php echo $id; ?>">✏️ Editar</a>
+          <a class="btn" href="portal_list.php">🔐 Volver al listado</a>
+        </div>
+      </section>
+    </main>
+  </div>
 </body>
-
 </html>

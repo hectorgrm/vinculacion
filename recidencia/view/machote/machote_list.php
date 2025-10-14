@@ -52,8 +52,9 @@
                 <td>2025-10-08</td>
                 <td><span class="badge en_revision">En revisión</span></td>
                 <td class="actions">
-                  <a href="revisar.php?id=1" class="btn small primary">💬 Revisar</a>
+                  <a href="Machote_revisar.php?id=1" class="btn small primary">💬 Revisar</a>
                   <a href="machote_edit.php?id=1" class="btn small">✏️ Editar</a>
+                  <a href="machote_view.php?id=1" class="btn small">✏️ view</a>
                   <a href="machote_delete.php?id=1" class="btn small danger" onclick="return confirm('¿Eliminar este machote?')">🗑️ Eliminar</a>
                 </td>
               </tr>

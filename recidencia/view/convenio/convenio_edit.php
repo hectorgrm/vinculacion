@@ -115,6 +115,18 @@
         </div>
       </section>
 
+      <section class="card">
+  <header>Histórico de versiones</header>
+  <div class="content">
+    <ul>
+      <li>v1.0 — Creado 10/09/2024</li>
+      <li>v1.1 — Modificado 12/03/2025</li>
+      <li>v1.2 — Actual (01/07/2025)</li>
+    </ul>
+  </div>
+</section>
+
+
       <!-- Accesos rápidos -->
       <section class="card">
         <header>Accesos rápidos</header>

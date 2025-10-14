@@ -192,12 +192,26 @@
                     </ul>
                 </div>
             </section>
+            <div class="field">
+                <label>Registrado por</label>
+                <div>Lic. Martha Pérez</div>
+            </div>
+
+            <div class="field">
+                <label>Fecha de registro</label>
+                <div>10/09/2025</div>
+            </div>
+
+
 
             <!-- Acciones finales -->
-            <div class="actions">
-                <a href="convenio_edit.php?id=12" class="btn primary">✏️ Editar Convenio</a>
-                <a href="convenio_delete.php?id=12" class="btn danger">🗑️ Eliminar Convenio</a>
-            </div>
+            <section class="card">
+                <div class="content actions">
+                    <a href="convenio_edit.php?id=12" class="btn primary">✏️ Editar Convenio</a>
+                    <a href="convenio_delete.php?id=12" class="btn danger">🗑️ Eliminar Convenio</a>
+                </div>
+            </section>
+
         </main>
     </div>
 </body>

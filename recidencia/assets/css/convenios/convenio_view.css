@@ -228,3 +228,66 @@ td.actions .btn {
         align-items: stretch
     }
 }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px 20px;
+}
+
+.field label {
+  font-weight: 600;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.text-muted {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.badge.ok { background: #16a34a; }          /* Vigente */
+.badge.secondary { background: #3b82f6; }   /* En revisión */
+.badge.warn { background: #f59e0b; }        /* Pendiente */
+.badge.err { background: #dc2626; }         /* Vencido */
+
+.card table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.card th,
+.card td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card th {
+  background: #f8fafc;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.card tr:hover {
+  background: #f1f5f9;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}

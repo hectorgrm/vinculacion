@@ -139,10 +139,11 @@
           <!-- Leyenda de estatus -->
           <div style="margin-top:10px; color:#64748b; font-size:14px;">
             <strong>Leyenda:</strong>
-            <span class="badge ok">Vigente</span>
-            <span class="badge secondary">En revisión</span>
-            <span class="badge warn">Pendiente</span>
-            <span class="badge err">Vencido</span>
+            <span class="badge ok">✅ Vigente</span>
+            <span class="badge secondary">🕓 En revisión</span>
+            <span class="badge warn">⚠️ Pendiente</span>
+            <span class="badge err">⛔ Vencido</span>
+
           </div>
         </div>
       </section>
