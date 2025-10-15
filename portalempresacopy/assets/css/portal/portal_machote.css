@@ -1,0 +1,195 @@
+/* 📜 portal_machote.css - Sección de revisión de machote */
+
+:root {
+  --primary: #0d6efd;
+  --primary-hover: #0b5ed7;
+  --success: #198754;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --muted: #6c757d;
+  --border: #dee2e6;
+  --radius: 10px;
+  --shadow: 0 4px 12px rgba(0,0,0,0.06);
+  --transition: all 0.3s ease;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: var(--light);
+  color: var(--dark);
+}
+
+/* HEADER */
+header {
+  background: var(--primary);
+  color: #fff;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+header a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+header a:hover {
+  text-decoration: underline;
+}
+
+/* MAIN */
+main {
+  padding: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* CARD */
+.card {
+  background: #fff;
+  padding: 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 30px;
+}
+
+.card h2 {
+  margin-top: 0;
+  color: var(--primary);
+  font-size: 24px;
+}
+
+.card p {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* CLAUSES */
+.clause {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.clause h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.clause p {
+  margin: 0 0 15px;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* FORM */
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comment-form textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 15px;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.comment-form textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(13,110,253,0.2);
+  outline: none;
+}
+
+.comment-form .btn {
+  align-self: flex-end;
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-success {
+  background: var(--success);
+  color: #fff;
+}
+
+.btn-success:hover {
+  background: #157347;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #bb2d3b;
+}
+
+.comment-list {
+  margin-top: 15px;
+  border-left: 3px solid var(--primary);
+  padding-left: 15px;
+}
+
+.comment-item {
+  background: #f8f9ff;
+  padding: 10px 15px;
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.comment-item strong {
+  color: var(--primary);
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  main {
+    padding: 20px;
+  }
+
+  .clause {
+    padding: 15px;
+  }
+}
