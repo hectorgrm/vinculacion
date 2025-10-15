@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../controller/EmpresaController.php';
+require_once __DIR__ . '/../../common/functions/empresafunction.php';
 
 use Residencia\Controller\EmpresaController;
 
@@ -9,36 +10,6 @@ $search = isset($_GET['search']) ? trim((string) $_GET['search']) : null;
 
 $empresaController = new EmpresaController();
 $empresas = $empresaController->listEmpresas($search);
-
-function renderBadgeClass(?string $estatus): string {
-    $value = trim((string) $estatus);
-
-    if ($value !== '' && function_exists('mb_strtolower')) {
-        $value = mb_strtolower($value, 'UTF-8');
-    } else {
-        $value = strtolower($value);
-    }
-
-    switch ($value) {
-        case 'activa':
-            return 'badge ok';
-        case 'en revisión':
-        case 'en revision':
-            return 'badge secondary';
-        case 'inactiva':
-            return 'badge warn';
-        case 'suspendida':
-            return 'badge err';
-        default:
-            return 'badge secondary';
-    }
-}
-
-function renderBadgeLabel(?string $estatus): string {
-    $estatus = trim((string) $estatus);
-
-    return $estatus !== '' ? $estatus : 'Sin especificar';
-}
 ?>
 <!DOCTYPE html>
 <html lang="es">
