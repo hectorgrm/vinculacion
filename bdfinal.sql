@@ -198,12 +198,17 @@ CREATE TABLE `rp_empresa` (
   `contacto_nombre` varchar(191) DEFAULT NULL,
   `contacto_email` varchar(191) DEFAULT NULL,
   `telefono` varchar(30) DEFAULT NULL,
+  `estado` varchar(100) DEFAULT NULL,
+  `municipio` varchar(100) DEFAULT NULL,
+  `cp` varchar(10) DEFAULT NULL,
+  `direccion` varchar(255) DEFAULT NULL,
   `estatus` enum('Activa','En revisión','Inactiva','Suspendida') NOT NULL DEFAULT 'En revisión',
   `creado_en` datetime NOT NULL DEFAULT current_timestamp(),
+  `actualizado_en` datetime DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_empresa_rfc` (`rfc`),
   KEY `idx_empresa_nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -212,7 +217,7 @@ CREATE TABLE `rp_empresa` (
 
 LOCK TABLES `rp_empresa` WRITE;
 /*!40000 ALTER TABLE `rp_empresa` DISABLE KEYS */;
-INSERT INTO `rp_empresa` VALUES (1,'Casa del Barrio','CDB810101AA1','José Manuel Velador','contacto@casadelbarrio.mx','(33) 1234 5678','En revisión','2025-09-09 21:48:19'),(2,'Tequila ECT','TEC920202BB2','María González','legal@tequilaect.com','(33) 2345 6789','Activa','2025-09-09 21:48:19'),(3,'Industrias Yakumo','IYA930303CC3','Luis Pérez','vinculacion@yakumo.com','(55) 3456 7890','En revisión','2025-09-09 21:48:19'),(4,'Barbería Gómez','BG1234567AA1','Homero Ruiz','contacto@barberiagomez.mx','33 1234 5678','En revisión','2025-10-15 00:23:17');
+INSERT INTO `rp_empresa` VALUES (1,'Casa del Barrio','CDB810101AA1','José Manuel Velador','contacto@casadelbarrio.mx','(33) 1234 5678','Jalisco','Guadalajara','44100','Av. Vallarta 1200, Col. Arcos Vallarta','En revisión','2025-09-09 21:48:19','2025-10-15 14:14:20'),(2,'Tequila ECT','TEC920202BB2','María González','legal@tequilaect.com','(33) 2345 6789','Jalisco','Tequila','46400','Calle Morelos 45, Centro','Activa','2025-09-09 21:48:19','2025-10-15 14:14:20'),(3,'Industrias Yakumo','IYA930303CC3','Luis Pérez','vinculacion@yakumo.com','(55) 3456 7890','Ciudad de México','Benito Juárez','03100','Av. Universidad 300, Col. Del Valle','En revisión','2025-09-09 21:48:19','2025-10-15 14:14:20'),(4,'Barbería Gómez','BG1234567AA1','Homero Ruiz','contacto@barberiagomez.mx','33 1234 5678','Jalisco','Tequila','46400','Calle Hidalgo 12','En revisión','2025-10-15 00:23:17','2025-10-15 14:14:20');
 /*!40000 ALTER TABLE `rp_empresa` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -771,4 +776,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-15  1:33:03
+-- Dump completed on 2025-10-15 14:22:19
