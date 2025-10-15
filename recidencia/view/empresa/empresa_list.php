@@ -1,3 +1,45 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../../controller/EmpresaController.php';
+
+use Residencia\Controller\EmpresaController;
+
+$search = isset($_GET['search']) ? trim((string) $_GET['search']) : null;
+
+$empresaController = new EmpresaController();
+$empresas = $empresaController->listEmpresas($search);
+
+function renderBadgeClass(?string $estatus): string {
+    $value = trim((string) $estatus);
+
+    if ($value !== '' && function_exists('mb_strtolower')) {
+        $value = mb_strtolower($value, 'UTF-8');
+    } else {
+        $value = strtolower($value);
+    }
+
+    switch ($value) {
+        case 'activa':
+            return 'badge ok';
+        case 'en revisión':
+        case 'en revision':
+            return 'badge secondary';
+        case 'inactiva':
+            return 'badge warn';
+        case 'suspendida':
+            return 'badge err';
+        default:
+            return 'badge secondary';
+    }
+}
+
+function renderBadgeLabel(?string $estatus): string {
+    $estatus = trim((string) $estatus);
+
+    return $estatus !== '' ? $estatus : 'Sin especificar';
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -37,7 +79,7 @@
             <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
               <div class="field" style="min-width:260px; max-width:360px; flex:1;">
                 <label for="search">Buscar empresa:</label>
-                <input type="text" id="search" name="search" placeholder="Nombre, contacto o RFC..." />
+                <input type="text" id="search" name="search" placeholder="Nombre, contacto o RFC..." value="<?php echo htmlspecialchars((string) $search, ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
               <div class="actions" style="margin:0;">
                 <button type="submit" class="btn primary">🔍 Buscar</button>
@@ -62,50 +104,28 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- 🧪 Registros de ejemplo (remplazar por PHP dinámico) -->
+                <?php if ($empresas === []) : ?>
                 <tr>
-                  <td>1</td>
-                  <td>Casa del Barrio</td>
-                  <td>CDB810101AA1</td>
-                  <td>José Manuel Velador</td>
-                  <td>contacto@casadelbarrio.mx</td>
-                  <td>(33) 1234 5678</td>
-                  <td><span class="badge ok">Activa</span></td>
+                  <td colspan="8" style="text-align:center;">No se encontraron empresas registradas.</td>
+                </tr>
+                <?php else : ?>
+                  <?php foreach ($empresas as $empresa) : ?>
+                <tr>
+                  <td><?php echo htmlspecialchars((string) ($empresa['id'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                  <td><?php echo htmlspecialchars((string) ($empresa['nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                  <td><?php echo htmlspecialchars((string) ($empresa['rfc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                  <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                  <td><?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                  <td><?php echo htmlspecialchars((string) ($empresa['telefono'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                  <td><span class="<?php echo renderBadgeClass($empresa['estatus'] ?? null); ?>"><?php echo htmlspecialchars(renderBadgeLabel($empresa['estatus'] ?? null), ENT_QUOTES, 'UTF-8'); ?></span></td>
                   <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <a href="empresa_view.php?id=1" class="btn">👁️ Ver</a>
-                    <a href="empresa_edit.php?id=1" class="btn">✏️ Editar</a>
-                    <a href="empresa_delete.php?id=1" class="btn">🗑️ Eliminar</a>
+                    <a href="empresa_view.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>" class="btn">👁️ Ver</a>
+                    <a href="empresa_edit.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>" class="btn">✏️ Editar</a>
+                    <a href="empresa_delete.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>" class="btn">🗑️ Eliminar</a>
                   </td>
                 </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Tequila ECT</td>
-                  <td>TEC920202BB2</td>
-                  <td>María González</td>
-                  <td>legal@tequilaect.com</td>
-                  <td>(33) 2345 6789</td>
-                  <td><span class="badge ok">Activa</span></td>
-                  <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <a href="empresa_view.php?id=2" class="btn">👁️ Ver</a>
-                    <a href="empresa_edit.php?id=2" class="btn">✏️ Editar</a>
-                    <a href="empresa_delete.php?id=2" class="btn">🗑️ Eliminar</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>Industrias Yakumo</td>
-                  <td>IYA930303CC3</td>
-                  <td>Luis Pérez</td>
-                  <td>vinculacion@yakumo.com</td>
-                  <td>(55) 3456 7890</td>
-                  <td><span class="badge ok">Activa</span></td>
-                  <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <a href="empresa_view.php?id=3" class="btn">👁️ Ver</a>
-                    <a href="empresa_edit.php?id=3" class="btn">✏️ Editar</a>
-                    <a href="empresa_delete.php?id=3" class="btn">🗑️ Eliminar</a>
-                  </td>
-                </tr>
-                <!-- /Registros de ejemplo -->
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
