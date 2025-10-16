@@ -64,6 +64,10 @@ class EmpresaModel
             INSERT INTO rp_empresa (
                 nombre,
                 rfc,
+                representante,
+                cargo_representante,
+                sector,
+                sitio_web,
                 contacto_nombre,
                 contacto_email,
                 telefono,
@@ -71,10 +75,16 @@ class EmpresaModel
                 municipio,
                 cp,
                 direccion,
-                estatus
+                estatus,
+                regimen_fiscal,
+                notas
             ) VALUES (
                 :nombre,
                 :rfc,
+                :representante,
+                :cargo_representante,
+                :sector,
+                :sitio_web,
                 :contacto_nombre,
                 :contacto_email,
                 :telefono,
@@ -82,7 +92,9 @@ class EmpresaModel
                 :municipio,
                 :cp,
                 :direccion,
-                :estatus
+                :estatus,
+                :regimen_fiscal,
+                :notas
             )
         SQL;
 
@@ -90,6 +102,10 @@ class EmpresaModel
         $statement->execute([
             ':nombre' => $data['nombre'],
             ':rfc' => $data['rfc'],
+            ':representante' => $data['representante'],
+            ':cargo_representante' => $data['cargo_representante'],
+            ':sector' => $data['sector'],
+            ':sitio_web' => $data['sitio_web'],
             ':contacto_nombre' => $data['contacto_nombre'],
             ':contacto_email' => $data['contacto_email'],
             ':telefono' => $data['telefono'],
@@ -98,6 +114,8 @@ class EmpresaModel
             ':cp' => $data['cp'],
             ':direccion' => $data['direccion'],
             ':estatus' => $data['estatus'],
+            ':regimen_fiscal' => $data['regimen_fiscal'],
+            ':notas' => $data['notas'],
         ]);
 
         return (int) $this->pdo->lastInsertId();

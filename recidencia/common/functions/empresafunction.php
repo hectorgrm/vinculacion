@@ -84,6 +84,10 @@ if (!function_exists('empresaFormDefaults')) {
         return [
             'nombre' => '',
             'rfc' => '',
+            'representante' => '',
+            'cargo_representante' => '',
+            'sector' => '',
+            'sitio_web' => '',
             'contacto_nombre' => '',
             'contacto_email' => '',
             'telefono' => '',
@@ -91,7 +95,9 @@ if (!function_exists('empresaFormDefaults')) {
             'municipio' => '',
             'cp' => '',
             'direccion' => '',
-            'estatus' => 'Activa',
+            'estatus' => 'En revisión',
+            'regimen_fiscal' => '',
+            'notas' => '',
         ];
     }
 }
@@ -110,6 +116,11 @@ if (!function_exists('empresaSanitizeInput')) {
 
             if (!is_string($value)) {
                 $value = '';
+            }
+
+            if ($field === 'notas') {
+                $data[$field] = trim($value) === '' ? '' : $value;
+                continue;
             }
 
             $value = trim($value);
@@ -161,6 +172,26 @@ if (!function_exists('empresaValidateData')) {
             $errors[] = 'El nombre del contacto no puede exceder 191 caracteres.';
         }
 
+        if ($data['representante'] !== '' && empresaStringLength($data['representante']) > 191) {
+            $errors[] = 'El representante legal no puede exceder 191 caracteres.';
+        }
+
+        if ($data['cargo_representante'] !== '' && empresaStringLength($data['cargo_representante']) > 191) {
+            $errors[] = 'El cargo del representante no puede exceder 191 caracteres.';
+        }
+
+        if ($data['sector'] !== '' && empresaStringLength($data['sector']) > 191) {
+            $errors[] = 'El sector no puede exceder 191 caracteres.';
+        }
+
+        if ($data['sitio_web'] !== '') {
+            if (!filter_var($data['sitio_web'], FILTER_VALIDATE_URL)) {
+                $errors[] = 'Ingresa un sitio web válido.';
+            } elseif (empresaStringLength($data['sitio_web']) > 255) {
+                $errors[] = 'El sitio web no puede exceder 255 caracteres.';
+            }
+        }
+
         if ($data['contacto_email'] !== '') {
             if (!filter_var($data['contacto_email'], FILTER_VALIDATE_EMAIL)) {
                 $errors[] = 'Ingresa un correo electrónico de contacto válido.';
@@ -189,6 +220,14 @@ if (!function_exists('empresaValidateData')) {
             $errors[] = 'La dirección no puede exceder 255 caracteres.';
         }
 
+        if ($data['regimen_fiscal'] !== '' && empresaStringLength($data['regimen_fiscal']) > 191) {
+            $errors[] = 'El régimen fiscal no puede exceder 191 caracteres.';
+        }
+
+        if ($data['notas'] !== '' && empresaStringLength($data['notas']) > 65535) {
+            $errors[] = 'Las notas no pueden exceder 65535 caracteres.';
+        }
+
         if (!in_array($data['estatus'], empresaStatusOptions(), true)) {
             $errors[] = 'Selecciona un estatus válido para la empresa.';
         }
@@ -209,6 +248,11 @@ if (!function_exists('empresaPrepareForPersistence')) {
         foreach ($data as $field => $value) {
             if ($field === 'estatus') {
                 $prepared[$field] = empresaNormalizeStatus($value);
+                continue;
+            }
+
+            if ($field === 'notas') {
+                $prepared[$field] = trim($value) === '' ? null : $value;
                 continue;
             }
 
