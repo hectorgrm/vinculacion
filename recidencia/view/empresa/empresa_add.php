@@ -166,31 +166,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
   </div>
   <?php if ($successMessage !== null) : ?>
-  <script>
-    (function () {
-      const toast = document.createElement('div');
-      toast.className = 'toast toast-success';
-      toast.setAttribute('role', 'status');
-      toast.setAttribute('aria-live', 'polite');
-      toast.textContent = <?php echo json_encode($successMessage, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
-      document.body.appendChild(toast);
-
-      requestAnimationFrame(function () {
-        toast.classList.add('is-visible');
-      });
-
-      window.setTimeout(function () {
-        toast.classList.remove('is-visible');
-        toast.addEventListener(
-          'transitionend',
-          function () {
-            toast.remove();
-          },
-          { once: true }
-        );
-      }, 4000);
-    })();
-  </script>
+  <div id="empresa-success-toast" data-toast-message="<?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>" hidden></div>
+  <script src="../../assets/js/empresa-success-toast.js"></script>
   <?php endif; ?>
 </body>
 
