@@ -213,3 +213,30 @@ td.actions .btn {
   border-bottom: 1px dashed var(--border);
   padding-bottom: 5px;
 }
+
+
+/* ---------- Toast notifications ---------- */
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(31, 111, 235, 0.95);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 1100;
+}
+
+.toast.toast-success {
+  background: rgba(45, 185, 128, 0.95);
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}

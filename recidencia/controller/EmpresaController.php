@@ -6,10 +6,12 @@ namespace Residencia\Controller;
 
 require_once __DIR__ . '/../model/EmpresaModel.php';
 require_once __DIR__ . '/../../common/model/db.php';
+require_once __DIR__ . '/../common/functions/empresafunction.php';
 
 use Common\Model\Database;
 use PDO;
 use Residencia\Model\EmpresaModel;
+use function empresaPrepareForPersistence;
 
 class EmpresaController
 {
@@ -36,5 +38,15 @@ class EmpresaController
         }
 
         return $this->empresaModel->fetchAll($term);
+    }
+
+    /**
+     * @param array<string, string> $data
+     */
+    public function createEmpresa(array $data): int
+    {
+        $payload = empresaPrepareForPersistence($data);
+
+        return $this->empresaModel->insert($payload);
     }
 }
