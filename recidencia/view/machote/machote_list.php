@@ -14,20 +14,26 @@
 
     <!-- Main -->
     <main class="main">
+
+      <!-- Encabezado -->
       <header class="topbar">
-        <h2>📑 Machotes de Convenio</h2>
-        <p class="subtitle">Administra las versiones de machotes institucionales y revisiones activas con empresas.</p>
+        <div>
+          <h2>📑 Machotes de Convenio</h2>
+          <p class="subtitle">
+            Administra las versiones de machotes institucionales y revisiones activas con empresas.
+          </p>
+        </div>
         <div class="actions">
           <a href="machote_add.php" class="btn primary">➕ Nuevo Machote</a>
         </div>
       </header>
 
-      <!-- Filtros de búsqueda -->
+      <!-- Filtros -->
       <section class="card">
         <form class="search-bar" method="get" style="display:flex; gap:10px; margin-bottom:15px;">
           <input type="text" name="search" placeholder="Buscar por empresa o versión..." />
           <button type="submit" class="btn primary">🔍 Buscar</button>
-          <a href="list.php" class="btn secondary">Limpiar</a>
+          <a href="machote_list.php" class="btn secondary">Limpiar</a>
         </form>
 
         <!-- Tabla -->
@@ -40,11 +46,10 @@
                 <th>Versión Machote</th>
                 <th>Fecha</th>
                 <th>Estatus</th>
-                <th>Acciones</th>
+                <th style="min-width:220px;">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              <!-- Ejemplo de registros -->
               <tr>
                 <td>1</td>
                 <td>Casa del Barrio</td>
@@ -52,9 +57,9 @@
                 <td>2025-10-08</td>
                 <td><span class="badge en_revision">En revisión</span></td>
                 <td class="actions">
-                  <a href="Machote_revisar.php?id=1" class="btn small primary">💬 Revisar</a>
+                  <a href="machote_revisar.php?id=1" class="btn small primary">💬 Revisar</a>
                   <a href="machote_edit.php?id=1" class="btn small">✏️ Editar</a>
-                  <a href="machote_view.php?id=1" class="btn small">✏️ view</a>
+                  <a href="machote_view.php?id=1" class="btn small">👁️ Ver</a>
                   <a href="machote_delete.php?id=1" class="btn small danger" onclick="return confirm('¿Eliminar este machote?')">🗑️ Eliminar</a>
                 </td>
               </tr>
@@ -65,7 +70,7 @@
                 <td>2025-09-25</td>
                 <td><span class="badge aprobado">Aprobado</span></td>
                 <td class="actions">
-                  <a href="revisar.php?id=2" class="btn small primary">💬 Revisar</a>
+                  <a href="machote_revisado.php?id=2" class="btn small primary">📄 Ver aprobado</a>
                 </td>
               </tr>
               <tr>
@@ -75,7 +80,7 @@
                 <td>2025-09-10</td>
                 <td><span class="badge cancelado">Cancelado</span></td>
                 <td class="actions">
-                  <a href="edit.php?id=3" class="btn small">✏️ Editar</a>
+                  <a href="machote_edit.php?id=3" class="btn small">✏️ Editar</a>
                 </td>
               </tr>
             </tbody>

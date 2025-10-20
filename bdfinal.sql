@@ -122,13 +122,84 @@ INSERT INTO `rp_convenio` VALUES (1,1,NULL,'vigente','2025-07-01','2026-06-30','
 UNLOCK TABLES;
 
 --
--- Table structure for table `rp_documento`
+-- Table structure for table `rp_documento_tipo`
 --
 
-DROP TABLE IF EXISTS `rp_documento`;
+DROP TABLE IF EXISTS `rp_documento_tipo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `rp_documento` (
+CREATE TABLE `rp_documento_tipo` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `obligatorio` tinyint(1) NOT NULL DEFAULT 1,
+  `tipo_empresa` enum('fisica','moral','ambas') DEFAULT 'ambas',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_documento_tipo_nombre` (`nombre`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `rp_documento_tipo`
+--
+
+LOCK TABLES `rp_documento_tipo` WRITE;
+/*!40000 ALTER TABLE `rp_documento_tipo` DISABLE KEYS */;
+INSERT INTO `rp_documento_tipo` VALUES (15,'Constancia de situación fiscal (SAT)','Copia de constancia del SAT emitida por la autoridad fiscal.',1,'fisica'),(16,'Comprobante de domicilio','Documento vigente no mayor a tres meses.',1,'fisica'),(17,'INE del titular','Identificación oficial del titular del negocio.',1,'fisica'),(18,'Logotipo del negocio','Archivo JPG o PNG con el logotipo del negocio (opcional).',0,'fisica'),(19,'Acta constitutiva','Carátula o documento donde se observe su constitución y objeto social.',1,'moral'),(20,'Poder notarial (si aplica)','Copia del poder notariado y la INE del apoderado legal (solo si aplica).',0,'moral'),(21,'INE del representante legal','Identificación oficial vigente del representante legal.',1,'moral'),(22,'Logotipo de la empresa','Archivo JPG o PNG con el logotipo institucional (opcional).',0,'moral');
+/*!40000 ALTER TABLE `rp_documento_tipo` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `rp_empresa`
+--
+
+DROP TABLE IF EXISTS `rp_empresa`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `rp_empresa` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(191) NOT NULL,
+  `rfc` varchar(20) DEFAULT NULL,
+  `representante` varchar(191) DEFAULT NULL,
+  `cargo_representante` varchar(191) DEFAULT NULL,
+  `sector` varchar(191) DEFAULT NULL,
+  `sitio_web` varchar(255) DEFAULT NULL,
+  `contacto_nombre` varchar(191) DEFAULT NULL,
+  `contacto_email` varchar(191) DEFAULT NULL,
+  `telefono` varchar(30) DEFAULT NULL,
+  `estado` varchar(100) DEFAULT NULL,
+  `municipio` varchar(100) DEFAULT NULL,
+  `cp` varchar(10) DEFAULT NULL,
+  `direccion` varchar(255) DEFAULT NULL,
+  `estatus` enum('Activa','En revisión','Inactiva','Suspendida') NOT NULL DEFAULT 'En revisión',
+  `regimen_fiscal` varchar(191) DEFAULT NULL,
+  `notas` text DEFAULT NULL,
+  `creado_en` datetime NOT NULL DEFAULT current_timestamp(),
+  `actualizado_en` datetime DEFAULT NULL ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_empresa_rfc` (`rfc`),
+  KEY `idx_empresa_nombre` (`nombre`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `rp_empresa`
+--
+
+LOCK TABLES `rp_empresa` WRITE;
+/*!40000 ALTER TABLE `rp_empresa` DISABLE KEYS */;
+INSERT INTO `rp_empresa` VALUES (1,'Casa del Barrio','CDB810101AA1','José Manuel Velador','Director General','Educación / Social','https://casadelbarrio.mx','José Manuel Velador','contacto@casadelbarrio.mx','(33) 1234 5678','Jalisco','Guadalajara','44100','Av. Vallarta 1200, Col. Arcos Vallarta','En revisión','Persona Moral con fines no lucrativos','Colabora en proyectos sociales con estudiantes.','2025-09-09 21:48:19','2025-10-15 22:13:04'),(2,'Tequila ECT','TEC920202BB2','María González','Gerente de Producción','Industrial / Alimentario','https://tequilaect.com.mx','María González','legal@tequilaect.com','(33) 2345 6789','Jalisco','Tequila','46400','Calle Morelos 45, Centro','Activa','Persona Moral','Empresa con convenio activo en prácticas profesionales.','2025-09-09 21:48:19','2025-10-15 22:13:04'),(3,'Industrias Yakumo','IYA930303CC3','Luis Pérez','Director de Vinculación','Tecnología / Manufactura','https://yakumo.com.mx','Luis Pérez','vinculacion@yakumo.com','(55) 3456 7890','Ciudad de México','Benito Juárez','03100','Av. Universidad 300, Col. Del Valle','En revisión','Sociedad Anónima de Capital Variable','Recibe alumnos de ingeniería en informática.','2025-09-09 21:48:19','2025-10-15 22:13:04'),(4,'Barbería Gómez','BG1234567AA1','Homero Ruiz','Propietario','Servicios / Estética','https://barberiagomez.mx','Homero Ruiz','contacto@barberiagomez.mx','33 1234 5678','Jalisco','Tequila','46400','Calle Hidalgo 12','En revisión','Régimen Simplificado de Confianza','Negocio local que apoya programas de residencias profesionales.','2025-10-15 00:23:17','2025-10-15 22:13:04'),(28,'NEW EMPRESA','TEST123321232','TestLegal','Test General','Education','https://www.test.com','Test Hector','hector@tech.com','(22)33-33-33-33','Activo','testtequila','40209234','tequila, av tech 3333','En revisión','Fisico','Test','2025-10-15 23:19:55',NULL),(30,'NEW EMPRESA','TEST1233212324','TestLegal','Test General','Education','https://www.test.com','Test Hector','hector@tech.com','(22)33-33-33-33','Activo','testtequila','40209234','tequila, av tech 3333','En revisión','Fisico',NULL,'2025-10-15 23:20:53',NULL);
+/*!40000 ALTER TABLE `rp_empresa` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `rp_empresa_doc`
+--
+
+DROP TABLE IF EXISTS `rp_empresa_doc`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `rp_empresa_doc` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `empresa_id` bigint(20) NOT NULL,
   `convenio_id` bigint(20) DEFAULT NULL,
@@ -148,77 +219,13 @@ CREATE TABLE `rp_documento` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `rp_documento`
+-- Dumping data for table `rp_empresa_doc`
 --
 
-LOCK TABLES `rp_documento` WRITE;
-/*!40000 ALTER TABLE `rp_documento` DISABLE KEYS */;
-INSERT INTO `rp_documento` VALUES (8,1,1,1,'/uploads/docs/technova_acta.pdf','aprobado','Acta revisada y válida','2025-09-19 02:11:53'),(9,1,1,2,'/uploads/docs/technova_ine.pdf','pendiente','Falta sello notarial','2025-09-19 02:11:53'),(10,2,2,1,'/uploads/docs/barberia_acta.pdf','aprobado','Documento correcto','2025-09-19 02:11:53'),(11,2,2,3,'/uploads/docs/barberia_comprobante.pdf','rechazado','Dirección no coincide con RFC','2025-09-19 02:11:53');
-/*!40000 ALTER TABLE `rp_documento` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `rp_documento_tipo`
---
-
-DROP TABLE IF EXISTS `rp_documento_tipo`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `rp_documento_tipo` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `descripcion` text DEFAULT NULL,
-  `obligatorio` tinyint(1) NOT NULL DEFAULT 1,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_documento_tipo_nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `rp_documento_tipo`
---
-
-LOCK TABLES `rp_documento_tipo` WRITE;
-/*!40000 ALTER TABLE `rp_documento_tipo` DISABLE KEYS */;
-INSERT INTO `rp_documento_tipo` VALUES (1,'INE representante',NULL,1),(2,'CURP representante',NULL,1),(3,'Acta constitutiva',NULL,1),(4,'Comprobante domicilio',NULL,0);
-/*!40000 ALTER TABLE `rp_documento_tipo` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `rp_empresa`
---
-
-DROP TABLE IF EXISTS `rp_empresa`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `rp_empresa` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(191) NOT NULL,
-  `rfc` varchar(20) DEFAULT NULL,
-  `contacto_nombre` varchar(191) DEFAULT NULL,
-  `contacto_email` varchar(191) DEFAULT NULL,
-  `telefono` varchar(30) DEFAULT NULL,
-  `estado` varchar(100) DEFAULT NULL,
-  `municipio` varchar(100) DEFAULT NULL,
-  `cp` varchar(10) DEFAULT NULL,
-  `direccion` varchar(255) DEFAULT NULL,
-  `estatus` enum('Activa','En revisión','Inactiva','Suspendida') NOT NULL DEFAULT 'En revisión',
-  `creado_en` datetime NOT NULL DEFAULT current_timestamp(),
-  `actualizado_en` datetime DEFAULT NULL ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_empresa_rfc` (`rfc`),
-  KEY `idx_empresa_nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `rp_empresa`
---
-
-LOCK TABLES `rp_empresa` WRITE;
-/*!40000 ALTER TABLE `rp_empresa` DISABLE KEYS */;
-INSERT INTO `rp_empresa` VALUES (1,'Casa del Barrio','CDB810101AA1','José Manuel Velador','contacto@casadelbarrio.mx','(33) 1234 5678','Jalisco','Guadalajara','44100','Av. Vallarta 1200, Col. Arcos Vallarta','En revisión','2025-09-09 21:48:19','2025-10-15 14:14:20'),(2,'Tequila ECT','TEC920202BB2','María González','legal@tequilaect.com','(33) 2345 6789','Jalisco','Tequila','46400','Calle Morelos 45, Centro','Activa','2025-09-09 21:48:19','2025-10-15 14:14:20'),(3,'Industrias Yakumo','IYA930303CC3','Luis Pérez','vinculacion@yakumo.com','(55) 3456 7890','Ciudad de México','Benito Juárez','03100','Av. Universidad 300, Col. Del Valle','En revisión','2025-09-09 21:48:19','2025-10-15 14:14:20'),(4,'Barbería Gómez','BG1234567AA1','Homero Ruiz','contacto@barberiagomez.mx','33 1234 5678','Jalisco','Tequila','46400','Calle Hidalgo 12','En revisión','2025-10-15 00:23:17','2025-10-15 14:14:20');
-/*!40000 ALTER TABLE `rp_empresa` ENABLE KEYS */;
+LOCK TABLES `rp_empresa_doc` WRITE;
+/*!40000 ALTER TABLE `rp_empresa_doc` DISABLE KEYS */;
+INSERT INTO `rp_empresa_doc` VALUES (8,1,1,1,'/uploads/docs/technova_acta.pdf','aprobado','Acta revisada y válida','2025-09-19 02:11:53'),(9,1,1,2,'/uploads/docs/technova_ine.pdf','pendiente','Falta sello notarial','2025-09-19 02:11:53'),(10,2,2,1,'/uploads/docs/barberia_acta.pdf','aprobado','Documento correcto','2025-09-19 02:11:53'),(11,2,2,3,'/uploads/docs/barberia_comprobante.pdf','rechazado','Dirección no coincide con RFC','2025-09-19 02:11:53');
+/*!40000 ALTER TABLE `rp_empresa_doc` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -776,4 +783,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-15 14:22:19
+-- Dump completed on 2025-10-20  2:08:17

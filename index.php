@@ -14,6 +14,10 @@
             <a href="common/login.php?module=recidencia" class="btn btn-rec">Ingresar</a>
         </div>
         <div class="card">
+            <h2>Empresa </h2>
+            <a href="portalempresa/index.php" class="btn btn-rec">Ingresar</a>
+        </div>
+        <div class="card">
             <h2>Servicio Social</h2>
             <a href="common/login.php?module=serviciosocial" class="btn btn-ss">Ingresar</a>
         </div>

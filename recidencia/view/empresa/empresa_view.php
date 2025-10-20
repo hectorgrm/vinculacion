@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -95,86 +96,136 @@
       </section>
 
       <!-- 💬 Observaciones de Machote -->
-<!-- 💬 Revisión de Machote -->
+      <!-- 💬 Revisión de Machote -->
 
-<!-- 🟢 Caso 1: Machote aprobado -->
+      <!-- 🟢 Caso 1: Machote aprobado -->
 
-<section class="card">
-  <header>📝 Revisión de Machote</header>
-  <div class="content">
-    <div class="review-summary">
-      <strong>Versión aprobada:</strong> Institucional v1.2<br>
-      <strong>Estado:</strong> <span class="badge ok">Aprobado</span><br>
-      <ul class="file-list" style="margin-top:8px;">
-        <li><a href="../../uploads/machote_v12_final.pdf" target="_blank">📄 Machote final (PDF)</a></li>
-        <li><a href="../convenio/convenio_view.php?id=12">📑 Ver convenio generado</a></li>
-      </ul>
-    </div>
-    <div class="actions">
-      <a href="../machote/machote_revisado.php?id_empresa=45" class="btn secondary">👁️ Vista final</a>
-    </div>
-  </div>
-</section>
-<!-- 🟡 Caso 2: En revisión -->
-
-
-<section class="card">
-  <header>📝 Revisión de Machote</header>
-  <div class="content">
-    <div class="review-summary">
-      <strong>Versión activa:</strong> Institucional v1.2<br>
-      <strong>Estado:</strong> <span class="badge en_revision">En revisión</span><br>
-      <strong>Hilos abiertos:</strong> 1 · <strong>Resueltos:</strong> 3 · <strong>Progreso:</strong> 75%
-    </div>
-    <div class="actions">
-      <a href="../machote/revisar.php?id_empresa=45" class="btn primary">💬 Abrir Revisión</a>
-    </div>
-  </div>
-</section>
-<!-- 🔴 Caso 3: Sin revisión activa -->
-
-<section class="card">
-  <header>📝 Revisión de Machote</header>
-  <div class="content">
-    <p>No existe una revisión de machote activa para esta empresa.</p>
-    <div class="actions">
-      <a href="../machote/add.php?empresa=45" class="btn primary">➕ Iniciar revisión</a>
-    </div>
-  </div>
-</section>
-
-
-
-      <!-- 📂 Documentos -->
       <section class="card">
-        <header>📂 Documentación Legal</header>
+        <header>📝 Revisión de Machote</header>
         <div class="content">
-          <table>
-            <thead>
-              <tr>
-                <th>Documento</th>
-                <th>Estado</th>
-                <th>Fecha de carga</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>INE Representante</td>
-                <td><span class="badge ok">Aprobado</span></td>
-                <td>2025-09-10</td>
-                <td><a href="../../uploads/ine_josevelador.pdf" class="btn small">📄 Ver</a></td>
-              </tr>
-              <tr>
-                <td>Acta Constitutiva</td>
-                <td><span class="badge pendiente">Pendiente</span></td>
-                <td>—</td>
-                <td><a href="../documentos/documento_upload.php?empresa=45" class="btn small primary">⬆️ Subir</a></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="review-summary">
+            <strong>Versión aprobada:</strong> Institucional v1.2<br>
+            <strong>Estado:</strong> <span class="badge ok">Aprobado</span><br>
+            <ul class="file-list" style="margin-top:8px;">
+              <li><a href="../../uploads/machote_v12_final.pdf" target="_blank">📄 Machote final (PDF)</a></li>
+              <li><a href="../convenio/convenio_view.php?id=12">📑 Ver convenio generado</a></li>
+            </ul>
+          </div>
+          <div class="actions">
+            <a href="../machote/machote_revisado.php?id_empresa=45" class="btn secondary">👁️ Vista final</a>
+          </div>
         </div>
       </section>
+      <!-- 🟡 Caso 2: En revisión -->
+
+
+      <section class="card">
+        <header>📝 Revisión de Machote</header>
+        <div class="content">
+          <div class="review-summary">
+            <strong>Versión activa:</strong> Institucional v1.2<br>
+            <strong>Estado:</strong> <span class="badge en_revision">En revisión</span><br>
+            <strong>Hilos abiertos:</strong> 1 · <strong>Resueltos:</strong> 3 · <strong>Progreso:</strong> 75%
+          </div>
+          <div class="actions">
+            <a href="../machote/revisar.php?id_empresa=45" class="btn primary">💬 Abrir Revisión</a>
+          </div>
+        </div>
+      </section>
+      <!-- 🔴 Caso 3: Sin revisión activa -->
+
+      <section class="card">
+        <header>📝 Revisión de Machote</header>
+        <div class="content">
+          <p>No existe una revisión de machote activa para esta empresa.</p>
+          <div class="actions">
+            <a href="../machote/add.php?empresa=45" class="btn primary">➕ Iniciar revisión</a>
+          </div>
+        </div>
+      </section>
+
+
+
+<!-- 📂 Documentación Legal -->
+<section class="card">
+  <header>
+    📂 Documentación Legal
+    <span class="subtitle">Control de documentos requeridos por Vinculación</span>
+  </header>
+
+  <div class="content">
+    <?php
+    // --- Datos simulados de ejemplo (puedes reemplazar luego con consulta real) ---
+    $docsTotal = 5;      // Total de documentos requeridos
+    $docsSubidos = 3;    // Archivos cargados por la empresa
+    $docsAprobados = 2;  // Documentos validados por Vinculación
+    $progreso = round(($docsSubidos / $docsTotal) * 100);
+    ?>
+
+    <!-- 🔢 Resumen visual -->
+    <div class="docs-summary" style="margin-bottom:15px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+      <div style="flex:1;">
+        <strong>📄 Documentos requeridos:</strong> <?php echo $docsTotal; ?><br>
+        <strong>📤 Subidos:</strong> <?php echo $docsSubidos; ?>  
+        <strong>✅ Aprobados:</strong> <?php echo $docsAprobados; ?>
+      </div>
+      <div style="flex:1;">
+        <label style="font-weight:600;">Progreso general:</label>
+        <div style="background:#eee; border-radius:8px; overflow:hidden; height:10px; margin-top:4px;">
+          <div style="width:<?php echo $progreso; ?>%; height:10px; background:#4caf50;"></div>
+        </div>
+        <small><?php echo $progreso; ?>% completado</small>
+      </div>
+    </div>
+
+    <!-- 🧾 Tabla de resumen de documentos -->
+    <table>
+      <thead>
+        <tr>
+          <th>Documento</th>
+          <th>Estado</th>
+          <th>Última actualización</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- ✅ Ejemplo: documento aprobado -->
+        <tr>
+          <td>Constancia SAT</td>
+          <td><span class="badge ok">Aprobado</span></td>
+          <td>2025-09-10</td>
+          <td><a href="../../uploads/empresa_45/sat_constancia.pdf" class="btn small">📄 Ver</a></td>
+        </tr>
+
+        <!-- ⏳ Ejemplo: documento pendiente -->
+        <tr>
+          <td>Acta Constitutiva</td>
+          <td><span class="badge pendiente">Pendiente</span></td>
+          <td>—</td>
+          <td>
+            <a href="empresa_docs.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
+          </td>
+        </tr>
+
+        <!-- ⬆ Ejemplo: logotipo pendiente -->
+        <tr>
+          <td>Logotipo del Negocio</td>
+          <td><span class="badge warn">Faltante</span></td>
+          <td>—</td>
+          <td>
+            <a href="empresa_docs.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 🔗 Acción principal -->
+    <div class="actions" style="margin-top:16px; justify-content:flex-end;">
+      <a href="empresa_docs.php?id_empresa=45" class="btn primary">📁 Gestionar Documentos</a>
+    </div>
+  </div>
+</section>
+
 
       <!-- 🎓 Estudiantes vinculados -->
       <section class="card">
@@ -211,14 +262,15 @@
       </section>
 
       <!-- 🔧 Acciones -->
-<section class="card">
-  <div class="content actions" style="justify-content:flex-end;">
-    <a href="empresa_edit.php?id=45" class="btn primary">✏️ Editar Empresa</a>
-    <a href="empresa_delete.php?id=45" class="btn danger">🗑️ Eliminar Empresa</a>
-  </div>
-</section>
+      <section class="card">
+        <div class="content actions" style="justify-content:flex-end;">
+          <a href="empresa_edit.php?id=45" class="btn primary">✏️ Editar Empresa</a>
+          <a href="empresa_delete.php?id=45" class="btn danger">🗑️ Eliminar Empresa</a>
+        </div>
+      </section>
 
     </main>
   </div>
 </body>
+
 </html>

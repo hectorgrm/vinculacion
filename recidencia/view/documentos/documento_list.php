@@ -3,15 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Documentos · Residencias Profesionales</title>
+  <title>Gestión de Documentos · Residencias Profesionales</title>
 
   <!-- Estilos globales -->
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-        <link rel="stylesheet" href="../../assets/css/documentos/documento_list.css" />
+  <link rel="stylesheet" href="../../assets/css/documentos/documento_list.css" />
 
-  <!-- (Opcional) Estilos específicos de documentos -->
-  <!-- <link rel="stylesheet" href="../../assets/css/residencias/documento_list.css" /> -->
+  <style>
+    /* 🎨 Estilos locales de apoyo */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .filters .field {
+      min-width: 180px;
+      flex: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: left;
+    }
+
+    th {
+      background: #f8f8f8;
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .badge.ok { background: #d4edda; color: #155724; }
+    .badge.warn { background: #fff3cd; color: #856404; }
+    .badge.err { background: #f8d7da; color: #721c24; }
+    .badge.secondary { background: #e2e3e5; color: #383d41; }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn.small {
+      font-size: 14px;
+      padding: 6px 10px;
+    }
+
+    .legend {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .legend strong {
+      margin-right: 6px;
+    }
+  </style>
 </head>
+
 <body>
   <div class="app">
     <!-- Sidebar -->
@@ -22,71 +85,40 @@
       <header class="topbar">
         <div>
           <h2>📂 Gestión de Documentos</h2>
-          <nav class="breadcrumb">
-            <a href="../../index.php">Inicio</a>
-            <span>›</span>
-            <span>Documentos</span>
-          </nav>
+          <p class="subtitle">Revisión, control y estado de los documentos cargados por las empresas.</p>
         </div>
-        <div class="actions" style="gap:10px;">
-          <!-- Subida directa (general) -->
-          <a href="documento_upload.php" class="btn primary">⬆️ Subir Documento</a>
-        </div>
+        <a href="documento_upload.php" class="btn primary">⬆️ Subir Documento</a>
       </header>
 
-      <!-- (Opcional) Contexto si se filtra por empresa/convenio -->
-      <!--
+      <!-- 🔍 Filtros -->
       <section class="card">
-        <header>📌 Contexto</header>
+        <header>🔍 Filtros de búsqueda</header>
         <div class="content">
-          Mostrando documentos de la empresa <strong>Casa del Barrio</strong> (ID #45)
-          y convenio <strong>#12</strong>.
-          <div class="actions" style="margin-top:10px; justify-content:flex-start;">
-            <a class="btn" href="../empresa/empresa_view.php?id=45">🏢 Ver empresa</a>
-            <a class="btn" href="../convenio/convenio_view.php?id=12">📑 Ver convenio</a>
-            <a class="btn" href="documento_upload.php?empresa=45&convenio=12">⬆️ Subir ligado</a>
-          </div>
-        </div>
-      </section>
-      -->
-
-      <section class="card">
-        <header>📋 Listado de Documentos</header>
-        <div class="content">
-          <!-- Filtros -->
-          <form method="GET" class="form" style="margin-bottom: 14px;">
-            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-              <div class="field" style="min-width:260px; max-width:360px; flex:1;">
+          <form class="form">
+            <div class="filters">
+              <div class="field">
                 <label for="q">Buscar</label>
-                <input type="text" id="q" name="q" placeholder="Empresa, tipo, notas..." />
+                <input id="q" name="q" type="text" placeholder="Empresa, tipo o nota..." />
               </div>
 
               <div class="field">
                 <label for="empresa">Empresa</label>
                 <select id="empresa" name="empresa">
                   <option value="">Todas</option>
-                  <option value="45">Casa del Barrio</option>
-                  <option value="22">Tequila ECT</option>
-                  <option value="31">Industrias Yakumo</option>
+                  <option value="1">Casa del Barrio</option>
+                  <option value="2">Tequila ECT</option>
+                  <option value="3">Industrias Yakumo</option>
                 </select>
               </div>
 
               <div class="field">
-                <label for="convenio">Convenio</label>
-                <select id="convenio" name="convenio">
-                  <option value="">Todos</option>
-                  <option value="12">#12 (v1.2)</option>
-                  <option value="15">#15 (v2.0)</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label for="tipo">Tipo</label>
+                <label for="tipo">Tipo de Documento</label>
                 <select id="tipo" name="tipo">
                   <option value="">Todos</option>
-                  <option value="INE">INE Representante</option>
-                  <option value="ACTA">Acta Constitutiva</option>
-                  <option value="ANEXO">Anexo Técnico</option>
+                  <option value="15">Constancia SAT</option>
+                  <option value="16">Comprobante domicilio</option>
+                  <option value="19">Acta constitutiva</option>
+                  <option value="21">INE representante legal</option>
                 </select>
               </div>
 
@@ -100,80 +132,83 @@
                 </select>
               </div>
 
-              <div class="actions" style="margin:0;">
+              <div class="actions">
                 <button type="submit" class="btn primary">🔎 Buscar</button>
                 <a href="documento_list.php" class="btn">Limpiar</a>
               </div>
             </div>
           </form>
+        </div>
+      </section>
 
-          <!-- Tabla -->
-          <div class="table-wrapper" style="overflow:auto;">
+      <!-- 📋 Listado de documentos -->
+      <section class="card">
+        <header>📋 Documentos registrados</header>
+        <div class="content">
+          <div class="table-wrapper" style="overflow-x:auto;">
             <table>
               <thead>
                 <tr>
                   <th>ID</th>
                   <th>Empresa</th>
-                  <th>Convenio</th>
-                  <th>Tipo</th>
+                  <th>Tipo de Documento</th>
                   <th>Estatus</th>
-                  <th>Fecha</th>
+                  <th>Observación</th>
+                  <th>Fecha de Carga</th>
                   <th style="min-width:260px;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <!-- Ejemplos (luego dinámico con PHP) -->
+                <!-- Ejemplos estáticos (luego dinámico con PHP) -->
                 <tr>
-                  <td>101</td>
-                  <td><a class="btn" href="../empresa/empresa_view.php?id=45">Casa del Barrio</a></td>
-                  <td><a class="btn" href="../convenio/convenio_view.php?id=12">#12 (v1.2)</a></td>
-                  <td>INE Representante</td>
+                  <td>8</td>
+                  <td><a class="btn small" href="../empresa/empresa_view.php?id=1">Casa del Barrio</a></td>
+                  <td>Acta constitutiva</td>
                   <td><span class="badge ok">Aprobado</span></td>
-                  <td>2025-09-10</td>
-                  <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <a class="btn" href="../../uploads/ine_josevelador.pdf" target="_blank">📄 Ver</a>
-                    <a class="btn" href="documento_view.php?id=101">👁️ Detalle</a>
-                    <a class="btn" href="documento_delete.php?id=101">🗑️ Eliminar</a>
+                  <td>Documento validado correctamente.</td>
+                  <td>2025-09-19</td>
+                  <td class="actions">
+                    <a class="btn small" href="../../uploads/docs/technova_acta.pdf" target="_blank">📄 Ver</a>
+                    <a class="btn small" href="documento_view.php?id=8">👁️ Detalle</a>
+                    <a class="btn small danger" href="documento_delete.php?id=8">🗑️ Eliminar</a>
                   </td>
                 </tr>
 
                 <tr>
-                  <td>102</td>
-                  <td><a class="btn" href="../empresa/empresa_view.php?id=45">Casa del Barrio</a></td>
-                  <td><a class="btn" href="../convenio/convenio_view.php?id=12">#12 (v1.2)</a></td>
-                  <td>Acta Constitutiva</td>
+                  <td>9</td>
+                  <td><a class="btn small" href="../empresa/empresa_view.php?id=1">Casa del Barrio</a></td>
+                  <td>INE del representante legal</td>
                   <td><span class="badge warn">Pendiente</span></td>
-                  <td>—</td>
-                  <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <a class="btn primary" href="documento_upload.php?empresa=45&convenio=12&tipo=ACTA">⬆️ Subir</a>
-                    <a class="btn" href="documento_view.php?id=102">👁️ Detalle</a>
-                    <a class="btn" href="documento_delete.php?id=102">🗑️ Eliminar</a>
+                  <td>Falta sello notarial.</td>
+                  <td>2025-09-19</td>
+                  <td class="actions">
+                    <a class="btn small primary" href="documento_review.php?id=9">📝 Revisar</a>
+                    <a class="btn small" href="documento_view.php?id=9">👁️ Detalle</a>
                   </td>
                 </tr>
 
                 <tr>
-                  <td>103</td>
-                  <td><a class="btn" href="../empresa/empresa_view.php?id=31">Industrias Yakumo</a></td>
-                  <td>—</td>
-                  <td>Anexo Técnico</td>
-                  <td><span class="badge secondary">Rechazado</span></td>
-                  <td>2025-08-22</td>
-                  <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <a class="btn" href="../../uploads/anexo_tecnico_103.pdf" target="_blank">📄 Ver</a>
-                    <a class="btn" href="documento_view.php?id=103">👁️ Detalle</a>
-                    <a class="btn" href="documento_delete.php?id=103">🗑️ Eliminar</a>
+                  <td>11</td>
+                  <td><a class="btn small" href="../empresa/empresa_view.php?id=2">Tequila ECT</a></td>
+                  <td>Comprobante de domicilio</td>
+                  <td><span class="badge err">Rechazado</span></td>
+                  <td>Dirección no coincide con RFC.</td>
+                  <td>2025-09-19</td>
+                  <td class="actions">
+                    <a class="btn small" href="../../uploads/docs/barberia_comprobante.pdf" target="_blank">📄 Ver</a>
+                    <a class="btn small" href="documento_review.php?id=11">📝 Revisar</a>
+                    <a class="btn small danger" href="documento_delete.php?id=11">🗑️ Eliminar</a>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Leyenda -->
-          <div style="margin-top:10px; color:#64748b; font-size:14px;">
+          <div class="legend">
             <strong>Leyenda:</strong>
             <span class="badge ok">Aprobado</span>
             <span class="badge warn">Pendiente</span>
-            <span class="badge secondary">Rechazado</span>
+            <span class="badge err">Rechazado</span>
           </div>
         </div>
       </section>

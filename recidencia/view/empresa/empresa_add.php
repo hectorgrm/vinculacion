@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../controller/EmpresaController.php';
 require_once __DIR__ . '/../../common/functions/empresafunction.php';
 
+
 use Residencia\Controller\EmpresaController;
 
 $empresaController = new EmpresaController();
@@ -23,7 +24,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $successMessage = 'La empresa se registró correctamente con el folio #' . $empresaId . '.';
             $formData = empresaFormDefaults();
         } catch (\Throwable $throwable) {
-            $errors[] = 'Ocurrió un error al registrar la empresa. Intenta nuevamente.';
+            if ($throwable instanceof PDOException) {
+                $errorInfo = $throwable->errorInfo;
+
+                if (is_array($errorInfo) && isset($errorInfo[1]) && (int) $errorInfo[1] === 1062) {
+                    $errors[] = 'Ya existe una empresa registrada con el RFC proporcionado.';
+                } else {
+                    $errors[] = 'Ocurrió un error al registrar la empresa. Intenta nuevamente.';
+                }
+            } else {
+                $errors[] = 'Ocurrió un error al registrar la empresa. Intenta nuevamente.';
+            }
         }
     }
 }
