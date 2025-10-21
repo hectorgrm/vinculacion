@@ -8,8 +8,15 @@ use Residencia\Controller\EmpresaController;
 
 $search = isset($_GET['search']) ? trim((string) $_GET['search']) : null;
 
-$empresaController = new EmpresaController();
-$empresas = $empresaController->listEmpresas($search);
+$empresas = [];
+$errorMessage = null;
+
+try {
+  $empresaController = new EmpresaController();
+  $empresas = $empresaController->listEmpresas($search);
+} catch (Throwable $exception) {
+  $errorMessage = $exception->getMessage();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -45,6 +52,11 @@ $empresas = $empresaController->listEmpresas($search);
       <section class="card">
         <header>📂 Lista de Empresas Registradas</header>
         <div class="content">
+          <?php if ($errorMessage !== null) : ?>
+          <div class="alert error" role="alert" style="margin-bottom:16px; padding:12px 16px; border-radius:8px; background:#fce8e6; color:#a50e0e;">
+            <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
+          </div>
+          <?php endif; ?>
           <!-- BUSCADOR -->
           <form class="form" style="margin: 0 0 16px 0;">
             <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">

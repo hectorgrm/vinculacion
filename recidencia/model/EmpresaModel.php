@@ -24,6 +24,7 @@ class EmpresaModel
             SELECT id,
                    nombre,
                    rfc,
+                   representante,
                    contacto_nombre,
                    contacto_email,
                    telefono,
@@ -37,20 +38,18 @@ class EmpresaModel
         if ($search !== null && $search !== '') {
             $sql .= ' WHERE (nombre LIKE :search'
                  . ' OR rfc LIKE :search'
+                 . ' OR representante LIKE :search'
                  . ' OR contacto_nombre LIKE :search'
                  . ' OR contacto_email LIKE :search'
+                 . ' OR telefono LIKE :search'
                  . ' OR estatus LIKE :search)';
             $params[':search'] = '%' . $search . '%';
         }
 
         $sql .= ' ORDER BY nombre ASC';
 
-        if ($params === []) {
-            $statement = $this->pdo->query($sql);
-        } else {
-            $statement = $this->pdo->prepare($sql);
-            $statement->execute($params);
-        }
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($params);
 
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }

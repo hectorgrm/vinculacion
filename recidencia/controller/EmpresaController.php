@@ -10,8 +10,11 @@ require_once __DIR__ . '/../common/functions/empresafunction.php';
 
 use Common\Model\Database;
 use PDO;
+use PDOException;
 use Residencia\Model\EmpresaModel;
 use function empresaPrepareForPersistence;
+use RuntimeException;
+
 
 class EmpresaController
 {
@@ -25,7 +28,7 @@ class EmpresaController
 
         $this->empresaModel = new EmpresaModel($pdo);
     }
-
+//
     /**
      * @return array<int, array<string, mixed>>
      */
@@ -37,7 +40,11 @@ class EmpresaController
             $term = null;
         }
 
-        return $this->empresaModel->fetchAll($term);
+        try {
+            return $this->empresaModel->fetchAll($term);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudieron obtener las empresas registradas.', 0, $exception);
+        }
     }
 
     /**
@@ -47,6 +54,10 @@ class EmpresaController
     {
         $payload = empresaPrepareForPersistence($data);
 
-        return $this->empresaModel->insert($payload);
+        try {
+            return $this->empresaModel->insert($payload);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo registrar la empresa.', 0, $exception);
+        }
     }
 }
