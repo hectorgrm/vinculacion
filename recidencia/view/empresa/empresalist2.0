@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Empresas · Residencia Profesional</title>
+
+  <!-- Estilos globales -->
+  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
+  <link rel="stylesheet" href="../../assets/css/empresas/empresalist.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>Residencias Profesionales</h1>
+      </div>
+      <nav class="nav">
+        <a href="../../index.php">🏠 Dashboard</a>
+        <a href="../convenio/convenio_list.php">📑 Convenios</a>
+        <a href="empresa_list.php" class="active">🏢 Empresas</a>
+        <a href="../documentos/documento_list.php">📂 Documentos</a>
+        <a href="../machote/machote_list.php">📝 Machote Comentarios</a>
+        <a href="../documentotipo/documentotipo_list.php">🗂️ Documento Tipo</a>
+        <a href="../portalacceso/portal_list.php">🔐 Portal Acceso</a>
+        <a href="../../../common/logout.php">🚪 Cerrar sesión</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2>🏢 Empresas · Residencia Profesional</h2>
+          <nav class="breadcrumb">
+            <a href="../../index.php">Inicio</a>
+            <span>›</span>
+            <span>Empresas</span>
+          </nav>
+        </div>
+        <a href="empresa_add.php" class="btn primary">➕ Registrar Nueva Empresa</a>
+      </header>
+
+      <!-- === RESUMEN RÁPIDO (KPIs) === -->
+      <section class="empresa-summary">
+        <a href="empresa_list.php?status=activa" class="kpi ok">
+          <small>Activas</small>
+          <b>12</b>
+        </a>
+        <a href="empresa_list.php?status=en_revision" class="kpi warn">
+          <small>En Revisión</small>
+          <b>4</b>
+        </a>
+        <a href="empresa_list.php?status=inactiva" class="kpi">
+          <small>Inactivas</small>
+          <b>3</b>
+        </a>
+        <a href="empresa_list.php?status=suspendida" class="kpi err">
+          <small>Suspendidas</small>
+          <b>1</b>
+        </a>
+        <a href="../machote/machote_list.php" class="kpi chat">
+          <small>Con Comentarios</small>
+          <b>5</b>
+        </a>
+      </section>
+
+      <!-- === BUSCADOR Y FILTROS === -->
+      <section class="search-section">
+        <form class="form">
+          <div class="search-bar">
+            <input type="text" id="search" name="search" placeholder="Buscar por nombre, contacto o RFC..." />
+            <button type="submit" class="btn primary">🔍 Buscar</button>
+            <a href="empresa_list.php" class="btn">Limpiar</a>
+          </div>
+        </form>
+        <div class="filters">
+          <a href="empresa_list.php?status=activa" class="filter">Activas</a>
+          <a href="empresa_list.php?status=en_revision" class="filter">En Revisión</a>
+          <a href="empresa_list.php?status=inactiva" class="filter">Inactivas</a>
+          <a href="empresa_list.php?status=suspendida" class="filter">Suspendidas</a>
+        </div>
+      </section>
+
+      <!-- === TABLA DE EMPRESAS === -->
+      <section class="empresa-table card">
+        <header>📋 Empresas Registradas</header>
+        <div class="content">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>RFC</th>
+                  <th>Contacto</th>
+                  <th>Email</th>
+                  <th>Teléfono</th>
+                  <th>Estatus</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Homero Burgers</td>
+                  <td>HBG12345678</td>
+                  <td>Homero Simpson</td>
+                  <td>contacto@homero.com</td>
+                  <td>3312345678</td>
+                  <td><span class="badge ok">Activa</span></td>
+                  <td class="actions">
+                    <a href="empresa_view.php?id=1" class="btn">👁️ Ver</a>
+                    <a href="empresa_edit.php?id=1" class="btn">✏️ Editar</a>
+                    <a href="empresa_delete.php?id=1" class="btn">🗑️ Eliminar</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Barbería Gómez</td>
+                  <td>BGZ45678901</td>
+                  <td>Manuel Gómez</td>
+                  <td>info@barberiagomez.com</td>
+                  <td>3323456789</td>
+                  <td><span class="badge warn">En Revisión</span></td>
+                  <td class="actions">
+                    <a href="empresa_view.php?id=2" class="btn">👁️ Ver</a>
+                    <a href="empresa_edit.php?id=2" class="btn">✏️ Editar</a>
+                    <a href="empresa_delete.php?id=2" class="btn">🗑️ Eliminar</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Tech Solutions MX</td>
+                  <td>TSM98765432</td>
+                  <td>María Ruiz</td>
+                  <td>contacto@techmx.com</td>
+                  <td>3335678910</td>
+                  <td><span class="badge err">Suspendida</span></td>
+                  <td class="actions">
+                    <a href="empresa_view.php?id=3" class="btn">👁️ Ver</a>
+                    <a href="empresa_edit.php?id=3" class="btn">✏️ Editar</a>
+                    <a href="empresa_delete.php?id=3" class="btn">🗑️ Eliminar</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Paginación -->
+        <div class="pagination">
+          <a href="#">« Anterior</a>
+          <a href="#" class="active">1</a>
+          <a href="#">2</a>
+          <a href="#">3</a>
+          <a href="#">Siguiente »</a>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
