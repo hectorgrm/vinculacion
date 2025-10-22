@@ -102,6 +102,33 @@ if (!function_exists('empresaFormDefaults')) {
     }
 }
 
+if (!function_exists('empresaHydrateForm')) {
+    /**
+     * @param array<string, string> $defaults
+     * @param array<string, mixed> $record
+     * @return array<string, string>
+     */
+    function empresaHydrateForm(array $defaults, array $record): array
+    {
+        foreach ($defaults as $field => $value) {
+            if (!array_key_exists($field, $record)) {
+                continue;
+            }
+
+            if ($record[$field] === null) {
+                $defaults[$field] = '';
+                continue;
+            }
+
+            $defaults[$field] = (string) $record[$field];
+        }
+
+        $defaults['estatus'] = empresaNormalizeStatus($defaults['estatus']);
+
+        return $defaults;
+    }
+}
+
 if (!function_exists('empresaSanitizeInput')) {
     /**
      * @param array<string, mixed> $input

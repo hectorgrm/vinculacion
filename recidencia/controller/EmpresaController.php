@@ -47,6 +47,21 @@ class EmpresaController
         }
     }
 
+    public function getEmpresaById(int $id): array
+    {
+        try {
+            $empresa = $this->empresaModel->findById($id);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo obtener la información de la empresa.', 0, $exception);
+        }
+
+        if ($empresa === null) {
+            throw new RuntimeException('La empresa solicitada no existe.');
+        }
+
+        return $empresa;
+    }
+
     /**
      * @param array<string, string> $data
      */
@@ -58,6 +73,20 @@ class EmpresaController
             return $this->empresaModel->insert($payload);
         } catch (PDOException $exception) {
             throw new RuntimeException('No se pudo registrar la empresa.', 0, $exception);
+        }
+    }
+
+    /**
+     * @param array<string, string> $data
+     */
+    public function updateEmpresa(int $id, array $data): void
+    {
+        $payload = empresaPrepareForPersistence($data);
+
+        try {
+            $this->empresaModel->update($id, $payload);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo actualizar la empresa.', 0, $exception);
         }
     }
 }
