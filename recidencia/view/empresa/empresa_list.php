@@ -20,6 +20,7 @@ try {
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,9 +28,10 @@ try {
 
   <!-- Estilos globales del módulo de Residencias -->
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-    <link rel="stylesheet" href="../../assets/css/empresas/empresalist.css">
+  <link rel="stylesheet" href="../../assets/css/empresas/empresalist.css">
 
 </head>
+
 <body>
   <div class="app">
     <!-- Sidebar (usa el que ya configuraste con tus rutas) -->
@@ -52,17 +54,19 @@ try {
       <section class="card">
         <header>📂 Lista de Empresas Registradas</header>
         <div class="content">
-          <?php if ($errorMessage !== null) : ?>
-          <div class="alert error" role="alert" style="margin-bottom:16px; padding:12px 16px; border-radius:8px; background:#fce8e6; color:#a50e0e;">
-            <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
-          </div>
+          <?php if ($errorMessage !== null): ?>
+            <div class="alert error" role="alert"
+              style="margin-bottom:16px; padding:12px 16px; border-radius:8px; background:#fce8e6; color:#a50e0e;">
+              <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
+            </div>
           <?php endif; ?>
           <!-- BUSCADOR -->
           <form class="form" style="margin: 0 0 16px 0;">
             <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
               <div class="field" style="min-width:260px; max-width:360px; flex:1;">
                 <label for="search">Buscar empresa:</label>
-                <input type="text" id="search" name="search" placeholder="Nombre, contacto o RFC..." value="<?php echo htmlspecialchars((string) $search, ENT_QUOTES, 'UTF-8'); ?>" />
+                <input type="text" id="search" name="search" placeholder="Nombre, contacto o RFC..."
+                  value="<?php echo htmlspecialchars((string) $search, ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
               <div class="actions" style="margin:0;">
                 <button type="submit" class="btn primary">🔍 Buscar</button>
@@ -87,26 +91,54 @@ try {
                 </tr>
               </thead>
               <tbody>
-                <?php if ($empresas === []) : ?>
-                <tr>
-                  <td colspan="8" style="text-align:center;">No se encontraron empresas registradas.</td>
-                </tr>
-                <?php else : ?>
-                  <?php foreach ($empresas as $empresa) : ?>
-                <tr>
-                  <td><?php echo htmlspecialchars((string) ($empresa['id'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                  <td><?php echo htmlspecialchars((string) ($empresa['nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                  <td><?php echo htmlspecialchars((string) ($empresa['rfc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                  <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                  <td><?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                  <td><?php echo htmlspecialchars((string) ($empresa['telefono'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                  <td><span class="<?php echo renderBadgeClass($empresa['estatus'] ?? null); ?>"><?php echo htmlspecialchars(renderBadgeLabel($empresa['estatus'] ?? null), ENT_QUOTES, 'UTF-8'); ?></span></td>
-                  <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <a href="empresa_view.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>" class="btn">👁️ Ver</a>
-                    <a href="empresa_edit.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>" class="btn">✏️ Editar</a>
-                    <a href="empresa_delete.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>" class="btn">🗑️ Eliminar</a>
-                  </td>
-                </tr>
+                <?php if ($empresas === []): ?>
+                  <tr>
+                    <td colspan="8" style="text-align:center;">No se encontraron empresas registradas.</td>
+                  </tr>
+                <?php else: ?>
+                  <?php foreach ($empresas as $empresa): ?>
+                    <tr>
+                      <td><?php echo htmlspecialchars((string) ($empresa['id'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['rfc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                      </td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                      </td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['telefono'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><span
+                          class="<?php echo renderBadgeClass($empresa['estatus'] ?? null); ?>"><?php echo htmlspecialchars(renderBadgeLabel($empresa['estatus'] ?? null), ENT_QUOTES, 'UTF-8'); ?></span>
+                      </td>
+                      <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <a href="empresa_view.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>"
+                          class="btn">👁️ Ver</a>
+                        <a href="empresa_edit.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>"
+                          class="btn">✏️ Editar</a>
+
+                        <?php if (($empresa['estatus'] ?? '') === 'Activa' || ($empresa['estatus'] ?? '') === 'En revisión'): ?>
+                          <form id="disableForm-<?php echo $empresa['id']; ?>" action="empresa_disable.php" method="post"
+                            style="display:inline;">
+                            <input type="hidden" name="id"
+                              value="<?php echo htmlspecialchars((string) $empresa['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <button type="button" class="btn warn"
+                              onclick="confirmDisable(<?php echo $empresa['id']; ?>, '<?php echo addslashes($empresa['nombre']); ?>')">
+                              🚫 Desactivar
+                            </button>
+                          </form>
+                        <?php elseif (($empresa['estatus'] ?? '') === 'Inactiva'): ?>
+                          <form id="reactivateForm-<?php echo $empresa['id']; ?>" action="empresa_reactivate.php"
+                            method="post" style="display:inline;">
+                            <input type="hidden" name="id"
+                              value="<?php echo htmlspecialchars((string) $empresa['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <button type="button" class="btn success"
+                              onclick="confirmReactivate(<?php echo $empresa['id']; ?>, '<?php echo addslashes($empresa['nombre']); ?>')">
+                              ✅ Reactivar
+                            </button>
+                          </form>
+                        <?php endif; ?>
+                        <!-- <a href="empresa_delete.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>" class="btn">🗑️ Eliminar</a> -->
+                      </td>
+                    </tr>
                   <?php endforeach; ?>
                 <?php endif; ?>
               </tbody>
@@ -117,4 +149,19 @@ try {
     </main>
   </div>
 </body>
+<script>
+function confirmDisable(id, name) {
+  if (confirm(`¿Seguro que deseas desactivar la empresa "${name}"?\nEsto deshabilitará su portal, convenios y plazas asociadas.`)) {
+    document.getElementById('disableForm-' + id).submit();
+  }
+}
+
+function confirmReactivate(id, name) {
+  if (confirm(`¿Deseas reactivar la empresa "${name}" y restaurar su acceso al portal?`)) {
+    document.getElementById('reactivateForm-' + id).submit();
+  }
+}
+</script>
+
+
 </html>
