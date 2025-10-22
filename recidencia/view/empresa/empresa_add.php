@@ -7,14 +7,20 @@ require_once __DIR__ . '/../../common/functions/empresafunction.php';
 
 use Residencia\Controller\EmpresaController;
 
-$empresaController = new EmpresaController();
-
 $formData = empresaFormDefaults();
 $estatusOptions = empresaStatusOptions();
 $errors = [];
 $successMessage = null;
+$controllerError = null;
+$empresaController = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+try {
+    $empresaController = new EmpresaController();
+} catch (\PDOException | \RuntimeException $exception) {
+    $controllerError = 'No se pudo establecer conexión con la base de datos. Intenta nuevamente más tarde.';
+}
+
+if ($controllerError === null && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $formData = empresaSanitizeInput($_POST);
     $errors = empresaValidateData($formData);
 
@@ -24,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $successMessage = 'La empresa se registró correctamente con el folio #' . $empresaId . '.';
             $formData = empresaFormDefaults();
         } catch (\Throwable $throwable) {
-            if ($throwable instanceof PDOException) {
+            if ($throwable instanceof \PDOException) {
                 $errorInfo = $throwable->errorInfo;
 
                 if (is_array($errorInfo) && isset($errorInfo[1]) && (int) $errorInfo[1] === 1062) {
@@ -37,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+} elseif ($controllerError !== null && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $errors[] = $controllerError;
 }
 ?>
 <!DOCTYPE html>
@@ -82,6 +90,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </p>
 
           <!-- FORMULARIO -->
+          <?php if ($controllerError !== null) : ?>
+          <div class="alert alert-danger" style="margin-bottom:16px;">
+            <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
+          </div>
+          <?php endif; ?>
+
           <?php if ($successMessage !== null) : ?>
           <div class="alert alert-success" style="margin-bottom:16px;">
             <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
