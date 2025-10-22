@@ -9,15 +9,8 @@ require_once __DIR__ . '/../../common/auth.php';
 
 use Residencia\Controller\EmpresaController;
 
-// ============================
-// 🧍 Validar sesión y permisos
-// ============================
-$user = $_SESSION['user'] ?? null;
-
-if (!$user || !in_array(strtolower((string)($user['role'] ?? '')), ['res_admin', 'ss_admin'], true)) {
-    header('Location: empresa_list.php?error=unauthorized');
-    exit;
-}
+// Usuario autenticado disponible desde auth.php
+$user = $residenciaAuthUser;
 
 // ============================
 // 📩 Validar ID recibido por POST

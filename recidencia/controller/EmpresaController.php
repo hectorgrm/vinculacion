@@ -89,4 +89,22 @@ class EmpresaController
             throw new RuntimeException('No se pudo actualizar la empresa.', 0, $exception);
         }
     }
+
+    public function disableEmpresa(int $empresaId, int $userId, string $reason = ''): void
+    {
+        try {
+            $this->empresaModel->disableWithCascade($empresaId, $userId, $reason);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo desactivar la empresa.', 0, $exception);
+        }
+    }
+
+    public function reactivateEmpresa(int $empresaId, int $userId, string $reason = ''): void
+    {
+        try {
+            $this->empresaModel->reactivateWithCascade($empresaId, $userId, $reason);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo reactivar la empresa.', 0, $exception);
+        }
+    }
 }

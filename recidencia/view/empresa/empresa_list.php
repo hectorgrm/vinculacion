@@ -148,20 +148,6 @@ try {
       </section>
     </main>
   </div>
+<script src="../../assets/js/empresa-actions.js"></script>
 </body>
-<script>
-function confirmDisable(id, name) {
-  if (confirm(`¿Seguro que deseas desactivar la empresa "${name}"?\nEsto deshabilitará su portal, convenios y plazas asociadas.`)) {
-    document.getElementById('disableForm-' + id).submit();
-  }
-}
-
-function confirmReactivate(id, name) {
-  if (confirm(`¿Deseas reactivar la empresa "${name}" y restaurar su acceso al portal?`)) {
-    document.getElementById('reactivateForm-' + id).submit();
-  }
-}
-</script>
-
-
 </html>
