@@ -36,6 +36,7 @@
         </div>
       </section>
 
+      <!-- Formulario principal -->
       <form class="form-grid" method="post" action="update.php">
         <input type="hidden" name="empresa_id" value="45" />
 
@@ -123,9 +124,10 @@
             <div class="field">
               <label for="estatus">Estatus</label>
               <select id="estatus" name="estatus">
-                <option value="activa" selected>Activa</option>
-                <option value="en_revision">En revisión</option>
-                <option value="inactiva">Inactiva</option>
+                <option value="Activa" selected>Activa</option>
+                <option value="En revisión">En revisión</option>
+                <option value="Inactiva">Inactiva</option>
+                <option value="Suspendida">Suspendida</option>
               </select>
             </div>
 
