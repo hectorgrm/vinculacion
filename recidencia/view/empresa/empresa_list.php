@@ -81,6 +81,7 @@ try {
               <thead>
                 <tr>
                   <th>ID</th>
+                  <th>No. Control</th>
                   <th>Nombre</th>
                   <th>RFC</th>
                   <th>Contacto</th>
@@ -93,12 +94,13 @@ try {
               <tbody>
                 <?php if ($empresas === []): ?>
                   <tr>
-                    <td colspan="8" style="text-align:center;">No se encontraron empresas registradas.</td>
+                    <td colspan="9" style="text-align:center;">No se encontraron empresas registradas.</td>
                   </tr>
                 <?php else: ?>
                   <?php foreach ($empresas as $empresa): ?>
                     <tr>
                       <td><?php echo htmlspecialchars((string) ($empresa['id'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['numero_control'] ?? '-'), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['rfc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>

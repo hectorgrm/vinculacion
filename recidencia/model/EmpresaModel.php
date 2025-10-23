@@ -22,6 +22,7 @@ class EmpresaModel
     {
         $sql = <<<'SQL'
             SELECT id,
+                   numero_control,
                    nombre,
                    rfc,
                    representante,
@@ -36,7 +37,8 @@ class EmpresaModel
         $params = [];
 
         if ($search !== null && $search !== '') {
-            $sql .= ' WHERE (nombre LIKE :search'
+            $sql .= ' WHERE (numero_control LIKE :search'
+                 . ' OR nombre LIKE :search'
                  . ' OR rfc LIKE :search'
                  . ' OR representante LIKE :search'
                  . ' OR contacto_nombre LIKE :search'
@@ -124,6 +126,7 @@ class EmpresaModel
     {
         $sql = <<<'SQL'
             SELECT id,
+                   numero_control,
                    nombre,
                    rfc,
                    representante,
