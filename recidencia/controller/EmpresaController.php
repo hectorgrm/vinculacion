@@ -12,8 +12,9 @@ use Common\Model\Database;
 use PDO;
 use PDOException;
 use Residencia\Model\EmpresaModel;
-use function empresaPrepareForPersistence;
 use RuntimeException;
+use function array_key_exists;
+use function empresaPrepareForPersistence;
 
 
 class EmpresaController
@@ -81,6 +82,13 @@ class EmpresaController
      */
     public function updateEmpresa(int $id, array $data): void
     {
+        if (!array_key_exists('numero_control', $data)) {
+            $existing = $this->getEmpresaById($id);
+            $data['numero_control'] = isset($existing['numero_control']) && $existing['numero_control'] !== null
+                ? (string) $existing['numero_control']
+                : '';
+        }
+
         $payload = empresaPrepareForPersistence($data);
 
         try {

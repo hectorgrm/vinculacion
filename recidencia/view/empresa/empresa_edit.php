@@ -70,7 +70,17 @@ if ($controllerError === null
                 $errorInfo = $previous->errorInfo;
 
                 if (is_array($errorInfo) && isset($errorInfo[1]) && (int) $errorInfo[1] === 1062) {
-                    $errors[] = 'Ya existe una empresa registrada con el RFC proporcionado.';
+                    $duplicateDetail = isset($errorInfo[2]) && is_string($errorInfo[2])
+                        ? $errorInfo[2]
+                        : '';
+
+                    if ($duplicateDetail !== '' && stripos($duplicateDetail, 'numero_control') !== false) {
+                        $errors[] = 'Ya existe una empresa registrada con el número de control proporcionado.';
+                    } elseif ($duplicateDetail !== '' && stripos($duplicateDetail, 'rfc') !== false) {
+                        $errors[] = 'Ya existe una empresa registrada con el RFC proporcionado.';
+                    } else {
+                        $errors[] = 'Ya existe una empresa registrada con la información proporcionada.';
+                    }
                 } else {
                     $errors[] = 'Ocurrió un error al actualizar la empresa. Intenta nuevamente.';
                 }
@@ -172,6 +182,10 @@ $empresaNombre = $formData['nombre'] ?? '';
         <section class="card">
           <header>🏢 Datos Generales</header>
           <div class="content grid">
+            <div class="field">
+              <label for="numero_control">No. de control</label>
+              <input id="numero_control" name="numero_control" type="text" maxlength="20" placeholder="Ej: EMP-0001" value="<?php echo htmlspecialchars(empresaFormValue($formData, 'numero_control'), ENT_QUOTES, 'UTF-8'); ?>" />
+            </div>
             <div class="field">
               <label for="nombre" class="required">Nombre de la empresa *</label>
               <input id="nombre" name="nombre" type="text" required placeholder="Ej: Casa del Barrio" value="<?php echo htmlspecialchars(empresaFormValue($formData, 'nombre'), ENT_QUOTES, 'UTF-8'); ?>" />

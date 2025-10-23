@@ -82,6 +82,7 @@ if (!function_exists('empresaFormDefaults')) {
     function empresaFormDefaults(): array
     {
         return [
+            'numero_control' => '',
             'nombre' => '',
             'rfc' => '',
             'representante' => '',
@@ -189,6 +190,10 @@ if (!function_exists('empresaValidateData')) {
             $errors[] = 'El nombre de la empresa es obligatorio.';
         } elseif (empresaStringLength($data['nombre']) > 191) {
             $errors[] = 'El nombre de la empresa no puede exceder 191 caracteres.';
+        }
+
+        if ($data['numero_control'] !== '' && empresaStringLength($data['numero_control']) > 20) {
+            $errors[] = 'El número de control no puede exceder 20 caracteres.';
         }
 
         if ($data['rfc'] !== '' && empresaStringLength($data['rfc']) > 20) {

@@ -63,6 +63,7 @@ class EmpresaModel
     {
         $sql = <<<'SQL'
             INSERT INTO rp_empresa (
+                numero_control,
                 nombre,
                 rfc,
                 representante,
@@ -80,6 +81,7 @@ class EmpresaModel
                 regimen_fiscal,
                 notas
             ) VALUES (
+                :numero_control,
                 :nombre,
                 :rfc,
                 :representante,
@@ -101,6 +103,7 @@ class EmpresaModel
 
         $statement = $this->pdo->prepare($sql);
         $statement->execute([
+            ':numero_control' => array_key_exists('numero_control', $data) ? $data['numero_control'] : null,
             ':nombre' => $data['nombre'],
             ':rfc' => $data['rfc'],
             ':representante' => $data['representante'],
@@ -165,7 +168,8 @@ class EmpresaModel
     {
         $sql = <<<'SQL'
             UPDATE rp_empresa
-               SET nombre = :nombre,
+               SET numero_control = :numero_control,
+                   nombre = :nombre,
                    rfc = :rfc,
                    representante = :representante,
                    cargo_representante = :cargo_representante,
@@ -186,6 +190,7 @@ class EmpresaModel
 
         $statement = $this->pdo->prepare($sql);
         $statement->execute([
+            ':numero_control' => array_key_exists('numero_control', $data) ? $data['numero_control'] : null,
             ':nombre' => $data['nombre'],
             ':rfc' => $data['rfc'],
             ':representante' => $data['representante'],

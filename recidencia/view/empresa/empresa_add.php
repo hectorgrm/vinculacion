@@ -34,7 +34,17 @@ if ($controllerError === null && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errorInfo = $throwable->errorInfo;
 
                 if (is_array($errorInfo) && isset($errorInfo[1]) && (int) $errorInfo[1] === 1062) {
-                    $errors[] = 'Ya existe una empresa registrada con el RFC proporcionado.';
+                    $duplicateDetail = isset($errorInfo[2]) && is_string($errorInfo[2])
+                        ? $errorInfo[2]
+                        : '';
+
+                    if ($duplicateDetail !== '' && stripos($duplicateDetail, 'numero_control') !== false) {
+                        $errors[] = 'Ya existe una empresa registrada con el número de control proporcionado.';
+                    } elseif ($duplicateDetail !== '' && stripos($duplicateDetail, 'rfc') !== false) {
+                        $errors[] = 'Ya existe una empresa registrada con el RFC proporcionado.';
+                    } else {
+                        $errors[] = 'Ya existe una empresa registrada con la información proporcionada.';
+                    }
                 } else {
                     $errors[] = 'Ocurrió un error al registrar la empresa. Intenta nuevamente.';
                 }
@@ -118,6 +128,10 @@ if ($controllerError === null && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
               <!-- 🏢 Datos generales -->
               <h3 class="section-title">🏢 Información general</h3>
+              <div class="field">
+                <label for="numero_control">No. de control</label>
+                <input type="text" id="numero_control" name="numero_control" placeholder="Ej: EMP-0001" maxlength="20" value="<?php echo htmlspecialchars(empresaFormValue($formData, 'numero_control'), ENT_QUOTES, 'UTF-8'); ?>" />
+              </div>
               <div class="field col-span-2">
                 <label for="nombre" class="required">Nombre de la empresa *</label>
                 <input type="text" id="nombre" name="nombre" placeholder="Ej: Industrias Yakumo S.A. de C.V." value="<?php echo htmlspecialchars(empresaFormValue($formData, 'nombre'), ENT_QUOTES, 'UTF-8'); ?>" required />
