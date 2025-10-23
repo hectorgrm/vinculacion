@@ -86,6 +86,7 @@ try {
                 <tr>
                   <th>ID</th>
                   <th>Empresa</th>
+                  <th>No. Control</th>
                   <th>Folio</th>
                   <th>Estatus</th>
                   <th>Machote</th>
@@ -99,13 +100,14 @@ try {
               <tbody>
                 <?php if ($convenios === []): ?>
                   <tr>
-                    <td colspan="10" style="text-align:center;">No se encontraron convenios con los filtros aplicados.</td>
+                    <td colspan="11" style="text-align:center;">No se encontraron convenios con los filtros aplicados.</td>
                   </tr>
                 <?php else: ?>
                   <?php foreach ($convenios as $convenio): ?>
                     <tr>
                       <td><?php echo htmlspecialchars((string) ($convenio['id'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['empresa_nombre'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['empresa_numero_control'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['folio'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><span class="<?php echo convenioRenderBadgeClass($convenio['estatus'] ?? null); ?>">
                           <?php echo htmlspecialchars(convenioRenderBadgeLabel($convenio['estatus'] ?? null), ENT_QUOTES, 'UTF-8'); ?>

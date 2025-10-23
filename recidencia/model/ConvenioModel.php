@@ -24,6 +24,7 @@ class ConvenioModel
             SELECT c.id,
                    c.empresa_id,
                    e.nombre AS empresa_nombre,
+                   e.numero_control AS empresa_numero_control,
                    c.folio,
                    c.estatus,
                    c.machote_version,
@@ -50,6 +51,7 @@ class ConvenioModel
         if ($search !== null && $search !== '') {
             $conditions[] = '(
                 e.nombre LIKE :search
+                OR e.numero_control LIKE :search
                 OR c.folio LIKE :search
                 OR c.version_actual LIKE :search
                 OR c.machote_version LIKE :search

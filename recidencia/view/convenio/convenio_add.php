@@ -5,19 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registrar Convenio · Residencias Profesionales</title>
 
-  <!-- Estilos globales del módulo -->
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-    <link rel="stylesheet" href="../../assets/css/convenios/convenioadd.css" />
-
-  <!-- (Opcional) agrega un CSS específico si lo necesitas -->
-  <!-- <link rel="stylesheet" href="../../assets/css/residencias/convenio_add.css" /> -->
+  <link rel="stylesheet" href="../../assets/css/convenios/convenioadd.css" />
 </head>
 <body>
   <div class="app">
-    <!-- Sidebar -->
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-    <!-- Main -->
     <main class="main">
       <header class="topbar">
         <div>
@@ -40,20 +34,22 @@
             Registra un convenio vinculado a una empresa. Podrás adjuntar el archivo y definir su vigencia.
           </p>
 
-          <!-- FORMULARIO -->
-          <!-- Si adjuntas archivo, usa multipart/form-data -->
           <form class="form" method="POST" action="convenio_add_action.php" enctype="multipart/form-data">
             <div class="grid">
+
               <!-- Empresa -->
               <div class="field col-span-2">
                 <label for="empresa_id" class="required">Empresa *</label>
                 <select name="empresa_id" id="empresa_id" required>
                   <option value="">-- Selecciona una empresa --</option>
-                  <option value="1">Casa del Barrio</option>
-                  <option value="2">Tequila ECT</option>
-                  <option value="3">Industrias Yakumo</option>
-                  <!-- 🔁 Este listado se llenará dinámicamente desde rp_empresa -->
+                  <!-- Aquí se llenará dinámicamente con PHP -->
                 </select>
+              </div>
+
+              <!-- Folio -->
+              <div class="field">
+                <label for="folio">Folio del convenio</label>
+                <input type="text" name="folio" id="folio" placeholder="Ej: CBR-2025-01" />
               </div>
 
               <!-- Estatus -->
@@ -61,17 +57,23 @@
                 <label for="estatus" class="required">Estatus del convenio *</label>
                 <select name="estatus" id="estatus" required>
                   <option value="">-- Selecciona el estatus --</option>
-                  <option value="pendiente">Pendiente</option>
-                  <option value="en_revision">En revisión</option>
-                  <option value="vigente">Vigente</option>
-                  <option value="vencido">Vencido</option>
+                  <option value="Activa">Activa</option>
+                  <option value="En revisión">En revisión</option>
+                  <option value="Inactiva">Inactiva</option>
+                  <option value="Suspendida">Suspendida</option>
                 </select>
               </div>
 
-              <!-- Versión -->
+              <!-- Machote versión -->
               <div class="field">
-                <label for="version_actual">Versión</label>
-                <input type="text" name="version_actual" id="version_actual" placeholder="Ej: v1.0, v1.2, etc." />
+                <label for="machote_version">Versión de machote</label>
+                <input type="text" name="machote_version" id="machote_version" placeholder="Ej: v1.0" />
+              </div>
+
+              <!-- Versión actual -->
+              <div class="field">
+                <label for="version_actual">Versión actual del convenio</label>
+                <input type="text" name="version_actual" id="version_actual" placeholder="Ej: v1.2" />
               </div>
 
               <!-- Fechas -->
@@ -85,16 +87,16 @@
                 <input type="date" name="fecha_fin" id="fecha_fin" />
               </div>
 
-              <!-- Archivo (opcional) -->
+              <!-- Archivo -->
               <div class="field col-span-2">
-                <label for="archivo_pdf">Archivo del convenio (PDF)</label>
-                <input type="file" name="archivo_pdf" id="archivo_pdf" accept="application/pdf" />
+                <label for="borrador_path">Archivo del convenio (PDF)</label>
+                <input type="file" name="borrador_path" id="borrador_path" accept="application/pdf" />
               </div>
 
-              <!-- Notas -->
+              <!-- Observaciones -->
               <div class="field col-span-2">
-                <label for="notas">Notas / Observaciones</label>
-                <textarea name="notas" id="notas" rows="4" placeholder="Comentarios internos del área de vinculación..."></textarea>
+                <label for="observaciones">Notas / Observaciones</label>
+                <textarea name="observaciones" id="observaciones" rows="4" placeholder="Comentarios internos del área de vinculación..."></textarea>
               </div>
             </div>
 
@@ -105,17 +107,6 @@
           </form>
         </div>
       </section>
-
-      <!-- (Opcional) Accesos rápidos si vienes desde empresa -->
-      <!--
-      <section class="card">
-        <header>Accesos rápidos</header>
-        <div class="content actions" style="justify-content:flex-start;">
-          <a class="btn" href="../empresa/empresa_view.php?id=45">🏢 Volver a la empresa</a>
-          <a class="btn" href="convenio_list.php?empresa=45">📑 Ver convenios de esta empresa</a>
-        </div>
-      </section>
-      -->
     </main>
   </div>
 </body>
