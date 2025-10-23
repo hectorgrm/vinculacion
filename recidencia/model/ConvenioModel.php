@@ -70,4 +70,72 @@ class ConvenioModel
 
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function fetchEmpresasForSelect(): array
+    {
+        $sql = <<<'SQL'
+            SELECT id,
+                   nombre,
+                   numero_control,
+                   estatus
+              FROM rp_empresa
+             WHERE estatus IN ('Activa', 'En revisión')
+             ORDER BY nombre ASC
+        SQL;
+
+        $statement = $this->pdo->query($sql);
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function insert(array $data): int
+    {
+        $sql = <<<'SQL'
+            INSERT INTO rp_convenio (
+                empresa_id,
+                machote_version,
+                estatus,
+                observaciones,
+                fecha_inicio,
+                fecha_fin,
+                version_actual,
+                folio,
+                borrador_path,
+                firmado_path
+            ) VALUES (
+                :empresa_id,
+                :machote_version,
+                :estatus,
+                :observaciones,
+                :fecha_inicio,
+                :fecha_fin,
+                :version_actual,
+                :folio,
+                :borrador_path,
+                :firmado_path
+            )
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([
+            ':empresa_id' => isset($data['empresa_id']) ? (int) $data['empresa_id'] : 0,
+            ':machote_version' => $data['machote_version'] ?? null,
+            ':estatus' => $data['estatus'] ?? 'En revisión',
+            ':observaciones' => $data['observaciones'] ?? null,
+            ':fecha_inicio' => $data['fecha_inicio'] ?? null,
+            ':fecha_fin' => $data['fecha_fin'] ?? null,
+            ':version_actual' => $data['version_actual'] ?? null,
+            ':folio' => $data['folio'] ?? null,
+            ':borrador_path' => $data['borrador_path'] ?? null,
+            ':firmado_path' => $data['firmado_path'] ?? null,
+        ]);
+
+        return (int) $this->pdo->lastInsertId();
+    }
 }

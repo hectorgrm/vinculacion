@@ -49,4 +49,28 @@ class ConvenioController
             throw new RuntimeException('No se pudieron obtener los convenios registrados.', 0, $exception);
         }
     }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getEmpresasForSelect(): array
+    {
+        try {
+            return $this->convenioModel->fetchEmpresasForSelect();
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudieron obtener las empresas disponibles.', 0, $exception);
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function createConvenio(array $data): int
+    {
+        try {
+            return $this->convenioModel->insert($data);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo registrar el convenio.', 0, $exception);
+        }
+    }
 }
