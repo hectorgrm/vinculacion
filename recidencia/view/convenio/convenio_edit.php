@@ -1,126 +1,30 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../controller/ConvenioController.php';
+require_once __DIR__ . '/../../controller/convenio/ConvenioEditController.php';
 require_once __DIR__ . '/../../common/functions/conveniofunction.php';
-require_once __DIR__ . '/../../common/functions/convenio/conveniofunctions_edit.php';
 
-$estatusOptions = convenioStatusOptions();
-$controllerData = convenioResolveControllerData();
-$controller = $controllerData['controller'];
-$controllerError = $controllerData['error'];
+use Residencia\Controller\Convenio\ConvenioEditController;
 
-$convenioId = 0;
-if (isset($_GET['id'])) {
-    $filtered = preg_replace('/[^0-9]/', '', (string) $_GET['id']);
-    $convenioId = $filtered !== null && $filtered !== '' ? (int) $filtered : 0;
-}
+$editController = new ConvenioEditController();
+$viewData = $editController->handle($_GET, $_POST, $_FILES, $_SERVER);
 
-if ($convenioId <= 0 && isset($_POST['id'])) {
-    $filtered = preg_replace('/[^0-9]/', '', (string) $_POST['id']);
-    $convenioId = $filtered !== null && $filtered !== '' ? (int) $filtered : 0;
-}
-
-$errors = [];
-$successMessage = null;
-$convenio = null;
-
-if ($controller === null) {
-    $errors[] = $controllerError ?? 'No se pudo establecer conexión con la base de datos. Intenta nuevamente más tarde.';
-} elseif ($convenioId <= 0) {
-    $errors[] = 'El identificador del convenio no es válido.';
-} else {
-    try {
-        $convenio = $controller->getConvenioById($convenioId);
-
-        if ($convenio === null) {
-            $errors[] = 'El convenio solicitado no existe o fue eliminado.';
-        }
-    } catch (\RuntimeException $runtimeException) {
-        $errors[] = $runtimeException->getMessage();
-    }
-}
-
-$formData = $convenio !== null
-    ? convenioHydrateFormDataFromRecord($convenio)
-    : convenioFormDefaults();
-
-if ($controller !== null && $convenio !== null && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $handleResult = convenioHandleEditRequest(
-        $controller,
-        isset($convenio['id']) ? (int) $convenio['id'] : $convenioId,
-        $_POST,
-        $_FILES,
-        $convenio,
-        convenioUploadsAbsoluteDir(),
-        convenioUploadsRelativeDir()
-    );
-
-    $formData = $handleResult['formData'];
-    $successMessage = $handleResult['successMessage'];
-    $postErrors = $handleResult['errors'];
-
-    if ($postErrors !== []) {
-        $errors = array_merge($errors, $postErrors);
-    }
-
-    if (is_array($handleResult['convenio'])) {
-        $convenio = $handleResult['convenio'];
-        if (isset($convenio['id']) && ctype_digit((string) $convenio['id'])) {
-            $convenioId = (int) $convenio['id'];
-        }
-    }
-}
-
-if ($errors !== []) {
-    $errors = array_values(array_unique($errors));
-}
-
-$empresaNombre = $convenio !== null && isset($convenio['empresa_nombre'])
-    ? trim((string) $convenio['empresa_nombre'])
-    : '';
-$empresaNumeroControl = $convenio !== null && isset($convenio['empresa_numero_control'])
-    ? trim((string) $convenio['empresa_numero_control'])
-    : '';
-$empresaId = $convenio !== null && isset($convenio['empresa_id'])
-    ? (int) $convenio['empresa_id']
-    : 0;
-
-$empresaLabel = $empresaNombre !== '' ? $empresaNombre : ($empresaId > 0 ? 'Empresa #' . $empresaId : 'Empresa no disponible');
-if ($empresaId > 0) {
-    $empresaLabel .= $empresaNumeroControl !== ''
-        ? sprintf(' (ID %d, NC %s)', $empresaId, $empresaNumeroControl)
-        : sprintf(' (ID %d)', $empresaId);
-}
-
-$borradorRelativePath = $convenio !== null && isset($convenio['borrador_path']) && $convenio['borrador_path'] !== null
-    ? trim((string) $convenio['borrador_path'])
-    : '';
-if ($borradorRelativePath !== '') {
-    $normalizedPath = str_replace('\\', '/', ltrim($borradorRelativePath, '/\\'));
-    $borradorUrl = '../../' . $normalizedPath;
-    $borradorFileName = basename($normalizedPath);
-} else {
-    $borradorUrl = null;
-    $borradorFileName = null;
-}
-
-$folioLabel = $convenio !== null
-    ? convenioValueOrDefault($convenio['folio'] ?? null, 'Sin folio asignado')
-    : 'Sin folio asignado';
-
-$empresaLink = $empresaId > 0
-    ? '../empresa/empresa_view.php?id=' . urlencode((string) $empresaId)
-    : '#';
-$convenioListLink = $empresaId > 0
-    ? 'convenio_list.php?empresa=' . urlencode((string) $empresaId)
-    : 'convenio_list.php';
-$machoteLink = ($empresaId > 0 && $convenioId > 0)
-    ? '../machote/revisar.php?id_empresa=' . urlencode((string) $empresaId) . '&convenio=' . urlencode((string) $convenioId)
-    : '#';
-$cancelLink = $convenioId > 0
-    ? 'convenio_view.php?id=' . urlencode((string) $convenioId)
-    : 'convenio_list.php';
+$estatusOptions = $viewData['estatusOptions'];
+$controllerError = $viewData['controllerError'];
+$controllerAvailable = $viewData['controllerAvailable'];
+$errors = $viewData['errors'];
+$successMessage = $viewData['successMessage'];
+$convenio = $viewData['convenio'];
+$convenioId = $viewData['convenioId'];
+$formData = $viewData['formData'];
+$empresaLabel = $viewData['empresaLabel'];
+$borradorUrl = $viewData['borradorUrl'];
+$borradorFileName = $viewData['borradorFileName'];
+$folioLabel = $viewData['folioLabel'];
+$empresaLink = $viewData['empresaLink'];
+$convenioListLink = $viewData['convenioListLink'];
+$machoteLink = $viewData['machoteLink'];
+$cancelLink = $viewData['cancelLink'];
 
 ?>
 <!DOCTYPE html>
@@ -177,7 +81,7 @@ $cancelLink = $convenioId > 0
             <?php endif; ?>
           </p>
 
-          <?php if ($controllerError !== null && $controller === null): ?>
+          <?php if ($controllerError !== null && !$controllerAvailable): ?>
           <div class="alert alert-danger" style="margin-bottom:16px;">
             <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
           </div>
