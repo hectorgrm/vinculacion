@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../controller/ConvenioController.php';
 require_once __DIR__ . '/../../common/functions/conveniofunction.php';
-require_once __DIR__ . '/../../common/functions/convenio/convenio_edit.php';
+require_once __DIR__ . '/../../common/functions/convenio/conveniofunctions_edit.php';
 
 $estatusOptions = convenioStatusOptions();
 $controllerData = convenioResolveControllerData();
