@@ -5,12 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Editar Convenio · Residencias Profesionales</title>
 
-  <!-- Estilos globales del módulo -->
+  <!-- Estilos globales -->
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-    <link rel="stylesheet" href="../../assets/css/convenios/convenio_edit.css" />
-
-  <!-- (Opcional) Estilos específicos para esta vista -->
-  <!-- <link rel="stylesheet" href="../../assets/css/residencias/convenio_edit.css" /> -->
+  <link rel="stylesheet" href="../../assets/css/convenios/convenio_edit.css" />
 </head>
 <body>
   <div class="app">
@@ -37,13 +34,13 @@
         </div>
       </header>
 
-      <!-- Datos del convenio -->
+      <!-- Formulario principal -->
       <section class="card">
         <header>🧾 Datos del Convenio</header>
         <div class="content">
-          <!-- Mensaje contextual (de ejemplo, luego dinámico) -->
           <p class="text-muted" style="margin-top:-6px">
-            Estás editando el convenio <strong>#12</strong> vinculado a la empresa <strong>Casa del Barrio</strong> (ID <strong>45</strong>).
+            Estás editando el convenio <strong>#12</strong> vinculado a la empresa 
+            <strong>Casa del Barrio</strong> (ID <strong>45</strong>).
           </p>
 
           <form class="form" method="POST" action="convenio_edit_action.php?id=12" enctype="multipart/form-data">
@@ -51,27 +48,39 @@
             <input type="hidden" name="empresa_id" value="45" />
 
             <div class="grid">
-              <!-- Empresa (bloqueada para evitar cambios de relación) -->
+              <!-- Empresa (bloqueada) -->
               <div class="field col-span-2">
                 <label for="empresa_locked">Empresa</label>
                 <input type="text" id="empresa_locked" value="Casa del Barrio (ID 45)" disabled />
                 <div class="help">La empresa no puede cambiarse desde aquí.</div>
               </div>
 
+              <!-- Folio -->
+              <div class="field">
+                <label for="folio">Folio</label>
+                <input type="text" id="folio" name="folio" value="CBR-2025-01" placeholder="Ej: CBR-2025-01" />
+              </div>
+
               <!-- Estatus -->
               <div class="field">
                 <label for="estatus" class="required">Estatus *</label>
                 <select id="estatus" name="estatus" required>
-                  <option value="vigente" selected>Vigente</option>
-                  <option value="en_revision">En revisión</option>
-                  <option value="pendiente">Pendiente</option>
-                  <option value="vencido">Vencido</option>
+                  <option value="Activa" selected>Activa</option>
+                  <option value="En revisión">En revisión</option>
+                  <option value="Inactiva">Inactiva</option>
+                  <option value="Suspendida">Suspendida</option>
                 </select>
               </div>
 
-              <!-- Versión -->
+              <!-- Machote versión -->
               <div class="field">
-                <label for="version_actual">Versión</label>
+                <label for="machote_version">Versión de machote</label>
+                <input type="text" id="machote_version" name="machote_version" value="v1.0" placeholder="Ej: v1.0, v1.1..." />
+              </div>
+
+              <!-- Versión actual -->
+              <div class="field">
+                <label for="version_actual">Versión actual del convenio</label>
                 <input type="text" id="version_actual" name="version_actual" value="v1.2" placeholder="Ej: v1.0, v1.2, etc." />
               </div>
 
@@ -86,24 +95,25 @@
                 <input type="date" id="fecha_fin" name="fecha_fin" value="2026-06-30" />
               </div>
 
-              <!-- Archivo actual y reemplazo -->
+              <!-- Archivo actual -->
               <div class="field">
                 <label>Archivo actual (PDF)</label>
                 <div>
-                  <a class="btn" href="../../uploads/convenios/convenio_12.pdf" target="_blank">📄 Abrir PDF actual</a>
+                  <a class="btn" href="../../uploads/convenios/convenio_12.pdf" target="_blank">📄 Ver PDF actual</a>
                 </div>
                 <div class="help">Si no subirás un archivo nuevo, deja este campo vacío.</div>
               </div>
 
+              <!-- Subir nuevo PDF -->
               <div class="field">
-                <label for="archivo_pdf">Reemplazar PDF</label>
-                <input type="file" id="archivo_pdf" name="archivo_pdf" accept="application/pdf" />
+                <label for="borrador_path">Reemplazar PDF</label>
+                <input type="file" id="borrador_path" name="archivo_pdf" accept="application/pdf" />
               </div>
 
-              <!-- Notas -->
+              <!-- Observaciones -->
               <div class="field col-span-2">
-                <label for="notas">Notas / Observaciones</label>
-                <textarea id="notas" name="notas" rows="4" placeholder="Comentarios internos del área de vinculación...">Convenio marco para prácticas y residencias; incluye anexo técnico para proyectos TI.</textarea>
+                <label for="observaciones">Notas / Observaciones</label>
+                <textarea id="observaciones" name="observaciones" rows="4" placeholder="Comentarios internos del área de vinculación...">Convenio marco para prácticas y residencias; incluye anexo técnico para proyectos TI.</textarea>
               </div>
             </div>
 
@@ -115,17 +125,17 @@
         </div>
       </section>
 
+      <!-- Histórico -->
       <section class="card">
-  <header>Histórico de versiones</header>
-  <div class="content">
-    <ul>
-      <li>v1.0 — Creado 10/09/2024</li>
-      <li>v1.1 — Modificado 12/03/2025</li>
-      <li>v1.2 — Actual (01/07/2025)</li>
-    </ul>
-  </div>
-</section>
-
+        <header>Histórico de versiones</header>
+        <div class="content">
+          <ul>
+            <li>v1.0 — Creado 10/09/2024</li>
+            <li>v1.1 — Modificado 12/03/2025</li>
+            <li>v1.2 — Actual (01/07/2025)</li>
+          </ul>
+        </div>
+      </section>
 
       <!-- Accesos rápidos -->
       <section class="card">
