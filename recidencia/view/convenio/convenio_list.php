@@ -2,26 +2,19 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../controller/ConvenioController.php';
+require_once __DIR__ . '/../../controller/convenio/ConvenioListController.php';
 require_once __DIR__ . '/../../common/functions/conveniofunction.php';
 
-use Residencia\Controller\ConvenioController;
+use Residencia\Controller\Convenio\ConvenioListController;
 
-$search = isset($_GET['search']) ? trim((string) $_GET['search']) : '';
-$rawStatus = isset($_GET['estatus']) ? trim((string) $_GET['estatus']) : '';
+$listController = new ConvenioListController();
+$viewData = $listController->handle($_GET);
 
-$estatusFilter = $rawStatus !== '' ? convenioNormalizeStatus($rawStatus) : null;
-$selectedStatus = $estatusFilter ?? '';
-
-$convenios = [];
-$errorMessage = null;
-
-try {
-  $controller = new ConvenioController();
-  $convenios = $controller->listConvenios($search !== '' ? $search : null, $estatusFilter);
-} catch (Throwable $exception) {
-  $errorMessage = $exception->getMessage();
-}
+$search = $viewData['search'];
+$selectedStatus = $viewData['selectedStatus'];
+$statusOptions = $viewData['statusOptions'];
+$convenios = $viewData['convenios'];
+$errorMessage = $viewData['errorMessage'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -56,7 +49,7 @@ try {
               value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" />
             <select name="estatus">
               <option value="">Todos los estados</option>
-              <?php foreach (convenioStatusOptions() as $option): ?>
+              <?php foreach ($statusOptions as $option): ?>
                 <option value="<?php echo htmlspecialchars($option, ENT_QUOTES, 'UTF-8'); ?>"
                   <?php echo $selectedStatus === $option ? 'selected' : ''; ?>>
                   <?php echo htmlspecialchars($option, ENT_QUOTES, 'UTF-8'); ?>
