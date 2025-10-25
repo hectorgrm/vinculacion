@@ -289,3 +289,36 @@
   color: #64748b;
   font-size: 14px;
 }
+.danger-zone {
+  background: #fff4f4;
+  border: 1px solid #ffb4b4;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.05);
+}
+
+.danger-zone header {
+  font-weight: bold;
+  color: #b60000;
+  margin-bottom: 10px;
+}
+
+.danger-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 6px;
+}
+
+.danger-list li::before {
+  content: "⚠️ ";
+}
+
+.btn.danger {
+  background: #c62828;
+  color: white;
+  font-weight: bold;
+}
+
+.btn.danger:hover {
+  background: #a61616;
+}
