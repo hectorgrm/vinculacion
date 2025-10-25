@@ -1,34 +1,15 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../controller/ConvenioController.php';
-require_once __DIR__ . '/../../common/functions/conveniofunction.php';
+$handlerResult = require __DIR__ . '/../../handler/convenio/convenio_add_handler.php';
 
-$formData = convenioFormDefaults();
-$estatusOptions = convenioStatusOptions();
-$errors = [];
-$successMessage = null;
-
-$controllerData = convenioResolveControllerData();
-$controller = $controllerData['controller'];
-$controllerError = $controllerData['error'];
-$empresaOptions = $controllerData['empresaOptions'];
-
-if ($controller !== null && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $handleResult = convenioHandleAddRequest(
-        $controller,
-        $_POST,
-        $_FILES,
-        convenioUploadsAbsoluteDir(),
-        convenioUploadsRelativeDir()
-    );
-
-    $formData = $handleResult['formData'];
-    $errors = $handleResult['errors'];
-    $successMessage = $handleResult['successMessage'];
-} elseif ($controller === null && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $errors[] = $controllerError ?? 'No se pudo procesar la solicitud.';
-}
+$formData = $handlerResult['formData'];
+$estatusOptions = $handlerResult['estatusOptions'];
+$empresaOptions = $handlerResult['empresaOptions'];
+$errors = $handlerResult['errors'];
+$successMessage = $handlerResult['successMessage'];
+$controllerError = $handlerResult['controllerError'];
+$controllerAvailable = $handlerResult['controllerAvailable'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -97,7 +78,7 @@ if ($controller !== null && $_SERVER['REQUEST_METHOD'] === 'POST') {
               <!-- Empresa -->
               <div class="field col-span-2">
                 <label for="empresa_id" class="required">Empresa *</label>
-                <select name="empresa_id" id="empresa_id" required <?php echo $controller === null ? 'disabled' : ''; ?>>
+                <select name="empresa_id" id="empresa_id" required <?php echo $controllerAvailable ? '' : 'disabled'; ?>>
                   <option value="">-- Selecciona una empresa --</option>
                   <?php foreach ($empresaOptions as $empresa): ?>
                   <?php
@@ -181,7 +162,7 @@ if ($controller !== null && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="actions">
               <a href="convenio_list.php" class="btn">Cancelar</a>
-              <button type="submit" class="btn primary" <?php echo $controller === null ? 'disabled' : ''; ?>>Guardar
+              <button type="submit" class="btn primary" <?php echo $controllerAvailable ? '' : 'disabled'; ?>>Guardar
                 Convenio</button>
             </div>
           </form>
