@@ -1,22 +1,13 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../controller/EmpresaController.php';
 require_once __DIR__ . '/../../common/functions/empresafunction.php';
 
-use Residencia\Controller\EmpresaController;
+$handlerResult = require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
 
-$search = isset($_GET['search']) ? trim((string) $_GET['search']) : null;
-
-$empresas = [];
-$errorMessage = null;
-
-try {
-  $empresaController = new EmpresaController();
-  $empresas = $empresaController->listEmpresas($search);
-} catch (Throwable $exception) {
-  $errorMessage = $exception->getMessage();
-}
+$search = $handlerResult['search'];
+$empresas = $handlerResult['empresas'];
+$errorMessage = $handlerResult['errorMessage'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
