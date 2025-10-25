@@ -1,10 +1,15 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../common/functions/empresafunction.php';
-require_once __DIR__ . '/../../handler/empresa/empresa_add_handler.php';
-
-$handlerResult = empresaAddHandler();
+/** @var array{
+ *     formData: array<string, string>,
+ *     estatusOptions: array<int, string>,
+ *     errors: array<int, string>,
+ *     successMessage: ?string,
+ *     controllerError: ?string
+ * } $handlerResult
+ */
+$handlerResult = require __DIR__ . '/../../handler/empresa/empresa_add_handler.php';
 
 $formData = $handlerResult['formData'];
 $estatusOptions = $handlerResult['estatusOptions'];

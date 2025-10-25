@@ -66,12 +66,4 @@ if (!function_exists('empresaAddHandler')) {
     }
 }
 
-$handlerResult = empresaAddHandler();
-
-$formData = $handlerResult['formData'];
-$estatusOptions = $handlerResult['estatusOptions'];
-$errors = $handlerResult['errors'];
-$successMessage = $handlerResult['successMessage'];
-$controllerError = $handlerResult['controllerError'];
-
-return $handlerResult;
+return empresaAddHandler();
