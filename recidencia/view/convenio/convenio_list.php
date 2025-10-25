@@ -2,19 +2,13 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../controller/convenio/ConvenioListController.php';
-require_once __DIR__ . '/../../common/functions/conveniofunction.php';
+$handlerResult = require __DIR__ . '/../../handler/convenio/convenio_list_handler.php';
 
-use Residencia\Controller\Convenio\ConvenioListController;
-
-$listController = new ConvenioListController();
-$viewData = $listController->handle($_GET);
-
-$search = $viewData['search'];
-$selectedStatus = $viewData['selectedStatus'];
-$statusOptions = $viewData['statusOptions'];
-$convenios = $viewData['convenios'];
-$errorMessage = $viewData['errorMessage'];
+$search = $handlerResult['search'];
+$selectedStatus = $handlerResult['selectedStatus'];
+$statusOptions = $handlerResult['statusOptions'];
+$convenios = $handlerResult['convenios'];
+$errorMessage = $handlerResult['errorMessage'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
