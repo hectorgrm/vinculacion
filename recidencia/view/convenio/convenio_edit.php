@@ -1,30 +1,24 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../controller/convenio/ConvenioEditController.php';
-require_once __DIR__ . '/../../common/functions/conveniofunction.php';
+$handlerResult = require __DIR__ . '/../../handler/convenio/convenio_edit_handler.php';
 
-use Residencia\Controller\Convenio\ConvenioEditController;
-
-$editController = new ConvenioEditController();
-$viewData = $editController->handle($_GET, $_POST, $_FILES, $_SERVER);
-
-$estatusOptions = $viewData['estatusOptions'];
-$controllerError = $viewData['controllerError'];
-$controllerAvailable = $viewData['controllerAvailable'];
-$errors = $viewData['errors'];
-$successMessage = $viewData['successMessage'];
-$convenio = $viewData['convenio'];
-$convenioId = $viewData['convenioId'];
-$formData = $viewData['formData'];
-$empresaLabel = $viewData['empresaLabel'];
-$borradorUrl = $viewData['borradorUrl'];
-$borradorFileName = $viewData['borradorFileName'];
-$folioLabel = $viewData['folioLabel'];
-$empresaLink = $viewData['empresaLink'];
-$convenioListLink = $viewData['convenioListLink'];
-$machoteLink = $viewData['machoteLink'];
-$cancelLink = $viewData['cancelLink'];
+$estatusOptions = $handlerResult['estatusOptions'];
+$controllerError = $handlerResult['controllerError'];
+$controllerAvailable = $handlerResult['controllerAvailable'];
+$errors = $handlerResult['errors'];
+$successMessage = $handlerResult['successMessage'];
+$convenio = $handlerResult['convenio'];
+$convenioId = $handlerResult['convenioId'];
+$formData = $handlerResult['formData'];
+$empresaLabel = $handlerResult['empresaLabel'];
+$borradorUrl = $handlerResult['borradorUrl'];
+$borradorFileName = $handlerResult['borradorFileName'];
+$folioLabel = $handlerResult['folioLabel'];
+$empresaLink = $handlerResult['empresaLink'];
+$convenioListLink = $handlerResult['convenioListLink'];
+$machoteLink = $handlerResult['machoteLink'];
+$cancelLink = $handlerResult['cancelLink'];
 
 ?>
 <!DOCTYPE html>
