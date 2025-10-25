@@ -210,4 +210,46 @@ class ConvenioModel
             ':id' => $id,
         ]);
     }
+
+    public function deactivate(int $id, ?string $motivo = null): bool
+    {
+        $motivo = $motivo !== null ? trim($motivo) : null;
+
+        if ($motivo === '') {
+            $motivo = null;
+        }
+
+        if ($motivo !== null) {
+            $nota = sprintf('[%s] Motivo de desactivación: %s', date('Y-m-d H:i:s'), $motivo);
+
+            $sql = <<<'SQL'
+                UPDATE rp_convenio
+                   SET estatus = 'Inactiva',
+                       observaciones = CASE
+                           WHEN observaciones IS NULL OR observaciones = '' THEN :observaciones
+                           ELSE CONCAT(observaciones, '\n\n', :observaciones)
+                       END,
+                       actualizado_en = NOW()
+                 WHERE id = :id
+            SQL;
+
+            $statement = $this->pdo->prepare($sql);
+
+            return $statement->execute([
+                ':id' => $id,
+                ':observaciones' => $nota,
+            ]);
+        }
+
+        $sql = <<<'SQL'
+            UPDATE rp_convenio
+               SET estatus = 'Inactiva',
+                   actualizado_en = NOW()
+             WHERE id = :id
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+
+        return $statement->execute([':id' => $id]);
+    }
 }

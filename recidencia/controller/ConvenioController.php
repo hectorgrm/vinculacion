@@ -97,4 +97,13 @@ class ConvenioController
             throw new RuntimeException('No se pudo actualizar el convenio.', 0, $exception);
         }
     }
+
+    public function deactivateConvenio(int $id, ?string $motivo = null): bool
+    {
+        try {
+            return $this->convenioModel->deactivate($id, $motivo);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo desactivar el convenio.', 0, $exception);
+        }
+    }
 }
