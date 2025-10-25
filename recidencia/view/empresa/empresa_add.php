@@ -1,61 +1,16 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../controller/EmpresaController.php';
 require_once __DIR__ . '/../../common/functions/empresafunction.php';
+require_once __DIR__ . '/../../handler/empresa/empresa_add_handler.php';
 
+$handlerResult = empresaAddHandler();
 
-use Residencia\Controller\EmpresaController;
-
-$formData = empresaFormDefaults();
-$estatusOptions = empresaStatusOptions();
-$errors = [];
-$successMessage = null;
-$controllerError = null;
-$empresaController = null;
-
-try {
-    $empresaController = new EmpresaController();
-} catch (\PDOException | \RuntimeException $exception) {
-    $controllerError = 'No se pudo establecer conexión con la base de datos. Intenta nuevamente más tarde.';
-}
-
-if ($controllerError === null && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $formData = empresaSanitizeInput($_POST);
-    $errors = empresaValidateData($formData);
-
-    if ($errors === []) {
-        try {
-            $empresaId = $empresaController->createEmpresa($formData);
-            $successMessage = 'La empresa se registró correctamente con el folio #' . $empresaId . '.';
-            $formData = empresaFormDefaults();
-        } catch (\Throwable $throwable) {
-            if ($throwable instanceof \PDOException) {
-                $errorInfo = $throwable->errorInfo;
-
-                if (is_array($errorInfo) && isset($errorInfo[1]) && (int) $errorInfo[1] === 1062) {
-                    $duplicateDetail = isset($errorInfo[2]) && is_string($errorInfo[2])
-                        ? $errorInfo[2]
-                        : '';
-
-                    if ($duplicateDetail !== '' && stripos($duplicateDetail, 'numero_control') !== false) {
-                        $errors[] = 'Ya existe una empresa registrada con el número de control proporcionado.';
-                    } elseif ($duplicateDetail !== '' && stripos($duplicateDetail, 'rfc') !== false) {
-                        $errors[] = 'Ya existe una empresa registrada con el RFC proporcionado.';
-                    } else {
-                        $errors[] = 'Ya existe una empresa registrada con la información proporcionada.';
-                    }
-                } else {
-                    $errors[] = 'Ocurrió un error al registrar la empresa. Intenta nuevamente.';
-                }
-            } else {
-                $errors[] = 'Ocurrió un error al registrar la empresa. Intenta nuevamente.';
-            }
-        }
-    }
-} elseif ($controllerError !== null && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $errors[] = $controllerError;
-}
+$formData = $handlerResult['formData'];
+$estatusOptions = $handlerResult['estatusOptions'];
+$errors = $handlerResult['errors'];
+$successMessage = $handlerResult['successMessage'];
+$controllerError = $handlerResult['controllerError'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
