@@ -34,6 +34,6 @@ if (!function_exists('empresaListErrorMessage')) {
     {
         $message = trim($message);
 
-        return $message !== '' ? $message : 'No se pudo obtener la lista de empresas. Intenta nuevamente mA�s tarde.';
+        return $message !== '' ? $message : 'No se pudo obtener la lista de empresas. Intenta nuevamente más tarde.';
     }
 }

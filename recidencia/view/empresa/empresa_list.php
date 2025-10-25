@@ -2,12 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../common/functions/empresafunction.php';
-
-$handlerResult = require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
-
-$search = $handlerResult['search'];
-$empresas = $handlerResult['empresas'];
-$errorMessage = $handlerResult['errorMessage'];
+require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -89,47 +84,46 @@ $errorMessage = $handlerResult['errorMessage'];
                   </tr>
                 <?php else: ?>
                   <?php foreach ($empresas as $empresa): ?>
+                    <?php
+                    $empresaId = $empresa['id'] ?? '';
+                    $empresaNombre = $empresa['nombre'] ?? '';
+                    $empresaEstatus = (string) ($empresa['estatus'] ?? '');
+                    $empresaPuedeDesactivar = $empresaEstatus === 'Activa' || $empresaEstatus === 'En revisión';
+                    $empresaPuedeReactivar = $empresaEstatus === 'Inactiva';
+                    ?>
                     <tr>
-                      <td><?php echo htmlspecialchars((string) ($empresa['id'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['numero_control'] ?? '-'), ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?php echo htmlspecialchars((string) ($empresa['nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars((string) $empresaNombre, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['rfc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
-                      </td>
-                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
-                      </td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['telefono'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><span
-                          class="<?php echo renderBadgeClass($empresa['estatus'] ?? null); ?>"><?php echo htmlspecialchars(renderBadgeLabel($empresa['estatus'] ?? null), ENT_QUOTES, 'UTF-8'); ?></span>
+                      <td>
+                        <span class="<?php echo renderBadgeClass($empresaEstatus); ?>"><?php echo htmlspecialchars(renderBadgeLabel($empresaEstatus), ENT_QUOTES, 'UTF-8'); ?></span>
                       </td>
                       <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <a href="empresa_view.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>"
-                          class="btn">👁️ Ver</a>
-                        <a href="empresa_edit.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>"
-                          class="btn">✏️ Editar</a>
+                        <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">👁️ Ver</a>
+                        <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️ Editar</a>
 
-                        <?php if (($empresa['estatus'] ?? '') === 'Activa' || ($empresa['estatus'] ?? '') === 'En revisión'): ?>
-                          <form id="disableForm-<?php echo $empresa['id']; ?>" action="empresa_disable.php" method="post"
-                            style="display:inline;">
-                            <input type="hidden" name="id"
-                              value="<?php echo htmlspecialchars((string) $empresa['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <?php if ($empresaPuedeDesactivar): ?>
+                          <form id="disableForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>" action="empresa_disable.php" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
                             <button type="button" class="btn warn"
-                              onclick="confirmDisable(<?php echo $empresa['id']; ?>, '<?php echo addslashes($empresa['nombre']); ?>')">
+                              onclick="confirmDisable(<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>, '<?php echo addslashes((string) $empresaNombre); ?>')">
                               🚫 Desactivar
                             </button>
                           </form>
-                        <?php elseif (($empresa['estatus'] ?? '') === 'Inactiva'): ?>
-                          <form id="reactivateForm-<?php echo $empresa['id']; ?>" action="empresa_reactivate.php"
-                            method="post" style="display:inline;">
-                            <input type="hidden" name="id"
-                              value="<?php echo htmlspecialchars((string) $empresa['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <?php elseif ($empresaPuedeReactivar): ?>
+                          <form id="reactivateForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>" action="empresa_reactivate.php" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
                             <button type="button" class="btn success"
-                              onclick="confirmReactivate(<?php echo $empresa['id']; ?>, '<?php echo addslashes($empresa['nombre']); ?>')">
+                              onclick="confirmReactivate(<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>, '<?php echo addslashes((string) $empresaNombre); ?>')">
                               ✅ Reactivar
                             </button>
                           </form>
                         <?php endif; ?>
-                        <!-- <a href="empresa_delete.php?id=<?php echo urlencode((string) ($empresa['id'] ?? '')); ?>" class="btn">🗑️ Eliminar</a> -->
+                        <!-- <a href="empresa_delete.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">🗑️ Eliminar</a> -->
                       </td>
                     </tr>
                   <?php endforeach; ?>
