@@ -5,21 +5,28 @@ declare(strict_types=1);
 namespace Residencia\Controller;
 
 require_once __DIR__ . '/../model/EmpresaModel.php';
+require_once __DIR__ . '/../model/empresa/EmpresaAddModel.php';
+require_once __DIR__ . '/../model/empresa/EmpresaEditModel.php';
+require_once __DIR__ . '/../model/empresa/EmpresaListModel.php';
 require_once __DIR__ . '/../../common/model/db.php';
-require_once __DIR__ . '/../common/functions/empresafunction.php';
 
 use Common\Model\Database;
 use PDO;
 use PDOException;
+use Residencia\Model\Empresa\EmpresaAddModel;
+use Residencia\Model\Empresa\EmpresaEditModel;
+use Residencia\Model\Empresa\EmpresaListModel;
 use Residencia\Model\EmpresaModel;
 use RuntimeException;
 use function array_key_exists;
-use function empresaPrepareForPersistence;
 
 
 class EmpresaController
 {
     private EmpresaModel $empresaModel;
+    private EmpresaAddModel $empresaAddModel;
+    private EmpresaEditModel $empresaEditModel;
+    private EmpresaListModel $empresaListModel;
 
     public function __construct(?PDO $pdo = null)
     {
@@ -28,6 +35,9 @@ class EmpresaController
         }
 
         $this->empresaModel = new EmpresaModel($pdo);
+        $this->empresaAddModel = new EmpresaAddModel($pdo);
+        $this->empresaEditModel = new EmpresaEditModel($pdo);
+        $this->empresaListModel = new EmpresaListModel($pdo);
     }
 //
     /**
@@ -42,7 +52,7 @@ class EmpresaController
         }
 
         try {
-            return $this->empresaModel->fetchAll($term);
+            return $this->empresaListModel->fetchAll($term);
         } catch (PDOException $exception) {
             throw new RuntimeException('No se pudieron obtener las empresas registradas.', 0, $exception);
         }
@@ -51,7 +61,7 @@ class EmpresaController
     public function getEmpresaById(int $id): array
     {
         try {
-            $empresa = $this->empresaModel->findById($id);
+            $empresa = $this->empresaEditModel->findById($id);
         } catch (PDOException $exception) {
             throw new RuntimeException('No se pudo obtener la información de la empresa.', 0, $exception);
         }
@@ -68,10 +78,8 @@ class EmpresaController
      */
     public function createEmpresa(array $data): int
     {
-        $payload = empresaPrepareForPersistence($data);
-
         try {
-            return $this->empresaModel->insert($payload);
+            return $this->empresaAddModel->create($data);
         } catch (PDOException $exception) {
             throw new RuntimeException('No se pudo registrar la empresa.', 0, $exception);
         }
@@ -89,10 +97,8 @@ class EmpresaController
                 : '';
         }
 
-        $payload = empresaPrepareForPersistence($data);
-
         try {
-            $this->empresaModel->update($id, $payload);
+            $this->empresaEditModel->update($id, $data);
         } catch (PDOException $exception) {
             throw new RuntimeException('No se pudo actualizar la empresa.', 0, $exception);
         }

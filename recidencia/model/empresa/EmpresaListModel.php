@@ -4,32 +4,58 @@ declare(strict_types=1);
 
 namespace Residencia\Model\Empresa;
 
-require_once __DIR__ . '/../EmpresaModel.php';
 require_once __DIR__ . '/../../../common/model/db.php';
 
 use Common\Model\Database;
-use Residencia\Model\EmpresaModel;
+use PDO;
 
 class EmpresaListModel
 {
-    private EmpresaModel $empresaModel;
+    private PDO $pdo;
 
-    public function __construct(?EmpresaModel $empresaModel = null)
+    public function __construct(?PDO $pdo = null)
     {
-        if ($empresaModel instanceof EmpresaModel) {
-            $this->empresaModel = $empresaModel;
-            return;
-        }
-
-        $pdo = Database::getConnection();
-        $this->empresaModel = new EmpresaModel($pdo);
+        $this->pdo = $pdo ?? Database::getConnection();
     }
 
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function getEmpresas(?string $search = null): array
+    public function fetchAll(?string $search = null): array
     {
-        return $this->empresaModel->fetchAll($search);
+        $sql = <<<'SQL'
+            SELECT id,
+                   numero_control,
+                   nombre,
+                   rfc,
+                   representante,
+                   contacto_nombre,
+                   contacto_email,
+                   telefono,
+                   estatus,
+                   creado_en
+              FROM rp_empresa
+        SQL;
+
+        $params = [];
+
+        if ($search !== null && $search !== '') {
+            $sql .= ' WHERE (numero_control LIKE :search'
+                 . ' OR nombre LIKE :search'
+                 . ' OR rfc LIKE :search'
+                 . ' OR representante LIKE :search'
+                 . ' OR contacto_nombre LIKE :search'
+                 . ' OR contacto_email LIKE :search'
+                 . ' OR telefono LIKE :search'
+                 . ' OR estatus LIKE :search)';
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        $sql .= ' ORDER BY nombre ASC';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($params);
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 }
