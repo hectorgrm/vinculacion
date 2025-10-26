@@ -58,4 +58,12 @@ class EmpresaListModel
 
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getEmpresas(?string $search = null): array
+    {
+        return $this->fetchAll($search);
+    }
 }
