@@ -2,17 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Residencia\Model;
+namespace Residencia\Model\Empresa;
 
+require_once __DIR__ . '/../../../common/model/db.php';
+
+use Common\Model\Database;
 use PDO;
+use PDOException;
 
-class EmpresaModel
+class EmpresaStatusModel
 {
     private PDO $pdo;
 
-    public function __construct(PDO $pdo)
+    public function __construct(?PDO $pdo = null)
     {
-        $this->pdo = $pdo;
+        $this->pdo = $pdo ?? Database::getConnection();
     }
 
     public function disableWithCascade(int $empresaId, ?int $byUserId = null, ?string $reason = null): bool
@@ -63,7 +67,7 @@ class EmpresaModel
             $this->pdo->commit();
 
             return true;
-        } catch (\PDOException $exception) {
+        } catch (PDOException $exception) {
             $this->pdo->rollBack();
             throw $exception;
         }
@@ -118,7 +122,7 @@ class EmpresaModel
             $this->pdo->commit();
 
             return true;
-        } catch (\PDOException $exception) {
+        } catch (PDOException $exception) {
             $this->pdo->rollBack();
             throw $exception;
         }

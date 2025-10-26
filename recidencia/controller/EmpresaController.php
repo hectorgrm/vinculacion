@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Residencia\Controller;
 
-require_once __DIR__ . '/../model/EmpresaModel.php';
+require_once __DIR__ . '/../model/empresa/EmpresaStatusModel.php';
 require_once __DIR__ . '/../model/empresa/EmpresaAddModel.php';
 require_once __DIR__ . '/../model/empresa/EmpresaEditModel.php';
 require_once __DIR__ . '/../model/empresa/EmpresaListModel.php';
@@ -16,14 +16,14 @@ use PDOException;
 use Residencia\Model\Empresa\EmpresaAddModel;
 use Residencia\Model\Empresa\EmpresaEditModel;
 use Residencia\Model\Empresa\EmpresaListModel;
-use Residencia\Model\EmpresaModel;
+use Residencia\Model\Empresa\EmpresaStatusModel;
 use RuntimeException;
 use function array_key_exists;
 
 
 class EmpresaController
 {
-    private EmpresaModel $empresaModel;
+    private EmpresaStatusModel $empresaStatusModel;
     private EmpresaAddModel $empresaAddModel;
     private EmpresaEditModel $empresaEditModel;
     private EmpresaListModel $empresaListModel;
@@ -34,7 +34,7 @@ class EmpresaController
             $pdo = Database::getConnection();
         }
 
-        $this->empresaModel = new EmpresaModel($pdo);
+        $this->empresaStatusModel = new EmpresaStatusModel($pdo);
         $this->empresaAddModel = new EmpresaAddModel($pdo);
         $this->empresaEditModel = new EmpresaEditModel($pdo);
         $this->empresaListModel = new EmpresaListModel($pdo);
@@ -107,7 +107,7 @@ class EmpresaController
     public function disableEmpresa(int $empresaId, int $userId, string $reason = ''): void
     {
         try {
-            $this->empresaModel->disableWithCascade($empresaId, $userId, $reason);
+            $this->empresaStatusModel->disableWithCascade($empresaId, $userId, $reason);
         } catch (PDOException $exception) {
             throw new RuntimeException('No se pudo desactivar la empresa.', 0, $exception);
         }
@@ -116,7 +116,7 @@ class EmpresaController
     public function reactivateEmpresa(int $empresaId, int $userId, string $reason = ''): void
     {
         try {
-            $this->empresaModel->reactivateWithCascade($empresaId, $userId, $reason);
+            $this->empresaStatusModel->reactivateWithCascade($empresaId, $userId, $reason);
         } catch (PDOException $exception) {
             throw new RuntimeException('No se pudo reactivar la empresa.', 0, $exception);
         }

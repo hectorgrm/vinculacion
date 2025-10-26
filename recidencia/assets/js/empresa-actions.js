@@ -2,8 +2,8 @@
   'use strict';
 
   function submitIfExists(formId) {
-    var form = document.getElementById(formId);
-    if (form instanceof HTMLFormElement) {
+    var form = global.document.getElementById(formId);
+    if (form instanceof global.HTMLFormElement) {
       form.submit();
     }
   }
@@ -30,11 +30,12 @@
     }
   }
 
-  var freeze = typeof Object.freeze === 'function'
-    ? Object.freeze
-    : function (value) {
-        return value;
-      };
+  var freeze =
+    typeof Object.freeze === 'function'
+      ? Object.freeze
+      : function (value) {
+          return value;
+        };
 
   global.EmpresaActions = freeze({
     confirmDisable: confirmDisable,

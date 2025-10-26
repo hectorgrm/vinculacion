@@ -1,6 +1,8 @@
 (function (global) {
   'use strict';
 
+  var doc = global.document;
+
   function removeToastAfterFade(toast) {
     toast.addEventListener(
       'transitionend',
@@ -12,16 +14,20 @@
   }
 
   function showToast(message) {
+    if (typeof message === 'string') {
+      message = message.trim();
+    }
+
     if (!message) {
       return;
     }
 
-    var toast = global.document.createElement('div');
+    var toast = doc.createElement('div');
     toast.className = 'toast toast-success';
     toast.setAttribute('role', 'status');
     toast.setAttribute('aria-live', 'polite');
     toast.textContent = message;
-    global.document.body.appendChild(toast);
+    doc.body.appendChild(toast);
 
     global.requestAnimationFrame(function () {
       toast.classList.add('is-visible');
@@ -34,7 +40,7 @@
   }
 
   function initFromDataset() {
-    var dataElement = global.document.getElementById('empresa-success-toast');
+    var dataElement = doc.getElementById('empresa-success-toast');
     if (!dataElement) {
       return;
     }
@@ -45,11 +51,12 @@
     showToast(message);
   }
 
-  var freeze = typeof Object.freeze === 'function'
-    ? Object.freeze
-    : function (value) {
-        return value;
-      };
+  var freeze =
+    typeof Object.freeze === 'function'
+      ? Object.freeze
+      : function (value) {
+          return value;
+        };
 
   global.EmpresaSuccessToast = freeze({
     show: showToast,
