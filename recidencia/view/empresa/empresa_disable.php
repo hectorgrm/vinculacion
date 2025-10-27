@@ -4,10 +4,10 @@ declare(strict_types=1);
 // ============================
 // 🔒 Controlador y autenticación
 // ============================
-require_once __DIR__ . '/../../controller/EmpresaController.php';
+require_once __DIR__ . '/../../controller/empresa/EmpresaStatusController.php';
 require_once __DIR__ . '/../../common/auth.php';
 
-use Residencia\Controller\EmpresaController;
+use Residencia\Controller\Empresa\EmpresaStatusController;
 
 // Usuario autenticado disponible desde auth.php
 $user = $residenciaAuthUser;
@@ -26,7 +26,7 @@ if ($id <= 0) {
 // ⚙️ Ejecutar desactivación
 // ============================
 try {
-    $controller = new EmpresaController();
+    $controller = new EmpresaStatusController();
 
     // Desactivar en cascada
     $controller->disableEmpresa(

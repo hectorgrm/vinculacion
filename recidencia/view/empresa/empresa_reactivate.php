@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../controller/EmpresaController.php';
+require_once __DIR__ . '/../../controller/empresa/EmpresaStatusController.php';
 require_once __DIR__ . '/../../common/auth.php';
 
-use Residencia\Controller\EmpresaController;
+use Residencia\Controller\Empresa\EmpresaStatusController;
 
 $user = $residenciaAuthUser;
 
@@ -17,7 +17,7 @@ if ($id <= 0) {
 }
 
 try {
-    $controller = new EmpresaController();
+    $controller = new EmpresaStatusController();
     $controller->reactivateEmpresa(
         $id,
         (int) ($user['id'] ?? 0),
