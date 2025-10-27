@@ -61,6 +61,7 @@ if (!function_exists('convenioResolveControllerData')) {
     /**
      * @return array{
      *     controller: ?\Residencia\Controller\ConvenioController,
+     *     editController: ?\Residencia\Controller\Convenio\ConvenioEdController,
      *     empresaOptions: array<int, array<string, mixed>>,
      *     error: ?string
      * }
@@ -75,22 +76,56 @@ if (!function_exists('convenioResolveControllerData')) {
             }
         }
 
+        if (!class_exists(\Residencia\Controller\Convenio\ConvenioEdController::class)) {
+            $editControllerPath = __DIR__ . '/../../controller/convenio/ConvenioEdController.php';
+
+            if (is_file($editControllerPath)) {
+                require_once $editControllerPath;
+            }
+        }
+
+        if (!class_exists(\Residencia\Controller\Convenio\ConvenioAddController::class)) {
+            $addControllerPath = __DIR__ . '/../../controller/convenio/ConvenioAddController.php';
+
+            if (is_file($addControllerPath)) {
+                require_once $addControllerPath;
+            }
+        }
+
+        $controller = null;
+        $editController = null;
+        $empresaOptions = [];
+        $error = null;
+
         try {
             $controller = new \Residencia\Controller\ConvenioController();
-            $empresaOptions = $controller->getEmpresasForSelect();
-
-            return [
-                'controller' => $controller,
-                'empresaOptions' => $empresaOptions,
-                'error' => null,
-            ];
         } catch (\Throwable) {
-            return [
-                'controller' => null,
-                'empresaOptions' => [],
-                'error' => 'No se pudo establecer conexión con la base de datos. Intenta nuevamente más tarde.',
-            ];
+            $error = 'No se pudo establecer conexión con la base de datos. Intenta nuevamente más tarde.';
         }
+
+        try {
+            $editController = new \Residencia\Controller\Convenio\ConvenioEdController();
+        } catch (\Throwable) {
+            if ($error === null) {
+                $error = 'No se pudo establecer conexión con la base de datos. Intenta nuevamente más tarde.';
+            }
+        }
+
+        try {
+            if (class_exists(\Residencia\Controller\Convenio\ConvenioAddController::class)) {
+                $addController = new \Residencia\Controller\Convenio\ConvenioAddController();
+                $empresaOptions = $addController->getEmpresasForSelect();
+            }
+        } catch (\Throwable) {
+            $empresaOptions = [];
+        }
+
+        return [
+            'controller' => $controller,
+            'editController' => $editController,
+            'empresaOptions' => $empresaOptions,
+            'error' => $error,
+        ];
     }
 }
 

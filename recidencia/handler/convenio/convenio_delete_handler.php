@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../controller/ConvenioController.php';
+require_once __DIR__ . '/../../controller/convenio/ConvenioEditController.php';
 require_once __DIR__ . '/../../common/functions/conveniofunction.php';
 require_once __DIR__ . '/../../common/functions/convenio/conveniofunctions_delete.php';
 
@@ -21,18 +22,38 @@ if (isset($_GET['empresa_id'])) {
     }
 }
 
-$controllerData = convenioResolveControllerData();
-$controller = $controllerData['controller'] ?? null;
-$controllerError = $controllerData['error'] ?? null;
+$controller = null;
+$editController = null;
+$controllerError = null;
+
+try {
+    $controller = new \Residencia\Controller\ConvenioController();
+} catch (\Throwable $throwable) {
+    $message = trim($throwable->getMessage());
+    $controllerError = $message !== '' ? $message : 'No se pudo establecer conexion con la base de datos. Intenta nuevamente mas tarde.';
+}
+
+try {
+    $editController = new \Residencia\Controller\Convenio\ConvenioEditController();
+} catch (\Throwable $throwable) {
+    $message = trim($throwable->getMessage());
+    if ($controllerError === null) {
+        $controllerError = $message !== '' ? $message : 'No se pudo establecer conexion con la base de datos. Intenta nuevamente mas tarde.';
+    }
+}
 
 $errors = [];
 $successMessage = null;
 $sanitizedPost = null;
 $convenio = null;
 
-if ($controller !== null && $requestedId > 0) {
+if ($editController === null && $controllerError !== null) {
+    $errors[] = $controllerError;
+}
+
+if ($editController !== null && $requestedId > 0) {
     try {
-        $convenio = $controller->getConvenioById($requestedId);
+        $convenio = $editController->getConvenioById($requestedId);
         if ($convenio === null) {
             $errors[] = 'No se encontró el convenio solicitado.';
         }
@@ -51,9 +72,9 @@ if ($controller !== null && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         $requestedId = $handleResult['convenioId'];
     }
 
-    if ($successMessage !== null && $requestedId > 0) {
+    if ($successMessage !== null && $requestedId > 0 && $editController !== null) {
         try {
-            $refreshed = $controller->getConvenioById($requestedId);
+            $refreshed = $editController->getConvenioById($requestedId);
             if ($refreshed !== null) {
                 $convenio = $refreshed;
             }
@@ -61,7 +82,7 @@ if ($controller !== null && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             $errors[] = $runtimeException->getMessage();
         }
     }
-} elseif ($controller === null && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+} elseif (($controller === null || $editController === null) && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $errors[] = $controllerError ?? 'No se pudo procesar la solicitud.';
 }
 
@@ -94,7 +115,7 @@ $isAlreadyInactive = $convenio !== null
     && isset($convenio['estatus'])
     && (string) $convenio['estatus'] === 'Inactiva';
 
-$formDisabled = $successMessage !== null || $isAlreadyInactive || $controller === null;
+$formDisabled = $successMessage !== null || $isAlreadyInactive || $controller === null || $editController === null;
 
 return [
     'controllerError' => $controllerError,

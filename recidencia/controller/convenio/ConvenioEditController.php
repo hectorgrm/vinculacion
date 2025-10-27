@@ -4,14 +4,47 @@ declare(strict_types=1);
 
 namespace Residencia\Controller\Convenio;
 
-require_once __DIR__ . '/../ConvenioController.php';
+require_once __DIR__ . '/../../model/convenio/ConvenioEditModel.php';
 require_once __DIR__ . '/../../common/functions/conveniofunction.php';
 require_once __DIR__ . '/../../common/functions/convenio/conveniofunctions_edit.php';
 
-use Residencia\Controller\ConvenioController;
+use Residencia\Model\Convenio\ConvenioEditModel;
+use PDOException;
+use RuntimeException;
 
 class ConvenioEditController
 {
+    private ConvenioEditModel $model;
+
+    public function __construct(?ConvenioEditModel $model = null)
+    {
+        $this->model = $model ?? new ConvenioEditModel();
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getConvenioById(int $id): ?array
+    {
+        try {
+            return $this->model->getConvenioById($id);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo obtener la informacion del convenio solicitado.', 0, $exception);
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function updateConvenio(int $id, array $data): bool
+    {
+        try {
+            return $this->model->updateConvenio($id, $data);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo actualizar el convenio.', 0, $exception);
+        }
+    }
+
     /**
      * @param array<string, mixed> $query
      * @param array<string, mixed> $post
@@ -40,63 +73,64 @@ class ConvenioEditController
     public function handle(array $query, array $post, array $files, array $server): array
     {
         $estatusOptions = convenioStatusOptions();
-        $controllerData = convenioResolveControllerData();
-        /** @var ConvenioController|null $convenioController */
-        $convenioController = $controllerData['controller'];
-        $controllerError = $controllerData['error'];
-
         $convenioId = $this->resolveConvenioId($query, $post);
         $errors = [];
         $successMessage = null;
         $convenio = null;
         $formData = convenioFormDefaults();
-        $controllerErrorMessage = $controllerError;
+        $controllerErrorMessage = null;
+        $controllerAvailable = true;
         $method = isset($server['REQUEST_METHOD']) ? strtoupper((string) $server['REQUEST_METHOD']) : 'GET';
 
-        if ($convenioController === null) {
-            $controllerErrorMessage = $controllerErrorMessage
-                ?? 'No se pudo establecer conexión con la base de datos. Intenta nuevamente más tarde.';
-            $errors[] = $controllerErrorMessage;
-        } elseif ($convenioId <= 0) {
-            $errors[] = 'El identificador del convenio no es válido.';
+        if ($convenioId <= 0) {
+            $errors[] = 'El identificador del convenio no es valido.';
         } else {
             try {
-                $convenio = $convenioController->getConvenioById($convenioId);
+                $convenio = $this->getConvenioById($convenioId);
 
                 if ($convenio === null) {
                     $errors[] = 'El convenio solicitado no existe o fue eliminado.';
                 } else {
                     $formData = convenioHydrateFormDataFromRecord($convenio);
+                }
+            } catch (RuntimeException $runtimeException) {
+                $controllerAvailable = false;
+                $controllerErrorMessage = $runtimeException->getMessage();
+                $errors[] = $controllerErrorMessage;
+            }
+        }
 
-                    if ($method === 'POST') {
-                        $handleResult = convenioHandleEditRequest(
-                            $convenioController,
-                            isset($convenio['id']) ? (int) $convenio['id'] : $convenioId,
-                            $post,
-                            $files,
-                            $convenio,
-                            convenioUploadsAbsoluteDir(),
-                            convenioUploadsRelativeDir()
-                        );
+        if ($method === 'POST') {
+            if (!$controllerAvailable) {
+                $errors[] = $controllerErrorMessage
+                    ?? 'No se pudo procesar la solicitud. Intenta nuevamente mas tarde.';
+            } elseif ($convenio === null) {
+                $errors[] = 'El convenio solicitado no existe o fue eliminado.';
+            } else {
+                $handleResult = convenioHandleEditRequest(
+                    $this,
+                    isset($convenio['id']) ? (int) $convenio['id'] : $convenioId,
+                    $post,
+                    $files,
+                    $convenio,
+                    convenioUploadsAbsoluteDir(),
+                    convenioUploadsRelativeDir()
+                );
 
-                        $formData = $handleResult['formData'];
-                        $successMessage = $handleResult['successMessage'];
-                        $postErrors = $handleResult['errors'];
+                $formData = $handleResult['formData'];
+                $successMessage = $handleResult['successMessage'];
+                $postErrors = $handleResult['errors'];
 
-                        if ($postErrors !== []) {
-                            $errors = array_merge($errors, $postErrors);
-                        }
+                if ($postErrors !== []) {
+                    $errors = array_merge($errors, $postErrors);
+                }
 
-                        if (is_array($handleResult['convenio'])) {
-                            $convenio = $handleResult['convenio'];
-                            if (isset($convenio['id']) && ctype_digit((string) $convenio['id'])) {
-                                $convenioId = (int) $convenio['id'];
-                            }
-                        }
+                if (is_array($handleResult['convenio'])) {
+                    $convenio = $handleResult['convenio'];
+                    if (isset($convenio['id']) && ctype_digit((string) $convenio['id'])) {
+                        $convenioId = (int) $convenio['id'];
                     }
                 }
-            } catch (\RuntimeException $runtimeException) {
-                $errors[] = $runtimeException->getMessage();
             }
         }
 
@@ -114,7 +148,7 @@ class ConvenioEditController
         return [
             'estatusOptions' => $estatusOptions,
             'controllerError' => $controllerErrorMessage,
-            'controllerAvailable' => $convenioController !== null,
+            'controllerAvailable' => $controllerAvailable,
             'errors' => $errors,
             'successMessage' => $successMessage,
             'convenio' => $convenio,

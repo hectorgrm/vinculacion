@@ -9,6 +9,8 @@ require_once __DIR__ . '/../../common/functions/convenio/conveniofunctions_add.p
 require_once __DIR__ . '/../../model/convenio/ConvenioAddModel.php';
 
 use Residencia\Model\Convenio\ConvenioAddModel;
+use PDOException;
+use RuntimeException;
 use Throwable;
 
 class ConvenioAddController
@@ -25,7 +27,11 @@ class ConvenioAddController
      */
     public function getEmpresasForSelect(): array
     {
-        return $this->model->getEmpresasForSelect();
+        try {
+            return $this->model->getEmpresasForSelect();
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudieron obtener las empresas disponibles.', 0, $exception);
+        }
     }
 
     /**
@@ -33,7 +39,11 @@ class ConvenioAddController
      */
     public function createConvenio(array $data): int
     {
-        return $this->model->createConvenio($data);
+        try {
+            return $this->model->createConvenio($data);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo registrar el convenio.', 0, $exception);
+        }
     }
 
     /**

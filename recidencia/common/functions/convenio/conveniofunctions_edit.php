@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Residencia\Controller\Convenio\ConvenioEditController;
+
 if (!function_exists('convenioHandleEditRequest')) {
     /**
      * @param array<string, mixed> $request
@@ -15,7 +17,7 @@ if (!function_exists('convenioHandleEditRequest')) {
      * }
      */
     function convenioHandleEditRequest(
-        \Residencia\Controller\ConvenioController $controller,
+        ConvenioEditController $controller,
         int $convenioId,
         array $request,
         array $files,

@@ -50,54 +50,6 @@ class ConvenioController
         }
     }
 
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    public function getEmpresasForSelect(): array
-    {
-        try {
-            return $this->convenioModel->fetchEmpresasForSelect();
-        } catch (PDOException $exception) {
-            throw new RuntimeException('No se pudieron obtener las empresas disponibles.', 0, $exception);
-        }
-    }
-
-    /**
-     * @return array<string, mixed>|null
-     */
-    public function getConvenioById(int $id): ?array
-    {
-        try {
-            return $this->convenioModel->fetchById($id);
-        } catch (PDOException $exception) {
-            throw new RuntimeException('No se pudo obtener la información del convenio solicitado.', 0, $exception);
-        }
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    public function createConvenio(array $data): int
-    {
-        try {
-            return $this->convenioModel->insert($data);
-        } catch (PDOException $exception) {
-            throw new RuntimeException('No se pudo registrar el convenio.', 0, $exception);
-        }
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    public function updateConvenio(int $id, array $data): bool
-    {
-        try {
-            return $this->convenioModel->update($id, $data);
-        } catch (PDOException $exception) {
-            throw new RuntimeException('No se pudo actualizar el convenio.', 0, $exception);
-        }
-    }
-
     public function deactivateConvenio(int $id, ?string $motivo = null): bool
     {
         try {
