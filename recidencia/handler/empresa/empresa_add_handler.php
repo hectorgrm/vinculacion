@@ -45,12 +45,24 @@ if (!function_exists('empresaAddHandler')) {
         }
 
         try {
-            $empresaId = $controller->create($viewData['formData']);
+            $empresaId = $controller->createEmpresa($viewData['formData']);
             $viewData['successMessage'] = empresaAddSuccessMessage($empresaId);
             $viewData['formData'] = empresaFormDefaults();
         } catch (\Throwable $exception) {
+            $pdoException = null;
+
             if ($exception instanceof \PDOException) {
-                $duplicateErrors = empresaAddDuplicateErrors($exception);
+                $pdoException = $exception;
+            } elseif ($exception instanceof \RuntimeException) {
+                $previous = $exception->getPrevious();
+
+                if ($previous instanceof \PDOException) {
+                    $pdoException = $previous;
+                }
+            }
+
+            if ($pdoException instanceof \PDOException) {
+                $duplicateErrors = empresaAddDuplicateErrors($pdoException);
 
                 if ($duplicateErrors !== []) {
                     $viewData['errors'] = $duplicateErrors;

@@ -7,6 +7,8 @@ namespace Residencia\Controller\Empresa;
 require_once __DIR__ . '/../../model/empresa/EmpresaAddModel.php';
 
 use Residencia\Model\Empresa\EmpresaAddModel;
+use RuntimeException;
+use PDOException;
 
 class EmpresaAddController
 {
@@ -20,8 +22,20 @@ class EmpresaAddController
     /**
      * @param array<string, string> $data
      */
+    public function createEmpresa(array $data): int
+    {
+        try {
+            return $this->model->create($data);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo registrar la empresa.', 0, $exception);
+        }
+    }
+
+    /**
+     * @param array<string, string> $data
+     */
     public function create(array $data): int
     {
-        return $this->model->createEmpresa($data);
+        return $this->createEmpresa($data);
     }
 }

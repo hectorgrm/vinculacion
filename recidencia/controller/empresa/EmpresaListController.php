@@ -7,8 +7,12 @@ namespace Residencia\Controller\Empresa;
 require_once __DIR__ . '/../../model/empresa/EmpresaListModel.php';
 require_once __DIR__ . '/../../common/functions/empresa/empresafunctions_list.php';
 
+use PDOException;
 use Residencia\Model\Empresa\EmpresaListModel;
-use Throwable;
+use RuntimeException;
+
+use function empresaListDefaults;
+use function empresaNormalizeSearch;
 
 class EmpresaListController
 {
@@ -20,31 +24,46 @@ class EmpresaListController
     }
 
     /**
-     * @param array<string, mixed> $query
+     * @return array<int, array<string, mixed>>
+     */
+    public function listEmpresas(?string $search = null): array
+    {
+        $term = empresaNormalizeSearch($search);
+
+        if ($term === '') {
+            $term = null;
+        }
+
+        try {
+            return $this->model->fetchAll($term);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudieron obtener las empresas registradas.', 0, $exception);
+        }
+    }
+
+    public function list(?string $search = null): array
+    {
+        return $this->listEmpresas($search);
+    }
+
+    /**
+     * @param array<string, mixed> $input
      * @return array{
      *     search: string,
      *     empresas: array<int, array<string, mixed>>,
      *     errorMessage: ?string
      * }
      */
-    public function handle(array $query): array
+    public function handle(array $input): array
     {
-        $rawSearch = $query['search'] ?? null;
-        $search = empresaNormalizeSearch($rawSearch);
+        $defaults = empresaListDefaults();
 
-        $empresas = [];
-        $errorMessage = null;
+        $searchValue = $input['search'] ?? null;
+        $search = empresaNormalizeSearch(is_string($searchValue) ? $searchValue : null);
 
-        try {
-            $empresas = $this->model->getEmpresas($search !== '' ? $search : null);
-        } catch (Throwable $exception) {
-            $errorMessage = $exception->getMessage();
-        }
+        $defaults['search'] = $search;
+        $defaults['empresas'] = $this->listEmpresas($search);
 
-        return [
-            'search' => $search,
-            'empresas' => $empresas,
-            'errorMessage' => $errorMessage,
-        ];
+        return $defaults;
     }
 }
