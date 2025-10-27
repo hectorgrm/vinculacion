@@ -107,7 +107,7 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
                         <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️ Editar</a>
 
                         <?php if ($empresaPuedeDesactivar): ?>
-                          <form id="disableForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>" action="empresa_disable.php" method="post" style="display:inline;">
+                          <form id="disableForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>" action="../../handler/empresa/empresa_disable.php" method="post" style="display:inline;">
                             <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
                             <button type="button" class="btn warn"
                               onclick="confirmDisable(<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>, '<?php echo addslashes((string) $empresaNombre); ?>')">
@@ -115,7 +115,7 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
                             </button>
                           </form>
                         <?php elseif ($empresaPuedeReactivar): ?>
-                          <form id="reactivateForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>" action="empresa_reactivate.php" method="post" style="display:inline;">
+                          <form id="reactivateForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>" action="../../handler/empresa/empresa_reactivate.php" method="post" style="display:inline;">
                             <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
                             <button type="button" class="btn success"
                               onclick="confirmReactivate(<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>, '<?php echo addslashes((string) $empresaNombre); ?>')">

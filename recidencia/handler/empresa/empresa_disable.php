@@ -18,7 +18,7 @@ $user = $residenciaAuthUser;
 $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 
 if ($id <= 0) {
-    header('Location: empresa_list.php?error=invalid_id');
+    header('Location: ../../view/empresa/empresa_list.php?error=invalid_id');
     exit;
 }
 
@@ -36,17 +36,17 @@ try {
     );
 
     // Redirigir con mensaje de éxito
-    header('Location: empresa_list.php?success=disabled');
+    header('Location: ../../view/empresa/empresa_list.php?success=disabled');
     exit;
 
 } catch (RuntimeException $e) {
     // Error controlado (problemas de base de datos, etc.)
     $msg = urlencode($e->getMessage());
-    header("Location: empresa_list.php?error={$msg}");
+    header("Location: ../../view/empresa/empresa_list.php?error={$msg}");
     exit;
 
 } catch (Throwable $t) {
     // Error inesperado
-    header('Location: empresa_list.php?error=unexpected');
+    header('Location: ../../view/empresa/empresa_list.php?error=unexpected');
     exit;
 }
