@@ -26,30 +26,6 @@ class ConvenioController
         $this->convenioModel = new ConvenioModel($pdo);
     }
 
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    public function listConvenios(?string $search = null, ?string $estatus = null): array
-    {
-        $term = $search !== null ? trim($search) : null;
-
-        if ($term === '') {
-            $term = null;
-        }
-
-        $statusFilter = $estatus !== null ? trim($estatus) : null;
-
-        if ($statusFilter === '') {
-            $statusFilter = null;
-        }
-
-        try {
-            return $this->convenioModel->fetchAll($term, $statusFilter);
-        } catch (PDOException $exception) {
-            throw new RuntimeException('No se pudieron obtener los convenios registrados.', 0, $exception);
-        }
-    }
-
     public function deactivateConvenio(int $id, ?string $motivo = null): bool
     {
         try {
