@@ -234,6 +234,7 @@ $tipoId = $document !== null && isset($document['tipo_id']) ? (int) $document['t
             <?php endif; ?>
           </div>
         </section>
+        
 
         <div class="actions">
           <a href="documento_delete.php?id=<?php echo urlencode((string) $document['id']); ?>" class="btn danger">Eliminar documento</a>
