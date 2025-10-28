@@ -6,17 +6,9 @@
   <title>Revisión de Documento · Residencias Profesionales</title>
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
+  <link rel="stylesheet" href="../../assets/css/documentos/documento_review.css" />
 
-  <style>
-    .review-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .full { grid-column: 1 / -1; }
-    .badge { padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 13px; }
-    .badge.ok { background:#c8f7c5; color:#2e7d32; }
-    .badge.err { background:#f8d7da; color:#721c24; }
-    .badge.warn { background:#fff3cd; color:#856404; }
-    iframe { border:1px solid #ddd; border-radius:8px; width:100%; height:400px; }
-    .actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
-  </style>
+ 
 </head>
 
 <body>
