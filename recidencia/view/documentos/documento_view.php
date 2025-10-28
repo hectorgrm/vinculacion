@@ -9,16 +9,7 @@
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
   <!-- (Opcional) Estilos específicos -->
   <!-- <link rel="stylesheet" href="../../assets/css/residencias/documento_view.css" /> -->
-  <style>
-    .info-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px 16px }
-    .field label{ display:block; font-weight:700; color:#334155; margin-bottom:4px }
-    .col-span-2{ grid-column:1/3 }
-    .preview{ border:1px solid #e5e7eb; border-radius:12px; overflow:hidden }
-    .badge{ display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700; color:#fff; line-height:1 }
-    .badge.ok{ background:#2db980 } .badge.warn{ background:#ffb400 } .badge.secondary{ background:#64748b }
-    .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:12px }
-    @media (max-width:920px){ .info-grid{ grid-template-columns:1fr } .col-span-2{ grid-column:1/2 } }
-  </style>
+
 </head>
 <body>
   <div class="app">
