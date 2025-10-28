@@ -18,7 +18,7 @@
           <h2>➕ Nuevo Tipo de Documento</h2>
           <nav class="breadcrumb">
             <a href="../../index.php">Inicio</a><span>›</span>
-            <a href="documentotipo_list.php">Documento Tipo</a><span>›</span>
+            <a href="documentotipo_list.php">Tipos de Documento</a><span>›</span>
             <span>Nuevo</span>
           </nav>
         </div>
@@ -30,41 +30,36 @@
         <div class="content">
           <form class="form" method="post" action="documentotipo_add_action.php">
             <div class="grid">
-              <div class="field">
-                <label class="required" for="clave">Clave *</label>
-                <input id="clave" name="clave" type="text" placeholder="Ej: INE, ACTA, ANEXO" required>
-              </div>
+              <!-- nombre (VARCHAR(100), UNIQUE) -->
               <div class="field">
                 <label class="required" for="nombre">Nombre *</label>
-                <input id="nombre" name="nombre" type="text" placeholder="Nombre descriptivo" required>
+                <input id="nombre" name="nombre" type="text" maxlength="100"
+                       placeholder="Ej: Constancia de situación fiscal (SAT)" required>
               </div>
 
+              <!-- descripcion (TEXT, opcional) -->
               <div class="field col-span-2">
                 <label for="descripcion">Descripción</label>
-                <textarea id="descripcion" name="descripcion" rows="3" placeholder="Uso, contexto, notas internas…"></textarea>
+                <textarea id="descripcion" name="descripcion" rows="3"
+                          placeholder="Describe brevemente el propósito del documento."></textarea>
               </div>
 
+              <!-- obligatorio (TINYINT(1)) -->
               <div class="field">
-                <label class="required" for="requiere_convenio">Requiere convenio *</label>
-                <select id="requiere_convenio" name="requiere_convenio" required>
-                  <option value="0">No</option>
-                  <option value="1">Sí</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label class="required" for="obligatorio">Obligatorio *</label>
+                <label class="required" for="obligatorio">¿Obligatorio? *</label>
                 <select id="obligatorio" name="obligatorio" required>
+                  <option value="1" selected>Sí</option>
                   <option value="0">No</option>
-                  <option value="1">Sí</option>
                 </select>
               </div>
 
+              <!-- tipo_empresa (ENUM: fisica|moral|ambas) -->
               <div class="field">
-                <label class="required" for="estatus">Estatus *</label>
-                <select id="estatus" name="estatus" required>
-                  <option value="activo">Activo</option>
-                  <option value="inactivo">Inactivo</option>
+                <label class="required" for="tipo_empresa">Tipo de empresa *</label>
+                <select id="tipo_empresa" name="tipo_empresa" required>
+                  <option value="ambas" selected>Ambas</option>
+                  <option value="fisica">Física</option>
+                  <option value="moral">Moral</option>
                 </select>
               </div>
             </div>

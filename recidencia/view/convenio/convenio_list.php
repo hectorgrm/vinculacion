@@ -107,7 +107,7 @@ $errorMessage = $handlerResult['errorMessage'];
                       <td class="actions">
                         <a href="convenio_view.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn sm">👁️</a>
                         <a href="convenio_edit.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn sm">✏️</a>
-                        <a href="convenio_delete.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn sm">🗑️</a>
+                        <a href="convenio_delete.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn sm">🚫</a>
                       </td>
                     </tr>
                   <?php endforeach; ?>
