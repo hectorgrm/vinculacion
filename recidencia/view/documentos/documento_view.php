@@ -234,7 +234,22 @@ $tipoId = $document !== null && isset($document['tipo_id']) ? (int) $document['t
             <?php endif; ?>
           </div>
         </section>
-        
+        <?php if ($document['estatus'] === 'aprobado'): ?>
+          <section class="card">
+            <header>&#128260; Reabrir revisi&oacute;n</header>
+            <div class="content">
+              <p class="text-muted">
+                Este documento est&aacute; actualmente <strong>aprobado</strong>.  
+                Si detectaste alg&uacute;n error o necesitas volver a evaluarlo, puedes reabrir la revisi&oacute;n.  
+                Esto cambiar&aacute; su estatus a <em>pendiente</em> y ser&aacute; visible nuevamente para revisi&oacute;n.
+              </p>
+              <form action="../../handler/documento/documento_reopen_action.php" method="post">
+                <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) $document['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                <button type="submit" class="btn warn">&#128260; Reabrir revisi&oacute;n</button>
+              </form>
+            </div>
+          </section>
+        <?php endif; ?>
 
         <div class="actions">
           <a href="documento_delete.php?id=<?php echo urlencode((string) $document['id']); ?>" class="btn danger">Eliminar documento</a>
