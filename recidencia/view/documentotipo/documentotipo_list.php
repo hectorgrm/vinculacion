@@ -1,115 +1,77 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * @var array{
+ *     q: string,
+ *     tipo_empresa: string,
+ *     tipos: array<int, array<string, mixed>>,
+ *     tipoEmpresaOptions: array<string, string>,
+ *     errorMessage: ?string
+ * } $handlerResult
+ */
+$handlerResult = require __DIR__ . '/../../handler/documentotipo/documentotipo_list_handler.php';
+
+$searchValue = $handlerResult['q'];
+$selectedTipoEmpresa = $handlerResult['tipo_empresa'];
+$tipos = $handlerResult['tipos'];
+$tipoEmpresaOptions = $handlerResult['tipoEmpresaOptions'];
+$errorMessage = $handlerResult['errorMessage'];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tipos de Documento · Residencias Profesionales</title>
+  <title>Tipos de Documento - Residencias Profesionales</title>
 
-  <!-- Estilos globales -->
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
   <link rel="stylesheet" href="../../assets/css/documentotipo/documentotipo.css" />
 
-  <style>
-    /* 🎨 Estilos locales */
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-end;
-      gap: 15px;
-    }
 
-    .filters .field {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #e0e0e0;
-      text-align: left;
-    }
-
-    th {
-      background: #f8f8f8;
-      font-weight: 600;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .badge.ok { background: #d4edda; color: #155724; }
-    .badge.warn { background: #fff3cd; color: #856404; }
-    .badge.secondary { background: #e2e3e5; color: #383d41; }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn.small {
-      font-size: 14px;
-      padding: 6px 10px;
-    }
-
-    .legend {
-      margin-top: 15px;
-      font-size: 14px;
-      color: #555;
-    }
-
-    .legend strong {
-      margin-right: 6px;
-    }
-  </style>
 </head>
 
 <body>
   <div class="app">
-    <!-- Sidebar -->
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-    <!-- Main -->
     <main class="main">
       <header class="topbar">
         <div>
-          <h2>📄 Tipos de Documento</h2>
-          <p class="subtitle">Catálogo de documentos requeridos por Vinculación para empresas físicas y morales.</p>
+          <h2>Tipos de Documento</h2>
+          <p class="subtitle">Catalogo de documentos requeridos por Vinculacion para empresas fisicas y morales.</p>
         </div>
-        <a href="documentotipo_add.php" class="btn primary">➕ Nuevo Tipo</a>
+        <a href="documentotipo_add.php" class="btn primary">Nuevo tipo</a>
       </header>
 
-      <!-- 🔎 Filtros -->
       <section class="card">
-        <header>🔎 Filtros de búsqueda</header>
+        <header>Filtros de busqueda</header>
         <div class="content">
-          <form class="form">
+          <form class="form" method="get" action="documentotipo_list.php">
             <div class="filters">
               <div class="field">
                 <label for="q">Buscar</label>
-                <input id="q" name="q" type="text" placeholder="Nombre o descripción del documento" />
+                <input
+                  id="q"
+                  name="q"
+                  type="text"
+                  placeholder="Nombre o descripcion del documento"
+                  value="<?php echo htmlspecialchars($searchValue, ENT_QUOTES, 'UTF-8'); ?>"
+                />
               </div>
 
               <div class="field">
                 <label for="tipo_empresa">Tipo de empresa</label>
                 <select id="tipo_empresa" name="tipo_empresa">
                   <option value="">Todas</option>
-                  <option value="fisica">Persona Física</option>
-                  <option value="moral">Persona Moral</option>
-                  <option value="ambas">Ambas</option>
+                  <?php foreach ($tipoEmpresaOptions as $value => $label): ?>
+                    <option
+                      value="<?php echo htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); ?>"
+                      <?php echo $selectedTipoEmpresa === $value ? 'selected' : ''; ?>
+                    >
+                      <?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?>
+                    </option>
+                  <?php endforeach; ?>
                 </select>
               </div>
 
@@ -122,64 +84,78 @@
         </div>
       </section>
 
-      <!-- 📋 Listado -->
+      <?php if ($errorMessage !== null): ?>
+        <section class="card">
+          <div class="content">
+            <div class="alert alert-danger">
+              <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
+            </div>
+          </div>
+        </section>
+      <?php endif; ?>
+
       <section class="card">
-        <header>📋 Listado de Tipos de Documento</header>
+        <header>Listado de tipos de documento</header>
         <div class="content">
           <div class="table-wrapper">
             <table>
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Nombre del Documento</th>
-                  <th>Descripción</th>
-                  <th>Tipo de Empresa</th>
+                  <th>Nombre del documento</th>
+                  <th>Descripcion</th>
+                  <th>Tipo de empresa</th>
                   <th>Obligatorio</th>
                   <th style="min-width:200px;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <!-- 🧱 Ejemplos estáticos (se generarán dinámicos desde rp_documento_tipo) -->
-                <tr>
-                  <td>15</td>
-                  <td>Constancia de situación fiscal (SAT)</td>
-                  <td>Copia de constancia del SAT emitida por la autoridad fiscal.</td>
-                  <td><span class="badge secondary">Ambas</span></td>
-                  <td><span class="badge ok">Sí</span></td>
-                  <td class="actions">
-                    <a class="btn small" href="documentotipo_edit.php?id=15">✏️ Editar</a>
-                    <a class="btn small danger" href="documentotipo_delete.php?id=15">🗑️ Eliminar</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>21</td>
-                  <td>INE del representante legal</td>
-                  <td>Identificación oficial vigente del representante legal.</td>
-                  <td><span class="badge secondary">Moral</span></td>
-                  <td><span class="badge ok">Sí</span></td>
-                  <td class="actions">
-                    <a class="btn small" href="documentotipo_edit.php?id=21">✏️ Editar</a>
-                    <a class="btn small danger" href="documentotipo_delete.php?id=21">🗑️ Eliminar</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>18</td>
-                  <td>Logotipo del negocio</td>
-                  <td>Archivo JPG o PNG con el logotipo del negocio (opcional).</td>
-                  <td><span class="badge secondary">Física</span></td>
-                  <td><span class="badge warn">No</span></td>
-                  <td class="actions">
-                    <a class="btn small" href="documentotipo_edit.php?id=18">✏️ Editar</a>
-                    <a class="btn small danger" href="documentotipo_delete.php?id=18">🗑️ Eliminar</a>
-                  </td>
-                </tr>
+                <?php if ($tipos === []): ?>
+                  <tr>
+                    <td colspan="6" style="text-align:center;">No se encontraron tipos de documento.</td>
+                  </tr>
+                <?php else: ?>
+                  <?php foreach ($tipos as $tipo): ?>
+                    <?php
+                      $id = isset($tipo['id']) ? (int) $tipo['id'] : null;
+                      $nombre = documentoTipoValueOrDefault($tipo['nombre'] ?? null, 'Sin nombre');
+                      $descripcion = documentoTipoValueOrDefault($tipo['descripcion'] ?? null, 'Sin descripcion');
+                      $tipoEmpresaLabel = documentoTipoRenderEmpresaLabel($tipo['tipo_empresa'] ?? null);
+                      $obligatorioClass = documentoTipoRenderObligatorioClass($tipo['obligatorio'] ?? null);
+                      $obligatorioLabel = documentoTipoRenderObligatorioLabel($tipo['obligatorio'] ?? null);
+                    ?>
+                    <tr>
+                      <td><?php echo $id !== null ? htmlspecialchars((string) $id, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
+                      <td><?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars($descripcion, ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td>
+                        <span class="badge secondary">
+                          <?php echo htmlspecialchars($tipoEmpresaLabel, ENT_QUOTES, 'UTF-8'); ?>
+                        </span>
+                      </td>
+                      <td>
+                        <span class="<?php echo htmlspecialchars($obligatorioClass, ENT_QUOTES, 'UTF-8'); ?>">
+                          <?php echo htmlspecialchars($obligatorioLabel, ENT_QUOTES, 'UTF-8'); ?>
+                        </span>
+                      </td>
+                      <td class="actions">
+                        <?php if ($id !== null): ?>
+                          <a class="btn small" href="documentotipo_edit.php?id=<?php echo urlencode((string) $id); ?>">Editar</a>
+                          <a class="btn small danger" href="documentotipo_delete.php?id=<?php echo urlencode((string) $id); ?>">Eliminar</a>
+                        <?php else: ?>
+                          <span class="text-muted">Acciones no disponibles</span>
+                        <?php endif; ?>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>
 
           <div class="legend">
             <strong>Leyenda:</strong>
-            <span class="badge ok">Sí (Obligatorio)</span>
+            <span class="badge ok">Si (Obligatorio)</span>
             <span class="badge warn">No (Opcional)</span>
           </div>
         </div>
@@ -188,3 +164,4 @@
   </div>
 </body>
 </html>
+

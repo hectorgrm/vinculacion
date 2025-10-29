@@ -197,3 +197,68 @@ td.actions .btn {
 .field label.required::after { content:" *"; color:#e44848; font-weight:800 }
 .actions { display:flex; gap:10px; justify-content:flex-end; margin-top:12px }
 @media (max-width:860px){ .grid{ grid-template-columns:1fr } .col-span-2{ grid-column:1/2 } }
+
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 15px;
+    }
+
+    .filters .field {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: left;
+    }
+
+    th {
+      background: #f8f8f8;
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .badge.ok { background: #d4edda; color: #155724; }
+    .badge.warn { background: #fff3cd; color: #856404; }
+    .badge.secondary { background: #e2e3e5; color: #383d41; }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn.small {
+      font-size: 14px;
+      padding: 6px 10px;
+    }
+
+    .legend {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .legend strong {
+      margin-right: 6px;
+    }
