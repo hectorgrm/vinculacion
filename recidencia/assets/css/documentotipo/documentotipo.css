@@ -262,3 +262,90 @@ td.actions .btn {
     .legend strong {
       margin-right: 6px;
     }
+
+    /* Documento_edit */
+
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .card .content label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .card .content input,
+    .card .content select,
+    .card .content textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      transition: border-color 0.2s;
+    }
+
+    .card .content input:focus,
+    .card .content select:focus,
+    .card .content textarea:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn.primary {
+      background: #007bff;
+      color: #fff;
+    }
+    .btn.primary:hover {
+      background: #0069d9;
+    }
+
+    .btn.secondary {
+      background: #e0e0e0;
+      color: #222;
+    }
+    .btn.secondary:hover {
+      background: #d5d5d5;
+    }
+
+    .badge.info {
+      background: #e3f2fd;
+      color: #1565c0;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
