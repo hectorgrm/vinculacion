@@ -9,7 +9,8 @@ if (!function_exists('documentoTipoListDefaults')) {
      *     tipo_empresa: string,
      *     tipos: array<int, array<string, mixed>>,
      *     tipoEmpresaOptions: array<string, string>,
-     *     errorMessage: ?string
+     *     errorMessage: ?string,
+     *     statusMessage: ?string
      * }
      */
     function documentoTipoListDefaults(): array
@@ -20,6 +21,7 @@ if (!function_exists('documentoTipoListDefaults')) {
             'tipos' => [],
             'tipoEmpresaOptions' => documentoTipoEmpresaOptions(),
             'errorMessage' => null,
+            'statusMessage' => null,
         ];
     }
 }
@@ -146,5 +148,35 @@ if (!function_exists('documentoTipoValueOrDefault')) {
         }
 
         return $fallback;
+    }
+}
+
+if (!function_exists('documentoTipoListStatusMessage')) {
+    function documentoTipoListStatusMessage(?string $statusCode, ?string $nombre): ?string
+    {
+        if ($statusCode === null || $statusCode === '') {
+            return null;
+        }
+
+        $nombreLabel = null;
+        if ($nombre !== null) {
+            $trimmed = trim($nombre);
+            if ($trimmed !== '') {
+                $nombreLabel = $trimmed;
+            }
+        }
+
+        switch ($statusCode) {
+            case 'deleted':
+                return $nombreLabel !== null
+                    ? 'El tipo de documento "' . $nombreLabel . '" se elimino correctamente.'
+                    : 'El tipo de documento se elimino correctamente.';
+            case 'deactivated':
+                return $nombreLabel !== null
+                    ? 'El tipo de documento "' . $nombreLabel . '" se desactivo y ya no aparecera en nuevos registros.'
+                    : 'El tipo de documento se desactivo y ya no aparecera en nuevos registros.';
+            default:
+                return null;
+        }
     }
 }

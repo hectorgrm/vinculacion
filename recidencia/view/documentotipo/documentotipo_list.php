@@ -7,7 +7,8 @@ declare(strict_types=1);
  *     tipo_empresa: string,
  *     tipos: array<int, array<string, mixed>>,
  *     tipoEmpresaOptions: array<string, string>,
- *     errorMessage: ?string
+ *     errorMessage: ?string,
+ *     statusMessage: ?string
  * } $handlerResult
  */
 $handlerResult = require __DIR__ . '/../../handler/documentotipo/documentotipo_list_handler.php';
@@ -17,6 +18,7 @@ $selectedTipoEmpresa = $handlerResult['tipo_empresa'];
 $tipos = $handlerResult['tipos'];
 $tipoEmpresaOptions = $handlerResult['tipoEmpresaOptions'];
 $errorMessage = $handlerResult['errorMessage'];
+$statusMessage = $handlerResult['statusMessage'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -83,6 +85,16 @@ $errorMessage = $handlerResult['errorMessage'];
           </form>
         </div>
       </section>
+
+      <?php if ($statusMessage !== null): ?>
+        <section class="card">
+          <div class="content">
+            <div class="alert alert-success">
+              <?php echo htmlspecialchars($statusMessage, ENT_QUOTES, 'UTF-8'); ?>
+            </div>
+          </div>
+        </section>
+      <?php endif; ?>
 
       <?php if ($errorMessage !== null): ?>
         <section class="card">
@@ -164,4 +176,3 @@ $errorMessage = $handlerResult['errorMessage'];
   </div>
 </body>
 </html>
-
