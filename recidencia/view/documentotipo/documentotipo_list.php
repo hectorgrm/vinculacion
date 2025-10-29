@@ -118,13 +118,14 @@ $statusMessage = $handlerResult['statusMessage'];
                   <th>Descripcion</th>
                   <th>Tipo de empresa</th>
                   <th>Obligatorio</th>
+                  <th>Estado</th>
                   <th style="min-width:200px;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 <?php if ($tipos === []): ?>
                   <tr>
-                    <td colspan="6" style="text-align:center;">No se encontraron tipos de documento.</td>
+                    <td colspan="7" style="text-align:center;">No se encontraron tipos de documento.</td>
                   </tr>
                 <?php else: ?>
                   <?php foreach ($tipos as $tipo): ?>
@@ -135,6 +136,9 @@ $statusMessage = $handlerResult['statusMessage'];
                       $tipoEmpresaLabel = documentoTipoRenderEmpresaLabel($tipo['tipo_empresa'] ?? null);
                       $obligatorioClass = documentoTipoRenderObligatorioClass($tipo['obligatorio'] ?? null);
                       $obligatorioLabel = documentoTipoRenderObligatorioLabel($tipo['obligatorio'] ?? null);
+                      $estaActivo = documentoTipoCastBool($tipo['activo'] ?? null);
+                      $estadoClass = $estaActivo ? 'badge status-active' : 'badge status-inactive';
+                      $estadoLabel = $estaActivo ? 'Activo' : 'Inactivo';
                     ?>
                     <tr>
                       <td><?php echo $id !== null ? htmlspecialchars((string) $id, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
@@ -148,6 +152,11 @@ $statusMessage = $handlerResult['statusMessage'];
                       <td>
                         <span class="<?php echo htmlspecialchars($obligatorioClass, ENT_QUOTES, 'UTF-8'); ?>">
                           <?php echo htmlspecialchars($obligatorioLabel, ENT_QUOTES, 'UTF-8'); ?>
+                        </span>
+                      </td>
+                      <td>
+                        <span class="<?php echo htmlspecialchars($estadoClass, ENT_QUOTES, 'UTF-8'); ?>">
+                          <?php echo htmlspecialchars($estadoLabel, ENT_QUOTES, 'UTF-8'); ?>
                         </span>
                       </td>
                       <td class="actions">

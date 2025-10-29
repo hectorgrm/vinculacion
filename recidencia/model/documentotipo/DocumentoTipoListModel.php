@@ -28,7 +28,8 @@ class DocumentoTipoListModel
                    nombre,
                    descripcion,
                    obligatorio,
-                   tipo_empresa
+                   tipo_empresa,
+                   activo
               FROM rp_documento_tipo
         SQL;
 

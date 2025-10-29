@@ -134,6 +134,18 @@ td.actions .btn {
     line-height: 1
 }
 
+.badge.status-active {
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+.badge.status-inactive {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    color: #4b5563;
+}
+
 .badge.ok {
     background: #2db980
 }
