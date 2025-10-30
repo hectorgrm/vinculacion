@@ -221,7 +221,7 @@
 
     <!-- 🔗 Acción principal -->
     <div class="actions" style="margin-top:16px; justify-content:flex-end;">
-      <a href="empresa_docs.php?id_empresa=45" class="btn primary">📁 Gestionar Documentos</a>
+      <a href="../empresadocumentotipo/empresa_documentotipo_list.php?id_empresa=45" class="btn primary">📁 Gestionar Documentos</a>
     </div>
   </div>
 </section>

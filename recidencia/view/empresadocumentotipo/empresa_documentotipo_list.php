@@ -154,10 +154,10 @@
             <p>Consulta y gestiona los documentos legales requeridos por Vinculación.</p>
           </div>
           <div>
-            <a href="../empresa_documentotipo/empresa_documentotipo_list.php?id=45" class="btn secondary">⬅ Volver al detalle</a>
+            <!-- <a href="../empresa_documentotipo/empresa_documentotipo_list.php?id=45" class="btn secondary">⬅ Volver al detalle</a> -->
           </div>
         </div>
-           <a href="#" class="btn adddoc"> ➕ Agregar Doc</a>
+           <a href="empresa_documentotipo_add.php?id=45" class="btn adddoc"> ➕ Agregar Doc</a>
       </header>
 
       <!-- 🧾 Resumen -->
@@ -244,7 +244,7 @@
 
           <!-- 🔘 Botones finales -->
           <div class="actions">
-            <a href="empresa_view.php?id=45" class="btn secondary">⬅ Volver</a>
+            <a href="../empresa/empresa_view.php?id=45" class="btn secondary">⬅ Volver</a>
             <a href="#" class="btn primary">💾 Guardar Cambios</a>
           </div>
         </div>
