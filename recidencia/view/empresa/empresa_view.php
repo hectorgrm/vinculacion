@@ -1,3 +1,43 @@
+<?php
+declare(strict_types=1);
+
+/** @var array{
+ *     empresaId: ?int,
+ *     empresa: ?array<string, mixed>,
+ *     controllerError: ?string,
+ *     notFoundMessage: ?string,
+ *     inputError: ?string
+ * } $handlerResult
+ */
+$handlerResult = require __DIR__ . '/../../handler/empresa/empresa_view_handler.php';
+
+$empresa = $handlerResult['empresa'];
+$controllerError = $handlerResult['controllerError'];
+$notFoundMessage = $handlerResult['notFoundMessage'];
+$inputError = $handlerResult['inputError'];
+
+$nombre = 'Sin datos';
+$rfc = 'N/A';
+$representante = 'No especificado';
+$telefono = 'No registrado';
+$correo = 'No registrado';
+$estatusClass = 'badge secondary';
+$estatusLabel = 'Sin estatus';
+$creadoEn = 'N/A';
+$actualizadoEn = 'Sin actualizar';
+
+if (is_array($empresa)) {
+    $nombre = (string) ($empresa['nombre_label'] ?? ($empresa['nombre'] ?? $nombre));
+    $rfc = (string) ($empresa['rfc_label'] ?? $rfc);
+    $representante = (string) ($empresa['representante_label'] ?? $representante);
+    $telefono = (string) ($empresa['telefono_label'] ?? $telefono);
+    $correo = (string) ($empresa['correo_label'] ?? $correo);
+    $estatusClass = (string) ($empresa['estatus_badge_class'] ?? $estatusClass);
+    $estatusLabel = (string) ($empresa['estatus_badge_label'] ?? $estatusLabel);
+    $creadoEn = (string) ($empresa['creado_en_label'] ?? $creadoEn);
+    $actualizadoEn = (string) ($empresa['actualizado_en_label'] ?? $actualizadoEn);
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -36,16 +76,25 @@
       <section class="card">
         <header>🏢 Información General de la Empresa</header>
         <div class="content empresa-info">
-          <div class="info-grid">
-            <div><strong>Nombre:</strong> Casa del Barrio</div>
-            <div><strong>RFC:</strong> CDB810101AA1</div>
-            <div><strong>Representante Legal:</strong> José Manuel Velador</div>
-            <div><strong>Teléfono:</strong> (33) 1234 5678</div>
-            <div><strong>Correo:</strong> contacto@casadelbarrio.mx</div>
-            <div><strong>Estatus:</strong> <span class="badge vigente">Vigente</span></div>
-            <div><strong>Fecha de Registro:</strong> 09/09/2025</div>
-            <div><strong>Última actualización:</strong> 02/10/2025</div>
-          </div>
+          <?php if ($controllerError !== null || $inputError !== null || $notFoundMessage !== null) : ?>
+            <div class="alert error" role="alert">
+              <?php
+              $message = $controllerError ?? $inputError ?? $notFoundMessage ?? 'No se pudo cargar la información de la empresa.';
+              echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+              ?>
+            </div>
+          <?php else : ?>
+            <div class="info-grid">
+              <div><strong>Nombre:</strong> <?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></div>
+              <div><strong>RFC:</strong> <?php echo htmlspecialchars($rfc, ENT_QUOTES, 'UTF-8'); ?></div>
+              <div><strong>Representante Legal:</strong> <?php echo htmlspecialchars($representante, ENT_QUOTES, 'UTF-8'); ?></div>
+              <div><strong>Teléfono:</strong> <?php echo htmlspecialchars($telefono, ENT_QUOTES, 'UTF-8'); ?></div>
+              <div><strong>Correo:</strong> <?php echo htmlspecialchars($correo, ENT_QUOTES, 'UTF-8'); ?></div>
+              <div><strong>Estatus:</strong> <span class="<?php echo htmlspecialchars($estatusClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($estatusLabel, ENT_QUOTES, 'UTF-8'); ?></span></div>
+              <div><strong>Fecha de Registro:</strong> <?php echo htmlspecialchars($creadoEn, ENT_QUOTES, 'UTF-8'); ?></div>
+              <div><strong>Última actualización:</strong> <?php echo htmlspecialchars($actualizadoEn, ENT_QUOTES, 'UTF-8'); ?></div>
+            </div>
+          <?php endif; ?>
         </div>
       </section>
 
@@ -132,99 +181,97 @@
           </div>
         </div>
       </section>
-      <!-- 🔴 Caso 3: Sin revisión activa -->
 
-      <section class="card">
-        <header>📝 Revisión de Machote</header>
+      <!-- 🔔 Alertas -->
+      <section class="card warn">
+        <header>⚠ Alertas recientes</header>
         <div class="content">
-          <p>No existe una revisión de machote activa para esta empresa.</p>
-          <div class="actions">
-            <a href="../machote/add.php?empresa=45" class="btn primary">➕ Iniciar revisión</a>
-          </div>
+          <ul class="alerts">
+            <li>⚠ Convenio #15 está próximo a vencer (30 días restantes).</li>
+            <li>⚠ Documento “Acta Constitutiva” sigue pendiente de aprobación.</li>
+          </ul>
         </div>
       </section>
 
+      <!-- 📂 Documentación Legal -->
+      <section class="card">
+        <header>
+          📂 Documentación Legal
+          <span class="subtitle">Control de documentos requeridos por Vinculación</span>
+        </header>
 
+        <div class="content">
+          <?php
+          // --- Datos simulados de ejemplo (puedes reemplazar luego con consulta real) ---
+          $docsTotal = 5;      // Total de documentos requeridos
+          $docsSubidos = 3;    // Archivos cargados por la empresa
+          $docsAprobados = 2;  // Documentos validados por Vinculación
+          $progreso = round(($docsSubidos / $docsTotal) * 100);
+          ?>
 
-<!-- 📂 Documentación Legal -->
-<section class="card">
-  <header>
-    📂 Documentación Legal
-    <span class="subtitle">Control de documentos requeridos por Vinculación</span>
-  </header>
+          <!-- 🔢 Resumen visual -->
+          <div class="docs-summary" style="margin-bottom:15px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+            <div style="flex:1;">
+              <strong>📄 Documentos requeridos:</strong> <?php echo $docsTotal; ?><br>
+              <strong>📤 Subidos:</strong> <?php echo $docsSubidos; ?>  
+              <strong>✅ Aprobados:</strong> <?php echo $docsAprobados; ?>
+            </div>
+            <div style="flex:1;">
+              <label style="font-weight:600;">Progreso general:</label>
+              <div style="background:#eee; border-radius:8px; overflow:hidden; height:10px; margin-top:4px;">
+                <div style="width:<?php echo $progreso; ?>%; height:10px; background:#4caf50;"></div>
+              </div>
+              <small><?php echo $progreso; ?>% completado</small>
+            </div>
+          </div>
 
-  <div class="content">
-    <?php
-    // --- Datos simulados de ejemplo (puedes reemplazar luego con consulta real) ---
-    $docsTotal = 5;      // Total de documentos requeridos
-    $docsSubidos = 3;    // Archivos cargados por la empresa
-    $docsAprobados = 2;  // Documentos validados por Vinculación
-    $progreso = round(($docsSubidos / $docsTotal) * 100);
-    ?>
+          <!-- 🧾 Tabla de resumen de documentos -->
+          <table>
+            <thead>
+              <tr>
+                <th>Documento</th>
+                <th>Estado</th>
+                <th>Última actualización</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- ✅ Ejemplo: documento aprobado -->
+              <tr>
+                <td>Constancia SAT</td>
+                <td><span class="badge ok">Aprobado</span></td>
+                <td>2025-09-10</td>
+                <td><a href="../../uploads/empresa_45/sat_constancia.pdf" class="btn small">📄 Ver</a></td>
+              </tr>
 
-    <!-- 🔢 Resumen visual -->
-    <div class="docs-summary" style="margin-bottom:15px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
-      <div style="flex:1;">
-        <strong>📄 Documentos requeridos:</strong> <?php echo $docsTotal; ?><br>
-        <strong>📤 Subidos:</strong> <?php echo $docsSubidos; ?>  
-        <strong>✅ Aprobados:</strong> <?php echo $docsAprobados; ?>
-      </div>
-      <div style="flex:1;">
-        <label style="font-weight:600;">Progreso general:</label>
-        <div style="background:#eee; border-radius:8px; overflow:hidden; height:10px; margin-top:4px;">
-          <div style="width:<?php echo $progreso; ?>%; height:10px; background:#4caf50;"></div>
+              <!-- ⏳ Ejemplo: documento pendiente -->
+              <tr>
+                <td>Acta Constitutiva</td>
+                <td><span class="badge pendiente">Pendiente</span></td>
+                <td>—</td>
+                <td>
+                  <a href="empresa_docs.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
+                </td>
+              </tr>
+
+              <!-- ⬆ Ejemplo: logotipo pendiente -->
+              <tr>
+                <td>Logotipo del Negocio</td>
+                <td><span class="badge warn">Faltante</span></td>
+                <td>—</td>
+                <td>
+                  <a href="empresa_docs.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- 🔗 Acción principal -->
+          <div class="actions" style="margin-top:16px; justify-content:flex-end;">
+            <a href="../empresadocumentotipo/empresa_documentotipo_list.php?id_empresa=45" class="btn primary">📁 Gestionar Documentos</a>
+          </div>
         </div>
-        <small><?php echo $progreso; ?>% completado</small>
-      </div>
-    </div>
-
-    <!-- 🧾 Tabla de resumen de documentos -->
-    <table>
-      <thead>
-        <tr>
-          <th>Documento</th>
-          <th>Estado</th>
-          <th>Última actualización</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- ✅ Ejemplo: documento aprobado -->
-        <tr>
-          <td>Constancia SAT</td>
-          <td><span class="badge ok">Aprobado</span></td>
-          <td>2025-09-10</td>
-          <td><a href="../../uploads/empresa_45/sat_constancia.pdf" class="btn small">📄 Ver</a></td>
-        </tr>
-
-        <!-- ⏳ Ejemplo: documento pendiente -->
-        <tr>
-          <td>Acta Constitutiva</td>
-          <td><span class="badge pendiente">Pendiente</span></td>
-          <td>—</td>
-          <td>
-            <a href="empresa_docs.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
-          </td>
-        </tr>
-
-        <!-- ⬆ Ejemplo: logotipo pendiente -->
-        <tr>
-          <td>Logotipo del Negocio</td>
-          <td><span class="badge warn">Faltante</span></td>
-          <td>—</td>
-          <td>
-            <a href="empresa_docs.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- 🔗 Acción principal -->
-    <div class="actions" style="margin-top:16px; justify-content:flex-end;">
-      <a href="../empresadocumentotipo/empresa_documentotipo_list.php?id_empresa=45" class="btn primary">📁 Gestionar Documentos</a>
-    </div>
-  </div>
-</section>
+      </section>
 
 
       <!-- 🎓 Estudiantes vinculados -->
