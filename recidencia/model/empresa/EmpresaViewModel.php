@@ -56,4 +56,40 @@ class EmpresaViewModel
 
         return $result !== false ? $result : null;
     }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findActiveConveniosByEmpresaId(int $empresaId): array
+    {
+        $sql = <<<'SQL'
+            SELECT id,
+                   empresa_id,
+                   machote_version,
+                   estatus,
+                   observaciones,
+                   fecha_inicio,
+                   fecha_fin,
+                   version_actual,
+                   folio,
+                   borrador_path,
+                   firmado_path,
+                   creado_en,
+                   actualizado_en
+              FROM rp_convenio
+             WHERE empresa_id = :empresa_id
+               AND estatus = 'Activa'
+             ORDER BY fecha_fin DESC,
+                      fecha_inicio DESC,
+                      id DESC
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        /** @var array<int, array<string, mixed>> $records */
+        $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $records;
+    }
 }

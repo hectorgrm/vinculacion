@@ -13,6 +13,7 @@ use RuntimeException;
 
 use function empresaViewDefaults;
 use function empresaViewDecorate;
+use function empresaViewDecorateConvenios;
 use function empresaViewInputErrorMessage;
 use function empresaViewNormalizeId;
 use function empresaViewNotFoundMessage;
@@ -39,10 +40,23 @@ class EmpresaViewController
     }
 
     /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getConveniosActivos(int $empresaId): array
+    {
+        try {
+            return $this->model->findActiveConveniosByEmpresaId($empresaId);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudieron obtener los convenios activos de la empresa.', 0, $exception);
+        }
+    }
+
+    /**
      * @param array<string, mixed> $input
      * @return array{
      *     empresaId: ?int,
      *     empresa: ?array<string, mixed>,
+     *     conveniosActivos: array<int, array<string, mixed>>,
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
      *     inputError: ?string
@@ -71,6 +85,9 @@ class EmpresaViewController
         }
 
         $viewData['empresa'] = empresaViewDecorate($empresa);
+
+        $convenios = $this->getConveniosActivos($empresaId);
+        $viewData['conveniosActivos'] = empresaViewDecorateConvenios($convenios);
 
         return $viewData;
     }

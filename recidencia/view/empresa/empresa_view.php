@@ -4,6 +4,7 @@ declare(strict_types=1);
 /** @var array{
  *     empresaId: ?int,
  *     empresa: ?array<string, mixed>,
+ *     conveniosActivos: array<int, array<string, mixed>>,
  *     controllerError: ?string,
  *     notFoundMessage: ?string,
  *     inputError: ?string
@@ -11,10 +12,16 @@ declare(strict_types=1);
  */
 $handlerResult = require __DIR__ . '/../../handler/empresa/empresa_view_handler.php';
 
+$empresaId = $handlerResult['empresaId'];
 $empresa = $handlerResult['empresa'];
 $controllerError = $handlerResult['controllerError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
 $inputError = $handlerResult['inputError'];
+$conveniosActivos = $handlerResult['conveniosActivos'] ?? [];
+
+if (!is_array($conveniosActivos)) {
+    $conveniosActivos = [];
+}
 
 $nombre = 'Sin datos';
 $rfc = 'N/A';
@@ -36,6 +43,13 @@ if (is_array($empresa)) {
     $estatusLabel = (string) ($empresa['estatus_badge_label'] ?? $estatusLabel);
     $creadoEn = (string) ($empresa['creado_en_label'] ?? $creadoEn);
     $actualizadoEn = (string) ($empresa['actualizado_en_label'] ?? $actualizadoEn);
+}
+
+$empresaIdQuery = $empresaId !== null ? (string) $empresaId : '';
+$nuevoConvenioUrl = '../convenio/convenio_add.php';
+
+if ($empresaIdQuery !== '') {
+    $nuevoConvenioUrl .= '?empresa=' . urlencode($empresaIdQuery);
 }
 ?>
 <!DOCTYPE html>
@@ -114,32 +128,52 @@ if (is_array($empresa)) {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>#12</td>
-                <td>v1.2</td>
-                <td>2025-06-01</td>
-                <td>2026-05-30</td>
-                <td><span class="badge vigente">Vigente</span></td>
-                <td>
-                  <a href="../convenio/convenio_view.php?id=12" class="btn small">👁️ Ver</a>
-                  <a href="../convenio/convenio_edit.php?id=12" class="btn small">✏️ Editar</a>
-                </td>
-              </tr>
-              <tr>
-                <td>#15</td>
-                <td>v2.0</td>
-                <td>2024-04-01</td>
-                <td>2025-03-30</td>
-                <td><span class="badge por_vencer">Por vencer</span></td>
-                <td>
-                  <a href="../convenio/convenio_view.php?id=15" class="btn small">👁️ Ver</a>
-                </td>
-              </tr>
+              <?php if ($controllerError !== null || $inputError !== null || $notFoundMessage !== null): ?>
+                <tr>
+                  <td colspan="6" style="text-align:center;">No hay datos de convenios disponibles.</td>
+                </tr>
+              <?php elseif ($conveniosActivos === []): ?>
+                <tr>
+                  <td colspan="6" style="text-align:center;">No existen convenios activos registrados para esta empresa.</td>
+                </tr>
+              <?php else: ?>
+                <?php foreach ($conveniosActivos as $convenio): ?>
+                  <?php
+                  $convenioIdLabel = (string) ($convenio['id_label'] ?? '#');
+                  $convenioVersion = (string) ($convenio['version_label'] ?? 'Sin version');
+                  $convenioInicio = (string) ($convenio['fecha_inicio_label'] ?? 'N/A');
+                  $convenioFin = (string) ($convenio['fecha_fin_label'] ?? 'N/A');
+                  $convenioEstatusClass = (string) ($convenio['estatus_badge_class'] ?? 'badge secondary');
+                  $convenioEstatusLabel = (string) ($convenio['estatus_badge_label'] ?? 'Sin estatus');
+                  $convenioViewUrl = isset($convenio['view_url']) ? (string) $convenio['view_url'] : null;
+                  $convenioEditUrl = isset($convenio['edit_url']) ? (string) $convenio['edit_url'] : null;
+                  ?>
+                  <tr>
+                    <td><?php echo htmlspecialchars($convenioIdLabel, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($convenioVersion, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($convenioInicio, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($convenioFin, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td>
+                      <span class="<?php echo htmlspecialchars($convenioEstatusClass, ENT_QUOTES, 'UTF-8'); ?>">
+                        <?php echo htmlspecialchars($convenioEstatusLabel, ENT_QUOTES, 'UTF-8'); ?>
+                      </span>
+                    </td>
+                    <td>
+                      <?php if ($convenioViewUrl !== null): ?>
+                        <a href="<?php echo htmlspecialchars($convenioViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️ Ver</a>
+                      <?php endif; ?>
+                      <?php if ($convenioEditUrl !== null): ?>
+                        <a href="<?php echo htmlspecialchars($convenioEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">✏️ Editar</a>
+                      <?php endif; ?>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              <?php endif; ?>
             </tbody>
           </table>
 
           <div class="actions">
-            <a href="../convenio/convenio_add.php?empresa=45" class="btn primary">➕ Nuevo Convenio</a>
+            <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Nuevo Convenio</a>
           </div>
         </div>
       </section>
@@ -250,7 +284,7 @@ if (is_array($empresa)) {
                 <td><span class="badge pendiente">Pendiente</span></td>
                 <td>—</td>
                 <td>
-                  <a href="empresa_docs.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
+                  <a href="../empresadocumentotipo/empresa_documentotipo_list.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
                 </td>
               </tr>
 
@@ -260,7 +294,7 @@ if (is_array($empresa)) {
                 <td><span class="badge warn">Faltante</span></td>
                 <td>—</td>
                 <td>
-                  <a href="empresa_docs.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
+                  <a href="../empresadocumentotipo/empresa_documentotipo_list.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
                 </td>
               </tr>
             </tbody>

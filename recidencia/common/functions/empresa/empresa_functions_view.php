@@ -9,6 +9,7 @@ if (!function_exists('empresaViewDefaults')) {
      * @return array{
      *     empresaId: ?int,
      *     empresa: ?array<string, mixed>,
+     *     conveniosActivos: array<int, array<string, mixed>>,
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
      *     inputError: ?string
@@ -19,6 +20,7 @@ if (!function_exists('empresaViewDefaults')) {
         return [
             'empresaId' => null,
             'empresa' => null,
+            'conveniosActivos' => [],
             'controllerError' => null,
             'notFoundMessage' => null,
             'inputError' => null,
@@ -137,5 +139,53 @@ if (!function_exists('empresaViewDecorate')) {
         $empresa['correo_label'] = empresaViewValueOrDefault($empresa['contacto_email'] ?? null, 'No registrado');
 
         return $empresa;
+    }
+}
+
+if (!function_exists('empresaViewDecorateConvenio')) {
+    /**
+     * @param array<string, mixed> $convenio
+     * @return array<string, mixed>
+     */
+    function empresaViewDecorateConvenio(array $convenio): array
+    {
+        $convenio['id_label'] = isset($convenio['id']) ? '#' . (string) $convenio['id'] : '#';
+        $convenio['version_label'] = empresaViewValueOrDefault(
+            $convenio['version_actual'] ?? $convenio['machote_version'] ?? null,
+            'Sin version'
+        );
+        $convenio['fecha_inicio_label'] = empresaViewFormatDate($convenio['fecha_inicio'] ?? null);
+        $convenio['fecha_fin_label'] = empresaViewFormatDate($convenio['fecha_fin'] ?? null);
+        $convenio['estatus_badge_class'] = renderBadgeClass($convenio['estatus'] ?? null);
+        $convenio['estatus_badge_label'] = renderBadgeLabel($convenio['estatus'] ?? null);
+
+        if (isset($convenio['id'])) {
+            $id = (int) $convenio['id'];
+            $convenio['view_url'] = '../convenio/convenio_view.php?id=' . urlencode((string) $id);
+            $convenio['edit_url'] = '../convenio/convenio_edit.php?id=' . urlencode((string) $id);
+        }
+
+        return $convenio;
+    }
+}
+
+if (!function_exists('empresaViewDecorateConvenios')) {
+    /**
+     * @param array<int, array<string, mixed>> $convenios
+     * @return array<int, array<string, mixed>>
+     */
+    function empresaViewDecorateConvenios(array $convenios): array
+    {
+        $decorated = [];
+
+        foreach ($convenios as $convenio) {
+            if (!is_array($convenio)) {
+                continue;
+            }
+
+            $decorated[] = empresaViewDecorateConvenio($convenio);
+        }
+
+        return $decorated;
     }
 }

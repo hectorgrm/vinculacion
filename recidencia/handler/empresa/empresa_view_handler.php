@@ -12,6 +12,7 @@ if (!function_exists('empresaViewHandler')) {
      * @return array{
      *     empresaId: ?int,
      *     empresa: ?array<string, mixed>,
+     *     conveniosActivos: array<int, array<string, mixed>>,
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
      *     inputError: ?string
