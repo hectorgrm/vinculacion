@@ -27,7 +27,8 @@ class DocumentoTipoEditModel
                    nombre,
                    descripcion,
                    obligatorio,
-                   tipo_empresa
+                   tipo_empresa,
+                   activo
               FROM rp_documento_tipo
              WHERE id = :id
              LIMIT 1
@@ -66,5 +67,16 @@ class DocumentoTipoEditModel
             ':id' => $documentoTipoId,
         ]);
     }
-}
 
+    public function reactivate(int $documentoTipoId): void
+    {
+        $sql = <<<'SQL'
+            UPDATE rp_documento_tipo
+               SET activo = 1
+             WHERE id = :id
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':id' => $documentoTipoId]);
+    }
+}

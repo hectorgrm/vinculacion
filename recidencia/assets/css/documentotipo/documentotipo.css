@@ -337,6 +337,13 @@ td.actions .btn {
       transition: background 0.2s;
     }
 
+    .btn.activar {
+      background: #028010;
+      color: #fff;
+    }
+    .btn.activar:hover {
+      background: #02b039;
+    }
     .btn.primary {
       background: #007bff;
       color: #fff;

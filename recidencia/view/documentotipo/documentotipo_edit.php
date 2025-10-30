@@ -8,7 +8,8 @@ declare(strict_types=1);
  *     errors: array<int, string>,
  *     successMessage: ?string,
  *     controllerError: ?string,
- *     loadError: ?string
+ *     loadError: ?string,
+ *     isActivo: bool
  * } $handlerResult
  */
 $handlerResult = require __DIR__ . '/../../handler/documentotipo/documentotipo_edit_handler.php';
@@ -20,11 +21,14 @@ $errors = $handlerResult['errors'];
 $successMessage = $handlerResult['successMessage'];
 $controllerError = $handlerResult['controllerError'];
 $loadError = $handlerResult['loadError'];
+$isActivo = $handlerResult['isActivo'];
 
 $nombreValue = documentoTipoEditFormValue($formData, 'nombre');
 $descripcionValue = documentoTipoEditFormValue($formData, 'descripcion');
 $obligatorioValue = documentoTipoEditFormValue($formData, 'obligatorio');
 $tipoEmpresaValue = documentoTipoEditFormValue($formData, 'tipo_empresa');
+$readonlyAttribute = $isActivo ? '' : ' readonly';
+$disabledAttribute = $isActivo ? '' : ' disabled';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -86,6 +90,12 @@ $tipoEmpresaValue = documentoTipoEditFormValue($formData, 'tipo_empresa');
               </div>
             <?php endif; ?>
 
+            <?php if (!$isActivo): ?>
+              <div class="alert alert-warning" style="margin-bottom:16px;">
+                Este tipo de documento est&aacute; inactivo. React&iacute;valo para habilitar la edici&oacute;n.
+              </div>
+            <?php endif; ?>
+
             <?php if ($errors !== []): ?>
               <div class="alert alert-danger" style="margin-bottom:16px;">
                 <p style="margin:0 0 8px 0; font-weight:600;">Corrige los siguientes errores:</p>
@@ -110,13 +120,13 @@ $tipoEmpresaValue = documentoTipoEditFormValue($formData, 'tipo_empresa');
                     maxlength="100"
                     placeholder="Ej: Constancia SAT"
                     value="<?php echo htmlspecialchars($nombreValue, ENT_QUOTES, 'UTF-8'); ?>"
-                    required
+                    required<?php echo $readonlyAttribute; ?>
                   />
                 </div>
 
                 <div class="field">
                   <label class="required" for="tipo_empresa">Tipo de empresa *</label>
-                  <select id="tipo_empresa" name="tipo_empresa" required>
+                  <select id="tipo_empresa" name="tipo_empresa" required<?php echo $disabledAttribute; ?>>
                     <?php foreach ($tipoEmpresaOptions as $value => $label): ?>
                       <option
                         value="<?php echo htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8'); ?>"
@@ -130,7 +140,7 @@ $tipoEmpresaValue = documentoTipoEditFormValue($formData, 'tipo_empresa');
 
                 <div class="field">
                   <label class="required" for="obligatorio">Es obligatorio *</label>
-                  <select id="obligatorio" name="obligatorio" required>
+                  <select id="obligatorio" name="obligatorio" required<?php echo $disabledAttribute; ?>>
                     <option value="1" <?php echo $obligatorioValue === '1' ? 'selected' : ''; ?>>Si</option>
                     <option value="0" <?php echo $obligatorioValue === '0' ? 'selected' : ''; ?>>No</option>
                   </select>
@@ -143,13 +153,21 @@ $tipoEmpresaValue = documentoTipoEditFormValue($formData, 'tipo_empresa');
                     name="descripcion"
                     rows="4"
                     placeholder="Describe el documento y en que casos se solicita."
+                    <?php echo $isActivo ? '' : 'readonly'; ?>
                   ><?php echo htmlspecialchars($descripcionValue, ENT_QUOTES, 'UTF-8'); ?></textarea>
                 </div>
               </div>
+              
 
               <div class="actions">
+                   
                 <a href="documentotipo_list.php" class="btn secondary">Cancelar</a>
-                <button type="submit" class="btn primary">Guardar cambios</button>
+                <?php if ($isActivo): ?>
+                  <button type="submit" class="btn primary" name="action" value="update">Guardar cambios</button>
+                <?php endif; ?>
+                <?php if (!$isActivo): ?>
+                  <button type="submit" class="btn activar" name="action" value="reactivate">Reactivar</button>
+                <?php endif; ?>
               </div>
             </form>
           </div>
@@ -167,4 +185,3 @@ $tipoEmpresaValue = documentoTipoEditFormValue($formData, 'tipo_empresa');
   </div>
 </body>
 </html>
-

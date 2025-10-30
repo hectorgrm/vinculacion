@@ -16,7 +16,8 @@ if (!function_exists('documentoTipoEditHandler')) {
      *     errors: array<int, string>,
      *     successMessage: ?string,
      *     controllerError: ?string,
-     *     loadError: ?string
+     *     loadError: ?string,
+     *     isActivo: bool
      * }
      */
     function documentoTipoEditHandler(): array
@@ -59,6 +60,7 @@ if (!function_exists('documentoTipoEditHandler')) {
                 documentoTipoEditFormDefaults(),
                 $documentoTipo
             );
+            $viewData['isActivo'] = documentoTipoEditRecordIsActive($documentoTipo);
         } catch (\RuntimeException $exception) {
             $message = trim($exception->getMessage());
             $viewData['loadError'] = $message !== ''
@@ -69,6 +71,32 @@ if (!function_exists('documentoTipoEditHandler')) {
         }
 
         if (!documentoTipoEditIsPostRequest()) {
+            return $viewData;
+        }
+
+        $action = documentoTipoEditResolveAction($_POST);
+
+        if ($action === 'reactivate') {
+            try {
+                $controller->reactivateDocumentoTipo($documentoTipoId);
+                $viewData['successMessage'] = documentoTipoEditReactivateSuccessMessage();
+
+                $actualizado = $controller->getDocumentoTipoById($documentoTipoId);
+                $viewData['formData'] = documentoTipoEditHydrateForm(
+                    documentoTipoEditFormDefaults(),
+                    $actualizado
+                );
+                $viewData['isActivo'] = documentoTipoEditRecordIsActive($actualizado);
+            } catch (\Throwable $exception) {
+                $viewData['errors'][] = documentoTipoEditReactivateErrorMessage();
+            }
+
+            return $viewData;
+        }
+
+        if ($viewData['isActivo'] === false) {
+            $viewData['errors'][] = documentoTipoEditInactiveUpdateErrorMessage();
+
             return $viewData;
         }
 
@@ -88,6 +116,7 @@ if (!function_exists('documentoTipoEditHandler')) {
                 documentoTipoEditFormDefaults(),
                 $actualizado
             );
+            $viewData['isActivo'] = documentoTipoEditRecordIsActive($actualizado);
         } catch (\Throwable $exception) {
             $pdoException = null;
 
@@ -119,4 +148,3 @@ if (!function_exists('documentoTipoEditHandler')) {
 }
 
 return documentoTipoEditHandler();
-

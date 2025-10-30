@@ -53,5 +53,13 @@ class DocumentoTipoEditController
     {
         $this->updateDocumentoTipo($documentoTipoId, $data);
     }
-}
 
+    public function reactivateDocumentoTipo(int $documentoTipoId): void
+    {
+        try {
+            $this->model->reactivate($documentoTipoId);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo reactivar el tipo de documento.', 0, $exception);
+        }
+    }
+}

@@ -14,7 +14,8 @@ if (!function_exists('documentoTipoEditDefaults')) {
      *     errors: array<int, string>,
      *     successMessage: ?string,
      *     controllerError: ?string,
-     *     loadError: ?string
+     *     loadError: ?string,
+     *     isActivo: bool
      * }
      */
     function documentoTipoEditDefaults(): array
@@ -27,6 +28,7 @@ if (!function_exists('documentoTipoEditDefaults')) {
             'successMessage' => null,
             'controllerError' => null,
             'loadError' => null,
+            'isActivo' => true,
         ];
     }
 }
@@ -216,3 +218,55 @@ if (!function_exists('documentoTipoEditFormValue')) {
     }
 }
 
+if (!function_exists('documentoTipoEditRecordIsActive')) {
+    /**
+     * @param array<string, mixed> $record
+     */
+    function documentoTipoEditRecordIsActive(array $record): bool
+    {
+        if (!array_key_exists('activo', $record)) {
+            return true;
+        }
+
+        return documentoTipoCastBool($record['activo']);
+    }
+}
+
+if (!function_exists('documentoTipoEditResolveAction')) {
+    /**
+     * @param array<string, mixed> $post
+     */
+    function documentoTipoEditResolveAction(array $post): string
+    {
+        $value = $post['action'] ?? 'update';
+
+        if (!is_scalar($value)) {
+            return 'update';
+        }
+
+        $action = strtolower(trim((string) $value));
+
+        return $action === 'reactivate' ? 'reactivate' : 'update';
+    }
+}
+
+if (!function_exists('documentoTipoEditReactivateSuccessMessage')) {
+    function documentoTipoEditReactivateSuccessMessage(): string
+    {
+        return 'El tipo de documento se reactivo correctamente.';
+    }
+}
+
+if (!function_exists('documentoTipoEditInactiveUpdateErrorMessage')) {
+    function documentoTipoEditInactiveUpdateErrorMessage(): string
+    {
+        return 'No se puede actualizar un tipo de documento inactivo. Debes reactivarlo primero.';
+    }
+}
+
+if (!function_exists('documentoTipoEditReactivateErrorMessage')) {
+    function documentoTipoEditReactivateErrorMessage(): string
+    {
+        return 'Ocurrio un error al intentar reactivar el tipo de documento. Intenta nuevamente.';
+    }
+}
