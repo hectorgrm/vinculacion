@@ -218,6 +218,9 @@ if (!function_exists('documentoUploadValidateData')) {
             } elseif (!$tipoGlobalExists($tipoGlobalId)) {
                 $errors[] = 'El tipo de documento global seleccionado no existe.';
             }
+
+            $formData['tipo_global_id'] = $tipoGlobalId !== null ? (string) $tipoGlobalId : '';
+            $formData['tipo_personalizado_id'] = '';
         } elseif ($tipoOrigen === 'personalizado') {
             $tipoPersonalizadoId = documentoNormalizePositiveInt($formData['tipo_personalizado_id'] ?? null);
             if ($tipoPersonalizadoId === null) {
@@ -227,6 +230,9 @@ if (!function_exists('documentoUploadValidateData')) {
             } elseif (!$tipoPersonalizadoExists($tipoPersonalizadoId, $empresaId)) {
                 $errors[] = 'El documento personalizado seleccionado no pertenece a la empresa indicada.';
             }
+
+            $formData['tipo_global_id'] = '';
+            $formData['tipo_personalizado_id'] = $tipoPersonalizadoId !== null ? (string) $tipoPersonalizadoId : '';
         } else {
             $errors[] = 'Selecciona un origen de documento válido.';
         }

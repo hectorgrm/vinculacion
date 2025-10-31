@@ -73,8 +73,12 @@ class DocumentoUploadController
         $estatus = (string) ($data['estatus'] ?? 'pendiente');
         $observacion = $data['observacion'] ?? null;
 
+        if ($tipoOrigen === 'personalizado' && $tipoPersonalizadoId === null) {
+            throw new RuntimeException('No se especificó un identificador de documento personalizado.');
+        }
+
         $tipoReferencia = $tipoOrigen === 'personalizado'
-            ? (int) ($tipoPersonalizadoId ?? 0)
+            ? (int) $tipoPersonalizadoId
             : (int) ($tipoGlobalId ?? 0);
 
         $uploadDirectory = $this->resolveUploadDirectory();
@@ -111,7 +115,7 @@ class DocumentoUploadController
         $normalizedPath = 'uploads/documento/' . $fileName;
 
         try {
-            $documentoId = $this->model->insertDocumento([
+            $saveResult = $this->model->saveDocumento([
                 'empresa_id' => $empresaId,
                 'tipo_global_id' => $tipoOrigen === 'global'
                     ? (documentoNormalizePositiveInt($tipoGlobalId) ?? null)
@@ -129,6 +133,12 @@ class DocumentoUploadController
         } catch (\Throwable $exception) {
             @unlink($destinationPath);
             throw $exception;
+        }
+
+        $documentoId = (int) ($saveResult['id'] ?? 0);
+
+        if (!empty($saveResult['replaced_path']) && is_string($saveResult['replaced_path'])) {
+            $this->removeExistingFile($saveResult['replaced_path']);
         }
 
         return [
@@ -161,5 +171,20 @@ class DocumentoUploadController
             throw new RuntimeException('No se pudo crear el directorio de carga de documentos.');
         }
     }
-}
 
+    private function removeExistingFile(string $relativePath): void
+    {
+        $relativePath = trim($relativePath);
+        if ($relativePath === '') {
+            return;
+        }
+
+        $projectRoot = dirname(__DIR__, 2);
+        $absolute = rtrim($projectRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+            . ltrim(str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+
+        if (is_file($absolute)) {
+            @unlink($absolute);
+        }
+    }
+}
