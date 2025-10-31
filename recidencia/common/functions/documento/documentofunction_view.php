@@ -174,49 +174,29 @@ if (!function_exists('documentoViewDecorateDocument')) {
             ? $empresaNombre
             : ($empresaId > 0 ? 'Empresa #' . $empresaId : 'Empresa sin nombre');
 
-        $document['convenio_label'] = documentoViewBuildConvenioLabel($document);
+        $tipoGlobalId = documentoNormalizePositiveInt($document['tipo_global_id'] ?? null);
+        $tipoPersonalizadoId = documentoNormalizePositiveInt($document['tipo_personalizado_id'] ?? null);
+        $document['tipo_origen'] = $tipoPersonalizadoId !== null ? 'personalizado' : 'global';
 
-        $document['tipo_label'] = documentoValueOrDefault($document['tipo_nombre'] ?? null, 'Tipo sin nombre');
+        if ($tipoPersonalizadoId !== null) {
+            $nombre = documentoValueOrDefault($document['tipo_personalizado_nombre'] ?? null, '');
+            $document['tipo_label'] = $nombre !== ''
+                ? $nombre
+                : 'Documento personalizado #' . $tipoPersonalizadoId;
+            $document['tipo_obligatorio'] = (bool) ($document['tipo_personalizado_obligatorio'] ?? false);
+        } else {
+            $nombre = documentoValueOrDefault($document['tipo_global_nombre'] ?? null, '');
+            $document['tipo_label'] = $nombre !== ''
+                ? $nombre
+                : ($tipoGlobalId !== null ? 'Documento global #' . $tipoGlobalId : 'Documento global');
+            $document['tipo_obligatorio'] = (bool) ($document['tipo_global_obligatorio'] ?? false);
+        }
 
         $document['archivo_nombre'] = isset($document['ruta'])
             ? basename(str_replace('\\', '/', (string) $document['ruta']))
             : null;
 
         return $document;
-    }
-}
-
-if (!function_exists('documentoViewBuildConvenioLabel')) {
-    /**
-     * @param array<string, mixed> $document
-     */
-    function documentoViewBuildConvenioLabel(array $document): ?string
-    {
-        $convenioId = documentoNormalizePositiveInt($document['convenio_id'] ?? null);
-        if ($convenioId === null) {
-            return null;
-        }
-
-        $parts = [];
-
-        $folio = trim((string) ($document['convenio_folio'] ?? ''));
-        if ($folio !== '') {
-            $parts[] = '#' . $folio;
-        } else {
-            $parts[] = 'Convenio #' . $convenioId;
-        }
-
-        $version = trim((string) ($document['convenio_version'] ?? ''));
-        if ($version !== '') {
-            $parts[] = 'v' . $version;
-        }
-
-        $estatus = trim((string) ($document['convenio_estatus'] ?? ''));
-        if ($estatus !== '') {
-            $parts[] = ucfirst(strtolower($estatus));
-        }
-
-        return implode(' - ', $parts);
     }
 }
 

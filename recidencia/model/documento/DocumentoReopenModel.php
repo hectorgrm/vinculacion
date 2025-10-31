@@ -80,20 +80,14 @@ class DocumentoReopenModel
             SELECT d.id,
                    d.empresa_id,
                    e.nombre AS empresa_nombre,
-                   d.convenio_id,
-                   c.folio AS convenio_folio,
-                   c.version_actual AS convenio_version,
-                   c.estatus AS convenio_estatus,
-                   d.tipo_id,
-                   t.nombre AS tipo_nombre,
+                   d.tipo_global_id,
+                   d.tipo_personalizado_id,
                    d.ruta,
                    d.estatus,
                    d.observacion,
                    d.creado_en
               FROM rp_empresa_doc AS d
               JOIN rp_empresa AS e ON e.id = d.empresa_id
-              LEFT JOIN rp_convenio AS c ON c.id = d.convenio_id
-              LEFT JOIN rp_documento_tipo AS t ON t.id = d.tipo_id
              WHERE d.id = :id
              LIMIT 1
         SQL;

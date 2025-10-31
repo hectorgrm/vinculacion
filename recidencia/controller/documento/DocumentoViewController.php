@@ -28,8 +28,20 @@ class DocumentoViewController
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function getHistory(int $empresaId, int $tipoId, int $excludeDocumentId, int $limit = 6): array
+    public function getHistory(
+        int $empresaId,
+        ?int $tipoGlobalId,
+        ?int $tipoPersonalizadoId,
+        int $excludeDocumentId,
+        int $limit = 6
+    ): array
     {
-        return $this->model->fetchHistory($empresaId, $tipoId, $excludeDocumentId, $limit);
+        return $this->model->fetchHistory(
+            $empresaId,
+            $tipoGlobalId,
+            $tipoPersonalizadoId,
+            $excludeDocumentId,
+            $limit
+        );
     }
 }

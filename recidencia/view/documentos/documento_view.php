@@ -29,8 +29,15 @@ $controllerError = $handlerResult['controllerError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
 
 $empresaId = $document !== null && isset($document['empresa_id']) ? (int) $document['empresa_id'] : null;
-$convenioId = $document !== null && isset($document['convenio_id']) ? (int) $document['convenio_id'] : null;
-$tipoId = $document !== null && isset($document['tipo_id']) ? (int) $document['tipo_id'] : null;
+$tipoGlobalId = $document !== null && isset($document['tipo_global_id']) ? (int) $document['tipo_global_id'] : null;
+if ($tipoGlobalId !== null && $tipoGlobalId <= 0) {
+  $tipoGlobalId = null;
+}
+$tipoPersonalizadoId = $document !== null && isset($document['tipo_personalizado_id']) ? (int) $document['tipo_personalizado_id'] : null;
+if ($tipoPersonalizadoId !== null && $tipoPersonalizadoId <= 0) {
+  $tipoPersonalizadoId = null;
+}
+$tipoOrigen = $document['tipo_origen'] ?? 'global';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -111,21 +118,18 @@ $tipoId = $document !== null && isset($document['tipo_id']) ? (int) $document['t
               </div>
 
               <div class="field">
-                <label>Convenio</label>
-                <?php if ($convenioId !== null && $document['convenio_label'] !== null): ?>
-                  <div>
-                    <a class="btn" href="../convenio/convenio_view.php?id=<?php echo urlencode((string) $convenioId); ?>">
-                      <?php echo htmlspecialchars((string) $document['convenio_label'], ENT_QUOTES, 'UTF-8'); ?>
-                    </a>
-                  </div>
-                <?php else: ?>
-                  <div>Sin convenio asociado</div>
-                <?php endif; ?>
+                <label>Tipo</label>
+                <div>
+                  <?php echo htmlspecialchars((string) $document['tipo_label'], ENT_QUOTES, 'UTF-8'); ?>
+                  <?php if (!empty($document['tipo_obligatorio'])): ?>
+                    <span class="badge ok" style="margin-left:6px;">Obligatorio</span>
+                  <?php endif; ?>
+                </div>
               </div>
 
               <div class="field">
-                <label>Tipo</label>
-                <div><?php echo htmlspecialchars((string) $document['tipo_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                <label>Origen del documento</label>
+                <div><?php echo $tipoOrigen === 'personalizado' ? 'Documento personalizado de la empresa' : 'Documento global'; ?></div>
               </div>
 
               <div class="field">
@@ -174,13 +178,18 @@ $tipoId = $document !== null && isset($document['tipo_id']) ? (int) $document['t
             </div>
 
             <div class="actions" style="justify-content:flex-start;">
-              <?php if ($empresaId !== null && $tipoId !== null): ?>
+              <?php if ($empresaId !== null): ?>
                 <?php
-                $uploadUrl = 'documento_upload.php?empresa=' . urlencode((string) $empresaId)
-                  . '&tipo=' . urlencode((string) $tipoId);
-                if ($convenioId !== null) {
-                  $uploadUrl .= '&convenio=' . urlencode((string) $convenioId);
+                $uploadParams = [
+                    'empresa' => (string) $empresaId,
+                    'origen' => $tipoOrigen,
+                ];
+                if ($tipoOrigen === 'personalizado' && $tipoPersonalizadoId !== null) {
+                    $uploadParams['personalizado'] = (string) $tipoPersonalizadoId;
+                } elseif ($tipoOrigen === 'global' && $tipoGlobalId !== null) {
+                    $uploadParams['tipo'] = (string) $tipoGlobalId;
                 }
+                $uploadUrl = 'documento_upload.php?' . http_build_query($uploadParams);
                 ?>
                 <a class="btn" href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>">Subir nueva version</a>
               <?php endif; ?>

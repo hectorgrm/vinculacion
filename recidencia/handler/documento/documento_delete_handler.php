@@ -13,7 +13,8 @@ if (!function_exists('documentoDeleteHandler')) {
      *     documentId: ?int,
      *     document: ?array<string, mixed>,
      *     empresaId: ?int,
-     *     convenioId: ?int,
+     *     tipoGlobalId: ?int,
+     *     tipoPersonalizadoId: ?int,
      *     fileMeta: array{
      *         exists: bool,
      *         absolutePath: ?string,
@@ -76,7 +77,8 @@ if (!function_exists('documentoDeleteHandler')) {
         );
 
         $viewData['empresaId'] = documentoDeleteNormalizeId($document['empresa_id'] ?? null);
-        $viewData['convenioId'] = documentoDeleteNormalizeId($document['convenio_id'] ?? null);
+        $viewData['tipoGlobalId'] = documentoDeleteNormalizeId($document['tipo_global_id'] ?? null);
+        $viewData['tipoPersonalizadoId'] = documentoDeleteNormalizeId($document['tipo_personalizado_id'] ?? null);
 
         return $viewData;
     }

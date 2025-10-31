@@ -10,7 +10,8 @@ if (!function_exists('documentoDeleteDefaults')) {
      *     documentId: ?int,
      *     document: ?array<string, mixed>,
      *     empresaId: ?int,
-     *     convenioId: ?int,
+     *     tipoGlobalId: ?int,
+     *     tipoPersonalizadoId: ?int,
      *     fileMeta: array{
      *         exists: bool,
      *         absolutePath: ?string,
@@ -32,7 +33,8 @@ if (!function_exists('documentoDeleteDefaults')) {
             'documentId' => null,
             'document' => null,
             'empresaId' => null,
-            'convenioId' => null,
+            'tipoGlobalId' => null,
+            'tipoPersonalizadoId' => null,
             'fileMeta' => [
                 'exists' => false,
                 'absolutePath' => null,
@@ -52,14 +54,13 @@ if (!function_exists('documentoDeleteDefaults')) {
 
 if (!function_exists('documentoDeleteFormDefaults')) {
     /**
-     * @return array{id: string, empresa_id: string, convenio_id: string, confirm: bool, motivo: string}
+     * @return array{id: string, empresa_id: string, confirm: bool, motivo: string}
      */
     function documentoDeleteFormDefaults(): array
     {
         return [
             'id' => '',
             'empresa_id' => '',
-            'convenio_id' => '',
             'confirm' => false,
             'motivo' => '',
         ];
@@ -118,7 +119,6 @@ if (!function_exists('documentoDeleteSanitizeInput')) {
      * @return array{
      *     id: ?int,
      *     empresa_id: ?int,
-     *     convenio_id: ?int,
      *     confirm: bool,
      *     motivo: ?string
      * }
@@ -128,7 +128,6 @@ if (!function_exists('documentoDeleteSanitizeInput')) {
         return [
             'id' => documentoDeleteNormalizeId($input['id'] ?? null),
             'empresa_id' => documentoDeleteNormalizeId($input['empresa_id'] ?? null),
-            'convenio_id' => documentoDeleteNormalizeId($input['convenio_id'] ?? null),
             'confirm' => documentoDeleteNormalizeBool($input['confirm'] ?? null),
             'motivo' => documentoDeleteNormalizeMotivo($input['motivo'] ?? null),
         ];
@@ -140,7 +139,6 @@ if (!function_exists('documentoDeleteValidateRequest')) {
      * @param array{
      *     id: ?int,
      *     empresa_id: ?int,
-     *     convenio_id: ?int,
      *     confirm: bool,
      *     motivo: ?string
      * } $sanitized
@@ -314,9 +312,22 @@ if (!function_exists('documentoDeleteLogMotivo')) {
             $parts[] = 'empresa #' . (int) $empresaId;
         }
 
-        $tipoId = $document['tipo_id'] ?? null;
-        if ($tipoId !== null) {
-            $parts[] = 'tipo #' . (int) $tipoId;
+        $tipoOrigen = $document['tipo_origen'] ?? null;
+        $tipoGlobalId = $document['tipo_global_id'] ?? null;
+        $tipoPersonalizadoId = $document['tipo_personalizado_id'] ?? null;
+
+        if ($tipoOrigen === null) {
+            if ($tipoPersonalizadoId !== null) {
+                $tipoOrigen = 'personalizado';
+            } elseif ($tipoGlobalId !== null) {
+                $tipoOrigen = 'global';
+            }
+        }
+
+        if ($tipoOrigen === 'personalizado' && $tipoPersonalizadoId !== null) {
+            $parts[] = 'personalizado #' . (int) $tipoPersonalizadoId;
+        } elseif ($tipoGlobalId !== null) {
+            $parts[] = 'global #' . (int) $tipoGlobalId;
         }
 
         $parts[] = 'motivo: ' . $motivo;
@@ -324,3 +335,4 @@ if (!function_exists('documentoDeleteLogMotivo')) {
         error_log(implode(' ', $parts));
     }
 }
+

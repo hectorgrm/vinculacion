@@ -5,7 +5,8 @@ declare(strict_types=1);
  *     documentId: ?int,
  *     document: ?array<string, mixed>,
  *     empresaId: ?int,
- *     convenioId: ?int,
+ *     tipoGlobalId: ?int,
+ *     tipoPersonalizadoId: ?int,
  *     fileMeta: array{
  *         exists: bool,
  *         absolutePath: ?string,
@@ -30,20 +31,38 @@ $controllerError = $handlerResult['controllerError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
 $errorMessage = $handlerResult['errorMessage'];
 $empresaId = $handlerResult['empresaId'];
-$convenioId = $handlerResult['convenioId'];
+$tipoGlobalId = $handlerResult['tipoGlobalId'];
+$tipoPersonalizadoId = $handlerResult['tipoPersonalizadoId'];
 
 if ($documentId === null && is_array($document) && isset($document['id'])) {
     $documentId = (int) $document['id'];
 }
 
-$viewUrl = $documentId !== null ? 'documento_view.php?id=' . urlencode((string) $documentId) : 'documento_list.php';
-$listUrl = 'documento_list.php';
+$queryParams = [];
 if ($empresaId !== null) {
-    $listUrl .= '?empresa=' . urlencode((string) $empresaId);
+    $queryParams['empresa'] = (string) $empresaId;
+}
+
+$tipoOrigen = is_array($document) && isset($document['tipo_origen']) ? (string) $document['tipo_origen'] : 'global';
+if ($tipoOrigen === 'personalizado' && $tipoPersonalizadoId !== null) {
+    $queryParams['personalizado'] = (string) $tipoPersonalizadoId;
+} elseif ($tipoGlobalId !== null) {
+    $queryParams['tipo'] = (string) $tipoGlobalId;
+}
+
+$viewUrl = $documentId !== null
+    ? 'documento_view.php?id=' . urlencode((string) $documentId)
+    : 'documento_list.php';
+if ($queryParams !== []) {
+    $viewUrl .= (strpos($viewUrl, '?') === false ? '?' : '&') . http_build_query($queryParams);
+}
+
+$listUrl = 'documento_list.php';
+if ($queryParams !== []) {
+    $listUrl .= '?' . http_build_query($queryParams);
 }
 
 $empresaUrl = $empresaId !== null ? '../empresa/empresa_view.php?id=' . urlencode((string) $empresaId) : null;
-$convenioUrl = $convenioId !== null ? '../convenio/convenio_view.php?id=' . urlencode((string) $convenioId) : null;
 
 $tipoLabel = 'Tipo sin nombre';
 $estatusBadgeClass = 'badge secondary';
@@ -52,8 +71,15 @@ $creadoEnLabel = 'N/D';
 $fileSizeLabel = $fileMeta['sizeLabel'] ?? null;
 $archivoLabel = $fileMeta['filename'] ?? 'Archivo';
 $empresaLabel = 'Empresa sin nombre';
-$convenioLabel = null;
 $observacion = '';
+$tipoOrigen = 'global';
+$tipoObligatorio = false;
+if (is_array($document)) {
+    if (isset($document['tipo_origen']) && (string) $document['tipo_origen'] !== '') {
+        $tipoOrigen = (string) $document['tipo_origen'];
+    }
+    $tipoObligatorio = !empty($document['tipo_obligatorio']);
+}
 
 if (is_array($document)) {
     if (isset($document['tipo_label']) && $document['tipo_label'] !== '') {
@@ -82,10 +108,6 @@ if (is_array($document)) {
         $empresaLabel = (string) $document['empresa_label'];
     } elseif (isset($document['empresa_nombre']) && $document['empresa_nombre'] !== '') {
         $empresaLabel = (string) $document['empresa_nombre'];
-    }
-
-    if (isset($document['convenio_label']) && $document['convenio_label'] !== '') {
-        $convenioLabel = (string) $document['convenio_label'];
     }
 
     if (isset($document['observacion'])) {
@@ -175,19 +197,24 @@ if (is_array($document)) {
               <?php else: ?>
                 <span class="badge secondary"><?php echo htmlspecialchars((string) $empresaLabel, ENT_QUOTES, 'UTF-8'); ?></span>
               <?php endif; ?>
-              <?php if ($convenioUrl !== null && $convenioLabel !== null && $convenioLabel !== ''): ?>
-                vinculado al convenio
-                <a class="btn" href="<?php echo htmlspecialchars($convenioUrl, ENT_QUOTES, 'UTF-8'); ?>">
-                  <?php echo htmlspecialchars((string) $convenioLabel, ENT_QUOTES, 'UTF-8'); ?>
-                </a>
-              <?php endif; ?>
-              . Esta acci&oacute;n <strong>no se puede deshacer</strong>.
+              <span class="badge secondary" style="margin-left:6px;">
+                <?php echo $tipoOrigen === 'personalizado' ? 'Documento personalizado' : 'Documento global'; ?>
+              </span>.
+              Esta acci&oacute;n <strong>no se puede deshacer</strong>.
             </p>
 
             <div class="grid-2" style="margin-top:12px;">
               <div class="card mini">
                 <h3>Resumen</h3>
-                <p class="text-muted">Tipo: <?php echo htmlspecialchars((string) $tipoLabel, ENT_QUOTES, 'UTF-8'); ?></p>
+                <p class="text-muted">
+                  Tipo: <?php echo htmlspecialchars((string) $tipoLabel, ENT_QUOTES, 'UTF-8'); ?>
+                  <?php if ($tipoObligatorio): ?>
+                    <span class="badge ok" style="margin-left:6px;">Obligatorio</span>
+                  <?php endif; ?>
+                </p>
+                <p class="text-muted">
+                  Origen: <?php echo $tipoOrigen === 'personalizado' ? 'Documento personalizado de la empresa' : 'Documento global'; ?>
+                </p>
                 <p class="text-muted">
                   Estatus:
                   <span class="<?php echo htmlspecialchars((string) $estatusBadgeClass, ENT_QUOTES, 'UTF-8'); ?>">
@@ -226,7 +253,6 @@ if (is_array($document)) {
           <div class="checklist">
             <p><strong>Antes de continuar, verifica lo siguiente:</strong></p>
             <ul class="danger-list">
-              <li>Que <strong>no sea requerido</strong> por un convenio en curso.</li>
               <li>Que <strong>no existan revisiones pendientes</strong> asociadas.</li>
               <li>Que <strong>tengas un respaldo</strong> en caso de ser necesario.</li>
             </ul>
@@ -234,9 +260,6 @@ if (is_array($document)) {
             <div class="links-inline">
               <?php if ($empresaUrl !== null): ?>
                 <a class="btn" href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>">Ver empresa</a>
-              <?php endif; ?>
-              <?php if ($convenioUrl !== null && $convenioLabel !== null && $convenioLabel !== ''): ?>
-                <a class="btn" href="<?php echo htmlspecialchars($convenioUrl, ENT_QUOTES, 'UTF-8'); ?>">Ver convenio</a>
               <?php endif; ?>
               <a class="btn" href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>">Volver a documentos</a>
             </div>
@@ -247,9 +270,6 @@ if (is_array($document)) {
               <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) $documentId, ENT_QUOTES, 'UTF-8'); ?>">
               <?php if ($empresaId !== null): ?>
                 <input type="hidden" name="empresa_id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
-              <?php endif; ?>
-              <?php if ($convenioId !== null): ?>
-                <input type="hidden" name="convenio_id" value="<?php echo htmlspecialchars((string) $convenioId, ENT_QUOTES, 'UTF-8'); ?>">
               <?php endif; ?>
               <!-- <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?? ''; ?>"> -->
 
@@ -281,3 +301,4 @@ if (is_array($document)) {
 </body>
 
 </html>
+

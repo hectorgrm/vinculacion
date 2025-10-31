@@ -36,7 +36,15 @@ $controllerError = $handlerResult['controllerError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
 
 $empresaId = $document !== null && isset($document['empresa_id']) ? (int) $document['empresa_id'] : null;
-$convenioId = $document !== null && isset($document['convenio_id']) ? (int) $document['convenio_id'] : null;
+$tipoGlobalId = $document !== null && isset($document['tipo_global_id']) ? (int) $document['tipo_global_id'] : null;
+if ($tipoGlobalId !== null && $tipoGlobalId <= 0) {
+  $tipoGlobalId = null;
+}
+$tipoPersonalizadoId = $document !== null && isset($document['tipo_personalizado_id']) ? (int) $document['tipo_personalizado_id'] : null;
+if ($tipoPersonalizadoId !== null && $tipoPersonalizadoId <= 0) {
+  $tipoPersonalizadoId = null;
+}
+$tipoOrigen = $document['tipo_origen'] ?? 'global';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -104,15 +112,16 @@ $convenioId = $document !== null && isset($document['convenio_id']) ? (int) $doc
               </div>
               <div class="field">
                 <label>Tipo de documento</label>
-                <div><?php echo htmlspecialchars((string) $document['tipo_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                <div>
+                  <?php echo htmlspecialchars((string) $document['tipo_label'], ENT_QUOTES, 'UTF-8'); ?>
+                  <?php if (!empty($document['tipo_obligatorio'])): ?>
+                    <span class="badge ok" style="margin-left:6px;">Obligatorio</span>
+                  <?php endif; ?>
+                </div>
               </div>
               <div class="field">
-                <label>Convenio</label>
-                <?php if ($convenioId !== null && $document['convenio_label'] !== null): ?>
-                  <div><?php echo htmlspecialchars((string) $document['convenio_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                <?php else: ?>
-                  <div>Sin convenio asociado</div>
-                <?php endif; ?>
+                <label>Origen del documento</label>
+                <div><?php echo $tipoOrigen === 'personalizado' ? 'Documento personalizado de la empresa' : 'Documento global'; ?></div>
               </div>
               <div class="field">
                 <label>Fecha de carga</label>
@@ -180,7 +189,17 @@ $convenioId = $document !== null && isset($document['convenio_id']) ? (int) $doc
 
               <div class="field">
                 <label>Tipo de documento</label>
-                <div><?php echo htmlspecialchars((string) $document['tipo_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                <div>
+                  <?php echo htmlspecialchars((string) $document['tipo_label'], ENT_QUOTES, 'UTF-8'); ?>
+                  <?php if (!empty($document['tipo_obligatorio'])): ?>
+                    <span class="badge ok" style="margin-left:6px;">Obligatorio</span>
+                  <?php endif; ?>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Origen del documento</label>
+                <div><?php echo $tipoOrigen === 'personalizado' ? 'Documento personalizado de la empresa' : 'Documento global'; ?></div>
               </div>
 
               <div class="field">

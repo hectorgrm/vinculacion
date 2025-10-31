@@ -71,11 +71,12 @@ if (!function_exists('documentoViewHandler')) {
         );
 
         $empresaId = documentoNormalizePositiveInt($document['empresa_id'] ?? null);
-        $tipoId = documentoNormalizePositiveInt($document['tipo_id'] ?? null);
+        $tipoGlobalId = documentoNormalizePositiveInt($document['tipo_global_id'] ?? null);
+        $tipoPersonalizadoId = documentoNormalizePositiveInt($document['tipo_personalizado_id'] ?? null);
 
-        if ($empresaId !== null && $tipoId !== null) {
+        if ($empresaId !== null && ($tipoGlobalId !== null || $tipoPersonalizadoId !== null)) {
             try {
-                $history = $controller->getHistory($empresaId, $tipoId, $documentId);
+                $history = $controller->getHistory($empresaId, $tipoGlobalId, $tipoPersonalizadoId, $documentId);
                 $viewData['history'] = documentoViewDecorateHistory($history);
             } catch (\Throwable) {
                 $viewData['history'] = [];

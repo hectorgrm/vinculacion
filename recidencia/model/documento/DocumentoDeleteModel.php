@@ -71,20 +71,22 @@ class DocumentoDeleteModel
             SELECT d.id,
                    d.empresa_id,
                    e.nombre AS empresa_nombre,
-                   d.convenio_id,
-                   c.folio AS convenio_folio,
-                   c.version_actual AS convenio_version,
-                   c.estatus AS convenio_estatus,
-                   d.tipo_id,
-                   t.nombre AS tipo_nombre,
+                   d.tipo_global_id,
+                   d.tipo_personalizado_id,
+                   tg.nombre AS tipo_global_nombre,
+                   tg.descripcion AS tipo_global_descripcion,
+                   tg.obligatorio AS tipo_global_obligatorio,
+                   tp.nombre AS tipo_personalizado_nombre,
+                   tp.descripcion AS tipo_personalizado_descripcion,
+                   tp.obligatorio AS tipo_personalizado_obligatorio,
                    d.ruta,
                    d.estatus,
                    d.observacion,
                    d.creado_en
               FROM rp_empresa_doc AS d
               JOIN rp_empresa AS e ON e.id = d.empresa_id
-              LEFT JOIN rp_convenio AS c ON c.id = d.convenio_id
-              LEFT JOIN rp_documento_tipo AS t ON t.id = d.tipo_id
+              LEFT JOIN rp_documento_tipo AS tg ON tg.id = d.tipo_global_id
+              LEFT JOIN rp_documento_tipo_empresa AS tp ON tp.id = d.tipo_personalizado_id
              WHERE d.id = :id
              LIMIT 1
         SQL;
@@ -102,3 +104,5 @@ class DocumentoDeleteModel
         return $result !== false ? $result : null;
     }
 }
+
+

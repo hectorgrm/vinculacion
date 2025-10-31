@@ -117,3 +117,4 @@ $redirect = documentoDeleteBuildRedirectUrl(
 
 header('Location: ' . $redirect);
 exit;
+
