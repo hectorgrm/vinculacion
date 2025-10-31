@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `nessuste_vinculacion` /*!40100 DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci */;
-USE `nessuste_vinculacion`;
 -- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
 -- Host: 65.99.225.140    Database: nessuste_vinculacion
@@ -823,4 +821,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-31  7:19:15
+-- Dump completed on 2025-10-31  7:21:37
