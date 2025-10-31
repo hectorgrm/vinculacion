@@ -23,21 +23,41 @@ if (!function_exists('empresaDocumentoTipoListHandler')) {
     function empresaDocumentoTipoListHandler(): array
     {
         $defaults = empresaDocumentoTipoListDefaults();
+        $statusCode = isset($_GET['status']) ? trim((string) $_GET['status']) : '';
+        $nombreParam = isset($_GET['nombre']) ? trim((string) $_GET['nombre']) : '';
+        $usageParam = $_GET['usage'] ?? null;
+        $usageCount = null;
+        if ($usageParam !== null && is_scalar($usageParam) && is_numeric($usageParam)) {
+            $usageCount = (int) $usageParam;
+        }
+
+        $statusMessage = empresaDocumentoTipoListStatusMessage(
+            $statusCode,
+            $nombreParam !== '' ? $nombreParam : null,
+            $usageCount
+        );
+        $defaults['statusMessage'] = $statusMessage;
 
         try {
             $controller = new EmpresaDocumentoTipoListController();
             $result = $controller->handle($_GET);
         } catch (\Throwable $exception) {
             $defaults['controllerError'] = empresaDocumentoTipoListControllerErrorMessage($exception);
+            $defaults['statusMessage'] = $statusMessage;
 
             return $defaults;
         }
 
         if (!is_array($result)) {
+            $defaults['statusMessage'] = $statusMessage;
+
             return $defaults;
         }
 
-        return array_merge($defaults, $result);
+        $merged = array_merge($defaults, $result);
+        $merged['statusMessage'] = $statusMessage;
+
+        return $merged;
     }
 }
 

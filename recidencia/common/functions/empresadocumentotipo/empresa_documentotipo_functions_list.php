@@ -12,7 +12,8 @@ if (!function_exists('empresaDocumentoTipoListDefaults')) {
      *     stats: array<string, int>,
      *     controllerError: ?string,
      *     inputError: ?string,
-     *     notFoundMessage: ?string
+     *     notFoundMessage: ?string,
+     *     statusMessage: ?string
      * }
      */
     function empresaDocumentoTipoListDefaults(): array
@@ -31,7 +32,48 @@ if (!function_exists('empresaDocumentoTipoListDefaults')) {
             'controllerError' => null,
             'inputError' => null,
             'notFoundMessage' => null,
+            'statusMessage' => null,
         ];
+    }
+}
+
+if (!function_exists('empresaDocumentoTipoListStatusMessage')) {
+    function empresaDocumentoTipoListStatusMessage(?string $statusCode, ?string $nombre = null, ?int $usageCount = null): ?string
+    {
+        if ($statusCode === null || $statusCode === '') {
+            return null;
+        }
+
+        $nombreLabel = null;
+        if ($nombre !== null) {
+            $trimmed = trim($nombre);
+            if ($trimmed !== '') {
+                $nombreLabel = $trimmed;
+            }
+        }
+
+        return match ($statusCode) {
+            'deleted' => $nombreLabel !== null
+                ? $nombreLabel . ' se elimino correctamente.'
+                : 'El documento individual se elimino correctamente.',
+            'deactivated' => $nombreLabel !== null
+                ? $nombreLabel . ' se desactivo porque tiene archivos relacionados' . empresaDocumentoTipoListStatusUsageSuffix($usageCount)
+                : 'El documento individual se desactivo porque tiene archivos relacionados' . empresaDocumentoTipoListStatusUsageSuffix($usageCount),
+            default => null,
+        };
+    }
+}
+
+if (!function_exists('empresaDocumentoTipoListStatusUsageSuffix')) {
+    function empresaDocumentoTipoListStatusUsageSuffix(?int $usageCount): string
+    {
+        if ($usageCount === null || $usageCount <= 0) {
+            return '.';
+        }
+
+        $suffix = $usageCount === 1 ? '' : 's';
+
+        return ' (' . $usageCount . ' archivo' . $suffix . ').';
     }
 }
 

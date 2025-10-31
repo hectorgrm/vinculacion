@@ -9,7 +9,8 @@ declare(strict_types=1);
  *     stats: array<string, int>,
  *     controllerError: ?string,
  *     inputError: ?string,
- *     notFoundMessage: ?string
+ *     notFoundMessage: ?string,
+ *     statusMessage: ?string
  * } $handlerResult
  */
 $handlerResult = require __DIR__ . '/../../handler/empresadocumentotipo/empresa_documentotipo_list_handler.php';
@@ -22,6 +23,7 @@ $stats = $handlerResult['stats'] ?? ['total' => 0, 'subidos' => 0, 'aprobados' =
 $controllerError = $handlerResult['controllerError'];
 $inputError = $handlerResult['inputError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
+$statusMessage = $handlerResult['statusMessage'] ?? null;
 
 $empresaNombre = is_array($empresa) ? (string) ($empresa['nombre_label'] ?? ($empresa['nombre'] ?? 'Sin datos')) : 'Sin datos';
 $empresaRfc = is_array($empresa) ? (string) ($empresa['rfc_label'] ?? ($empresa['rfc'] ?? 'N/A')) : 'N/A';
@@ -256,6 +258,11 @@ if (!function_exists('empresaDocTipoBuildFileUrl')) {
           <?php if ($errorMessage !== null): ?>
             <div class="alert error" role="alert" style="margin-bottom:16px;">
               <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
+            </div>
+          <?php endif; ?>
+          <?php if ($statusMessage !== null && $errorMessage === null): ?>
+            <div class="alert success" role="status" style="margin-bottom:16px;">
+              <?php echo htmlspecialchars($statusMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
 
