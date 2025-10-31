@@ -31,18 +31,17 @@ class DocumentoListModel
             SELECT d.id,
                    d.empresa_id,
                    e.nombre AS empresa_nombre,
-                   d.convenio_id,
-                   c.folio AS convenio_folio,
-                   d.tipo_id,
-                   t.nombre AS tipo_nombre,
+                   d.tipo_global_id,
+                   d.tipo_personalizado_id,
+                   COALESCE(tg.nombre, tp.nombre, CONCAT('Documento #', d.id)) AS tipo_nombre,
                    d.ruta,
                    d.estatus,
                    d.observacion,
                    d.creado_en
               FROM rp_empresa_doc AS d
               JOIN rp_empresa AS e ON e.id = d.empresa_id
-              LEFT JOIN rp_convenio AS c ON c.id = d.convenio_id
-              LEFT JOIN rp_documento_tipo AS t ON t.id = d.tipo_id
+              LEFT JOIN rp_documento_tipo AS tg ON tg.id = d.tipo_global_id
+              LEFT JOIN rp_documento_tipo_empresa AS tp ON tp.id = d.tipo_personalizado_id
         SQL;
 
         $conditions = [];
@@ -51,9 +50,9 @@ class DocumentoListModel
         if ($search !== null && $search !== '') {
             $conditions[] = '(
                 e.nombre LIKE :search
-                OR t.nombre LIKE :search
+                OR tg.nombre LIKE :search
+                OR tp.nombre LIKE :search
                 OR d.observacion LIKE :search
-                OR c.folio LIKE :search
             )';
             $params[':search'] = '%' . $search . '%';
         }
@@ -64,7 +63,7 @@ class DocumentoListModel
         }
 
         if ($tipoId !== null) {
-            $conditions[] = 'd.tipo_id = :tipo_id';
+            $conditions[] = 'd.tipo_global_id = :tipo_id';
             $params[':tipo_id'] = $tipoId;
         }
 

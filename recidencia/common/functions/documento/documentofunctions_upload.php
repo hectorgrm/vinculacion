@@ -10,8 +10,8 @@ if (!function_exists('documentoUploadDefaults')) {
      * @return array{
      *     formData: array<string, string>,
      *     empresas: array<int, array<string, mixed>>,
-     *     convenios: array<int, array<string, mixed>>,
-     *     tipos: array<int, array<string, mixed>>,
+     *     tiposGlobales: array<int, array<string, mixed>>,
+     *     tiposPersonalizados: array<int, array<string, mixed>>,
      *     statusOptions: array<string, string>,
      *     errors: array<int, string>,
      *     successMessage: ?string,
@@ -28,14 +28,20 @@ if (!function_exists('documentoUploadDefaults')) {
             $formData['empresa_id'] = (string) $empresaQuery;
         }
 
-        $convenioQuery = documentoNormalizePositiveInt($query['convenio'] ?? null);
-        if ($convenioQuery !== null) {
-            $formData['convenio_id'] = (string) $convenioQuery;
-        }
-
         $tipoQuery = documentoNormalizePositiveInt($query['tipo'] ?? null);
         if ($tipoQuery !== null) {
-            $formData['tipo_id'] = (string) $tipoQuery;
+            $formData['tipo_global_id'] = (string) $tipoQuery;
+        }
+
+        $personalizadoQuery = documentoNormalizePositiveInt($query['personalizado'] ?? null);
+        if ($personalizadoQuery !== null) {
+            $formData['tipo_personalizado_id'] = (string) $personalizadoQuery;
+            $formData['tipo_origen'] = 'personalizado';
+        }
+
+        $origenQuery = documentoUploadNormalizeOrigen($query['origen'] ?? null);
+        if ($origenQuery !== null) {
+            $formData['tipo_origen'] = $origenQuery;
         }
 
         $estatusQuery = documentoNormalizeStatus($query['estatus'] ?? null);
@@ -46,8 +52,8 @@ if (!function_exists('documentoUploadDefaults')) {
         return [
             'formData' => $formData,
             'empresas' => [],
-            'convenios' => [],
-            'tipos' => [],
+            'tiposGlobales' => [],
+            'tiposPersonalizados' => [],
             'statusOptions' => documentoStatusOptions(),
             'errors' => [],
             'successMessage' => null,
@@ -65,12 +71,30 @@ if (!function_exists('documentoUploadFormDefaults')) {
     {
         return [
             'empresa_id' => '',
-            'convenio_id' => '',
-            'tipo_id' => '',
+            'tipo_origen' => 'global',
+            'tipo_global_id' => '',
+            'tipo_personalizado_id' => '',
             'estatus' => 'pendiente',
             'observacion' => '',
             'fecha_doc' => '',
         ];
+    }
+}
+
+if (!function_exists('documentoUploadNormalizeOrigen')) {
+    function documentoUploadNormalizeOrigen(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = strtolower(trim((string) $value));
+
+        return match ($value) {
+            'global' => 'global',
+            'personalizado', 'personal', 'custom' => 'personalizado',
+            default => null,
+        };
     }
 }
 
@@ -92,8 +116,9 @@ if (!function_exists('documentoUploadSanitizeInput')) {
 
         $sanitized = $defaults;
         $sanitized['empresa_id'] = isset($input['empresa_id']) ? trim((string) $input['empresa_id']) : '';
-        $sanitized['convenio_id'] = isset($input['convenio_id']) ? trim((string) $input['convenio_id']) : '';
-        $sanitized['tipo_id'] = isset($input['tipo_id']) ? trim((string) $input['tipo_id']) : '';
+        $sanitized['tipo_origen'] = isset($input['tipo_origen']) ? trim((string) $input['tipo_origen']) : $defaults['tipo_origen'];
+        $sanitized['tipo_global_id'] = isset($input['tipo_global_id']) ? trim((string) $input['tipo_global_id']) : '';
+        $sanitized['tipo_personalizado_id'] = isset($input['tipo_personalizado_id']) ? trim((string) $input['tipo_personalizado_id']) : '';
         $sanitized['estatus'] = isset($input['estatus']) ? trim((string) $input['estatus']) : $defaults['estatus'];
         $sanitized['observacion'] = isset($input['observacion']) ? trim((string) $input['observacion']) : '';
         $sanitized['fecha_doc'] = isset($input['fecha_doc']) ? trim((string) $input['fecha_doc']) : '';
@@ -146,8 +171,8 @@ if (!function_exists('documentoUploadAllowedMimeTypes')) {
     {
         return [
             'application/pdf',
-            'image/png',
             'image/jpeg',
+            'image/png',
         ];
     }
 }
@@ -162,35 +187,48 @@ if (!function_exists('documentoUploadMaxFileSize')) {
 if (!function_exists('documentoUploadValidateData')) {
     /**
      * @param array<string, string> $formData
-     * @param array<string, mixed>|null $fileInfo
-     * @param array<string, string> $statusOptions
-     * @param callable(int):bool $empresaExists
-     * @param callable(int):bool $tipoExists
-     * @param callable(int,int):bool $convenioBelongsToEmpresa
+     * @param callable $tipoGlobalExists function(int $tipoId): bool
+     * @param callable $tipoPersonalizadoExists function(int $tipoId, int $empresaId): bool
      * @return array<int, string>
      */
     function documentoUploadValidateData(
-        array $formData,
+        array &$formData,
         ?array $fileInfo,
         array $statusOptions,
         callable $empresaExists,
-        callable $tipoExists,
-        callable $convenioBelongsToEmpresa
+        callable $tipoGlobalExists,
+        callable $tipoPersonalizadoExists
     ): array {
         $errors = [];
 
         $empresaId = documentoNormalizePositiveInt($formData['empresa_id'] ?? null);
         if ($empresaId === null) {
-            $errors[] = 'Selecciona una empresa válida.';
+            $errors[] = 'Selecciona una empresa.';
         } elseif (!$empresaExists($empresaId)) {
             $errors[] = 'La empresa seleccionada no existe.';
         }
 
-        $tipoId = documentoNormalizePositiveInt($formData['tipo_id'] ?? null);
-        if ($tipoId === null) {
-            $errors[] = 'Selecciona un tipo de documento.';
-        } elseif (!$tipoExists($tipoId)) {
-            $errors[] = 'El tipo de documento seleccionado no existe.';
+        $tipoOrigen = documentoUploadNormalizeOrigen($formData['tipo_origen'] ?? null) ?? 'global';
+        $formData['tipo_origen'] = $tipoOrigen;
+
+        if ($tipoOrigen === 'global') {
+            $tipoGlobalId = documentoNormalizePositiveInt($formData['tipo_global_id'] ?? null);
+            if ($tipoGlobalId === null) {
+                $errors[] = 'Selecciona un tipo de documento global.';
+            } elseif (!$tipoGlobalExists($tipoGlobalId)) {
+                $errors[] = 'El tipo de documento global seleccionado no existe.';
+            }
+        } elseif ($tipoOrigen === 'personalizado') {
+            $tipoPersonalizadoId = documentoNormalizePositiveInt($formData['tipo_personalizado_id'] ?? null);
+            if ($tipoPersonalizadoId === null) {
+                $errors[] = 'Selecciona un documento personalizado de la empresa.';
+            } elseif ($empresaId === null) {
+                $errors[] = 'Selecciona primero la empresa antes del documento personalizado.';
+            } elseif (!$tipoPersonalizadoExists($tipoPersonalizadoId, $empresaId)) {
+                $errors[] = 'El documento personalizado seleccionado no pertenece a la empresa indicada.';
+            }
+        } else {
+            $errors[] = 'Selecciona un origen de documento válido.';
         }
 
         $estatus = documentoNormalizeStatus($formData['estatus'] ?? null);
@@ -216,15 +254,6 @@ if (!function_exists('documentoUploadValidateData')) {
                 $formData['fecha_doc'] = $date->format('Y-m-d');
             } catch (\Throwable) {
                 $errors[] = 'La fecha del documento no tiene un formato válido (aaaa-mm-dd).';
-            }
-        }
-
-        $convenioId = documentoNormalizePositiveInt($formData['convenio_id'] ?? null);
-        if ($convenioId !== null) {
-            if ($empresaId === null) {
-                $errors[] = 'Selecciona primero una empresa antes de elegir un convenio.';
-            } elseif (!$convenioBelongsToEmpresa($convenioId, $empresaId)) {
-                $errors[] = 'El convenio seleccionado no corresponde a la empresa indicada.';
             }
         }
 

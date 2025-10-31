@@ -23,6 +23,7 @@ if (!function_exists('empresaDocumentoTipoListDefaults')) {
             'empresa' => null,
             'globalDocuments' => [],
             'customDocuments' => [],
+            'documentos' => [],
             'stats' => [
                 'total' => 0,
                 'subidos' => 0,
@@ -124,6 +125,29 @@ if (!function_exists('empresaDocumentoTipoListNotFoundMessage')) {
     function empresaDocumentoTipoListNotFoundMessage(int $empresaId): string
     {
         return 'No se encontro la empresa solicitada (#' . $empresaId . ').';
+    }
+}
+
+if (!function_exists('empresaDocumentoTipoListBuildArchivoUrl')) {
+    function empresaDocumentoTipoListBuildArchivoUrl(?string $ruta): ?string
+    {
+        if ($ruta === null) {
+            return null;
+        }
+
+        $ruta = trim($ruta);
+
+        if ($ruta === '') {
+            return null;
+        }
+
+        if (preg_match('/^https?:\/\//i', $ruta) === 1) {
+            return $ruta;
+        }
+
+        $sanitized = str_replace('\\', '/', $ruta);
+
+        return '../../' . ltrim($sanitized, '/');
     }
 }
 
@@ -247,10 +271,13 @@ if (!function_exists('empresaDocumentoTipoListDecorateGlobalDocument')) {
     {
         $obligatorio = empresaDocumentoTipoListCastBool($row['tipo_obligatorio'] ?? null);
         $documentoId = isset($row['documento_id']) ? (int) $row['documento_id'] : null;
-        $estadoRaw = $documentoId !== null ? (string) ($row['documento_estatus'] ?? '') : '';
-        $ruta = $documentoId !== null ? empresaDocumentoTipoListValueOrDefault($row['documento_ruta'] ?? null, '') : '';
-
-        $archivoNombre = $ruta !== '' ? basename($ruta) : null;
+        $estadoRaw = $documentoId !== null ? strtolower(trim((string) ($row['documento_estatus'] ?? ''))) : '';
+        $estado = $estadoRaw !== '' ? $estadoRaw : 'pendiente';
+        $rutaOriginal = $documentoId !== null ? empresaDocumentoTipoListValueOrDefault($row['documento_ruta'] ?? null, '') : '';
+        $archivoNombre = $rutaOriginal !== '' ? basename($rutaOriginal) : null;
+        $archivoUrl = $rutaOriginal !== '' ? empresaDocumentoTipoListBuildArchivoUrl($rutaOriginal) : null;
+        $observacion = empresaDocumentoTipoListValueOrDefault($row['documento_observacion'] ?? null, '');
+        $ultimaActualizacion = $row['documento_actualizado_en'] ?? $row['documento_creado_en'] ?? null;
 
         return [
             'id' => isset($row['tipo_id']) ? (int) $row['tipo_id'] : null,
@@ -259,15 +286,18 @@ if (!function_exists('empresaDocumentoTipoListDecorateGlobalDocument')) {
             'obligatorio' => $obligatorio,
             'obligatorio_label' => empresaDocumentoTipoListObligatorioLabel($obligatorio),
             'obligatorio_badge_class' => empresaDocumentoTipoListObligatorioClass($obligatorio),
-            'estado' => $estadoRaw !== '' ? $estadoRaw : 'pendiente',
-            'estado_label' => empresaDocumentoTipoListEstadoLabel($estadoRaw),
-            'estado_badge_class' => empresaDocumentoTipoListEstadoClass($estadoRaw),
+            'estado' => $estado,
+            'estado_label' => empresaDocumentoTipoListEstadoLabel($estado),
+            'estado_badge_class' => empresaDocumentoTipoListEstadoClass($estado),
             'archivo_nombre' => $archivoNombre,
-            'archivo_ruta' => $ruta !== '' ? $ruta : null,
+            'archivo_ruta' => $rutaOriginal !== '' ? $rutaOriginal : null,
+            'archivo_url' => $archivoUrl,
             'documento_id' => $documentoId,
-            'observacion' => empresaDocumentoTipoListValueOrDefault($row['documento_observacion'] ?? null, ''),
-            'ultima_actualizacion' => $row['documento_creado_en'] ?? null,
-            'ultima_actualizacion_label' => empresaDocumentoTipoListFormatDate($row['documento_creado_en'] ?? null),
+            'observacion' => $observacion,
+            'ultima_actualizacion' => $ultimaActualizacion,
+            'ultima_actualizacion_label' => empresaDocumentoTipoListFormatDate($ultimaActualizacion ?? null),
+            'origen' => 'global',
+            'tipo_empresa' => $row['tipo_empresa'] ?? null,
         ];
     }
 }
@@ -301,6 +331,14 @@ if (!function_exists('empresaDocumentoTipoListDecorateCustomDocument')) {
     function empresaDocumentoTipoListDecorateCustomDocument(array $row): array
     {
         $obligatorio = empresaDocumentoTipoListCastBool($row['obligatorio'] ?? null);
+        $documentoId = isset($row['documento_id']) ? (int) $row['documento_id'] : null;
+        $estadoRaw = $documentoId !== null ? strtolower(trim((string) ($row['documento_estatus'] ?? ''))) : '';
+        $estado = $estadoRaw !== '' ? $estadoRaw : 'pendiente';
+        $rutaOriginal = $documentoId !== null ? empresaDocumentoTipoListValueOrDefault($row['documento_ruta'] ?? null, '') : '';
+        $archivoNombre = $rutaOriginal !== '' ? basename($rutaOriginal) : null;
+        $archivoUrl = $rutaOriginal !== '' ? empresaDocumentoTipoListBuildArchivoUrl($rutaOriginal) : null;
+        $observacion = empresaDocumentoTipoListValueOrDefault($row['documento_observacion'] ?? null, '');
+        $ultimaActualizacion = $row['documento_actualizado_en'] ?? $row['documento_creado_en'] ?? null;
 
         return [
             'id' => isset($row['id']) ? (int) $row['id'] : null,
@@ -309,11 +347,19 @@ if (!function_exists('empresaDocumentoTipoListDecorateCustomDocument')) {
             'obligatorio' => $obligatorio,
             'obligatorio_label' => empresaDocumentoTipoListObligatorioLabel($obligatorio),
             'obligatorio_badge_class' => empresaDocumentoTipoListObligatorioClass($obligatorio),
-            'estado' => 'sin_registro',
-            'estado_label' => 'Sin registro',
-            'estado_badge_class' => 'badge pendiente',
+            'estado' => $estado,
+            'estado_label' => empresaDocumentoTipoListEstadoLabel($estado),
+            'estado_badge_class' => empresaDocumentoTipoListEstadoClass($estado),
+            'archivo_nombre' => $archivoNombre,
+            'archivo_ruta' => $rutaOriginal !== '' ? $rutaOriginal : null,
+            'archivo_url' => $archivoUrl,
+            'documento_id' => $documentoId,
+            'observacion' => $observacion,
             'creado_en' => $row['creado_en'] ?? null,
             'creado_en_label' => empresaDocumentoTipoListFormatDate($row['creado_en'] ?? null),
+            'ultima_actualizacion' => $ultimaActualizacion,
+            'ultima_actualizacion_label' => empresaDocumentoTipoListFormatDate($ultimaActualizacion ?? null),
+            'origen' => 'personalizado',
         ];
     }
 }
@@ -410,6 +456,22 @@ if (!function_exists('empresaDocumentoTipoListBuildStats')) {
             }
         }
 
+        foreach ($customDocuments as $documento) {
+            if (!is_array($documento)) {
+                continue;
+            }
+
+            $documentoId = $documento['documento_id'] ?? null;
+            if ($documentoId !== null) {
+                $subidos++;
+
+                $estado = strtolower(trim((string) ($documento['estado'] ?? '')));
+                if ($estado === 'aprobado') {
+                    $aprobados++;
+                }
+            }
+        }
+
         $porcentaje = 0;
         if ($total > 0) {
             $porcentaje = (int) round(($subidos / $total) * 100);
@@ -421,5 +483,109 @@ if (!function_exists('empresaDocumentoTipoListBuildStats')) {
             'aprobados' => $aprobados,
             'porcentaje' => $porcentaje,
         ];
+    }
+}
+
+if (!function_exists('empresaDocumentoTipoListNormalizeDocumentRecord')) {
+    /**
+     * @param array<string, mixed> $documento
+     * @param string $origen
+     * @return array<string, mixed>
+     */
+    function empresaDocumentoTipoListNormalizeDocumentRecord(array $documento, string $origen): array
+    {
+        $documentoId = isset($documento['documento_id']) ? (int) $documento['documento_id'] : null;
+        $tipoId = isset($documento['id']) ? (int) $documento['id'] : null;
+        $nombre = empresaDocumentoTipoListValueOrDefault($documento['nombre'] ?? null, 'Sin nombre');
+
+        $descripcion = '';
+        if (isset($documento['descripcion'])) {
+            $descripcion = trim((string) $documento['descripcion']);
+        }
+
+        $observacion = '';
+        if (isset($documento['observacion'])) {
+            $observacion = trim((string) $documento['observacion']);
+        }
+
+        $estado = strtolower(trim((string) ($documento['estado'] ?? 'pendiente')));
+        if ($estado === '') {
+            $estado = 'pendiente';
+        }
+
+        $badgeClass = $documento['estado_badge_class'] ?? empresaDocumentoTipoListEstadoClass($estado);
+        $estatusLabel = $documento['estado_label'] ?? empresaDocumentoTipoListEstadoLabel($estado);
+
+        $ruta = null;
+        if (isset($documento['archivo_url']) && is_string($documento['archivo_url']) && trim($documento['archivo_url']) !== '') {
+            $ruta = trim($documento['archivo_url']);
+        } elseif (isset($documento['archivo_ruta']) && is_string($documento['archivo_ruta']) && trim($documento['archivo_ruta']) !== '') {
+            $ruta = empresaDocumentoTipoListBuildArchivoUrl(trim($documento['archivo_ruta']));
+        }
+
+        $ultimaActualizacion = $documento['ultima_actualizacion'] ?? null;
+        $ultimaActualizacionLabel = $documento['ultima_actualizacion_label'] ?? empresaDocumentoTipoListFormatDate($ultimaActualizacion ?? null);
+
+        $obligatorio = empresaDocumentoTipoListCastBool($documento['obligatorio'] ?? false);
+        $obligatorioLabel = $documento['obligatorio_label'] ?? empresaDocumentoTipoListObligatorioLabel($obligatorio);
+        $obligatorioBadge = $documento['obligatorio_badge_class'] ?? empresaDocumentoTipoListObligatorioClass($obligatorio);
+
+        $rowClass = $origen === 'personalizado' ? 'row-custom' : '';
+        $uploadLabel = $documentoId !== null ? 'Actualizar' : 'Subir';
+        $idForActions = $documentoId ?? $tipoId;
+
+        return [
+            'id' => $idForActions,
+            'documento_id' => $documentoId,
+            'tipo_id' => $origen === 'global' ? $tipoId : null,
+            'tipo_personalizado_id' => $origen === 'personalizado' ? $tipoId : null,
+            'origen' => $origen,
+            'row_class' => $rowClass,
+            'nombre' => $nombre,
+            'descripcion' => $descripcion,
+            'estatus' => $estado,
+            'estatus_label' => $estatusLabel,
+            'badge_class' => $badgeClass,
+            'ruta' => $ruta,
+            'observacion' => $observacion,
+            'ultima_actualizacion' => $ultimaActualizacion,
+            'ultima_actualizacion_label' => $ultimaActualizacionLabel,
+            'obligatorio' => $obligatorio,
+            'obligatorio_label' => $obligatorioLabel,
+            'obligatorio_badge_class' => $obligatorioBadge,
+            'upload_label' => $uploadLabel,
+            'tiene_archivo' => $ruta !== null,
+            'archivo_nombre' => $documento['archivo_nombre'] ?? null,
+        ];
+    }
+}
+
+if (!function_exists('empresaDocumentoTipoListCollectDocuments')) {
+    /**
+     * @param array<int, array<string, mixed>> $globalDocuments
+     * @param array<int, array<string, mixed>> $customDocuments
+     * @return array<int, array<string, mixed>>
+     */
+    function empresaDocumentoTipoListCollectDocuments(array $globalDocuments, array $customDocuments): array
+    {
+        $documents = [];
+
+        foreach ($globalDocuments as $documento) {
+            if (!is_array($documento)) {
+                continue;
+            }
+
+            $documents[] = empresaDocumentoTipoListNormalizeDocumentRecord($documento, 'global');
+        }
+
+        foreach ($customDocuments as $documento) {
+            if (!is_array($documento)) {
+                continue;
+            }
+
+            $documents[] = empresaDocumentoTipoListNormalizeDocumentRecord($documento, 'personalizado');
+        }
+
+        return $documents;
     }
 }

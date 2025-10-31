@@ -12,6 +12,7 @@ use Residencia\Model\Empresadocumentotipo\EmpresaDocumentoTipoListModel;
 use RuntimeException;
 
 use function empresaDocumentoTipoListBuildStats;
+use function empresaDocumentoTipoListCollectDocuments;
 use function empresaDocumentoTipoListDecorateCustomDocuments;
 use function empresaDocumentoTipoListDecorateEmpresa;
 use function empresaDocumentoTipoListDecorateGlobalDocuments;
@@ -36,6 +37,7 @@ class EmpresaDocumentoTipoListController
      *     empresa: ?array<string, mixed>,
      *     globalDocuments: array<int, array<string, mixed>>,
      *     customDocuments: array<int, array<string, mixed>>,
+     *     documentos: array<int, array<string, mixed>>,
      *     stats: array<string, int>,
      *     controllerError: ?string,
      *     inputError: ?string,
@@ -80,6 +82,7 @@ class EmpresaDocumentoTipoListController
         $viewData['empresa'] = $empresaDecorated;
         $viewData['globalDocuments'] = $globalDocuments;
         $viewData['customDocuments'] = $customDocuments;
+        $viewData['documentos'] = empresaDocumentoTipoListCollectDocuments($globalDocuments, $customDocuments);
         $viewData['stats'] = empresaDocumentoTipoListBuildStats($globalDocuments, $customDocuments);
 
         return $viewData;

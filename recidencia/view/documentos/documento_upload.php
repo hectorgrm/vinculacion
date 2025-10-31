@@ -4,8 +4,8 @@ declare(strict_types=1);
 /** @var array{
  *     formData: array<string, string>,
  *     empresas: array<int, array<string, mixed>>,
- *     convenios: array<int, array<string, mixed>>,
- *     tipos: array<int, array<string, mixed>>,
+ *     tiposGlobales: array<int, array<string, mixed>>,
+ *     tiposPersonalizados: array<int, array<string, mixed>>,
  *     statusOptions: array<string, string>,
  *     errors: array<int, string>,
  *     successMessage: ?string,
@@ -17,8 +17,8 @@ $handlerResult = require __DIR__ . '/../../handler/documento/documento_upload_ha
 
 $formData = $handlerResult['formData'];
 $empresas = $handlerResult['empresas'];
-$convenios = $handlerResult['convenios'];
-$tipos = $handlerResult['tipos'];
+$tiposGlobales = $handlerResult['tiposGlobales'];
+$tiposPersonalizados = $handlerResult['tiposPersonalizados'];
 $statusOptions = $handlerResult['statusOptions'];
 $errors = $handlerResult['errors'];
 $successMessage = $handlerResult['successMessage'];
@@ -35,8 +35,6 @@ $savedDocument = $handlerResult['savedDocument'];
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
   <link rel="stylesheet" href="../../assets/css/documentos/documento_upload.css" />
-
-
 </head>
 
 <body>
@@ -62,7 +60,7 @@ $savedDocument = $handlerResult['savedDocument'];
         <header>Datos del Documento</header>
         <div class="content">
           <p class="text-muted" style="margin-top:-6px">
-            Asocia el documento a una empresa y, si aplica, a un convenio. Define su tipo, estatus y agrega observaciones.
+            Asocia el archivo a una empresa y selecciona si el documento corresponde a un requisito global o a uno personalizado de la empresa.
           </p>
 
           <?php if ($controllerError !== null): ?>
@@ -122,59 +120,60 @@ $savedDocument = $handlerResult['savedDocument'];
               </div>
 
               <div class="field">
-                <label for="convenio_id">Convenio (opcional)</label>
-                <select id="convenio_id" name="convenio_id">
-                  <option value="">-- Sin convenio asociado --</option>
-                  <?php foreach ($convenios as $convenio): ?>
-                    <?php
-                    $convenioId = isset($convenio['id']) ? (int) $convenio['id'] : 0;
-                    $folio = isset($convenio['folio']) ? trim((string) $convenio['folio']) : '';
-                    $version = isset($convenio['version_actual']) ? trim((string) $convenio['version_actual']) : '';
-                    $estatusConvenio = isset($convenio['estatus']) ? trim((string) $convenio['estatus']) : '';
-                    $labelParts = [];
-
-                    if ($folio !== '') {
-                      $labelParts[] = '#' . $folio;
-                    } else {
-                      $labelParts[] = 'Convenio #' . $convenioId;
-                    }
-
-                    if ($version !== '') {
-                      $labelParts[] = 'v' . $version;
-                    }
-
-                    if ($estatusConvenio !== '') {
-                      $labelParts[] = $estatusConvenio;
-                    }
-
-                    $convenioLabel = implode(' - ', $labelParts);
-                    ?>
-                    <option value="<?php echo htmlspecialchars((string) $convenioId, ENT_QUOTES, 'UTF-8'); ?>"
-                      <?php echo $formData['convenio_id'] === (string) $convenioId ? 'selected' : ''; ?>>
-                      <?php echo htmlspecialchars($convenioLabel, ENT_QUOTES, 'UTF-8'); ?>
-                    </option>
-                  <?php endforeach; ?>
+                <label for="tipo_origen" class="required">Origen del documento *</label>
+                <select id="tipo_origen" name="tipo_origen" required>
+                  <option value="global" <?php echo $formData['tipo_origen'] === 'global' ? 'selected' : ''; ?>>Global</option>
+                  <option value="personalizado" <?php echo $formData['tipo_origen'] === 'personalizado' ? 'selected' : ''; ?>>Personalizado de la empresa</option>
                 </select>
                 <div class="help">
-                  Selecciona primero la empresa para ver sus convenios disponibles.
+                  Selecciona "Global" para requisitos generales o "Personalizado" para documentos específicos de la empresa.
                 </div>
               </div>
 
-              <div class="field">
-                <label for="tipo_id" class="required">Tipo de documento *</label>
-                <select id="tipo_id" name="tipo_id" required>
-                  <option value="">-- Selecciona un tipo --</option>
-                  <?php foreach ($tipos as $tipo): ?>
+              <div class="field" data-origen="global">
+                <label for="tipo_global_id" class="required">Documento global *</label>
+                <select id="tipo_global_id" name="tipo_global_id" <?php echo $formData['tipo_origen'] === 'global' ? 'required' : ''; ?>>
+                  <option value="">-- Selecciona un documento global --</option>
+                  <?php foreach ($tiposGlobales as $tipo): ?>
                     <?php
                     $tipoId = isset($tipo['id']) ? (int) $tipo['id'] : 0;
                     $tipoNombre = isset($tipo['nombre']) ? (string) $tipo['nombre'] : '';
                     ?>
                     <option value="<?php echo htmlspecialchars((string) $tipoId, ENT_QUOTES, 'UTF-8'); ?>"
-                      <?php echo $formData['tipo_id'] === (string) $tipoId ? 'selected' : ''; ?>>
-                      <?php echo htmlspecialchars($tipoNombre !== '' ? $tipoNombre : 'Tipo #' . $tipoId, ENT_QUOTES, 'UTF-8'); ?>
+                      <?php echo $formData['tipo_global_id'] === (string) $tipoId ? 'selected' : ''; ?>>
+                      <?php echo htmlspecialchars($tipoNombre !== '' ? $tipoNombre : 'Tipo global #' . $tipoId, ENT_QUOTES, 'UTF-8'); ?>
                     </option>
                   <?php endforeach; ?>
                 </select>
+              </div>
+
+              <div class="field" data-origen="personalizado">
+                <label for="tipo_personalizado_id" class="required">Documento personalizado *</label>
+                <select id="tipo_personalizado_id" name="tipo_personalizado_id" <?php echo $formData['tipo_origen'] === 'personalizado' ? 'required' : ''; ?>>
+                  <option value="">-- Selecciona un documento personalizado --</option>
+                  <?php foreach ($tiposPersonalizados as $tipo): ?>
+                    <?php
+                    $tipoId = isset($tipo['id']) ? (int) $tipo['id'] : 0;
+                    $tipoNombre = isset($tipo['nombre']) ? (string) $tipo['nombre'] : '';
+                    $obligatorio = isset($tipo['obligatorio']) ? (bool) $tipo['obligatorio'] : false;
+                    ?>
+                    <option value="<?php echo htmlspecialchars((string) $tipoId, ENT_QUOTES, 'UTF-8'); ?>"
+                      <?php echo $formData['tipo_personalizado_id'] === (string) $tipoId ? 'selected' : ''; ?>>
+                      <?php
+                      $label = $tipoNombre !== '' ? $tipoNombre : 'Tipo personalizado #' . $tipoId;
+                      if ($obligatorio) {
+                          $label .= ' (Obligatorio)';
+                      }
+                      echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8');
+                      ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
+                <?php if ($tiposPersonalizados === [] && $formData['empresa_id'] !== ''): ?>
+                  <div class="help">La empresa seleccionada no tiene documentos personalizados registrados.</div>
+                <?php else: ?>
+                  <div class="help">Este listado se llena automáticamente con los documentos personalizados registrados para la empresa.</div>
+                <?php endif; ?>
               </div>
 
               <div class="field">
@@ -222,15 +221,80 @@ $savedDocument = $handlerResult['savedDocument'];
           <header>Accesos r&aacute;pidos</header>
           <div class="content actions" style="justify-content:flex-start;">
             <a class="btn" href="../empresa/empresa_view.php?id=<?php echo urlencode($formData['empresa_id']); ?>">Ver empresa</a>
-            <?php if ($formData['convenio_id'] !== ''): ?>
-              <a class="btn" href="../convenio/convenio_view.php?id=<?php echo urlencode($formData['convenio_id']); ?>">Ver convenio</a>
-            <?php endif; ?>
             <a class="btn" href="documento_list.php?empresa=<?php echo urlencode($formData['empresa_id']); ?>">Ver documentos de esta empresa</a>
           </div>
         </section>
       <?php endif; ?>
     </main>
   </div>
+
+  <script>
+    (function () {
+      var origenSelect = document.getElementById('tipo_origen');
+      var globalField = document.querySelector('[data-origen="global"]');
+      var personalField = document.querySelector('[data-origen="personalizado"]');
+      var empresaSelect = document.getElementById('empresa_id');
+      var globalSelect = document.getElementById('tipo_global_id');
+      var personalSelect = document.getElementById('tipo_personalizado_id');
+
+      function toggleFields() {
+        var value = origenSelect ? origenSelect.value : 'global';
+        if (globalField) {
+          globalField.style.display = value === 'global' ? '' : 'none';
+          if (globalSelect) {
+            if (value === 'global') {
+              globalSelect.setAttribute('required', 'required');
+            } else {
+              globalSelect.removeAttribute('required');
+            }
+          }
+        }
+        if (personalField) {
+          personalField.style.display = value === 'personalizado' ? '' : 'none';
+          if (personalSelect) {
+            if (value === 'personalizado') {
+              personalSelect.setAttribute('required', 'required');
+            } else {
+              personalSelect.removeAttribute('required');
+            }
+          }
+        }
+      }
+
+      if (origenSelect) {
+        origenSelect.addEventListener('change', toggleFields);
+      }
+      toggleFields();
+
+      if (empresaSelect) {
+        empresaSelect.addEventListener('change', function () {
+          var value = empresaSelect.value;
+          var params = new URLSearchParams();
+
+          if (value) {
+            params.set('empresa', value);
+          }
+
+          var origenValue = origenSelect ? origenSelect.value : '';
+          if (origenValue) {
+            params.set('origen', origenValue);
+          }
+
+          if (origenValue === 'global' && globalSelect && globalSelect.value) {
+            params.set('tipo', globalSelect.value);
+          }
+
+          if (origenValue === 'personalizado' && personalSelect && personalSelect.value) {
+            params.set('personalizado', personalSelect.value);
+          }
+
+          var query = params.toString();
+          var base = window.location.pathname.replace(/\/+$/, '');
+          window.location.href = query !== '' ? base + '?' + query : base;
+        });
+      }
+    })();
+  </script>
 </body>
 
 </html>

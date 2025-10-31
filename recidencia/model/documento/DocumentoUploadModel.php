@@ -38,12 +38,15 @@ class DocumentoUploadModel
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function fetchTipos(): array
+    public function fetchTiposGlobales(): array
     {
         $sql = <<<'SQL'
             SELECT id,
-                   nombre
+                   nombre,
+                   descripcion,
+                   obligatorio
               FROM rp_documento_tipo
+             WHERE activo = 1
              ORDER BY nombre ASC
         SQL;
 
@@ -55,16 +58,18 @@ class DocumentoUploadModel
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function fetchConveniosByEmpresa(int $empresaId): array
+    public function fetchTiposPersonalizados(int $empresaId): array
     {
         $sql = <<<'SQL'
             SELECT id,
-                   folio,
-                   version_actual,
-                   estatus
-              FROM rp_convenio
+                   nombre,
+                   descripcion,
+                   obligatorio,
+                   creado_en
+              FROM rp_documento_tipo_empresa
              WHERE empresa_id = :empresa_id
-             ORDER BY actualizado_en DESC, id DESC
+               AND activo = 1
+             ORDER BY obligatorio DESC, nombre ASC
         SQL;
 
         $statement = $this->pdo->prepare($sql);
@@ -83,9 +88,9 @@ class DocumentoUploadModel
         return (int) $statement->fetchColumn() > 0;
     }
 
-    public function tipoExists(int $tipoId): bool
+    public function tipoGlobalExists(int $tipoId): bool
     {
-        $sql = 'SELECT COUNT(*) FROM rp_documento_tipo WHERE id = :id';
+        $sql = 'SELECT COUNT(*) FROM rp_documento_tipo WHERE id = :id AND activo = 1';
 
         $statement = $this->pdo->prepare($sql);
         $statement->execute([':id' => $tipoId]);
@@ -93,18 +98,18 @@ class DocumentoUploadModel
         return (int) $statement->fetchColumn() > 0;
     }
 
-    public function convenioBelongsToEmpresa(int $convenioId, int $empresaId): bool
+    public function tipoPersonalizadoBelongsToEmpresa(int $tipoPersonalizadoId, int $empresaId): bool
     {
         $sql = <<<'SQL'
             SELECT COUNT(*)
-              FROM rp_convenio
-             WHERE id = :convenio_id
+              FROM rp_documento_tipo_empresa
+             WHERE id = :id
                AND empresa_id = :empresa_id
         SQL;
 
         $statement = $this->pdo->prepare($sql);
         $statement->execute([
-            ':convenio_id' => $convenioId,
+            ':id' => $tipoPersonalizadoId,
             ':empresa_id' => $empresaId,
         ]);
 
@@ -119,15 +124,15 @@ class DocumentoUploadModel
         $sql = <<<'SQL'
             INSERT INTO rp_empresa_doc (
                 empresa_id,
-                convenio_id,
-                tipo_id,
+                tipo_global_id,
+                tipo_personalizado_id,
                 ruta,
                 estatus,
                 observacion
             ) VALUES (
                 :empresa_id,
-                :convenio_id,
-                :tipo_id,
+                :tipo_global_id,
+                :tipo_personalizado_id,
                 :ruta,
                 :estatus,
                 :observacion
@@ -137,8 +142,8 @@ class DocumentoUploadModel
         $statement = $this->pdo->prepare($sql);
         $statement->execute([
             ':empresa_id' => (int) ($data['empresa_id'] ?? 0),
-            ':convenio_id' => $data['convenio_id'] ?? null,
-            ':tipo_id' => (int) ($data['tipo_id'] ?? 0),
+            ':tipo_global_id' => $data['tipo_global_id'],
+            ':tipo_personalizado_id' => $data['tipo_personalizado_id'],
             ':ruta' => (string) ($data['ruta'] ?? ''),
             ':estatus' => (string) ($data['estatus'] ?? 'pendiente'),
             ':observacion' => $data['observacion'] ?? null,

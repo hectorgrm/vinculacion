@@ -12,8 +12,8 @@ if (!function_exists('documentoUploadHandler')) {
      * @return array{
      *     formData: array<string, string>,
      *     empresas: array<int, array<string, mixed>>,
-     *     convenios: array<int, array<string, mixed>>,
-     *     tipos: array<int, array<string, mixed>>,
+     *     tiposGlobales: array<int, array<string, mixed>>,
+     *     tiposPersonalizados: array<int, array<string, mixed>>,
      *     statusOptions: array<string, string>,
      *     errors: array<int, string>,
      *     successMessage: ?string,
@@ -34,12 +34,12 @@ if (!function_exists('documentoUploadHandler')) {
         }
 
         $viewData['empresas'] = $controller->getEmpresas();
-        $viewData['tipos'] = $controller->getTipos();
+        $viewData['tiposGlobales'] = $controller->getTiposGlobales();
         $viewData['statusOptions'] = $controller->getStatusOptions();
 
         $selectedEmpresaId = documentoNormalizePositiveInt($viewData['formData']['empresa_id'] ?? null);
         if ($selectedEmpresaId !== null) {
-            $viewData['convenios'] = $controller->getConvenios($selectedEmpresaId);
+            $viewData['tiposPersonalizados'] = $controller->getTiposPersonalizados($selectedEmpresaId);
         }
 
         if (!documentoUploadIsPostRequest()) {
@@ -48,7 +48,9 @@ if (!function_exists('documentoUploadHandler')) {
 
         $viewData['formData'] = documentoUploadSanitizeInput($_POST);
         $selectedEmpresaId = documentoNormalizePositiveInt($viewData['formData']['empresa_id'] ?? null);
-        $viewData['convenios'] = $selectedEmpresaId !== null ? $controller->getConvenios($selectedEmpresaId) : [];
+        $viewData['tiposPersonalizados'] = $selectedEmpresaId !== null
+            ? $controller->getTiposPersonalizados($selectedEmpresaId)
+            : [];
 
         $fileInfo = documentoUploadNormalizeFile($_FILES['archivo'] ?? null);
 
@@ -57,8 +59,8 @@ if (!function_exists('documentoUploadHandler')) {
             $fileInfo,
             $viewData['statusOptions'],
             static fn (int $empresaId): bool => $controller->empresaExists($empresaId),
-            static fn (int $tipoId): bool => $controller->tipoExists($tipoId),
-            static fn (int $convenioId, int $empresaId): bool => $controller->convenioBelongsToEmpresa($convenioId, $empresaId)
+            static fn (int $tipoId): bool => $controller->tipoGlobalExists($tipoId),
+            static fn (int $tipoPersonalizadoId, int $empresaId): bool => $controller->tipoPersonalizadoBelongsToEmpresa($tipoPersonalizadoId, $empresaId)
         );
 
         if ($errors !== []) {
@@ -68,8 +70,9 @@ if (!function_exists('documentoUploadHandler')) {
         }
 
         $empresaId = documentoNormalizePositiveInt($viewData['formData']['empresa_id'] ?? null);
-        $tipoId = documentoNormalizePositiveInt($viewData['formData']['tipo_id'] ?? null);
-        $convenioId = documentoNormalizePositiveInt($viewData['formData']['convenio_id'] ?? null);
+        $tipoOrigen = documentoUploadNormalizeOrigen($viewData['formData']['tipo_origen'] ?? null) ?? 'global';
+        $tipoGlobalId = documentoNormalizePositiveInt($viewData['formData']['tipo_global_id'] ?? null);
+        $tipoPersonalizadoId = documentoNormalizePositiveInt($viewData['formData']['tipo_personalizado_id'] ?? null);
         $estatus = documentoNormalizeStatus($viewData['formData']['estatus'] ?? null) ?? 'pendiente';
 
         $observacion = $viewData['formData']['observacion'] !== ''
@@ -78,14 +81,15 @@ if (!function_exists('documentoUploadHandler')) {
 
         $payload = [
             'empresa_id' => $empresaId,
-            'tipo_id' => $tipoId,
-            'convenio_id' => $convenioId,
+            'tipo_origen' => $tipoOrigen,
+            'tipo_global_id' => $tipoOrigen === 'global' ? $tipoGlobalId : null,
+            'tipo_personalizado_id' => $tipoOrigen === 'personalizado' ? $tipoPersonalizadoId : null,
             'estatus' => $estatus,
             'observacion' => $observacion,
         ];
 
         if (!is_array($fileInfo)) {
-            $viewData['errors'][] = 'No se recibio el archivo a cargar.';
+            $viewData['errors'][] = 'No se recibió el archivo a cargar.';
 
             return $viewData;
         }
@@ -103,7 +107,7 @@ if (!function_exists('documentoUploadHandler')) {
             $viewData['formData'] = documentoUploadFormDefaults();
             if ($empresaId !== null) {
                 $viewData['formData']['empresa_id'] = (string) $empresaId;
-                $viewData['convenios'] = $controller->getConvenios($empresaId);
+                $viewData['tiposPersonalizados'] = $controller->getTiposPersonalizados($empresaId);
             }
         } catch (\Throwable $exception) {
             $viewData['errors'][] = documentoUploadPersistenceErrorMessage($exception);
@@ -114,3 +118,4 @@ if (!function_exists('documentoUploadHandler')) {
 }
 
 return documentoUploadHandler();
+

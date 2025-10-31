@@ -56,21 +56,30 @@ class EmpresaDocumentoTipoListModel
                    doc.ruta AS documento_ruta,
                    doc.estatus AS documento_estatus,
                    doc.observacion AS documento_observacion,
-                   doc.creado_en AS documento_creado_en
+                   doc.creado_en AS documento_creado_en,
+                   doc.actualizado_en AS documento_actualizado_en
               FROM rp_documento_tipo AS t
               LEFT JOIN (
-                    SELECT ranked.*
+                    SELECT ranked.id,
+                           ranked.empresa_id,
+                           ranked.tipo_global_id,
+                           ranked.ruta,
+                           ranked.estatus,
+                           ranked.observacion,
+                           ranked.creado_en,
+                           ranked.actualizado_en
                       FROM (
                             SELECT d.*,
                                    ROW_NUMBER() OVER (
-                                       PARTITION BY d.tipo_id
-                                       ORDER BY d.creado_en DESC, d.id DESC
+                                       PARTITION BY d.tipo_global_id
+                                       ORDER BY d.actualizado_en DESC, d.id DESC
                                    ) AS rn
                               FROM rp_empresa_doc AS d
                              WHERE d.empresa_id = :empresa_id
+                               AND d.tipo_global_id IS NOT NULL
                          ) AS ranked
                      WHERE ranked.rn = 1
-              ) AS doc ON doc.tipo_id = t.id
+              ) AS doc ON doc.tipo_global_id = t.id
              WHERE t.activo = 1
         SQL;
 
@@ -100,15 +109,42 @@ class EmpresaDocumentoTipoListModel
     public function fetchCustomDocumentos(int $empresaId): array
     {
         $sql = <<<'SQL'
-            SELECT id,
-                   empresa_id,
-                   nombre,
-                   descripcion,
-                   obligatorio,
-                   creado_en
-              FROM rp_documento_tipo_empresa
-             WHERE empresa_id = :empresa_id
-             ORDER BY obligatorio DESC, nombre ASC, id ASC
+            SELECT tipo.id,
+                   tipo.empresa_id,
+                   tipo.nombre,
+                   tipo.descripcion,
+                   tipo.obligatorio,
+                   tipo.creado_en,
+                   doc.id AS documento_id,
+                   doc.ruta AS documento_ruta,
+                   doc.estatus AS documento_estatus,
+                   doc.observacion AS documento_observacion,
+                   doc.creado_en AS documento_creado_en,
+                   doc.actualizado_en AS documento_actualizado_en
+              FROM rp_documento_tipo_empresa AS tipo
+              LEFT JOIN (
+                    SELECT ranked.id,
+                           ranked.empresa_id,
+                           ranked.tipo_personalizado_id,
+                           ranked.ruta,
+                           ranked.estatus,
+                           ranked.observacion,
+                           ranked.creado_en,
+                           ranked.actualizado_en
+                      FROM (
+                            SELECT d.*,
+                                   ROW_NUMBER() OVER (
+                                       PARTITION BY d.tipo_personalizado_id
+                                       ORDER BY d.actualizado_en DESC, d.id DESC
+                                   ) AS rn
+                              FROM rp_empresa_doc AS d
+                             WHERE d.empresa_id = :empresa_id
+                               AND d.tipo_personalizado_id IS NOT NULL
+                         ) AS ranked
+                     WHERE ranked.rn = 1
+              ) AS doc ON doc.tipo_personalizado_id = tipo.id
+             WHERE tipo.empresa_id = :empresa_id
+             ORDER BY tipo.obligatorio DESC, tipo.nombre ASC, tipo.id ASC
         SQL;
 
         $statement = $this->pdo->prepare($sql);

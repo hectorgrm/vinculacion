@@ -6,6 +6,7 @@ declare(strict_types=1);
  *     empresa: ?array<string, mixed>,
  *     globalDocuments: array<int, array<string, mixed>>,
  *     customDocuments: array<int, array<string, mixed>>,
+ *     documentos: array<int, array<string, mixed>>,
  *     stats: array<string, int>,
  *     controllerError: ?string,
  *     inputError: ?string,
@@ -19,6 +20,7 @@ $empresaId = $handlerResult['empresaId'];
 $empresa = $handlerResult['empresa'];
 $globalDocuments = $handlerResult['globalDocuments'];
 $customDocuments = $handlerResult['customDocuments'];
+$documentos = $handlerResult['documentos'] ?? [];
 $stats = $handlerResult['stats'] ?? ['total' => 0, 'subidos' => 0, 'aprobados' => 0, 'porcentaje' => 0];
 $controllerError = $handlerResult['controllerError'];
 $inputError = $handlerResult['inputError'];
@@ -39,31 +41,6 @@ $errorMessage = $controllerError ?? $inputError ?? $notFoundMessage ?? null;
 
 $addDocumentUrl = 'empresa_documentotipo_add.php' . ($empresaIdQuery !== '' ? '?id_empresa=' . urlencode($empresaIdQuery) : '');
 $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . urlencode($empresaIdQuery) : '');
-
-if (!function_exists('empresaDocTipoBuildFileUrl')) {
-    /**
-     * @param string|null $ruta
-     */
-    function empresaDocTipoBuildFileUrl(?string $ruta): ?string
-    {
-        if ($ruta === null) {
-            return null;
-        }
-
-        $ruta = trim($ruta);
-        if ($ruta === '') {
-            return null;
-        }
-
-        if (preg_match('/^https?:\/\//i', $ruta) === 1) {
-            return $ruta;
-        }
-
-        $sanitized = str_replace('\\', '/', $ruta);
-
-        return '../../' . ltrim($sanitized, '/');
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -140,6 +117,14 @@ if (!function_exists('empresaDocTipoBuildFileUrl')) {
       border-radius: 6px;
       font-size: 13px;
       font-weight: 600;
+    }
+
+    .docs-table tr.row-custom {
+      background: #f9fafc;
+    }
+
+    .docs-table tr.row-custom:hover {
+      background: #eef3ff;
     }
 
     .badge.ok {
@@ -290,126 +275,123 @@ if (!function_exists('empresaDocTipoBuildFileUrl')) {
           <table class="docs-table">
             <thead>
               <tr>
-                <th>Documento requerido</th>
-                <th>Estado</th>
+                <th>Documento</th>
+                <th>Estatus</th>
                 <th>Archivo</th>
                 <th style="width: 260px;">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              <?php if ($globalDocuments === [] && $customDocuments === []): ?>
+              <?php if ($documentos === []): ?>
                 <tr>
                   <td colspan="4" style="text-align:center;">No hay documentos registrados para esta empresa.</td>
                 </tr>
               <?php else: ?>
-                <?php foreach ($globalDocuments as $documento): ?>
+                <?php foreach ($documentos as $doc): ?>
                   <?php
-                  $docId = $documento['id'] ?? null;
-                  $docNombre = isset($documento['nombre']) ? (string) $documento['nombre'] : 'Documento';
-                  $estadoClass = isset($documento['estado_badge_class']) ? (string) $documento['estado_badge_class'] : 'badge pendiente';
-                  $estadoLabel = isset($documento['estado_label']) ? (string) $documento['estado_label'] : 'Pendiente';
-                  $archivoNombre = isset($documento['archivo_nombre']) ? (string) $documento['archivo_nombre'] : '';
-                  $archivoRuta = isset($documento['archivo_ruta']) ? (string) $documento['archivo_ruta'] : null;
-                  $archivoUrl = empresaDocTipoBuildFileUrl($archivoRuta);
-                  $documentoId = isset($documento['documento_id']) ? (int) $documento['documento_id'] : null;
-                  $ultimaActualizacion = isset($documento['ultima_actualizacion_label']) ? (string) $documento['ultima_actualizacion_label'] : '-';
-                  $uploadUrl = '../documentos/documento_upload.php';
-                  $uploadUrl .= '?empresa=' . urlencode($empresaIdQuery !== '' ? $empresaIdQuery : '0');
-                  if ($docId !== null) {
-                      $uploadUrl .= '&tipo=' . urlencode((string) $docId);
+                  $rowClass = isset($doc['row_class']) ? trim((string) $doc['row_class']) : '';
+                  $rowClassAttr = $rowClass !== '' ? ' class="' . htmlspecialchars($rowClass, ENT_QUOTES, 'UTF-8') . '"' : '';
+                  $nombre = isset($doc['nombre']) ? (string) $doc['nombre'] : 'Documento';
+                  $descripcion = isset($doc['descripcion']) ? trim((string) $doc['descripcion']) : '';
+                  $estatusValue = isset($doc['estatus']) ? strtolower((string) $doc['estatus']) : 'pendiente';
+                  $estatusLabel = isset($doc['estatus_label']) ? (string) $doc['estatus_label'] : 'Pendiente';
+                  $badgeClass = isset($doc['badge_class']) ? (string) $doc['badge_class'] : 'badge pendiente';
+                  $ultimaActualizacionLabel = isset($doc['ultima_actualizacion_label']) ? (string) $doc['ultima_actualizacion_label'] : '';
+                  $observacion = isset($doc['observacion']) ? trim((string) $doc['observacion']) : '';
+                  $origen = isset($doc['origen']) ? (string) $doc['origen'] : 'global';
+                  $origenLabel = $origen === 'personalizado' ? 'Personalizado' : 'Global';
+                  $obligatorioLabel = isset($doc['obligatorio_label']) ? (string) $doc['obligatorio_label'] : 'No';
+                  $obligatorioBadge = isset($doc['obligatorio_badge_class']) ? (string) $doc['obligatorio_badge_class'] : 'badge pendiente';
+                  $ruta = isset($doc['ruta']) ? trim((string) $doc['ruta']) : '';
+                  $ruta = $ruta !== '' ? $ruta : null;
+                  $archivoNombre = isset($doc['archivo_nombre']) ? trim((string) $doc['archivo_nombre']) : '';
+                  $uploadLabel = isset($doc['upload_label']) ? (string) $doc['upload_label'] : 'Subir';
+                  $documentoId = isset($doc['documento_id']) && $doc['documento_id'] !== null ? (int) $doc['documento_id'] : null;
+                  $tipoGlobalId = isset($doc['tipo_id']) && $doc['tipo_id'] !== null ? (int) $doc['tipo_id'] : null;
+                  $tipoPersonalizadoId = isset($doc['tipo_personalizado_id']) && $doc['tipo_personalizado_id'] !== null ? (int) $doc['tipo_personalizado_id'] : null;
+                  $uploadParams = [];
+                  if ($empresaIdQuery !== '') {
+                      $uploadParams['empresa_id'] = $empresaIdQuery;
                   }
-                  $viewUrl = $documentoId !== null
-                      ? '../documentos/documento_view.php?id=' . urlencode((string) $documentoId)
-                      : null;
+                  if ($documentoId !== null) {
+                      $uploadParams['id'] = (string) $documentoId;
+                  } elseif (isset($doc['id']) && $doc['id'] !== null) {
+                      $uploadParams['id'] = (string) $doc['id'];
+                  }
+                  if ($origen === 'global' && $tipoGlobalId !== null) {
+                      $uploadParams['tipo_global_id'] = (string) $tipoGlobalId;
+                  } elseif ($origen === 'personalizado' && $tipoPersonalizadoId !== null) {
+                      $uploadParams['tipo_personalizado_id'] = (string) $tipoPersonalizadoId;
+                  }
+                  $uploadParams['origen'] = $origen;
+                  $uploadUrl = 'empresa_doc_upload.php';
+                  if ($uploadParams !== []) {
+                      $uploadUrl .= '?' . http_build_query($uploadParams);
+                  }
+                  $detalleUrl = $documentoId !== null ? '../documentos/documento_view.php?id=' . urlencode((string) $documentoId) : null;
+                  $reviewUrl = ($documentoId !== null && $estatusValue !== 'aprobado') ? '../documentos/documento_review.php?id=' . urlencode((string) $documentoId) : null;
+                  $editTipoUrl = null;
+                  $deleteTipoUrl = null;
+                  if ($origen === 'personalizado' && $tipoPersonalizadoId !== null) {
+                      $editTipoUrl = 'empresa_documentotipo_edit.php?id=' . urlencode((string) $tipoPersonalizadoId);
+                      $deleteTipoUrl = 'empresa_documentotipo_delete.php?id=' . urlencode((string) $tipoPersonalizadoId);
+                      if ($empresaIdQuery !== '') {
+                          $editTipoUrl .= '&id_empresa=' . urlencode($empresaIdQuery);
+                          $deleteTipoUrl .= '&id_empresa=' . urlencode($empresaIdQuery);
+                      }
+                  }
                   ?>
-                  <tr>
+                  <tr<?php echo $rowClassAttr; ?>>
                     <td>
-                      <strong><?php echo htmlspecialchars($docNombre, ENT_QUOTES, 'UTF-8'); ?></strong><br>
-                      <?php if (!empty($documento['descripcion'])): ?>
-                        <span class="text-muted"><?php echo htmlspecialchars((string) $documento['descripcion'], ENT_QUOTES, 'UTF-8'); ?></span><br>
+                      <strong><?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></strong>
+                      <div class="text-muted" style="font-size:12px; margin-top:4px;">Origen: <?php echo htmlspecialchars($origenLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+                      <?php if ($descripcion !== ''): ?>
+                        <div class="text-muted" style="margin-top:4px;"><?php echo htmlspecialchars($descripcion, ENT_QUOTES, 'UTF-8'); ?></div>
                       <?php endif; ?>
-                      <span class="<?php echo htmlspecialchars((string) ($documento['obligatorio_badge_class'] ?? 'badge pendiente'), ENT_QUOTES, 'UTF-8'); ?>">
-                        Obligatorio: <?php echo htmlspecialchars((string) ($documento['obligatorio_label'] ?? 'No'), ENT_QUOTES, 'UTF-8'); ?>
+                      <span class="<?php echo htmlspecialchars($obligatorioBadge, ENT_QUOTES, 'UTF-8'); ?>" style="display:inline-block; margin-top:6px;">
+                        Obligatorio: <?php echo htmlspecialchars($obligatorioLabel, ENT_QUOTES, 'UTF-8'); ?>
                       </span>
                     </td>
                     <td>
-                      <span class="<?php echo htmlspecialchars($estadoClass, ENT_QUOTES, 'UTF-8'); ?>">
-                        <?php echo htmlspecialchars($estadoLabel, ENT_QUOTES, 'UTF-8'); ?>
+                      <span class="<?php echo htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8'); ?>">
+                        <?php echo htmlspecialchars($estatusLabel, ENT_QUOTES, 'UTF-8'); ?>
                       </span>
-                      <?php if ($ultimaActualizacion !== '-'): ?>
-                        <div class="text-muted" style="margin-top:4px;">Actualizado: <?php echo htmlspecialchars($ultimaActualizacion, ENT_QUOTES, 'UTF-8'); ?></div>
+                      <?php if ($ultimaActualizacionLabel !== '' && $ultimaActualizacionLabel !== '-'): ?>
+                        <div class="text-muted" style="margin-top:4px;">Actualizado: <?php echo htmlspecialchars($ultimaActualizacionLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+                      <?php endif; ?>
+                      <?php if ($observacion !== ''): ?>
+                        <div class="text-muted" style="margin-top:4px;">Observacion: <?php echo htmlspecialchars($observacion, ENT_QUOTES, 'UTF-8'); ?></div>
                       <?php endif; ?>
                     </td>
                     <td>
-                      <?php if ($archivoUrl !== null && $archivoNombre !== ''): ?>
-                        <a href="<?php echo htmlspecialchars($archivoUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
-                          <?php echo htmlspecialchars($archivoNombre, ENT_QUOTES, 'UTF-8'); ?>
-                        </a>
+                      <?php if ($ruta !== null): ?>
+                        <a href="<?php echo htmlspecialchars($ruta, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">Ver</a>
+                        <?php if ($archivoNombre !== ''): ?>
+                          <div class="text-muted" style="margin-top:4px;"><?php echo htmlspecialchars($archivoNombre, ENT_QUOTES, 'UTF-8'); ?></div>
+                        <?php endif; ?>
                       <?php else: ?>
                         <span class="text-muted">Sin archivo</span>
                       <?php endif; ?>
                     </td>
                     <td>
                       <div class="actions" style="justify-content:flex-start; margin-top:0;">
-                        <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">
-                          <?php echo $documentoId === null ? 'Subir' : 'Actualizar'; ?>
-                        </a>
-                        <?php if ($viewUrl !== null): ?>
-                          <a href="<?php echo htmlspecialchars($viewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Revisar</a>
+                        <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary"><?php echo htmlspecialchars($uploadLabel, ENT_QUOTES, 'UTF-8'); ?></a>
+                        <?php if ($detalleUrl !== null): ?>
+                          <a href="<?php echo htmlspecialchars($detalleUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Detalle</a>
                         <?php endif; ?>
-                        <?php if (!empty($documento['observacion'])): ?>
-                          <span class="text-muted" style="align-self:center;"><?php echo htmlspecialchars((string) $documento['observacion'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        <?php if ($reviewUrl !== null): ?>
+                          <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Revisar</a>
+                        <?php endif; ?>
+                        <?php if ($origen === 'personalizado' && $editTipoUrl !== null): ?>
+                          <a href="<?php echo htmlspecialchars($editTipoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Editar tipo</a>
+                          <?php if ($deleteTipoUrl !== null): ?>
+                            <a href="<?php echo htmlspecialchars($deleteTipoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small danger">Eliminar tipo</a>
+                          <?php endif; ?>
                         <?php endif; ?>
                       </div>
                     </td>
                   </tr>
                 <?php endforeach; ?>
-
-                <?php if ($customDocuments !== []): ?>
-                  <tr class="section-divider">
-                    <td colspan="4">Documentos individuales de la empresa</td>
-                  </tr>
-                  <?php foreach ($customDocuments as $documento): ?>
-                    <?php
-                    $customId = isset($documento['id']) ? (int) $documento['id'] : 0;
-                    $docNombre = isset($documento['nombre']) ? (string) $documento['nombre'] : 'Documento individual';
-                    $estadoClass = isset($documento['estado_badge_class']) ? (string) $documento['estado_badge_class'] : 'badge pendiente';
-                    $estadoLabel = isset($documento['estado_label']) ? (string) $documento['estado_label'] : 'Sin registro';
-                    $editarUrl = 'empresa_documentotipo_edit.php?id=' . urlencode((string) $customId);
-                    $eliminarUrl = 'empresa_documentotipo_delete.php?id=' . urlencode((string) $customId);
-                    if ($empresaIdQuery !== '') {
-                        $editarUrl .= '&id_empresa=' . urlencode($empresaIdQuery);
-                        $eliminarUrl .= '&id_empresa=' . urlencode($empresaIdQuery);
-                    }
-                    ?>
-                    <tr class="empresa-doc">
-                      <td>
-                        <strong><?php echo htmlspecialchars($docNombre, ENT_QUOTES, 'UTF-8'); ?></strong><br>
-                        <?php if (!empty($documento['descripcion'])): ?>
-                          <span class="text-muted"><?php echo htmlspecialchars((string) $documento['descripcion'], ENT_QUOTES, 'UTF-8'); ?></span><br>
-                        <?php endif; ?>
-                        <span class="<?php echo htmlspecialchars((string) ($documento['obligatorio_badge_class'] ?? 'badge pendiente'), ENT_QUOTES, 'UTF-8'); ?>">
-                          Obligatorio: <?php echo htmlspecialchars((string) ($documento['obligatorio_label'] ?? 'No'), ENT_QUOTES, 'UTF-8'); ?>
-                        </span>
-                      </td>
-                      <td>
-                        <span class="<?php echo htmlspecialchars($estadoClass, ENT_QUOTES, 'UTF-8'); ?>">
-                          <?php echo htmlspecialchars($estadoLabel, ENT_QUOTES, 'UTF-8'); ?>
-                        </span>
-                        <?php if (!empty($documento['creado_en_label']) && $documento['creado_en_label'] !== '-'): ?>
-                          <div class="text-muted" style="margin-top:4px;">Registrado: <?php echo htmlspecialchars((string) $documento['creado_en_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                        <?php endif; ?>
-                      </td>
-                      <td><span class="text-muted">Pendiente de carga</span></td>
-                      <td>
-                        <div class="actions" style="justify-content:flex-start; margin-top:0;">
-                          <a href="<?php echo htmlspecialchars($editarUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Editar</a>
-                          <a href="<?php echo htmlspecialchars($eliminarUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small danger">Eliminar</a>
-                        </div>
-                      </td>
-                    </tr>
-                  <?php endforeach; ?>
-                <?php endif; ?>
               <?php endif; ?>
             </tbody>
           </table>

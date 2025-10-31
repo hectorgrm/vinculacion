@@ -31,17 +31,17 @@ class DocumentoUploadController
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function getTipos(): array
+    public function getTiposGlobales(): array
     {
-        return $this->model->fetchTipos();
+        return $this->model->fetchTiposGlobales();
     }
 
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function getConvenios(int $empresaId): array
+    public function getTiposPersonalizados(int $empresaId): array
     {
-        return $this->model->fetchConveniosByEmpresa($empresaId);
+        return $this->model->fetchTiposPersonalizados($empresaId);
     }
 
     public function empresaExists(int $empresaId): bool
@@ -49,14 +49,14 @@ class DocumentoUploadController
         return $this->model->empresaExists($empresaId);
     }
 
-    public function tipoExists(int $tipoId): bool
+    public function tipoGlobalExists(int $tipoId): bool
     {
-        return $this->model->tipoExists($tipoId);
+        return $this->model->tipoGlobalExists($tipoId);
     }
 
-    public function convenioBelongsToEmpresa(int $convenioId, int $empresaId): bool
+    public function tipoPersonalizadoBelongsToEmpresa(int $tipoId, int $empresaId): bool
     {
-        return $this->model->convenioBelongsToEmpresa($convenioId, $empresaId);
+        return $this->model->tipoPersonalizadoBelongsToEmpresa($tipoId, $empresaId);
     }
 
     /**
@@ -67,12 +67,15 @@ class DocumentoUploadController
     public function upload(array $data, array $file): array
     {
         $empresaId = (int) ($data['empresa_id'] ?? 0);
-        $tipoId = (int) ($data['tipo_id'] ?? 0);
-        $convenioId = isset($data['convenio_id']) && $data['convenio_id'] !== null
-            ? (int) $data['convenio_id']
-            : null;
+        $tipoOrigen = isset($data['tipo_origen']) ? (string) $data['tipo_origen'] : 'global';
+        $tipoGlobalId = isset($data['tipo_global_id']) ? $data['tipo_global_id'] : null;
+        $tipoPersonalizadoId = isset($data['tipo_personalizado_id']) ? $data['tipo_personalizado_id'] : null;
         $estatus = (string) ($data['estatus'] ?? 'pendiente');
         $observacion = $data['observacion'] ?? null;
+
+        $tipoReferencia = $tipoOrigen === 'personalizado'
+            ? (int) ($tipoPersonalizadoId ?? 0)
+            : (int) ($tipoGlobalId ?? 0);
 
         $uploadDirectory = $this->resolveUploadDirectory();
         $this->ensureDirectoryExists($uploadDirectory);
@@ -84,10 +87,11 @@ class DocumentoUploadController
         } catch (\Exception $exception) {
             throw new RuntimeException('No se pudo preparar el nombre del archivo de carga.', 0, $exception);
         }
+
         $fileName = sprintf(
             'doc_%d_%d_%s_%s.%s',
             $empresaId,
-            $tipoId,
+            $tipoReferencia,
             date('Ymd_His'),
             $uniqueFragment,
             $extension
@@ -109,8 +113,12 @@ class DocumentoUploadController
         try {
             $documentoId = $this->model->insertDocumento([
                 'empresa_id' => $empresaId,
-                'convenio_id' => $convenioId,
-                'tipo_id' => $tipoId,
+                'tipo_global_id' => $tipoOrigen === 'global'
+                    ? (documentoNormalizePositiveInt($tipoGlobalId) ?? null)
+                    : null,
+                'tipo_personalizado_id' => $tipoOrigen === 'personalizado'
+                    ? (documentoNormalizePositiveInt($tipoPersonalizadoId) ?? null)
+                    : null,
                 'ruta' => $normalizedPath,
                 'estatus' => $estatus,
                 'observacion' => $observacion,
@@ -154,3 +162,4 @@ class DocumentoUploadController
         }
     }
 }
+
