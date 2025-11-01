@@ -36,7 +36,7 @@ CREATE TABLE `auditoria` (
   PRIMARY KEY (`id`),
   KEY `idx_auditoria_entidad` (`entidad`,`entidad_id`),
   KEY `idx_auditoria_actor` (`actor_tipo`,`actor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `auditoria` (
 
 LOCK TABLES `auditoria` WRITE;
 /*!40000 ALTER TABLE `auditoria` DISABLE KEYS */;
-INSERT INTO `auditoria` VALUES (6,'usuario',1,'subir','documento',16,'::1','2025-11-01 03:06:24');
+INSERT INTO `auditoria` VALUES (6,'usuario',1,'subir','documento',16,'::1','2025-11-01 03:06:24'),(7,'usuario',1,'subir','rp_empresa_doc',18,'::1','2025-11-01 04:40:16'),(8,'usuario',1,'subir_nueva_version','rp_empresa_doc',18,'::1','2025-11-01 04:41:08'),(9,'usuario',1,'aprobar','rp_empresa_doc',18,'::1','2025-11-01 04:41:55'),(10,'usuario',1,'reabrir','rp_empresa_doc',18,'::1','2025-11-01 05:03:02'),(11,'usuario',1,'rechazar','rp_empresa_doc',18,'::1','2025-11-01 05:03:47'),(12,'usuario',1,'actualizar_estatus','rp_empresa_doc',18,'::1','2025-11-01 05:08:32'),(13,'usuario',1,'subir_nueva_version','rp_empresa_doc',18,'::1','2025-11-01 05:11:55'),(14,'usuario',1,'subir_nueva_version','rp_empresa_doc',18,'::1','2025-11-01 05:12:23'),(15,'usuario',1,'aprobar','rp_empresa_doc',17,'::1','2025-11-01 05:12:59');
 /*!40000 ALTER TABLE `auditoria` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -180,7 +180,7 @@ CREATE TABLE `rp_documento_tipo_empresa` (
 
 LOCK TABLES `rp_documento_tipo_empresa` WRITE;
 /*!40000 ALTER TABLE `rp_documento_tipo_empresa` DISABLE KEYS */;
-INSERT INTO `rp_documento_tipo_empresa` VALUES (1,47,'CIel','Ciel',1,1,'2025-10-31 04:16:33','2025-10-31 04:16:33'),(2,47,'bonafont test de entrada','bonafont test de entrada',1,1,'2025-10-31 04:39:42','2025-10-31 06:16:15'),(3,4,'CIel','CIEL',1,1,'2025-11-01 00:55:21','2025-11-01 00:55:21');
+INSERT INTO `rp_documento_tipo_empresa` VALUES (1,47,'CIel','Ciel',1,1,'2025-10-31 04:16:33','2025-10-31 04:16:33'),(2,47,'bonafont test de entrada','bonafont test de entrada',1,1,'2025-10-31 04:39:42','2025-10-31 06:16:15'),(3,4,'CIel','SE EDITA',1,1,'2025-11-01 00:55:21','2025-11-01 05:06:49');
 /*!40000 ALTER TABLE `rp_documento_tipo_empresa` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -255,7 +255,7 @@ CREATE TABLE `rp_empresa_doc` (
   CONSTRAINT `fk_doc_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `rp_empresa` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_doc_tipo_global` FOREIGN KEY (`tipo_global_id`) REFERENCES `rp_documento_tipo` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_doc_tipo_personalizado` FOREIGN KEY (`tipo_personalizado_id`) REFERENCES `rp_documento_tipo_empresa` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -264,7 +264,7 @@ CREATE TABLE `rp_empresa_doc` (
 
 LOCK TABLES `rp_empresa_doc` WRITE;
 /*!40000 ALTER TABLE `rp_empresa_doc` DISABLE KEYS */;
-INSERT INTO `rp_empresa_doc` VALUES (17,47,26,NULL,'uploads/documento/doc_47_26_20251101_102841_7abc7b4e.pdf','pendiente',NULL,'2025-11-01 04:06:08','2025-11-01 04:28:40');
+INSERT INTO `rp_empresa_doc` VALUES (17,47,26,NULL,'uploads/documento/doc_47_26_20251101_102841_7abc7b4e.pdf','aprobado','APROBAR','2025-11-01 04:06:08','2025-11-01 05:12:59'),(18,4,NULL,3,'uploads/documento/doc_4_3_20251101_111224_1889364e.pdf','pendiente',NULL,'2025-11-01 04:40:16','2025-11-01 05:12:23');
 /*!40000 ALTER TABLE `rp_empresa_doc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -823,4 +823,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-01  4:33:45
+-- Dump completed on 2025-11-01  5:22:19
