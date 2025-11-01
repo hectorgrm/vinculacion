@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../auditoria/auditoriafunctions.php';
+
 if (!function_exists('documentoListDefaults')) {
     /**
      * @return array{
@@ -71,6 +73,73 @@ if (!function_exists('documentoStatusOptions')) {
             'pendiente' => 'Pendiente',
             'rechazado' => 'Rechazado',
         ];
+    }
+}
+
+if (!function_exists('documentoCurrentAuditContext')) {
+    /**
+     * @return array<string, mixed>
+     */
+    function documentoCurrentAuditContext(): array
+    {
+        $context = [];
+
+        if (isset($GLOBALS['residenciaAuthUser']) && is_array($GLOBALS['residenciaAuthUser'])) {
+            $context['actor_tipo'] = 'usuario';
+            $context['actor_id'] = documentoNormalizePositiveInt($GLOBALS['residenciaAuthUser']['id'] ?? null);
+        } elseif (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
+            $context['actor_tipo'] = 'usuario';
+            $context['actor_id'] = documentoNormalizePositiveInt($_SESSION['user']['id'] ?? null);
+        }
+
+        if (!isset($context['actor_tipo']) && !isset($context['actor_id'])) {
+            $context['actor_tipo'] = 'sistema';
+        }
+
+        $ip = auditoriaObtenerIP();
+        if ($ip !== '') {
+            $context['ip'] = $ip;
+        }
+
+        return $context;
+    }
+}
+
+if (!function_exists('documentoRegisterAuditEvent')) {
+    /**
+     * @param array<string, mixed> $context
+     */
+    function documentoRegisterAuditEvent(string $accion, int $documentId, array $context = []): bool
+    {
+        $accion = trim($accion);
+
+        if ($accion === '' || $documentId <= 0) {
+            return false;
+        }
+
+        $payload = [
+            'accion' => $accion,
+            'entidad' => 'rp_empresa_doc',
+            'entidad_id' => $documentId,
+        ];
+
+        if (isset($context['actor_tipo'])) {
+            $payload['actor_tipo'] = $context['actor_tipo'];
+        }
+
+        if (array_key_exists('actor_id', $context)) {
+            $payload['actor_id'] = $context['actor_id'];
+        }
+
+        if (isset($context['ip'])) {
+            $payload['ip'] = $context['ip'];
+        }
+
+        if (!isset($payload['actor_tipo']) && isset($payload['actor_id'])) {
+            $payload['actor_tipo'] = 'usuario';
+        }
+
+        return auditoriaRegistrarEvento($payload);
     }
 }
 

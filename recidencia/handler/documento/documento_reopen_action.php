@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+require_once dirname(__DIR__, 2) . '/common/auth.php';
 require_once __DIR__ . '/../../common/functions/documento/documentofunctions_reopen.php';
 require_once __DIR__ . '/../../controller/documento/DocumentoReopenController.php';
 
@@ -47,7 +48,8 @@ try {
 }
 
 try {
-    $controller->reopenDocument($documentId);
+    $auditContext = documentoCurrentAuditContext();
+    $controller->reopenDocument($documentId, $auditContext);
 } catch (\RuntimeException $exception) {
     $errorCode = match ($exception->getCode()) {
         404 => 'not_found',

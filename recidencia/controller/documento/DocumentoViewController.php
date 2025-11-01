@@ -44,4 +44,12 @@ class DocumentoViewController
             $limit
         );
     }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getAuditHistory(int $documentId, int $limit = 12): array
+    {
+        return $this->model->fetchAuditHistory($documentId, $limit);
+    }
 }

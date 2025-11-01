@@ -26,9 +26,20 @@ class DocumentoReviewController
         return $this->model->findById($documentId);
     }
 
-    public function updateStatus(int $documentId, string $estatus, ?string $observacion): void
+    public function updateStatus(int $documentId, string $estatus, ?string $observacion, array $auditContext = []): void
     {
         $this->model->updateStatus($documentId, $estatus, $observacion);
+
+        $normalizedStatus = documentoNormalizeStatus($estatus) ?? trim($estatus);
+
+        $accion = match ($normalizedStatus) {
+            'aprobado' => 'aprobar',
+            'rechazado' => 'rechazar',
+            'pendiente' => 'actualizar_estatus',
+            default => 'actualizar_estatus',
+        };
+
+        documentoRegisterAuditEvent($accion, $documentId, $auditContext);
     }
 
     /**

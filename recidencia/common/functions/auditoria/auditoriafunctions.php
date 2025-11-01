@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../../../common/model/db.php';
+
+use Common\Model\Database;
+
 if (!function_exists('auditoriaActorTipoOptions')) {
     /**
      * @return array<string, string>
@@ -220,5 +224,66 @@ if (!function_exists('auditoriaObtenerIP')) {
         }
 
         return '127.0.0.1';
+    }
+}
+
+if (!function_exists('auditoriaRegistrarEvento')) {
+    /**
+     * @param array{
+     *     accion: string,
+     *     entidad: string,
+     *     entidad_id: int|string|null,
+     *     actor_tipo?: string|null,
+     *     actor_id?: int|string|null,
+     *     ip?: string|null
+     * } $payload
+     */
+    function auditoriaRegistrarEvento(array $payload): bool
+    {
+        try {
+            $accion = auditoriaNormalizePlain($payload['accion'] ?? null);
+            $entidad = auditoriaNormalizePlain($payload['entidad'] ?? null);
+            $entidadId = auditoriaNormalizePositiveInt($payload['entidad_id'] ?? null);
+
+            if ($accion === null || $entidad === null || $entidadId === null) {
+                return false;
+            }
+
+            $actorTipo = auditoriaNormalizeActorTipo($payload['actor_tipo'] ?? null) ?? 'sistema';
+            $actorId = auditoriaNormalizePositiveInt($payload['actor_id'] ?? null);
+
+            $ip = isset($payload['ip']) ? trim((string) $payload['ip']) : '';
+            if ($ip === '') {
+                $ip = auditoriaObtenerIP();
+            }
+
+            $pdo = Database::getConnection();
+            $statement = $pdo->prepare(
+                'INSERT INTO auditoria (actor_tipo, actor_id, accion, entidad, entidad_id, ip) '
+                . 'VALUES (:actor_tipo, :actor_id, :accion, :entidad, :entidad_id, :ip)'
+            );
+
+            $statement->bindValue(':actor_tipo', $actorTipo, PDO::PARAM_STR);
+
+            if ($actorId === null) {
+                $statement->bindValue(':actor_id', null, PDO::PARAM_NULL);
+            } else {
+                $statement->bindValue(':actor_id', $actorId, PDO::PARAM_INT);
+            }
+
+            $statement->bindValue(':accion', $accion, PDO::PARAM_STR);
+            $statement->bindValue(':entidad', $entidad, PDO::PARAM_STR);
+            $statement->bindValue(':entidad_id', $entidadId, PDO::PARAM_INT);
+
+            if ($ip === '') {
+                $statement->bindValue(':ip', null, PDO::PARAM_NULL);
+            } else {
+                $statement->bindValue(':ip', $ip, PDO::PARAM_STR);
+            }
+
+            return $statement->execute();
+        } catch (\Throwable) {
+            return false;
+        }
     }
 }

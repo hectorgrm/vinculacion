@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+require_once dirname(__DIR__, 2) . '/common/auth.php';
 require_once __DIR__ . '/../../common/functions/documento/documentofunctions_upload.php';
 require_once __DIR__ . '/../../controller/documento/DocumentoUploadController.php';
 
@@ -94,13 +95,16 @@ if (!function_exists('documentoUploadHandler')) {
             return $viewData;
         }
 
+        $auditContext = documentoCurrentAuditContext();
+
         try {
-            $result = $controller->upload($payload, $fileInfo);
+            $result = $controller->upload($payload, $fileInfo, $auditContext);
             $viewData['successMessage'] = documentoUploadSuccessMessage($result['id']);
             $viewData['savedDocument'] = [
                 'id' => $result['id'],
                 'ruta' => $result['ruta'],
                 'filename' => $result['filename'],
+                'replaced_path' => $result['replaced_path'],
                 'originalName' => (string) ($fileInfo['name'] ?? $result['filename']),
             ];
 

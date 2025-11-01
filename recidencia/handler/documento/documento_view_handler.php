@@ -83,6 +83,13 @@ if (!function_exists('documentoViewHandler')) {
             }
         }
 
+        try {
+            $auditHistory = $controller->getAuditHistory($documentId);
+            $viewData['auditHistory'] = documentoViewDecorateAuditHistory($auditHistory);
+        } catch (\Throwable) {
+            $viewData['auditHistory'] = [];
+        }
+
         return $viewData;
     }
 }

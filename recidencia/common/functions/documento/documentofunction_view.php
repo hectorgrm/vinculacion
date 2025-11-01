@@ -40,6 +40,7 @@ if (!function_exists('documentoViewDefaults')) {
                 'canPreview' => false,
             ],
             'history' => [],
+            'auditHistory' => [],
             'controllerError' => null,
             'notFoundMessage' => null,
         ];
@@ -214,6 +215,122 @@ if (!function_exists('documentoViewDecorateHistory')) {
         }
 
         return $decorated;
+    }
+}
+
+if (!function_exists('documentoViewDecorateAuditHistory')) {
+    /**
+     * @param array<int, array<string, mixed>> $records
+     * @return array<int, array<string, mixed>>
+     */
+    function documentoViewDecorateAuditHistory(array $records): array
+    {
+        $decorated = [];
+
+        foreach ($records as $record) {
+            $decorated[] = documentoViewBuildAuditHistoryEntry($record);
+        }
+
+        return $decorated;
+    }
+}
+
+if (!function_exists('documentoViewBuildAuditHistoryEntry')) {
+    /**
+     * @param array<string, mixed> $record
+     * @return array<string, mixed>
+     */
+    function documentoViewBuildAuditHistoryEntry(array $record): array
+    {
+        $normalizedAction = documentoViewNormalizeAuditAction($record['accion'] ?? null);
+
+        $templates = [
+            'aprobar' => ['icon' => '✅', 'label' => 'Aprobado'],
+            'reabrir' => ['icon' => '🔄', 'label' => 'Revisión reabierta'],
+            'subir_nueva_version' => ['icon' => '📤', 'label' => 'Nueva versión subida'],
+            'subir' => ['icon' => '📄', 'label' => 'Documento cargado'],
+            'rechazar' => ['icon' => '❌', 'label' => 'Rechazado'],
+            'actualizar' => ['icon' => '🛠️', 'label' => 'Actualización'],
+            'actualizar_estatus' => ['icon' => '📝', 'label' => 'Estatus actualizado'],
+        ];
+
+        $template = $templates[$normalizedAction] ?? null;
+
+        $record['accion_icon'] = $template['icon'] ?? '•';
+        $record['accion_label'] = $template['label'] ?? documentoViewHumanizeAuditAction($normalizedAction);
+
+        $record['ts_label'] = documentoFormatDateTime($record['ts'] ?? null);
+
+        $actorNombre = isset($record['actor_nombre']) ? trim((string) $record['actor_nombre']) : '';
+        $actorTipo = isset($record['actor_tipo']) ? trim((string) $record['actor_tipo']) : '';
+        $actorId = $record['actor_id'] ?? null;
+        $record['actor_label'] = documentoViewFormatAuditActor($actorTipo, $actorId, $actorNombre);
+
+        $ip = isset($record['ip']) ? trim((string) $record['ip']) : '';
+        $record['ip_label'] = $ip !== '' ? $ip : null;
+
+        return $record;
+    }
+}
+
+if (!function_exists('documentoViewNormalizeAuditAction')) {
+    function documentoViewNormalizeAuditAction(mixed $accion): string
+    {
+        $accion = trim((string) $accion);
+
+        if ($accion === '') {
+            return '';
+        }
+
+        $accion = function_exists('mb_strtolower')
+            ? mb_strtolower($accion, 'UTF-8')
+            : strtolower($accion);
+
+        return str_replace([' ', '-'], '_', $accion);
+    }
+}
+
+if (!function_exists('documentoViewHumanizeAuditAction')) {
+    function documentoViewHumanizeAuditAction(string $accion): string
+    {
+        $accion = str_replace(['_', '-'], ' ', $accion);
+        $accion = trim($accion);
+
+        if ($accion === '') {
+            return 'Acción';
+        }
+
+        if (function_exists('mb_convert_case')) {
+            return mb_convert_case($accion, MB_CASE_TITLE, 'UTF-8');
+        }
+
+        return ucwords($accion);
+    }
+}
+
+if (!function_exists('documentoViewFormatAuditActor')) {
+    function documentoViewFormatAuditActor(?string $actorTipo, mixed $actorId, ?string $actorNombre): string
+    {
+        $actorNombre = is_string($actorNombre) ? trim($actorNombre) : '';
+        if ($actorNombre !== '') {
+            return $actorNombre;
+        }
+
+        $actorTipo = is_string($actorTipo) ? trim($actorTipo) : '';
+        $actorId = documentoNormalizePositiveInt($actorId);
+
+        $tipoLabel = match ($actorTipo) {
+            'usuario' => 'Usuario',
+            'empresa' => 'Empresa',
+            'sistema' => 'Sistema',
+            default => ($actorTipo !== '' ? ucfirst($actorTipo) : 'Sin actor'),
+        };
+
+        if ($tipoLabel === 'Sistema' || $actorId === null) {
+            return $tipoLabel;
+        }
+
+        return $tipoLabel . ' #' . $actorId;
     }
 }
 

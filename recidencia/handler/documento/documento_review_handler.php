@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+require_once dirname(__DIR__, 2) . '/common/auth.php';
 require_once __DIR__ . '/../../common/functions/documento/documentofunctions_review.php';
 require_once __DIR__ . '/../../controller/documento/DocumentoReviewController.php';
 
@@ -100,8 +101,10 @@ if (!function_exists('documentoReviewHandler')) {
             ? $viewData['formData']['observacion']
             : null;
 
+        $auditContext = documentoCurrentAuditContext();
+
         try {
-            $controller->updateStatus($documentId, $estatus, $observacion);
+            $controller->updateStatus($documentId, $estatus, $observacion, $auditContext);
             $viewData['successMessage'] = documentoReviewSuccessMessage($estatus);
 
             $document = $controller->getDocument($documentId);

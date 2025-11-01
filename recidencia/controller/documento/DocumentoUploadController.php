@@ -62,9 +62,10 @@ class DocumentoUploadController
     /**
      * @param array<string, mixed> $data
      * @param array<string, mixed> $file
-     * @return array{id: int, ruta: string, filename: string}
+     * @param array<string, mixed> $auditContext
+     * @return array{id: int, ruta: string, filename: string, replaced_path: ?string}
      */
-    public function upload(array $data, array $file): array
+    public function upload(array $data, array $file, array $auditContext = []): array
     {
         $empresaId = (int) ($data['empresa_id'] ?? 0);
         $tipoOrigen = isset($data['tipo_origen']) ? (string) $data['tipo_origen'] : 'global';
@@ -141,10 +142,19 @@ class DocumentoUploadController
             $this->removeExistingFile($saveResult['replaced_path']);
         }
 
+        $isReplacement = !empty($saveResult['replaced_path']);
+
+        documentoRegisterAuditEvent(
+            $isReplacement ? 'subir_nueva_version' : 'subir',
+            $documentoId,
+            $auditContext
+        );
+
         return [
             'id' => $documentoId,
             'ruta' => $normalizedPath,
             'filename' => $fileName,
+            'replaced_path' => $saveResult['replaced_path'] ?? null,
         ];
     }
 

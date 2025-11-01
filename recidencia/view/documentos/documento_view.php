@@ -15,6 +15,7 @@ declare(strict_types=1);
  *         canPreview: bool
  *     },
  *     history: array<int, array<string, mixed>>,
+ *     auditHistory: array<int, array<string, mixed>>,
  *     controllerError: ?string,
  *     notFoundMessage: ?string
  * } $handlerResult
@@ -25,6 +26,7 @@ $documentId = $handlerResult['documentId'];
 $document = $handlerResult['document'];
 $fileMeta = $handlerResult['fileMeta'];
 $history = $handlerResult['history'];
+$auditHistory = $handlerResult['auditHistory'];
 $controllerError = $handlerResult['controllerError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
 
@@ -219,28 +221,60 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
 
         <section class="card">
           <header>Historial relacionado</header>
-          <div class="content">
-            <?php if ($history !== []): ?>
-              <ul style="margin:0; padding-left:18px; color:#334155">
-                <?php foreach ($history as $entry): ?>
-                  <li>
-                    <strong><?php echo htmlspecialchars((string) $entry['creado_en_label'], ENT_QUOTES, 'UTF-8'); ?></strong>
-                    &mdash;
-                    <span class="<?php echo htmlspecialchars((string) $entry['estatus_badge_class'], ENT_QUOTES, 'UTF-8'); ?>">
-                      <?php echo htmlspecialchars((string) $entry['estatus_badge_label'], ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                    <?php if (!empty($entry['archivo_nombre'])): ?>
-                      <span style="margin-left:6px;">
-                        Archivo: <?php echo htmlspecialchars((string) $entry['archivo_nombre'], ENT_QUOTES, 'UTF-8'); ?>
+          <div class="content" style="display:flex; flex-direction:column; gap:20px;">
+            <div>
+              <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:1rem; font-weight:600;">📁 Versiones del documento</h4>
+              <?php if ($history !== []): ?>
+                <ul style="margin:0; padding-left:18px; color:#334155">
+                  <?php foreach ($history as $entry): ?>
+                    <li>
+                      <strong><?php echo htmlspecialchars((string) $entry['creado_en_label'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                      &mdash;
+                      <span class="<?php echo htmlspecialchars((string) $entry['estatus_badge_class'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <?php echo htmlspecialchars((string) $entry['estatus_badge_label'], ENT_QUOTES, 'UTF-8'); ?>
                       </span>
-                    <?php endif; ?>
-                    <a class="btn small" style="margin-left:8px;" href="documento_view.php?id=<?php echo urlencode((string) $entry['id']); ?>">Ver</a>
-                  </li>
-                <?php endforeach; ?>
-              </ul>
-            <?php else: ?>
-              <p class="text-muted" style="margin:0;">No hay otros documentos relacionados para este tipo.</p>
-            <?php endif; ?>
+                      <?php if (!empty($entry['archivo_nombre'])): ?>
+                        <span style="margin-left:6px;">
+                          Archivo: <?php echo htmlspecialchars((string) $entry['archivo_nombre'], ENT_QUOTES, 'UTF-8'); ?>
+                        </span>
+                      <?php endif; ?>
+                      <a class="btn small" style="margin-left:8px;" href="documento_view.php?id=<?php echo urlencode((string) $entry['id']); ?>">Ver</a>
+                    </li>
+                  <?php endforeach; ?>
+                </ul>
+              <?php else: ?>
+                <p class="text-muted" style="margin:0;">No hay otros documentos relacionados para este tipo.</p>
+              <?php endif; ?>
+            </div>
+
+            <div>
+              <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:1rem; font-weight:600;">📜 Historial de acciones</h4>
+              <?php if ($auditHistory !== []): ?>
+                <ul style="margin:0; padding-left:18px; color:#334155">
+                  <?php foreach ($auditHistory as $entry): ?>
+                    <li>
+                      <span aria-hidden="true" style="margin-right:6px; font-size:1.1rem; line-height:1;">
+                        <?php echo htmlspecialchars((string) $entry['accion_icon'], ENT_QUOTES, 'UTF-8'); ?>
+                      </span>
+                      <strong><?php echo htmlspecialchars((string) $entry['accion_label'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                      <span style="margin-left:4px;">
+                        por <?php echo htmlspecialchars((string) $entry['actor_label'], ENT_QUOTES, 'UTF-8'); ?>
+                      </span>
+                      <span style="margin-left:4px;">
+                        el <?php echo htmlspecialchars((string) $entry['ts_label'], ENT_QUOTES, 'UTF-8'); ?>
+                      </span>
+                      <?php if (!empty($entry['ip_label'])): ?>
+                        <span class="text-muted" style="margin-left:6px; font-size:0.95em;">
+                          (IP: <?php echo htmlspecialchars((string) $entry['ip_label'], ENT_QUOTES, 'UTF-8'); ?>)
+                        </span>
+                      <?php endif; ?>
+                    </li>
+                  <?php endforeach; ?>
+                </ul>
+              <?php else: ?>
+                <p class="text-muted" style="margin:0;">No hay acciones registradas en la auditor&iacute;a para este documento.</p>
+              <?php endif; ?>
+            </div>
           </div>
         </section>
         <?php if ($document['estatus'] === 'aprobado'): ?>
