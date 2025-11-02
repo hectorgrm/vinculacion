@@ -21,6 +21,14 @@ if (!function_exists('empresaViewDefaults')) {
             'empresaId' => null,
             'empresa' => null,
             'conveniosActivos' => [],
+            'documentos' => [],
+            'documentosStats' => [
+                'total' => 0,
+                'subidos' => 0,
+                'aprobados' => 0,
+                'porcentaje' => 0,
+            ],
+            'documentosGestionUrl' => null,
             'controllerError' => null,
             'notFoundMessage' => null,
             'inputError' => null,
@@ -97,6 +105,25 @@ if (!function_exists('empresaViewFormatDate')) {
     }
 }
 
+if (!function_exists('empresaViewFormatDateTime')) {
+    function empresaViewFormatDateTime(?string $value, string $fallback = '—'): string
+    {
+        $value = trim((string) $value);
+
+        if ($value === '' || $value === '0000-00-00' || $value === '0000-00-00 00:00:00') {
+            return $fallback;
+        }
+
+        try {
+            $date = new \DateTimeImmutable($value);
+        } catch (\Throwable) {
+            return $fallback;
+        }
+
+        return $date->format('d/m/Y H:i');
+    }
+}
+
 if (!function_exists('empresaViewValueOrDefault')) {
     function empresaViewValueOrDefault(mixed $value, string $fallback = 'N/A'): string
     {
@@ -137,8 +164,278 @@ if (!function_exists('empresaViewDecorate')) {
         $empresa['representante_label'] = empresaViewValueOrDefault($empresa['representante'] ?? null, 'No especificado');
         $empresa['telefono_label'] = empresaViewValueOrDefault($empresa['telefono'] ?? null, 'No registrado');
         $empresa['correo_label'] = empresaViewValueOrDefault($empresa['contacto_email'] ?? null, 'No registrado');
+        $empresa['tipo_empresa_inferido'] = empresaViewInferTipoEmpresa($empresa['regimen_fiscal'] ?? null);
 
         return $empresa;
+    }
+}
+
+if (!function_exists('empresaViewInferTipoEmpresa')) {
+    function empresaViewInferTipoEmpresa(mixed $regimenFiscal): ?string
+    {
+        if ($regimenFiscal === null) {
+            return null;
+        }
+
+        $normalized = (string) $regimenFiscal;
+
+        if (function_exists('mb_strtolower')) {
+            $normalized = mb_strtolower($normalized, 'UTF-8');
+        } else {
+            $normalized = strtolower($normalized);
+        }
+
+        $normalized = trim($normalized);
+
+        if ($normalized === '') {
+            return null;
+        }
+
+        if (strpos($normalized, 'moral') !== false) {
+            return 'moral';
+        }
+
+        if (strpos($normalized, 'fisica') !== false || strpos($normalized, 'fisico') !== false) {
+            return 'fisica';
+        }
+
+        return null;
+    }
+}
+
+if (!function_exists('empresaViewCastBool')) {
+    function empresaViewCastBool(mixed $value): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if ($value === null) {
+            return false;
+        }
+
+        if (is_int($value)) {
+            return $value === 1;
+        }
+
+        if (is_numeric($value)) {
+            return (int) $value === 1;
+        }
+
+        if (is_string($value)) {
+            $normalized = strtolower(trim($value));
+
+            return in_array($normalized, ['1', 'true', 'si', 'sí', 'yes', 'on'], true);
+        }
+
+        return false;
+    }
+}
+
+if (!function_exists('empresaViewBuildArchivoUrl')) {
+    function empresaViewBuildArchivoUrl(?string $ruta): ?string
+    {
+        if ($ruta === null) {
+            return null;
+        }
+
+        $ruta = trim($ruta);
+
+        if ($ruta === '') {
+            return null;
+        }
+
+        if (preg_match('/^https?:\/\//i', $ruta) === 1) {
+            return $ruta;
+        }
+
+        $sanitized = str_replace('\\', '/', $ruta);
+
+        return '../../' . ltrim($sanitized, '/');
+    }
+}
+
+if (!function_exists('empresaViewNormalizeDocumentStatus')) {
+    function empresaViewNormalizeDocumentStatus(?string $status): string
+    {
+        $status = trim((string) $status);
+
+        if ($status === '') {
+            return 'pendiente';
+        }
+
+        if (function_exists('mb_strtolower')) {
+            $status = mb_strtolower($status, 'UTF-8');
+        } else {
+            $status = strtolower($status);
+        }
+
+        return match ($status) {
+            'aprobado' => 'aprobado',
+            'rechazado' => 'rechazado',
+            'pendiente', 'en revisión', 'en revision', 'reabierto', 'reabierto (pendiente)' => 'pendiente',
+            default => 'pendiente',
+        };
+    }
+}
+
+if (!function_exists('empresaViewDocumentStatusLabel')) {
+    function empresaViewDocumentStatusLabel(string $status): string
+    {
+        return match ($status) {
+            'aprobado' => 'Aprobado',
+            'rechazado' => 'Rechazado',
+            default => 'Pendiente',
+        };
+    }
+}
+
+if (!function_exists('empresaViewDocumentStatusBadgeClass')) {
+    function empresaViewDocumentStatusBadgeClass(string $status): string
+    {
+        return match ($status) {
+            'aprobado' => 'badge ok',
+            'rechazado' => 'badge rechazado',
+            default => 'badge pendiente',
+        };
+    }
+}
+
+if (!function_exists('empresaViewDecorateDocumentoRegistro')) {
+    /**
+     * @param array<string, mixed> $record
+     * @return array<string, mixed>
+     */
+    function empresaViewDecorateDocumentoRegistro(array $record, string $origen, string $gestionUrl): array
+    {
+        $nombreKey = $origen === 'global' ? 'tipo_nombre' : 'nombre';
+        $descripcionKey = $origen === 'global' ? 'tipo_descripcion' : 'descripcion';
+        $obligatorioKey = $origen === 'global' ? 'tipo_obligatorio' : 'obligatorio';
+
+        $nombre = empresaViewValueOrDefault($record[$nombreKey] ?? null, 'Documento');
+        $descripcion = empresaViewValueOrDefault($record[$descripcionKey] ?? null, '');
+        $obligatorio = empresaViewCastBool($record[$obligatorioKey] ?? null);
+
+        $documentoId = isset($record['documento_id']) ? (int) $record['documento_id'] : null;
+        $rutaOriginal = empresaViewValueOrDefault($record['documento_ruta'] ?? null, '');
+        $archivoUrl = $rutaOriginal !== '' ? empresaViewBuildArchivoUrl($rutaOriginal) : null;
+
+        $status = $documentoId !== null
+            ? empresaViewNormalizeDocumentStatus($record['documento_estatus'] ?? null)
+            : 'pendiente';
+
+        $ultimaActualizacion = $record['documento_actualizado_en']
+            ?? $record['documento_creado_en']
+            ?? null;
+
+        $accionVariant = 'upload';
+        $accionLabel = 'Subir';
+        $accionUrl = $gestionUrl;
+
+        if ($archivoUrl !== null) {
+            $accionVariant = 'view';
+            $accionLabel = 'Ver';
+            $accionUrl = $archivoUrl;
+        }
+
+        return [
+            'nombre' => $nombre,
+            'descripcion' => $descripcion,
+            'obligatorio' => $obligatorio,
+            'obligatorio_label' => $obligatorio ? 'Obligatorio' : 'Opcional',
+            'estatus' => $status,
+            'estatus_label' => empresaViewDocumentStatusLabel($status),
+            'estatus_badge_class' => empresaViewDocumentStatusBadgeClass($status),
+            'ultima_actualizacion' => $ultimaActualizacion,
+            'ultima_actualizacion_label' => empresaViewFormatDateTime($ultimaActualizacion, '—'),
+            'accion_label' => $accionLabel,
+            'accion_url' => $accionUrl,
+            'accion_variant' => $accionVariant,
+            'archivo_url' => $archivoUrl,
+            'tiene_archivo' => $archivoUrl !== null,
+            'documento_id' => $documentoId,
+            'origen' => $origen,
+        ];
+    }
+}
+
+if (!function_exists('empresaViewDecorateDocumentos')) {
+    /**
+     * @param array<int, array<string, mixed>> $globalDocs
+     * @param array<int, array<string, mixed>> $customDocs
+     * @return array{items: array<int, array<string, mixed>>, stats: array{total: int, subidos: int, aprobados: int, porcentaje: int}}
+     */
+    function empresaViewDecorateDocumentos(array $globalDocs, array $customDocs, string $gestionUrl): array
+    {
+        $items = [];
+        $total = 0;
+        $subidos = 0;
+        $aprobados = 0;
+
+        foreach ($globalDocs as $record) {
+            if (!is_array($record)) {
+                continue;
+            }
+
+            $decorated = empresaViewDecorateDocumentoRegistro($record, 'global', $gestionUrl);
+            $items[] = $decorated;
+            $total++;
+
+            if ($decorated['tiene_archivo']) {
+                $subidos++;
+
+                if ($decorated['estatus'] === 'aprobado') {
+                    $aprobados++;
+                }
+            }
+        }
+
+        foreach ($customDocs as $record) {
+            if (!is_array($record)) {
+                continue;
+            }
+
+            $decorated = empresaViewDecorateDocumentoRegistro($record, 'personalizado', $gestionUrl);
+            $items[] = $decorated;
+            $total++;
+
+            if ($decorated['tiene_archivo']) {
+                $subidos++;
+
+                if ($decorated['estatus'] === 'aprobado') {
+                    $aprobados++;
+                }
+            }
+        }
+
+        $porcentaje = 0;
+
+        if ($total > 0) {
+            $porcentaje = (int) round(($subidos / $total) * 100);
+        }
+
+        return [
+            'items' => $items,
+            'stats' => [
+                'total' => $total,
+                'subidos' => $subidos,
+                'aprobados' => $aprobados,
+                'porcentaje' => $porcentaje,
+            ],
+        ];
+    }
+}
+
+if (!function_exists('empresaViewBuildGestionDocumentosUrl')) {
+    function empresaViewBuildGestionDocumentosUrl(?int $empresaId): string
+    {
+        $base = '../empresadocumentotipo/empresa_documentotipo_list.php';
+
+        if ($empresaId === null) {
+            return $base;
+        }
+
+        return $base . '?id_empresa=' . urlencode((string) $empresaId);
     }
 }
 

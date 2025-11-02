@@ -11,9 +11,12 @@ use PDOException;
 use Residencia\Model\Empresa\EmpresaViewModel;
 use RuntimeException;
 
-use function empresaViewDefaults;
+use function empresaViewBuildGestionDocumentosUrl;
 use function empresaViewDecorate;
 use function empresaViewDecorateConvenios;
+use function empresaViewDecorateDocumentos;
+use function empresaViewDefaults;
+use function empresaViewInferTipoEmpresa;
 use function empresaViewInputErrorMessage;
 use function empresaViewNormalizeId;
 use function empresaViewNotFoundMessage;
@@ -52,6 +55,18 @@ class EmpresaViewController
     }
 
     /**
+     * @return array{global: array<int, array<string, mixed>>, custom: array<int, array<string, mixed>>}
+     */
+    public function getDocumentos(int $empresaId, ?string $tipoEmpresa): array
+    {
+        try {
+            return $this->model->findDocumentosResumen($empresaId, $tipoEmpresa);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo obtener la documentacion de la empresa.', 0, $exception);
+        }
+    }
+
+    /**
      * @param array<string, mixed> $input
      * @return array{
      *     empresaId: ?int,
@@ -85,6 +100,16 @@ class EmpresaViewController
         }
 
         $viewData['empresa'] = empresaViewDecorate($empresa);
+
+        $tipoEmpresaInferido = $viewData['empresa']['tipo_empresa_inferido'] ?? empresaViewInferTipoEmpresa($empresa['regimen_fiscal'] ?? null);
+
+        $documentos = $this->getDocumentos($empresaId, is_string($tipoEmpresaInferido) ? $tipoEmpresaInferido : null);
+        $gestionUrl = empresaViewBuildGestionDocumentosUrl($empresaId);
+        $documentosDecorated = empresaViewDecorateDocumentos($documentos['global'], $documentos['custom'], $gestionUrl);
+
+        $viewData['documentos'] = $documentosDecorated['items'];
+        $viewData['documentosStats'] = $documentosDecorated['stats'];
+        $viewData['documentosGestionUrl'] = $gestionUrl;
 
         $convenios = $this->getConveniosActivos($empresaId);
         $viewData['conveniosActivos'] = empresaViewDecorateConvenios($convenios);

@@ -18,9 +18,36 @@ $controllerError = $handlerResult['controllerError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
 $inputError = $handlerResult['inputError'];
 $conveniosActivos = $handlerResult['conveniosActivos'] ?? [];
+$documentos = $handlerResult['documentos'] ?? [];
+$documentosStats = $handlerResult['documentosStats'] ?? [];
+$documentosGestionUrl = $handlerResult['documentosGestionUrl'] ?? null;
 
 if (!is_array($conveniosActivos)) {
     $conveniosActivos = [];
+}
+
+if (!is_array($documentos)) {
+    $documentos = [];
+}
+
+if (!is_array($documentosStats)) {
+    $documentosStats = [
+        'total' => 0,
+        'subidos' => 0,
+        'aprobados' => 0,
+        'porcentaje' => 0,
+    ];
+} else {
+    $documentosStats = [
+        'total' => isset($documentosStats['total']) ? (int) $documentosStats['total'] : 0,
+        'subidos' => isset($documentosStats['subidos']) ? (int) $documentosStats['subidos'] : 0,
+        'aprobados' => isset($documentosStats['aprobados']) ? (int) $documentosStats['aprobados'] : 0,
+        'porcentaje' => isset($documentosStats['porcentaje']) ? (int) $documentosStats['porcentaje'] : 0,
+    ];
+}
+
+if (!is_string($documentosGestionUrl) || $documentosGestionUrl === '') {
+    $documentosGestionUrl = '../empresadocumentotipo/empresa_documentotipo_list.php';
 }
 
 $nombre = 'Sin datos';
@@ -47,10 +74,22 @@ if (is_array($empresa)) {
 
 $empresaIdQuery = $empresaId !== null ? (string) $empresaId : '';
 $nuevoConvenioUrl = '../convenio/convenio_add.php';
+$empresaProgresoUrl = 'empresa_progreso.php';
+$empresaEditUrl = 'empresa_edit.php';
+$empresaDeleteUrl = 'empresa_delete.php';
 
 if ($empresaIdQuery !== '') {
     $nuevoConvenioUrl .= '?empresa=' . urlencode($empresaIdQuery);
+    $empresaProgresoUrl .= '?id_empresa=' . urlencode($empresaIdQuery);
+    $empresaEditUrl .= '?id=' . urlencode($empresaIdQuery);
+    $empresaDeleteUrl .= '?id=' . urlencode($empresaIdQuery);
+    $documentosGestionUrl = '../empresadocumentotipo/empresa_documentotipo_list.php?id_empresa=' . urlencode($empresaIdQuery);
 }
+
+$docsTotal = $documentosStats['total'];
+$docsSubidos = $documentosStats['subidos'];
+$docsAprobados = $documentosStats['aprobados'];
+$progreso = $documentosStats['porcentaje'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -80,7 +119,7 @@ if ($empresaIdQuery !== '') {
         </div>
         <div class="actions">
           <!-- Progreso (misma carpeta) -->
-          <a href="empresa_progreso.php?id_empresa=45" class="btn primary">📊 Ver Progreso</a>
+          <a href="<?php echo htmlspecialchars($empresaProgresoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📊 Ver Progreso</a>
           <!-- Volver al listado -->
           <a href="empresa_list.php" class="btn secondary">⬅ Volver</a>
         </div>
@@ -227,6 +266,8 @@ if ($empresaIdQuery !== '') {
         </div>
       </section>
 
+      
+
       <!-- 📂 Documentación Legal -->
       <section class="card">
         <header>
@@ -235,27 +276,18 @@ if ($empresaIdQuery !== '') {
         </header>
 
         <div class="content">
-          <?php
-          // --- Datos simulados de ejemplo (puedes reemplazar luego con consulta real) ---
-          $docsTotal = 5;      // Total de documentos requeridos
-          $docsSubidos = 3;    // Archivos cargados por la empresa
-          $docsAprobados = 2;  // Documentos validados por Vinculación
-          $progreso = round(($docsSubidos / $docsTotal) * 100);
-          ?>
-
-          <!-- 🔢 Resumen visual -->
           <div class="docs-summary" style="margin-bottom:15px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
             <div style="flex:1;">
-              <strong>📄 Documentos requeridos:</strong> <?php echo $docsTotal; ?><br>
-              <strong>📤 Subidos:</strong> <?php echo $docsSubidos; ?>  
-              <strong>✅ Aprobados:</strong> <?php echo $docsAprobados; ?>
+              <strong>📄 Documentos requeridos:</strong> <?php echo htmlspecialchars((string) $docsTotal, ENT_QUOTES, 'UTF-8'); ?><br>
+              <strong>📤 Subidos:</strong> <?php echo htmlspecialchars((string) $docsSubidos, ENT_QUOTES, 'UTF-8'); ?>
+              <strong>✅ Aprobados:</strong> <?php echo htmlspecialchars((string) $docsAprobados, ENT_QUOTES, 'UTF-8'); ?>
             </div>
             <div style="flex:1;">
               <label style="font-weight:600;">Progreso general:</label>
               <div style="background:#eee; border-radius:8px; overflow:hidden; height:10px; margin-top:4px;">
-                <div style="width:<?php echo $progreso; ?>%; height:10px; background:#4caf50;"></div>
+                <div style="width:<?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>%; height:10px; background:#4caf50;"></div>
               </div>
-              <small><?php echo $progreso; ?>% completado</small>
+              <small><?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>% completado</small>
             </div>
           </div>
 
@@ -270,39 +302,52 @@ if ($empresaIdQuery !== '') {
               </tr>
             </thead>
             <tbody>
-              <!-- ✅ Ejemplo: documento aprobado -->
-              <tr>
-                <td>Constancia SAT</td>
-                <td><span class="badge ok">Aprobado</span></td>
-                <td>2025-09-10</td>
-                <td><a href="../../uploads/empresa_45/sat_constancia.pdf" class="btn small">📄 Ver</a></td>
-              </tr>
+              <?php if ($documentos === []) : ?>
+                <tr>
+                  <td colspan="4" style="text-align:center;">No hay documentos configurados para esta empresa.</td>
+                </tr>
+              <?php else : ?>
+                <?php foreach ($documentos as $documento) : ?>
+                  <?php
+                  if (!is_array($documento)) {
+                      continue;
+                  }
 
-              <!-- ⏳ Ejemplo: documento pendiente -->
-              <tr>
-                <td>Acta Constitutiva</td>
-                <td><span class="badge pendiente">Pendiente</span></td>
-                <td>—</td>
-                <td>
-                  <a href="../empresadocumentotipo/empresa_documentotipo_list.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
-                </td>
-              </tr>
-
-              <!-- ⬆ Ejemplo: logotipo pendiente -->
-              <tr>
-                <td>Logotipo del Negocio</td>
-                <td><span class="badge warn">Faltante</span></td>
-                <td>—</td>
-                <td>
-                  <a href="../empresadocumentotipo/empresa_documentotipo_list.php?id_empresa=45" class="btn small primary">📁 Ver / Subir</a>
-                </td>
-              </tr>
+                  $documentoNombre = (string) ($documento['nombre'] ?? 'Documento');
+                  $documentoOpcional = isset($documento['obligatorio']) ? !((bool) $documento['obligatorio']) : false;
+                  $documentoEstadoClass = (string) ($documento['estatus_badge_class'] ?? 'badge pendiente');
+                  $documentoEstadoLabel = (string) ($documento['estatus_label'] ?? 'Pendiente');
+                  $documentoActualizado = (string) ($documento['ultima_actualizacion_label'] ?? '—');
+                  $accionUrl = isset($documento['accion_url']) && is_string($documento['accion_url']) ? trim($documento['accion_url']) : '';
+                  $accionLabel = (string) ($documento['accion_label'] ?? 'Ver');
+                  $accionVariant = (string) ($documento['accion_variant'] ?? 'view');
+                  $accionClass = $accionVariant === 'view' ? 'btn small' : 'btn small primary';
+                  $accionPrefix = $accionVariant === 'view' ? '📄 ' : '📁 ';
+                  $accionAttrs = $accionVariant === 'view' ? ' target="_blank" rel="noopener noreferrer"' : '';
+                  ?>
+                  <tr>
+                    <td>
+                      <?php echo htmlspecialchars($documentoNombre, ENT_QUOTES, 'UTF-8'); ?>
+                      <?php if ($documentoOpcional) : ?>
+                        <span class="badge secondary">Opcional</span>
+                      <?php endif; ?>
+                    </td>
+                    <td><span class="<?php echo htmlspecialchars($documentoEstadoClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($documentoEstadoLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
+                    <td><?php echo htmlspecialchars($documentoActualizado !== '' ? $documentoActualizado : '—', ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td>
+                      <?php if ($accionUrl !== '') : ?>
+                        <a href="<?php echo htmlspecialchars($accionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($accionClass, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $accionAttrs; ?>><?php echo htmlspecialchars($accionPrefix . $accionLabel, ENT_QUOTES, 'UTF-8'); ?></a>
+                      <?php endif; ?>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              <?php endif; ?>
             </tbody>
           </table>
 
           <!-- 🔗 Acción principal -->
           <div class="actions" style="margin-top:16px; justify-content:flex-end;">
-            <a href="../empresadocumentotipo/empresa_documentotipo_list.php?id_empresa=45" class="btn primary">📁 Gestionar Documentos</a>
+            <a href="<?php echo htmlspecialchars($documentosGestionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📁 Gestionar Documentos</a>
           </div>
         </div>
       </section>
@@ -345,8 +390,8 @@ if ($empresaIdQuery !== '') {
       <!-- 🔧 Acciones -->
       <section class="card">
         <div class="content actions" style="justify-content:flex-end;">
-          <a href="empresa_edit.php?id=45" class="btn primary">✏️ Editar Empresa</a>
-          <a href="empresa_delete.php?id=45" class="btn danger">🗑️ Eliminar Empresa</a>
+          <a href="<?php echo htmlspecialchars($empresaEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">✏️ Editar Empresa</a>
+          <a href="<?php echo htmlspecialchars($empresaDeleteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn danger">🗑️ Eliminar Empresa</a>
         </div>
       </section>
 
