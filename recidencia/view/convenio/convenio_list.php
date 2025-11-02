@@ -28,8 +28,8 @@ $errorMessage = $handlerResult['errorMessage'];
     <main class="main">
       <header class="topbar">
         <div>
-          <h2>📑 Gestión de Convenios</h2>
-          <p class="subtitle">Controla los convenios activos, en revisión y vencidos con las empresas vinculadas.</p>
+          <h2>📑 Convenios con Empresas</h2>
+          <p class="subtitle">Seguimiento y control de convenios activos, en revisión o vencidos</p>
         </div>
         <a href="convenio_add.php" class="btn primary">➕ Nuevo Convenio</a>
       </header>
