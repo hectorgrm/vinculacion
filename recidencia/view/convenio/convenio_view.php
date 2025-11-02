@@ -6,9 +6,7 @@ declare(strict_types=1);
  *     convenioId: ?int,
  *     convenio: ?array<string, mixed>,
  *     machoteObservaciones: array<int, array<string, mixed>>,
- *     documentosAsociados: array<int, array<string, mixed>>,
  *     historial: array<int, array<string, mixed>>,
- *     documentosError: ?string,
  *     controllerError: ?string,
  *     notFoundMessage: ?string,
  *     inputError: ?string
@@ -20,9 +18,7 @@ require_once __DIR__ . '/../../common/helpers/convenio/convenio_view_helpers.php
 $convenioId = $handlerResult['convenioId'];
 $convenio = $handlerResult['convenio'];
 $machoteObservaciones = $handlerResult['machoteObservaciones'];
-$documentosAsociados = $handlerResult['documentosAsociados'];
 $historial = $handlerResult['historial'];
-$documentosError = $handlerResult['documentosError'];
 $controllerError = $handlerResult['controllerError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
 $inputError = $handlerResult['inputError'];
@@ -193,87 +189,6 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                     </div>
                 </section>
 
-                <!-- Observaciones de machote -->
-                <section class="card">
-                    <header>📝 Observaciones de Machote (cláusula por cláusula)</header>
-                    <div class="content">
-                        <?php if (count($machoteObservaciones) > 0): ?>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Cláusula</th>
-                                        <th>Comentario</th>
-                                        <th>Estatus</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($machoteObservaciones as $index => $observacion): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars((string) ($observacion['numero'] ?? ($index + 1)), ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td><?php echo htmlspecialchars((string) ($observacion['clausula'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td><?php echo nl2br(htmlspecialchars((string) ($observacion['comentario'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></td>
-                                            <td>
-                                                <span class="badge <?php echo htmlspecialchars((string) ($observacion['badge_class'] ?? 'secondary'), ENT_QUOTES, 'UTF-8'); ?>">
-                                                    <?php echo htmlspecialchars((string) ($observacion['badge_label'] ?? ($observacion['estatus'] ?? 'N/D')), ENT_QUOTES, 'UTF-8'); ?>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        <?php else: ?>
-                            <p class="text-muted">No hay observaciones registradas para el machote.</p>
-                        <?php endif; ?>
-                    </div>
-                </section>
-
-                <!-- Documentos vinculados al convenio (si aplican) -->
-                <section class="card">
-                    <header>📂 Documentos Asociados</header>
-                    <div class="content">
-                        <?php if ($documentosError !== null): ?>
-                            <div class="alert alert-danger">
-                                <?php echo htmlspecialchars($documentosError, ENT_QUOTES, 'UTF-8'); ?>
-                            </div>
-                        <?php elseif (count($documentosAsociados) > 0): ?>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Documento</th>
-                                        <th>Estatus</th>
-                                        <th>Fecha</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($documentosAsociados as $documento): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars((string) ($documento['titulo'] ?? 'Documento'), ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td>
-                                                <span class="badge <?php echo htmlspecialchars((string) ($documento['badge_class'] ?? 'secondary'), ENT_QUOTES, 'UTF-8'); ?>">
-                                                    <?php echo htmlspecialchars((string) ($documento['badge_label'] ?? ($documento['estatus'] ?? 'N/D')), ENT_QUOTES, 'UTF-8'); ?>
-                                                </span>
-                                            </td>
-                                            <td><?php echo htmlspecialchars((string) ($documento['fecha'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td>
-                                                <?php if (!empty($documento['url'])): ?>
-                                                    <a href="<?php echo htmlspecialchars((string) $documento['url'], ENT_QUOTES, 'UTF-8'); ?>" class="btn" target="_blank" rel="noopener noreferrer">📄 Ver</a>
-                                                <?php elseif (!empty($documento['upload_url'])): ?>
-                                                    <a href="<?php echo htmlspecialchars((string) $documento['upload_url'], ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">⬆️ Subir</a>
-                                                <?php else: ?>
-                                                    <span class="text-muted">Sin acciones</span>
-                                                <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        <?php else: ?>
-                            <p class="text-muted">No hay documentos asociados registrados.</p>
-                        <?php endif; ?>
-                    </div>
-                </section>
 
                 <!-- Bitácora / Historial -->
                 <section class="card">

@@ -6,7 +6,6 @@ namespace Residencia\Controller\Convenio;
 
 require_once __DIR__ . '/../../model/convenio/ConvenioViewModel.php';
 require_once __DIR__ . '/../../common/functions/conveniofunction.php';
-require_once __DIR__ . '/ConvenioDocumentosController.php';
 
 use DateTimeImmutable;
 use PDOException;
@@ -22,12 +21,10 @@ use function convenioValueOrDefault;
 class ConvenioViewController
 {
     private ConvenioViewModel $model;
-    private ConvenioDocumentosController $documentosController;
 
-    public function __construct(?ConvenioViewModel $model = null, ?ConvenioDocumentosController $documentosController = null)
+    public function __construct(?ConvenioViewModel $model = null)
     {
         $this->model = $model ?? new ConvenioViewModel();
-        $this->documentosController = $documentosController ?? new ConvenioDocumentosController();
     }
 
     /**
@@ -48,9 +45,7 @@ class ConvenioViewController
      *     convenioId: ?int,
      *     convenio: ?array<string, mixed>,
      *     machoteObservaciones: array<int, array<string, mixed>>,
-     *     documentosAsociados: array<int, array<string, mixed>>,
      *     historial: array<int, array<string, mixed>>,
-     *     documentosError: ?string,
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
      *     inputError: ?string
@@ -86,13 +81,6 @@ class ConvenioViewController
 
         $viewData['convenio'] = $this->decorateConvenio($convenio);
 
-        try {
-            $viewData['documentosAsociados'] = $this->documentosController->getDocumentos($convenioId);
-        } catch (RuntimeException $exception) {
-            $viewData['documentosAsociados'] = [];
-            $viewData['documentosError'] = $exception->getMessage();
-        }
-
         return $viewData;
     }
 
@@ -101,9 +89,7 @@ class ConvenioViewController
      *     convenioId: ?int,
      *     convenio: ?array<string, mixed>,
      *     machoteObservaciones: array<int, array<string, mixed>>,
-     *     documentosAsociados: array<int, array<string, mixed>>,
      *     historial: array<int, array<string, mixed>>,
-     *     documentosError: ?string,
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
      *     inputError: ?string
@@ -115,9 +101,7 @@ class ConvenioViewController
             'convenioId' => null,
             'convenio' => null,
             'machoteObservaciones' => [],
-            'documentosAsociados' => [],
             'historial' => [],
-            'documentosError' => null,
             'controllerError' => null,
             'notFoundMessage' => null,
             'inputError' => null,
