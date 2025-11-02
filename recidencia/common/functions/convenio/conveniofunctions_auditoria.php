@@ -125,7 +125,7 @@ if (!function_exists('convenioAuditoriaDescribeAccion')) {
 
         return match ($accion) {
             'subir' => 'subió ' . $subject,
-            'subir_nueva_version' => 'subió una nueva versión de ' . $subject,
+            'subir_nueva_version' => 'subió una nueva versi�n de ' . $subject,
             'aprobar' => 'aprobó ' . $subject,
             'reabrir' => 'reabrió ' . $subject,
             'rechazar' => 'rechazó ' . $subject,
@@ -156,15 +156,15 @@ if (!function_exists('convenioAuditoriaDescribeSubject')) {
         if ($entidad === 'rp_convenio') {
             $etiqueta = 'el convenio';
             $folio = isset($record['convenio_folio']) ? trim((string) $record['convenio_folio']) : '';
-            $version = isset($record['convenio_version']) ? trim((string) $record['convenio_version']) : '';
+            $responsable = isset($record['convenio_responsable']) ? trim((string) $record['convenio_responsable']) : '';
             $detalles = [];
 
             if ($folio !== '') {
                 $detalles[] = 'folio ' . $folio;
             }
 
-            if ($version !== '') {
-                $detalles[] = 'versión ' . $version;
+            if ($responsable !== '') {
+                $detalles[] = 'responsable ' . $responsable;
             }
 
             if ($detalles !== []) {
@@ -310,3 +310,4 @@ if (!function_exists('convenioAuditoriaNormalizePositiveInt')) {
         return null;
     }
 }
+

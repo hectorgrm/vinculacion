@@ -132,15 +132,15 @@ $cancelLink = $handlerResult['cancelLink'];
               </div>
 
               <div class="field">
-                <label for="machote_version">Versión de machote</label>
-                <input type="text" id="machote_version" name="machote_version" placeholder="Ej: v1.0"
-                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'machote_version'), ENT_QUOTES, 'UTF-8'); ?>" />
+                <label for="tipo_convenio">Tipo de convenio</label>
+                <input type="text" id="tipo_convenio" name="tipo_convenio" placeholder="Ej: convenio marco"
+                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'tipo_convenio'), ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
 
               <div class="field">
-                <label for="version_actual">Versión actual del convenio</label>
-                <input type="text" id="version_actual" name="version_actual" placeholder="Ej: v1.2"
-                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'version_actual'), ENT_QUOTES, 'UTF-8'); ?>" />
+                <label for="responsable_academico">Responsable académico</label>
+                <input type="text" id="responsable_academico" name="responsable_academico" placeholder="Ej: Mtra. Ana Pérez"
+                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'responsable_academico'), ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
 
               <div class="field">

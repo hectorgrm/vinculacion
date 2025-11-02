@@ -119,18 +119,18 @@ $controllerAvailable = $handlerResult['controllerAvailable'];
                 </select>
               </div>
 
-              <!-- Machote versión -->
+              <!-- Tipo de convenio -->
               <div class="field">
-                <label for="machote_version">Versión de machote</label>
-                <input type="text" name="machote_version" id="machote_version" placeholder="Ej: v1.0"
-                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'machote_version'), ENT_QUOTES, 'UTF-8'); ?>" />
+                <label for="tipo_convenio">Tipo de convenio</label>
+                <input type="text" name="tipo_convenio" id="tipo_convenio" placeholder="Ej: convenio marco"
+                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'tipo_convenio'), ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
 
-              <!-- Versión actual -->
+              <!-- Responsable académico -->
               <div class="field">
-                <label for="version_actual">Versión actual del convenio</label>
-                <input type="text" name="version_actual" id="version_actual" placeholder="Ej: v1.2"
-                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'version_actual'), ENT_QUOTES, 'UTF-8'); ?>" />
+                <label for="responsable_academico">Responsable académico</label>
+                <input type="text" name="responsable_academico" id="responsable_academico" placeholder="Ej: Mtra. Ana Pérez"
+                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'responsable_academico'), ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
 
               <!-- Fechas -->

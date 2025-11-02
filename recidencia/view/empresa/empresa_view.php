@@ -167,7 +167,7 @@ $progreso = $documentosStats['porcentaje'];
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Versión</th>
+                <th>Responsable académico</th>
                 <th>Inicio</th>
                 <th>Fin</th>
                 <th>Estatus</th>
@@ -187,7 +187,7 @@ $progreso = $documentosStats['porcentaje'];
                 <?php foreach ($conveniosActivos as $convenio): ?>
                   <?php
                   $convenioIdLabel = (string) ($convenio['id_label'] ?? '#');
-                  $convenioVersion = (string) ($convenio['version_label'] ?? 'Sin version');
+                  $convenioResponsable = (string) ($convenio['responsable_label'] ?? 'Sin responsable');
                   $convenioInicio = (string) ($convenio['fecha_inicio_label'] ?? 'N/A');
                   $convenioFin = (string) ($convenio['fecha_fin_label'] ?? 'N/A');
                   $convenioEstatusClass = (string) ($convenio['estatus_badge_class'] ?? 'badge secondary');
@@ -197,7 +197,7 @@ $progreso = $documentosStats['porcentaje'];
                   ?>
                   <tr>
                     <td><?php echo htmlspecialchars($convenioIdLabel, ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><?php echo htmlspecialchars($convenioVersion, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($convenioResponsable, ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars($convenioInicio, ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars($convenioFin, ENT_QUOTES, 'UTF-8'); ?></td>
                     <td>

@@ -30,7 +30,8 @@ $downloadUrl = $metadata['downloadUrl'];
 $downloadLabel = $metadata['downloadLabel'];
 $diasRestantesLabel = $metadata['diasRestantesLabel'];
 $observacionesLabel = $metadata['observacionesLabel'];
-$versionLabel = $metadata['versionLabel'];
+$tipoConvenioLabel = $metadata['tipoConvenioLabel'];
+$responsableAcademicoLabel = $metadata['responsableAcademicoLabel'];
 $estatusBadgeClass = $metadata['estatusBadgeClass'];
 $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
 ?>
@@ -137,9 +138,16 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                             </div>
 
                             <div class="field">
-                                <label>Versión</label>
-                                <div><?php echo htmlspecialchars($versionLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+                                <label>Tipo de convenio</label>
+                                <div><?php echo htmlspecialchars($tipoConvenioLabel, ENT_QUOTES, 'UTF-8'); ?></div>
                             </div>
+
+                            <?php if ($responsableAcademicoLabel !== 'N/D'): ?>
+                                <div class="field">
+                                    <label>Responsable académico</label>
+                                    <div><?php echo htmlspecialchars($responsableAcademicoLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+                                </div>
+                            <?php endif; ?>
 
                             <div class="field">
                                 <label>Última actualización</label>
@@ -188,6 +196,22 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                         </div>
                     </div>
                 </section>
+
+
+                      <!-- 📎 Información complementaria -->
+<section class="card">
+  <header>📎 Detalles Administrativos</header>
+  <div class="content">
+    <div class="info-grid">
+      <div><strong>Tipo de convenio:</strong> Marco de colaboración académica</div>
+      <div><strong>Duración total:</strong> 12 meses</div>
+      <div><strong>Renovable:</strong> Sí, con revisión previa</div>
+      <div><strong>Responsable académico:</strong> Ing. Fernando Gómez</div>
+      <div><strong>Responsable empresarial:</strong> Mtro. Luis Benítez <span class="text-muted">(Director General)</span></div>
+    </div>
+  </div>
+</section>
+
 
 
                 <!-- Bitácora / Historial -->

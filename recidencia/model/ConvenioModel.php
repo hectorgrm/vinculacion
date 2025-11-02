@@ -27,8 +27,8 @@ class ConvenioModel
                    e.numero_control AS empresa_numero_control,
                    c.folio,
                    c.estatus,
-                   c.machote_version,
-                   c.version_actual,
+                   c.tipo_convenio,
+                   c.responsable_academico,
                    c.fecha_inicio,
                    c.fecha_fin,
                    c.creado_en,
@@ -62,8 +62,8 @@ class ConvenioModel
                    e.numero_control AS empresa_numero_control,
                    c.folio,
                    c.estatus,
-                   c.machote_version,
-                   c.version_actual,
+                   c.tipo_convenio,
+                   c.responsable_academico,
                    c.fecha_inicio,
                    c.fecha_fin,
                    c.creado_en,
@@ -88,8 +88,8 @@ class ConvenioModel
                 e.nombre LIKE :search
                 OR e.numero_control LIKE :search
                 OR c.folio LIKE :search
-                OR c.version_actual LIKE :search
-                OR c.machote_version LIKE :search
+                OR c.responsable_academico LIKE :search
+                OR c.tipo_convenio LIKE :search
             )';
             $params[':search'] = '%' . $search . '%';
         }
@@ -134,23 +134,23 @@ class ConvenioModel
         $sql = <<<'SQL'
             INSERT INTO rp_convenio (
                 empresa_id,
-                machote_version,
+                tipo_convenio,
                 estatus,
                 observaciones,
                 fecha_inicio,
                 fecha_fin,
-                version_actual,
+                responsable_academico,
                 folio,
                 borrador_path,
                 firmado_path
             ) VALUES (
                 :empresa_id,
-                :machote_version,
+                :tipo_convenio,
                 :estatus,
                 :observaciones,
                 :fecha_inicio,
                 :fecha_fin,
-                :version_actual,
+                :responsable_academico,
                 :folio,
                 :borrador_path,
                 :firmado_path
@@ -160,12 +160,12 @@ class ConvenioModel
         $statement = $this->pdo->prepare($sql);
         $statement->execute([
             ':empresa_id' => isset($data['empresa_id']) ? (int) $data['empresa_id'] : 0,
-            ':machote_version' => $data['machote_version'] ?? null,
+            ':tipo_convenio' => $data['tipo_convenio'] ?? null,
             ':estatus' => $data['estatus'] ?? 'En revisión',
             ':observaciones' => $data['observaciones'] ?? null,
             ':fecha_inicio' => $data['fecha_inicio'] ?? null,
             ':fecha_fin' => $data['fecha_fin'] ?? null,
-            ':version_actual' => $data['version_actual'] ?? null,
+            ':responsable_academico' => $data['responsable_academico'] ?? null,
             ':folio' => $data['folio'] ?? null,
             ':borrador_path' => $data['borrador_path'] ?? null,
             ':firmado_path' => $data['firmado_path'] ?? null,
@@ -182,12 +182,12 @@ class ConvenioModel
         $sql = <<<'SQL'
             UPDATE rp_convenio
                SET empresa_id = :empresa_id,
-                   machote_version = :machote_version,
+                   tipo_convenio = :tipo_convenio,
                    estatus = :estatus,
                    observaciones = :observaciones,
                    fecha_inicio = :fecha_inicio,
                    fecha_fin = :fecha_fin,
-                   version_actual = :version_actual,
+                   responsable_academico = :responsable_academico,
                    folio = :folio,
                    borrador_path = :borrador_path,
                    firmado_path = :firmado_path
@@ -198,12 +198,12 @@ class ConvenioModel
 
         return $statement->execute([
             ':empresa_id' => isset($data['empresa_id']) ? (int) $data['empresa_id'] : 0,
-            ':machote_version' => $data['machote_version'] ?? null,
+            ':tipo_convenio' => $data['tipo_convenio'] ?? null,
             ':estatus' => $data['estatus'] ?? 'En revisión',
             ':observaciones' => $data['observaciones'] ?? null,
             ':fecha_inicio' => $data['fecha_inicio'] ?? null,
             ':fecha_fin' => $data['fecha_fin'] ?? null,
-            ':version_actual' => $data['version_actual'] ?? null,
+            ':responsable_academico' => $data['responsable_academico'] ?? null,
             ':folio' => $data['folio'] ?? null,
             ':borrador_path' => $data['borrador_path'] ?? null,
             ':firmado_path' => $data['firmado_path'] ?? null,

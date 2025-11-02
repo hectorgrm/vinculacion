@@ -42,7 +42,7 @@ class EmpresaAuditoriaModel
                     NULL AS documento_tipo_nombre,
                     NULL AS convenio_id,
                     NULL AS convenio_folio,
-                    NULL AS convenio_version,
+                    NULL AS convenio_responsable,
                     NULL AS convenio_estatus,
                     empresa.nombre AS empresa_nombre
                FROM auditoria AS a
@@ -75,7 +75,7 @@ class EmpresaAuditoriaModel
                     COALESCE(dt.nombre, dte.nombre) AS documento_tipo_nombre,
                     NULL AS convenio_id,
                     NULL AS convenio_folio,
-                    NULL AS convenio_version,
+                    NULL AS convenio_responsable,
                     NULL AS convenio_estatus,
                     NULL AS empresa_nombre
                FROM auditoria AS a
@@ -112,7 +112,7 @@ class EmpresaAuditoriaModel
                     NULL AS documento_tipo_nombre,
                     c.id AS convenio_id,
                     c.folio AS convenio_folio,
-                    c.version_actual AS convenio_version,
+                    c.responsable_academico AS convenio_responsable,
                     c.estatus AS convenio_estatus,
                     NULL AS empresa_nombre
                FROM auditoria AS a

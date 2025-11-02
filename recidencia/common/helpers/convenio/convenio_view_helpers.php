@@ -13,7 +13,8 @@ if (!function_exists('convenio_prepare_view_metadata')) {
      *     downloadLabel: string,
      *     diasRestantesLabel: string,
      *     observacionesLabel: string,
-     *     versionLabel: string,
+     *     tipoConvenioLabel: string,
+     *     responsableAcademicoLabel: string,
      *     estatusBadgeClass: string,
      *     estatusBadgeLabel: string
      * }
@@ -27,7 +28,8 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             'downloadLabel' => 'Ver PDF',
             'diasRestantesLabel' => 'N/D',
             'observacionesLabel' => 'Sin observaciones registradas.',
-            'versionLabel' => 'N/D',
+            'tipoConvenioLabel' => 'N/D',
+            'responsableAcademicoLabel' => 'N/D',
             'estatusBadgeClass' => 'badge secondary',
             'estatusBadgeLabel' => 'Sin especificar',
         ];
@@ -88,17 +90,19 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             $metadata['observacionesLabel'] = nl2br(htmlspecialchars($observaciones, ENT_QUOTES, 'UTF-8'));
         }
 
-        $versionActual = isset($convenio['version_actual'])
-            ? trim((string) $convenio['version_actual'])
+        $responsableAcademico = isset($convenio['responsable_academico'])
+            ? trim((string) $convenio['responsable_academico'])
             : '';
-        $machoteVersion = isset($convenio['machote_version'])
-            ? trim((string) $convenio['machote_version'])
+        $tipoConvenio = isset($convenio['tipo_convenio'])
+            ? trim((string) $convenio['tipo_convenio'])
             : '';
 
-        if ($versionActual !== '') {
-            $metadata['versionLabel'] = $versionActual;
-        } elseif ($machoteVersion !== '') {
-            $metadata['versionLabel'] = $machoteVersion;
+        if ($tipoConvenio !== '') {
+            $metadata['tipoConvenioLabel'] = $tipoConvenio;
+        }
+
+        if ($responsableAcademico !== '') {
+            $metadata['responsableAcademicoLabel'] = $responsableAcademico;
         }
 
         if (isset($convenio['estatus_badge_class'])) {

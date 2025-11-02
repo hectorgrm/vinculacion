@@ -447,9 +447,9 @@ if (!function_exists('empresaViewDecorateConvenio')) {
     function empresaViewDecorateConvenio(array $convenio): array
     {
         $convenio['id_label'] = isset($convenio['id']) ? '#' . (string) $convenio['id'] : '#';
-        $convenio['version_label'] = empresaViewValueOrDefault(
-            $convenio['version_actual'] ?? $convenio['machote_version'] ?? null,
-            'Sin version'
+        $convenio['responsable_label'] = empresaViewValueOrDefault(
+            $convenio['responsable_academico'] ?? $convenio['tipo_convenio'] ?? null,
+            'Sin responsable'
         );
         $convenio['fecha_inicio_label'] = empresaViewFormatDate($convenio['fecha_inicio'] ?? null);
         $convenio['fecha_fin_label'] = empresaViewFormatDate($convenio['fecha_fin'] ?? null);

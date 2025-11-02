@@ -139,8 +139,8 @@ if (!function_exists('convenioFormDefaults')) {
             'empresa_id' => '',
             'folio' => '',
             'estatus' => 'En revisión',
-            'machote_version' => '',
-            'version_actual' => '',
+            'tipo_convenio' => '',
+            'responsable_academico' => '',
             'fecha_inicio' => '',
             'fecha_fin' => '',
             'observaciones' => '',
@@ -164,11 +164,11 @@ if (!function_exists('convenioHydrateFormDataFromRecord')) {
         $data['estatus'] = convenioNormalizeStatus(
             isset($convenio['estatus']) ? (string) $convenio['estatus'] : null
         );
-        $data['machote_version'] = isset($convenio['machote_version']) && $convenio['machote_version'] !== null
-            ? trim((string) $convenio['machote_version'])
+        $data['tipo_convenio'] = isset($convenio['tipo_convenio']) && $convenio['tipo_convenio'] !== null
+            ? trim((string) $convenio['tipo_convenio'])
             : '';
-        $data['version_actual'] = isset($convenio['version_actual']) && $convenio['version_actual'] !== null
-            ? trim((string) $convenio['version_actual'])
+        $data['responsable_academico'] = isset($convenio['responsable_academico']) && $convenio['responsable_academico'] !== null
+            ? trim((string) $convenio['responsable_academico'])
             : '';
         $data['fecha_inicio'] = isset($convenio['fecha_inicio']) && $convenio['fecha_inicio'] !== null
             ? trim((string) $convenio['fecha_inicio'])
@@ -260,12 +260,12 @@ if (!function_exists('convenioValidateData')) {
             $errors[] = 'El folio del convenio no puede exceder 32 caracteres.';
         }
 
-        if ($data['machote_version'] !== '' && mb_strlen($data['machote_version']) > 50) {
-            $errors[] = 'La versión del machote no puede exceder 50 caracteres.';
+        if ($data['tipo_convenio'] !== '' && mb_strlen($data['tipo_convenio']) > 50) {
+            $errors[] = 'El tipo de convenio no puede exceder 50 caracteres.';
         }
 
-        if ($data['version_actual'] !== '' && mb_strlen($data['version_actual']) > 100) {
-            $errors[] = 'La versión actual no puede exceder 100 caracteres.';
+        if ($data['responsable_academico'] !== '' && mb_strlen($data['responsable_academico']) > 150) {
+            $errors[] = 'El responsable academico no puede exceder 150 caracteres.';
         }
 
         $fechaInicio = null;
@@ -473,3 +473,4 @@ if (!function_exists('convenioFormatDateTime')) {
         return $date->format('d/m/Y H:i');
     }
 }
+

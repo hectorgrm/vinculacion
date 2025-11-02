@@ -1,4 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `nessuste_vinculacion` /*!40100 DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci */;
+﻿CREATE DATABASE  IF NOT EXISTS `nessuste_vinculacion` /*!40100 DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci */;
 USE `nessuste_vinculacion`;
 -- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
@@ -96,12 +96,12 @@ DROP TABLE IF EXISTS `rp_convenio`;
 CREATE TABLE `rp_convenio` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `empresa_id` bigint(20) NOT NULL,
-  `machote_version` varchar(50) DEFAULT NULL,
+  `tipo_convenio` varchar(50) DEFAULT NULL,
   `estatus` enum('Activa','En revisión','Inactiva','Suspendida') NOT NULL DEFAULT 'En revisión',
   `observaciones` text DEFAULT NULL,
   `fecha_inicio` date DEFAULT NULL,
   `fecha_fin` date DEFAULT NULL,
-  `version_actual` varchar(100) DEFAULT NULL,
+  `responsable_academico` varchar(150) DEFAULT NULL,
   `creado_en` datetime NOT NULL DEFAULT current_timestamp(),
   `folio` varchar(32) DEFAULT NULL,
   `borrador_path` varchar(255) DEFAULT NULL,
@@ -311,7 +311,7 @@ DROP TABLE IF EXISTS `rp_machote_revision`;
 CREATE TABLE `rp_machote_revision` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `empresa_id` bigint(20) NOT NULL,
-  `machote_version` varchar(50) DEFAULT NULL,
+  `tipo_convenio` varchar(50) DEFAULT NULL,
   `estado` enum('en_revision','acordado','cancelado') DEFAULT 'en_revision',
   `aprobado_admin` tinyint(1) DEFAULT 0,
   `aprobado_empresa` tinyint(1) DEFAULT 0,
@@ -449,7 +449,7 @@ CREATE TABLE `ss_convenio` (
   `estatus` enum('pendiente','vigente','vencido') DEFAULT 'pendiente',
   `fecha_inicio` date DEFAULT NULL,
   `fecha_fin` date DEFAULT NULL,
-  `version_actual` varchar(50) DEFAULT NULL,
+  `responsable_academico` varchar(150) DEFAULT NULL,
   `creado_en` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `fk_ssconvenio_ssempresa` (`ss_empresa_id`),

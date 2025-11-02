@@ -39,7 +39,7 @@ $errorMessage = $handlerResult['errorMessage'];
         <header>🔍 Filtros y búsqueda</header>
         <div class="content">
           <form method="GET" class="form search-bar">
-            <input type="text" name="search" placeholder="Buscar por empresa, folio o versión..."
+            <input type="text" name="search" placeholder="Buscar por empresa, folio o responsable..."
               value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>" />
             <select name="estatus">
               <option value="">Todos los estados</option>
@@ -76,8 +76,8 @@ $errorMessage = $handlerResult['errorMessage'];
                   <th>No. Control</th>
                   <th>Folio</th>
                   <th>Estatus</th>
-                  <th>Machote</th>
-                  <th>Versión</th>
+                  <th>Tipo</th>
+                  <th>Responsable académico</th>
                   <th>Inicio</th>
                   <th>Fin</th>
                   <th>Actualizado</th>
@@ -99,8 +99,8 @@ $errorMessage = $handlerResult['errorMessage'];
                       <td><span class="<?php echo convenioRenderBadgeClass($convenio['estatus'] ?? null); ?>">
                           <?php echo htmlspecialchars(convenioRenderBadgeLabel($convenio['estatus'] ?? null), ENT_QUOTES, 'UTF-8'); ?>
                         </span></td>
-                      <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['machote_version'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['version_actual'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['tipo_convenio'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['responsable_academico'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars(convenioFormatDate($convenio['fecha_inicio'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars(convenioFormatDate($convenio['fecha_fin'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars(convenioFormatDateTime($convenio['actualizado_en'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>

@@ -41,7 +41,7 @@ class ConvenioAuditoriaModel
                    END AS actor_nombre,
                    c.id AS convenio_id,
                    c.folio AS convenio_folio,
-                   c.version_actual AS convenio_version,
+                   c.responsable_academico AS convenio_responsable,
                    c.estatus AS convenio_estatus,
                    doc.id AS documento_id,
                    doc.estatus AS documento_estatus,
