@@ -8,6 +8,7 @@ declare(strict_types=1);
  *     machoteObservaciones: array<int, array<string, mixed>>,
  *     documentosAsociados: array<int, array<string, mixed>>,
  *     historial: array<int, array<string, mixed>>,
+ *     documentosError: ?string,
  *     controllerError: ?string,
  *     notFoundMessage: ?string,
  *     inputError: ?string
@@ -21,6 +22,7 @@ $convenio = $handlerResult['convenio'];
 $machoteObservaciones = $handlerResult['machoteObservaciones'];
 $documentosAsociados = $handlerResult['documentosAsociados'];
 $historial = $handlerResult['historial'];
+$documentosError = $handlerResult['documentosError'];
 $controllerError = $handlerResult['controllerError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
 $inputError = $handlerResult['inputError'];
@@ -230,7 +232,11 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                 <section class="card">
                     <header>📂 Documentos Asociados</header>
                     <div class="content">
-                        <?php if (count($documentosAsociados) > 0): ?>
+                        <?php if ($documentosError !== null): ?>
+                            <div class="alert alert-danger">
+                                <?php echo htmlspecialchars($documentosError, ENT_QUOTES, 'UTF-8'); ?>
+                            </div>
+                        <?php elseif (count($documentosAsociados) > 0): ?>
                             <table>
                                 <thead>
                                     <tr>

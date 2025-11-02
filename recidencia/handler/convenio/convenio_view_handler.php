@@ -15,6 +15,7 @@ if (!function_exists('convenioViewDefaults')) {
      *     machoteObservaciones: array<int, array<string, mixed>>,
      *     documentosAsociados: array<int, array<string, mixed>>,
      *     historial: array<int, array<string, mixed>>,
+     *     documentosError: ?string,
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
      *     inputError: ?string
@@ -28,6 +29,7 @@ if (!function_exists('convenioViewDefaults')) {
             'machoteObservaciones' => [],
             'documentosAsociados' => [],
             'historial' => [],
+            'documentosError' => null,
             'controllerError' => null,
             'notFoundMessage' => null,
             'inputError' => null,
@@ -52,6 +54,7 @@ if (!function_exists('convenioViewHandler')) {
      *     machoteObservaciones: array<int, array<string, mixed>>,
      *     documentosAsociados: array<int, array<string, mixed>>,
      *     historial: array<int, array<string, mixed>>,
+     *     documentosError: ?string,
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
      *     inputError: ?string
