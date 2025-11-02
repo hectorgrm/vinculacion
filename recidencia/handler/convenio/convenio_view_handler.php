@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../common/functions/conveniofunction.php';
 require_once __DIR__ . '/../../controller/convenio/ConvenioViewController.php';
+require_once __DIR__ . '/convenio_auditoria_handler.php';
 
 use Residencia\Controller\Convenio\ConvenioViewController;
 
@@ -84,7 +85,20 @@ if (!function_exists('convenioViewHandler')) {
             return $viewData;
         }
 
-        return array_merge($viewData, $result);
+        $viewData = array_merge($viewData, $result);
+
+        $convenioId = isset($viewData['convenioId']) && is_int($viewData['convenioId'])
+            ? $viewData['convenioId']
+            : null;
+        $convenio = $viewData['convenio'] ?? null;
+
+        if ($convenioId !== null && is_array($convenio)) {
+            $empresaId = isset($convenio['empresa_id']) ? (int) $convenio['empresa_id'] : null;
+            $auditoriaResult = convenioAuditoriaFetchHistorial($convenioId, $empresaId);
+            $viewData['historial'] = $auditoriaResult['historial'];
+        }
+
+        return $viewData;
     }
 }
 
