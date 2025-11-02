@@ -1,3 +1,41 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * @var array{
+ *     convenioId: ?int,
+ *     convenio: ?array<string, mixed>,
+ *     machoteObservaciones: array<int, array<string, mixed>>,
+ *     documentosAsociados: array<int, array<string, mixed>>,
+ *     historial: array<int, array<string, mixed>>,
+ *     controllerError: ?string,
+ *     notFoundMessage: ?string,
+ *     inputError: ?string
+ * } $handlerResult
+ */
+$handlerResult = require __DIR__ . '/../../handler/convenio/convenio_view_handler.php';
+require_once __DIR__ . '/../../common/helpers/convenio/convenio_view_helpers.php';
+
+$convenioId = $handlerResult['convenioId'];
+$convenio = $handlerResult['convenio'];
+$machoteObservaciones = $handlerResult['machoteObservaciones'];
+$documentosAsociados = $handlerResult['documentosAsociados'];
+$historial = $handlerResult['historial'];
+$controllerError = $handlerResult['controllerError'];
+$notFoundMessage = $handlerResult['notFoundMessage'];
+$inputError = $handlerResult['inputError'];
+
+$metadata = convenio_prepare_view_metadata($convenio);
+$empresaNombre = $metadata['empresaNombre'];
+$empresaUrl = $metadata['empresaUrl'];
+$downloadUrl = $metadata['downloadUrl'];
+$downloadLabel = $metadata['downloadLabel'];
+$diasRestantesLabel = $metadata['diasRestantesLabel'];
+$observacionesLabel = $metadata['observacionesLabel'];
+$versionLabel = $metadata['versionLabel'];
+$estatusBadgeClass = $metadata['estatusBadgeClass'];
+$estatusBadgeLabel = $metadata['estatusBadgeLabel'];
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -23,7 +61,7 @@
             <!-- Topbar -->
             <header class="topbar">
                 <div>
-                    <h2>📑 Detalle del Convenio</h2>
+                    <h2>📑 Detalle del Convenio<?php echo $convenioId !== null ? ' #' . htmlspecialchars((string) $convenioId, ENT_QUOTES, 'UTF-8') : ''; ?></h2>
                     <nav class="breadcrumb">
                         <a href="../../index.php">Inicio</a>
                         <span>›</span>
@@ -33,184 +71,239 @@
                     </nav>
                 </div>
                 <div class="top-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <a href="convenio_edit.php?id=12" class="btn">✏️ Editar</a>
-                    <a href="../../uploads/convenios/convenio_12.pdf" class="btn" target="_blank">📄 Ver PDF</a>
+                    <?php if ($convenioId !== null): ?>
+                        <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn">✏️ Editar</a>
+                    <?php endif; ?>
+                    <?php if ($downloadUrl !== null): ?>
+                        <a href="<?php echo htmlspecialchars($downloadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn" target="_blank" rel="noopener noreferrer"><?php echo htmlspecialchars($downloadLabel, ENT_QUOTES, 'UTF-8'); ?></a>
+                    <?php endif; ?>
                     <a href="convenio_list.php" class="btn secondary">⬅ Volver</a>
                 </div>
             </header>
 
-            <!-- Información principal -->
-            <section class="card">
-                <header>🧾 Información del Convenio</header>
-                <div class="content">
-                    <div class="grid">
-                        <div class="field">
-                            <label>Empresa</label>
-                            <div>
-                                <a href="../empresa/empresa_view.php?id=45" class="btn">🏢 Casa del Barrio</a>
+            <?php if ($controllerError !== null): ?>
+                <section class="card">
+                    <div class="content">
+                        <div class="alert alert-danger">
+                            <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($inputError !== null): ?>
+                <section class="card">
+                    <div class="content">
+                        <div class="alert alert-warning">
+                            <?php echo htmlspecialchars($inputError, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($notFoundMessage !== null): ?>
+                <section class="card">
+                    <div class="content">
+                        <div class="alert alert-warning">
+                            <?php echo htmlspecialchars($notFoundMessage, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($convenio !== null): ?>
+                <!-- Información principal -->
+                <section class="card">
+                    <header>🧾 Información del Convenio</header>
+                    <div class="content">
+                        <div class="grid">
+                            <div class="field">
+                                <label>Empresa</label>
+                                <div>
+                                    <?php if ($empresaUrl !== null): ?>
+                                        <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">🏢 <?php echo htmlspecialchars((string) $empresaNombre, ENT_QUOTES, 'UTF-8'); ?></a>
+                                    <?php else: ?>
+                                        <?php echo htmlspecialchars((string) ($empresaNombre ?? 'Sin empresa'), ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label>Estatus</label>
+                                <div><span class="<?php echo htmlspecialchars($estatusBadgeClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($estatusBadgeLabel, ENT_QUOTES, 'UTF-8'); ?></span></div>
+                            </div>
+
+                            <div class="field">
+                                <label>Folio</label>
+                                <div><?php echo htmlspecialchars((string) ($convenio['folio'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+
+                            <div class="field">
+                                <label>Versión</label>
+                                <div><?php echo htmlspecialchars($versionLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+
+                            <div class="field">
+                                <label>Última actualización</label>
+                                <div><?php echo htmlspecialchars((string) ($convenio['actualizado_en_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+
+                            <div class="field">
+                                <label>Fecha de inicio</label>
+                                <div><?php echo htmlspecialchars((string) ($convenio['fecha_inicio_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+
+                            <div class="field">
+                                <label>Fecha de término</label>
+                                <div><?php echo htmlspecialchars((string) ($convenio['fecha_fin_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+
+                            <div class="field">
+                                <label>Días restantes</label>
+                                <div><?php echo htmlspecialchars($diasRestantesLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+
+                            <div class="field">
+                                <label>Archivo adjunto (PDF)</label>
+                                <div>
+                                    <?php if ($downloadUrl !== null): ?>
+                                        <a class="btn" href="<?php echo htmlspecialchars($downloadUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">📥 Descargar</a>
+                                    <?php else: ?>
+                                        <span class="text-muted">No disponible</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <div class="field col-span-2">
+                                <label>Notas / Observaciones</label>
+                                <div class="text-muted"><?php echo $observacionesLabel; ?></div>
                             </div>
                         </div>
 
-                        <div class="field">
-                            <label>Estatus</label>
-                            <div><span class="badge ok">Vigente</span></div>
-                        </div>
-
-                        <div class="field">
-                            <label>Versión</label>
-                            <div>v1.2</div>
-                        </div>
-
-                        <div class="field">
-                            <label>Última actualización</label>
-                            <div>02/10/2025</div>
-                        </div>
-
-                        <div class="field">
-                            <label>Fecha de inicio</label>
-                            <div>01/07/2025</div>
-                        </div>
-
-                        <div class="field">
-                            <label>Fecha de término</label>
-                            <div>30/06/2026</div>
-                        </div>
-
-                        <div class="field">
-                            <label>Días restantes</label>
-                            <div>263</div>
-                        </div>
-
-                        <div class="field">
-                            <label>Archivo adjunto (PDF)</label>
-                            <div>
-                                <a class="btn" href="../../uploads/convenios/convenio_12.pdf" target="_blank">📥
-                                    Descargar</a>
-                            </div>
-                        </div>
-
-                        <div class="field col-span-2">
-                            <label>Notas / Observaciones</label>
-                            <div class="text-muted">Convenio marco para prácticas y residencias; incluye anexo técnico
-                                para proyectos TI.</div>
+                        <div class="actions" style="justify-content:flex-start; margin-top:14px;">
+                            <?php if ($convenioId !== null && isset($convenio['empresa_id'])): ?>
+                                <a href="convenio_add.php?empresa=<?php echo urlencode((string) $convenio['empresa_id']); ?>&copy=<?php echo urlencode((string) $convenioId); ?>" class="btn">🔁 Renovar (nueva versión)</a>
+                            <?php endif; ?>
+                            <?php if ($empresaUrl !== null): ?>
+                                <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">🏢 Ver empresa</a>
+                            <?php endif; ?>
                         </div>
                     </div>
+                </section>
 
-                    <div class="actions" style="justify-content:flex-start; margin-top:14px;">
-                        <a href="convenio_add.php?empresa=45&copy=12" class="btn">🔁 Renovar (nueva versión)</a>
-                        <a href="../empresa/empresa_view.php?id=45" class="btn">🏢 Ver empresa</a>
+                <!-- Observaciones de machote -->
+                <section class="card">
+                    <header>📝 Observaciones de Machote (cláusula por cláusula)</header>
+                    <div class="content">
+                        <?php if (count($machoteObservaciones) > 0): ?>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Cláusula</th>
+                                        <th>Comentario</th>
+                                        <th>Estatus</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($machoteObservaciones as $index => $observacion): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars((string) ($observacion['numero'] ?? ($index + 1)), ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><?php echo htmlspecialchars((string) ($observacion['clausula'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><?php echo nl2br(htmlspecialchars((string) ($observacion['comentario'] ?? ''), ENT_QUOTES, 'UTF-8')); ?></td>
+                                            <td>
+                                                <span class="badge <?php echo htmlspecialchars((string) ($observacion['badge_class'] ?? 'secondary'), ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <?php echo htmlspecialchars((string) ($observacion['badge_label'] ?? ($observacion['estatus'] ?? 'N/D')), ENT_QUOTES, 'UTF-8'); ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <p class="text-muted">No hay observaciones registradas para el machote.</p>
+                        <?php endif; ?>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- Observaciones de machote -->
-            <section class="card">
-                <header>📝 Observaciones de Machote (cláusula por cláusula)</header>
-                <div class="content">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Cláusula</th>
-                                <th>Comentario</th>
-                                <th>Estatus</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Objeto</td>
-                                <td>Solicitan explicitar alcance del proyecto y KPIs.</td>
-                                <td><span class="badge secondary">En revisión</span></td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Confidencialidad</td>
-                                <td>Se acepta texto del machote sin cambios.</td>
-                                <td><span class="badge ok">Aprobado</span></td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Vigencia</td>
-                                <td>Proponen alinear al ciclo escolar Ago–Dic / Feb–Jul.</td>
-                                <td><span class="badge warn">Pendiente</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="actions" style="margin-top:12px;">
-                        <a href="../machote/revisar.php?id_empresa=45&convenio=12" class="btn primary">✏️ Revisar
-                            Machote</a>
+                <!-- Documentos vinculados al convenio (si aplican) -->
+                <section class="card">
+                    <header>📂 Documentos Asociados</header>
+                    <div class="content">
+                        <?php if (count($documentosAsociados) > 0): ?>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Documento</th>
+                                        <th>Estatus</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($documentosAsociados as $documento): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars((string) ($documento['titulo'] ?? 'Documento'), ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td>
+                                                <span class="badge <?php echo htmlspecialchars((string) ($documento['badge_class'] ?? 'secondary'), ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <?php echo htmlspecialchars((string) ($documento['badge_label'] ?? ($documento['estatus'] ?? 'N/D')), ENT_QUOTES, 'UTF-8'); ?>
+                                                </span>
+                                            </td>
+                                            <td><?php echo htmlspecialchars((string) ($documento['fecha'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td>
+                                                <?php if (!empty($documento['url'])): ?>
+                                                    <a href="<?php echo htmlspecialchars((string) $documento['url'], ENT_QUOTES, 'UTF-8'); ?>" class="btn" target="_blank" rel="noopener noreferrer">📄 Ver</a>
+                                                <?php elseif (!empty($documento['upload_url'])): ?>
+                                                    <a href="<?php echo htmlspecialchars((string) $documento['upload_url'], ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">⬆️ Subir</a>
+                                                <?php else: ?>
+                                                    <span class="text-muted">Sin acciones</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <p class="text-muted">No hay documentos asociados registrados.</p>
+                        <?php endif; ?>
                     </div>
+                </section>
+
+                <!-- Bitácora / Historial -->
+                <section class="card">
+                    <header>🕒 Historial</header>
+                    <div class="content">
+                        <?php if (count($historial) > 0): ?>
+                            <ul style="margin:0; padding-left:18px; color:#334155">
+                                <?php foreach ($historial as $evento): ?>
+                                    <li>
+                                        <strong><?php echo htmlspecialchars((string) ($evento['fecha'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong>
+                                        —
+                                        <?php echo htmlspecialchars((string) ($evento['descripcion'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <p class="text-muted">Sin movimientos registrados en el historial.</p>
+                        <?php endif; ?>
+                    </div>
+                </section>
+
+                <div class="field">
+                    <label>Fecha de registro</label>
+                    <div><?php echo htmlspecialchars((string) ($convenio['creado_en_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></div>
                 </div>
-            </section>
 
-            <!-- Documentos vinculados al convenio (si aplican) -->
-            <section class="card">
-                <header>📂 Documentos Asociados</header>
-                <div class="content">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Documento</th>
-                                <th>Estatus</th>
-                                <th>Fecha</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Anexo Técnico</td>
-                                <td><span class="badge ok">Aprobado</span></td>
-                                <td>12/09/2025</td>
-                                <td><a href="../../uploads/anexo_tecnico_12.pdf" class="btn" target="_blank">📄 Ver</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Oficio de intención</td>
-                                <td><span class="badge warn">Pendiente</span></td>
-                                <td>—</td>
-                                <td>
-                                    <a href="../documentos/documento_upload.php?empresa=45&convenio=12"
-                                        class="btn primary">⬆️ Subir</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Bitácora / Historial -->
-            <section class="card">
-                <header>🕒 Historial</header>
-                <div class="content">
-                    <ul style="margin:0; padding-left:18px; color:#334155">
-                        <li><strong>02/10/2025</strong> — Actualizado estatus a <em>Vigente</em>.</li>
-                        <li><strong>20/09/2025</strong> — Subido anexo técnico (PDF).</li>
-                        <li><strong>15/09/2025</strong> — Observaciones de machote registradas.</li>
-                        <li><strong>10/09/2025</strong> — Convenio creado (v1.2) para empresa “Casa del Barrio”.</li>
-                    </ul>
-                </div>
-            </section>
-            <div class="field">
-                <label>Registrado por</label>
-                <div>Lic. Martha Pérez</div>
-            </div>
-
-            <div class="field">
-                <label>Fecha de registro</label>
-                <div>10/09/2025</div>
-            </div>
-
-
-
-            <!-- Acciones finales -->
-            <section class="card">
-                <div class="content actions">
-                    <a href="convenio_edit.php?id=12" class="btn primary">✏️ Editar Convenio</a>
-                    <a href="convenio_delete.php?id=12" class="btn danger">🗑️ Eliminar Convenio</a>
-                </div>
-            </section>
+                <!-- Acciones finales -->
+                <section class="card">
+                    <div class="content actions">
+                        <?php if ($convenioId !== null): ?>
+                            <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">✏️ Editar Convenio</a>
+                            <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn danger">🗑️ Eliminar Convenio</a>
+                        <?php endif; ?>
+                    </div>
+                </section>
+            <?php endif; ?>
 
         </main>
     </div>
