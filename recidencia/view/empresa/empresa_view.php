@@ -21,6 +21,10 @@ $conveniosActivos = $handlerResult['conveniosActivos'] ?? [];
 $documentos = $handlerResult['documentos'] ?? [];
 $documentosStats = $handlerResult['documentosStats'] ?? [];
 $documentosGestionUrl = $handlerResult['documentosGestionUrl'] ?? null;
+$auditoriaHandlerResult = require __DIR__ . '/../../handler/empresa/empresa_auditoria_handler.php';
+$auditoriaItems = $auditoriaHandlerResult['items'] ?? [];
+$auditoriaControllerError = $auditoriaHandlerResult['controllerError'] ?? null;
+$auditoriaInputError = $auditoriaHandlerResult['inputError'] ?? null;
 
 if (!is_array($conveniosActivos)) {
     $conveniosActivos = [];
@@ -44,6 +48,10 @@ if (!is_array($documentosStats)) {
         'aprobados' => isset($documentosStats['aprobados']) ? (int) $documentosStats['aprobados'] : 0,
         'porcentaje' => isset($documentosStats['porcentaje']) ? (int) $documentosStats['porcentaje'] : 0,
     ];
+}
+
+if (!is_array($auditoriaItems)) {
+    $auditoriaItems = [];
 }
 
 if (!is_string($documentosGestionUrl) || $documentosGestionUrl === '') {
@@ -388,16 +396,37 @@ $progreso = $documentosStats['porcentaje'];
       </section>
 
       <section class="card">
-                <header>🕒 Historial</header>
-                <div class="content">
-                    <ul style="margin:0; padding-left:18px; color:#334155">
-                        <li><strong>02/10/2025</strong> — Actualizado estatus a <em>Vigente</em>.</li>
-                        <li><strong>20/09/2025</strong> — Subido anexo técnico (PDF).</li>
-                        <li><strong>15/09/2025</strong> — Observaciones de machote registradas.</li>
-                        <li><strong>10/09/2025</strong> — Convenio creado (v1.2) para empresa “Casa del Barrio”.</li>
-                    </ul>
-                </div>
-            </section>
+        <header>🕒 Bitácora / Historial</header>
+        <div class="content">
+          <?php if ($auditoriaControllerError !== null || $auditoriaInputError !== null) : ?>
+            <div class="alert error" role="alert">
+              <?php
+              $message = $auditoriaControllerError ?? $auditoriaInputError ?? 'No se pudo cargar el historial de la empresa.';
+              echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+              ?>
+            </div>
+          <?php elseif ($auditoriaItems === []) : ?>
+            <p style="margin:0;">No se han registrado movimientos de auditoría para esta empresa.</p>
+          <?php else : ?>
+            <ul style="margin:0; padding-left:18px; color:#334155;">
+              <?php foreach ($auditoriaItems as $item) : ?>
+                <?php
+                if (!is_array($item)) {
+                    continue;
+                }
+
+                $itemFecha = (string) ($item['fecha'] ?? 'Sin fecha');
+                $itemMensaje = (string) ($item['mensaje'] ?? 'Acción registrada');
+                ?>
+                <li>
+                  <strong><?php echo htmlspecialchars($itemFecha, ENT_QUOTES, 'UTF-8'); ?></strong>
+                  — <?php echo htmlspecialchars($itemMensaje, ENT_QUOTES, 'UTF-8'); ?>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          <?php endif; ?>
+        </div>
+      </section>
 
       <!-- 🔧 Acciones -->
       <section class="card">
