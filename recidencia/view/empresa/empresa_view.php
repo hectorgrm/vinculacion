@@ -387,6 +387,18 @@ $progreso = $documentosStats['porcentaje'];
         </div>
       </section>
 
+      <section class="card">
+                <header>🕒 Historial</header>
+                <div class="content">
+                    <ul style="margin:0; padding-left:18px; color:#334155">
+                        <li><strong>02/10/2025</strong> — Actualizado estatus a <em>Vigente</em>.</li>
+                        <li><strong>20/09/2025</strong> — Subido anexo técnico (PDF).</li>
+                        <li><strong>15/09/2025</strong> — Observaciones de machote registradas.</li>
+                        <li><strong>10/09/2025</strong> — Convenio creado (v1.2) para empresa “Casa del Barrio”.</li>
+                    </ul>
+                </div>
+            </section>
+
       <!-- 🔧 Acciones -->
       <section class="card">
         <div class="content actions" style="justify-content:flex-end;">
