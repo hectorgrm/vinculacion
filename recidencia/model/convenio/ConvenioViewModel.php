@@ -28,6 +28,8 @@ class ConvenioViewModel
                    c.empresa_id,
                    e.nombre AS empresa_nombre,
                    e.numero_control AS empresa_numero_control,
+                   e.representante AS empresa_representante,
+                   e.cargo_representante AS empresa_representante_cargo,
                    c.folio,
                    c.estatus,
                    c.tipo_convenio,

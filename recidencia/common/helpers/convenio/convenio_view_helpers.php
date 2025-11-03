@@ -15,6 +15,10 @@ if (!function_exists('convenio_prepare_view_metadata')) {
      *     observacionesLabel: string,
      *     tipoConvenioLabel: string,
      *     responsableAcademicoLabel: string,
+     *     responsableEmpresarialLabel: string,
+     *     responsableEmpresarialCargo: ?string,
+     *     fechaInicioLabel: string,
+     *     fechaFinLabel: string,
      *     estatusBadgeClass: string,
      *     estatusBadgeLabel: string
      * }
@@ -30,6 +34,10 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             'observacionesLabel' => 'Sin observaciones registradas.',
             'tipoConvenioLabel' => 'N/D',
             'responsableAcademicoLabel' => 'N/D',
+            'responsableEmpresarialLabel' => 'N/D',
+            'responsableEmpresarialCargo' => null,
+            'fechaInicioLabel' => 'N/D',
+            'fechaFinLabel' => 'N/D',
             'estatusBadgeClass' => 'badge secondary',
             'estatusBadgeLabel' => 'Sin especificar',
         ];
@@ -103,6 +111,35 @@ if (!function_exists('convenio_prepare_view_metadata')) {
 
         if ($responsableAcademico !== '') {
             $metadata['responsableAcademicoLabel'] = $responsableAcademico;
+        }
+
+        $responsableEmpresarial = isset($convenio['empresa_representante'])
+            ? trim((string) $convenio['empresa_representante'])
+            : '';
+        $cargoEmpresarial = isset($convenio['empresa_representante_cargo'])
+            ? trim((string) $convenio['empresa_representante_cargo'])
+            : '';
+
+        if ($responsableEmpresarial !== '') {
+            $metadata['responsableEmpresarialLabel'] = $responsableEmpresarial;
+
+            if ($cargoEmpresarial !== '') {
+                $metadata['responsableEmpresarialCargo'] = $cargoEmpresarial;
+            }
+        }
+
+        $fechaInicio = isset($convenio['fecha_inicio_label'])
+            ? trim((string) $convenio['fecha_inicio_label'])
+            : '';
+        if ($fechaInicio !== '') {
+            $metadata['fechaInicioLabel'] = $fechaInicio;
+        }
+
+        $fechaFin = isset($convenio['fecha_fin_label'])
+            ? trim((string) $convenio['fecha_fin_label'])
+            : '';
+        if ($fechaFin !== '') {
+            $metadata['fechaFinLabel'] = $fechaFin;
         }
 
         if (isset($convenio['estatus_badge_class'])) {

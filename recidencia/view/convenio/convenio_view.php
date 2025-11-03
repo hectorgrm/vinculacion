@@ -32,6 +32,10 @@ $diasRestantesLabel = $metadata['diasRestantesLabel'];
 $observacionesLabel = $metadata['observacionesLabel'];
 $tipoConvenioLabel = $metadata['tipoConvenioLabel'];
 $responsableAcademicoLabel = $metadata['responsableAcademicoLabel'];
+$responsableEmpresarialLabel = $metadata['responsableEmpresarialLabel'];
+$responsableEmpresarialCargo = $metadata['responsableEmpresarialCargo'];
+$fechaInicioLabel = $metadata['fechaInicioLabel'];
+$fechaFinLabel = $metadata['fechaFinLabel'];
 $estatusBadgeClass = $metadata['estatusBadgeClass'];
 $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
 ?>
@@ -199,18 +203,40 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
 
 
                         <!-- 📎 Información complementaria -->
-<section class="card">
-  <header>📎 Detalles Administrativos</header>
-  <div class="content">
-    <div class="info-grid">
-      <div><strong>Tipo de convenio:</strong> Marco de colaboración académica</div>
-      <div><strong>Fecha de inicio:</strong> 01/07/2025</div>
-      <div><strong>Fecha de término:</strong> 30/06/2026</div>
-      <div><strong>Responsable académico:</strong> Ing. Fernando Gómez</div>
-      <div><strong>Responsable empresarial:</strong> Mtro. Luis Benítez <span class="text-muted">(Director General)</span></div>
-    </div>
-  </div>
-</section>
+                        <section class="card">
+                            <header>📎 Detalles Administrativos</header>
+                            <div class="content">
+                                <div class="info-grid">
+                                    <div>
+                                        <strong>Tipo de convenio:</strong>
+                                        <?php echo htmlspecialchars($tipoConvenioLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                    </div>
+                                    <div>
+                                        <strong>Fecha de inicio:</strong>
+                                        <?php echo htmlspecialchars($fechaInicioLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                    </div>
+                                    <div>
+                                        <strong>Fecha de término:</strong>
+                                        <?php echo htmlspecialchars($fechaFinLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                    </div>
+                                    <div>
+                                        <strong>Responsable académico:</strong>
+                                        <?php echo htmlspecialchars($responsableAcademicoLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                    </div>
+                                    <div>
+                                        <strong>Responsable empresarial:</strong>
+                                        <?php if ($responsableEmpresarialLabel !== 'N/D'): ?>
+                                            <?php echo htmlspecialchars($responsableEmpresarialLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                            <?php if (is_string($responsableEmpresarialCargo) && $responsableEmpresarialCargo !== ''): ?>
+                                                <span class="text-muted">(<?php echo htmlspecialchars($responsableEmpresarialCargo, ENT_QUOTES, 'UTF-8'); ?>)</span>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">N/D</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
 
 
 
