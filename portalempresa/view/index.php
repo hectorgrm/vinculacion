@@ -1,16 +1,40 @@
 <?php
-// Ejemplos de datos (reemplaza con tu sesión/BD)
-$empresaNombre   = 'Casa del Barrio';
-$estadoConvenio  = 'Aprobado'; // 'Aprobado' | 'Por vencer' | 'Vencido'
-$folioConvenio   = 'CV-2025-012';
-$versionMachote  = 'Institucional v1.2';
-$vigenciaInicio  = '2025-06-01';
-$vigenciaFin     = '2026-05-30';
+declare(strict_types=1);
 
-$kpiActivos      = 2;
-$kpiConcluidos   = 5;
-$kpiDocsOk       = 7;
-$kpiDocsPend     = 1;
+require_once __DIR__ . '/../../config/session.php';
+
+if (!isset($_SESSION['portal_empresa']) || !is_array($_SESSION['portal_empresa'])) {
+    header('Location: login.php?error=session');
+    exit;
+}
+
+$portalSession = $_SESSION['portal_empresa'];
+
+$empresaNombre = (string) ($portalSession['empresa_nombre'] ?? 'Empresa');
+$empresaNumeroControl = (string) ($portalSession['empresa_numero_control'] ?? '');
+$empresaEstatus = strtolower((string) ($portalSession['empresa_estatus'] ?? ''));
+
+switch ($empresaEstatus) {
+    case 'activa':
+        $estadoConvenio = 'Aprobado';
+        break;
+    case 'inactiva':
+        $estadoConvenio = 'Vencido';
+        break;
+    default:
+        $estadoConvenio = 'En revisión';
+        break;
+}
+
+$folioConvenio  = '—';
+$versionMachote = '—';
+$vigenciaInicio = '—';
+$vigenciaFin    = '—';
+
+$kpiActivos    = 0;
+$kpiConcluidos = 0;
+$kpiDocsOk     = 0;
+$kpiDocsPend   = 0;
 ?>
 <!DOCTYPE html>
 <html lang="es">

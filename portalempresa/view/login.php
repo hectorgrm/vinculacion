@@ -1,3 +1,36 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../../config/session.php';
+
+$errorKey = isset($_GET['error']) ? (string) $_GET['error'] : '';
+$statusKey = isset($_GET['status']) ? (string) $_GET['status'] : '';
+
+$errorMessage = '';
+$statusMessage = '';
+
+switch ($errorKey) {
+    case 'invalid':
+        $errorMessage = 'Token o NIP incorrecto.';
+        break;
+    case 'expired':
+        $errorMessage = 'Acceso expirado o bloqueado. Solicita uno nuevo con Vinculación.';
+        break;
+    case 'missing':
+        $errorMessage = 'Debes ingresar el token y el NIP para continuar.';
+        break;
+    case 'session':
+        $errorMessage = 'Tu sesión finalizó. Ingresa nuevamente.';
+        break;
+    case 'server':
+        $errorMessage = 'Ocurrió un problema al validar tus datos. Intenta otra vez en unos minutos.';
+        break;
+}
+
+if ($statusKey === 'loggedout') {
+    $statusMessage = 'Sesión cerrada correctamente.';
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -139,9 +172,13 @@
     <h2>🔐 Acceso al Portal de Empresa</h2>
     <p>Ingresa el Token y NIP proporcionados por Vinculación.</p>
 
-    <!-- Mensajes simulados -->
-    <!-- <div class="alert error">Token o NIP incorrecto</div> -->
-    <!-- <div class="alert success">Sesión cerrada correctamente</div> -->
+    <?php if ($errorMessage !== ''): ?>
+      <div class="alert error"><?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?></div>
+    <?php endif; ?>
+
+    <?php if ($statusMessage !== ''): ?>
+      <div class="alert success"><?php echo htmlspecialchars($statusMessage, ENT_QUOTES, 'UTF-8'); ?></div>
+    <?php endif; ?>
 
     <div class="field">
       <label for="token">Token de acceso</label>
