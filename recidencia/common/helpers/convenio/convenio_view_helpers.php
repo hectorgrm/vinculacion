@@ -19,6 +19,10 @@ if (!function_exists('convenio_prepare_view_metadata')) {
      *     responsableEmpresarialCargo: ?string,
      *     fechaInicioLabel: string,
      *     fechaFinLabel: string,
+     *     empresaTelefonoLabel: string,
+     *     empresaCorreoLabel: string,
+     *     empresaDireccionLabel: string,
+     *     empresaRegistroLabel: string,
      *     estatusBadgeClass: string,
      *     estatusBadgeLabel: string
      * }
@@ -38,6 +42,10 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             'responsableEmpresarialCargo' => null,
             'fechaInicioLabel' => 'N/D',
             'fechaFinLabel' => 'N/D',
+            'empresaTelefonoLabel' => 'N/D',
+            'empresaCorreoLabel' => 'N/D',
+            'empresaDireccionLabel' => 'N/D',
+            'empresaRegistroLabel' => 'N/D',
             'estatusBadgeClass' => 'badge secondary',
             'estatusBadgeLabel' => 'Sin especificar',
         ];
@@ -140,6 +148,58 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             : '';
         if ($fechaFin !== '') {
             $metadata['fechaFinLabel'] = $fechaFin;
+        }
+
+        $telefono = isset($convenio['empresa_telefono'])
+            ? trim((string) $convenio['empresa_telefono'])
+            : '';
+        if ($telefono !== '') {
+            $metadata['empresaTelefonoLabel'] = $telefono;
+        }
+
+        $correo = isset($convenio['empresa_contacto_email'])
+            ? trim((string) $convenio['empresa_contacto_email'])
+            : '';
+        if ($correo !== '') {
+            $metadata['empresaCorreoLabel'] = $correo;
+        }
+
+        $direccion = isset($convenio['empresa_direccion'])
+            ? trim((string) $convenio['empresa_direccion'])
+            : '';
+        $municipio = isset($convenio['empresa_municipio'])
+            ? trim((string) $convenio['empresa_municipio'])
+            : '';
+        $estado = isset($convenio['empresa_estado'])
+            ? trim((string) $convenio['empresa_estado'])
+            : '';
+        $cp = isset($convenio['empresa_cp'])
+            ? trim((string) $convenio['empresa_cp'])
+            : '';
+
+        $direccionPartes = [];
+        if ($direccion !== '') {
+            $direccionPartes[] = $direccion;
+        }
+        if ($municipio !== '') {
+            $direccionPartes[] = $municipio;
+        }
+        if ($estado !== '') {
+            $direccionPartes[] = $estado;
+        }
+        if ($cp !== '') {
+            $direccionPartes[] = 'C.P. ' . $cp;
+        }
+
+        if ($direccionPartes !== []) {
+            $metadata['empresaDireccionLabel'] = implode(', ', $direccionPartes);
+        }
+
+        $empresaRegistro = isset($convenio['empresa_creado_en_label'])
+            ? trim((string) $convenio['empresa_creado_en_label'])
+            : '';
+        if ($empresaRegistro !== '') {
+            $metadata['empresaRegistroLabel'] = $empresaRegistro;
         }
 
         if (isset($convenio['estatus_badge_class'])) {

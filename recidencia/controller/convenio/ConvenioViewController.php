@@ -138,6 +138,7 @@ class ConvenioViewController
         $fechaFin = isset($convenio['fecha_fin']) ? (string) $convenio['fecha_fin'] : null;
         $actualizadoEn = isset($convenio['actualizado_en']) ? (string) $convenio['actualizado_en'] : null;
         $creadoEn = isset($convenio['creado_en']) ? (string) $convenio['creado_en'] : null;
+        $empresaCreadoEn = isset($convenio['empresa_creado_en']) ? (string) $convenio['empresa_creado_en'] : null;
 
         $diasRestantes = null;
 
@@ -170,6 +171,7 @@ class ConvenioViewController
             'fecha_fin_label' => convenioFormatDate($fechaFin),
             'creado_en_label' => convenioFormatDateTime($creadoEn),
             'actualizado_en_label' => convenioFormatDateTime($actualizadoEn),
+            'empresa_creado_en_label' => convenioFormatDateTime($empresaCreadoEn),
             'dias_restantes' => $diasRestantes,
             'firma_public_url' => $firmadoPath,
             'borrador_public_url' => $borradorPath,

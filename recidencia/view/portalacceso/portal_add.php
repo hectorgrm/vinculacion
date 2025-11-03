@@ -21,11 +21,9 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <!-- Sidebar -->
+ <div class="app">
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-    <!-- Main -->
     <main class="main">
       <header class="topbar">
         <div>
@@ -46,90 +44,49 @@
         <div class="content">
           <form class="form" action="portal_add_action.php" method="post" autocomplete="off">
             <div class="grid">
+              
               <!-- Empresa -->
               <div class="field">
                 <label for="empresa_id" class="required">Empresa *</label>
                 <select id="empresa_id" name="empresa_id" required>
                   <option value="">— Selecciona una empresa —</option>
-                  <option value="45">Casa del Barrio</option>
-                  <option value="22">Tequila ECT</option>
-                  <option value="31">Industrias Yakumo</option>
-                  <!-- 🔁 Poblado dinámicamente desde BD -->
+                  <!-- 🔁 Poblado dinámicamente desde la BD -->
                 </select>
               </div>
 
-              <!-- Correo / usuario -->
+              <!-- Token -->
               <div class="field">
-                <label for="email" class="required">Correo (usuario) *</label>
-                <input id="email" name="email" type="email" placeholder="ej: admin@empresa.com" required>
-                <div class="hint">Se usará como usuario de acceso al portal.</div>
-              </div>
-
-              <!-- Rol -->
-              <div class="field">
-                <label for="rol" class="required">Rol *</label>
-                <select id="rol" name="rol" required>
-                  <option value="empresa_admin">empresa_admin</option>
-                  <option value="empresa_user">empresa_user</option>
-                </select>
-              </div>
-
-              <!-- Estatus -->
-              <div class="field">
-                <label for="estatus" class="required">Estatus *</label>
-                <select id="estatus" name="estatus" required>
-                  <option value="activo">Activo</option>
-                  <option value="inactivo">Inactivo</option>
-                  <option value="bloqueado">Bloqueado</option>
-                </select>
-              </div>
-
-              <!-- 2FA -->
-              <div class="field">
-                <label for="tfa" class="required">Autenticación 2FA *</label>
-                <select id="tfa" name="tfa" required>
-                  <option value="0">Deshabilitado</option>
-                  <option value="1">Habilitado</option>
-                </select>
-              </div>
-
-              <!-- Vencimiento de contraseña -->
-              <div class="field">
-                <label for="pwd_expires_at">Vencimiento de contraseña</label>
-                <input id="pwd_expires_at" name="pwd_expires_at" type="date">
-                <div class="hint">Opcional. Si se establece, el sistema forzará cambio al llegar la fecha.</div>
-              </div>
-
-              <!-- Contraseña temporal -->
-              <div class="field">
-                <label for="password" class="required">Contraseña temporal *</label>
-                <div class="inline">
-                  <input id="password" name="password" type="password" placeholder="Mín. 10 caracteres" required style="flex:1;">
-                  <button type="button" class="btn" onclick="genPwd()">🔐 Generar</button>
-                  <button type="button" class="btn" onclick="togglePwd()">👁️ Mostrar</button>
+                <label for="token" class="required">Token *</label>
+                <div style="display:flex; gap:10px;">
+                  <input id="token" name="token" type="text" placeholder="Generar token" readonly required style="flex:1;">
+                  <button type="button" class="btn" onclick="genToken()">🔑 Generar</button>
                 </div>
-                <div class="hint">Se recomienda compartirla por un canal seguro. El usuario podrá cambiarla al iniciar sesión.</div>
+                <div class="hint">Identificador único que se usará en la URL de acceso.</div>
               </div>
 
-              <!-- Confirmación -->
+              <!-- NIP -->
               <div class="field">
-                <label for="password2" class="required">Confirmar contraseña *</label>
-                <input id="password2" name="password2" type="password" required>
+                <label for="nip" class="required">NIP *</label>
+                <input id="nip" name="nip" type="text" maxlength="6" placeholder="Ej: 4567" required pattern="[0-9]{4,6}">
+                <div class="hint">Código corto (4–6 dígitos) que la empresa deberá ingresar.</div>
               </div>
 
-              <!-- Notas -->
-              <div class="field col-span-2">
-                <label for="notas">Notas</label>
-                <textarea id="notas" name="notas" rows="3" placeholder="Restricciones, alcance, observaciones internas…"></textarea>
+              <!-- Activo -->
+              <div class="field">
+                <label for="activo" class="required">Estatus *</label>
+                <select id="activo" name="activo" required>
+                  <option value="1">Activo</option>
+                  <option value="0">Inactivo</option>
+                </select>
               </div>
 
-              <!-- Envío de instrucciones -->
-              <div class="field col-span-2">
-                <label style="display:flex; gap:10px; align-items:flex-start;">
-                  <input type="checkbox" name="enviar_instrucciones" value="1" checked>
-                  <span>Enviar instrucciones de acceso por correo al usuario.</span>
-                </label>
+              <!-- Expiración -->
+              <div class="field">
+                <label for="expiracion">Expiración (opcional)</label>
+                <input id="expiracion" name="expiracion" type="datetime-local">
+                <div class="hint">Define una fecha de vencimiento del acceso si se desea limitar su duración.</div>
               </div>
+
             </div>
 
             <div class="actions">
@@ -140,18 +97,15 @@
         </div>
       </section>
 
-      <!-- Accesos rápidos -->
       <section class="card">
         <header>Accesos rápidos</header>
         <div class="content" style="display:flex; gap:8px; flex-wrap:wrap;">
           <a class="btn" href="../empresa/empresa_list.php">🏢 Empresas</a>
-          <a class="btn" href="../empresa/empresa_view.php?id=45">🏢 Ver empresa #45 (ej.)</a>
           <a class="btn" href="portal_list.php">🔐 Portal de Acceso</a>
         </div>
       </section>
     </main>
   </div>
-
   <script>
     function genPwd(){
       const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*?";

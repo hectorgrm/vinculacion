@@ -36,6 +36,10 @@ $responsableEmpresarialLabel = $metadata['responsableEmpresarialLabel'];
 $responsableEmpresarialCargo = $metadata['responsableEmpresarialCargo'];
 $fechaInicioLabel = $metadata['fechaInicioLabel'];
 $fechaFinLabel = $metadata['fechaFinLabel'];
+$empresaTelefonoLabel = $metadata['empresaTelefonoLabel'];
+$empresaCorreoLabel = $metadata['empresaCorreoLabel'];
+$empresaDireccionLabel = $metadata['empresaDireccionLabel'];
+$empresaRegistroLabel = $metadata['empresaRegistroLabel'];
 $estatusBadgeClass = $metadata['estatusBadgeClass'];
 $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
 ?>
@@ -202,41 +206,67 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                 </section>
 
 
-                        <!-- 📎 Información complementaria -->
-                        <section class="card">
-                            <header>📎 Detalles Administrativos</header>
-                            <div class="content">
-                                <div class="info-grid">
-                                    <div>
-                                        <strong>Tipo de convenio:</strong>
-                                        <?php echo htmlspecialchars($tipoConvenioLabel, ENT_QUOTES, 'UTF-8'); ?>
-                                    </div>
-                                    <div>
-                                        <strong>Fecha de inicio:</strong>
-                                        <?php echo htmlspecialchars($fechaInicioLabel, ENT_QUOTES, 'UTF-8'); ?>
-                                    </div>
-                                    <div>
-                                        <strong>Fecha de término:</strong>
-                                        <?php echo htmlspecialchars($fechaFinLabel, ENT_QUOTES, 'UTF-8'); ?>
-                                    </div>
-                                    <div>
-                                        <strong>Responsable académico:</strong>
-                                        <?php echo htmlspecialchars($responsableAcademicoLabel, ENT_QUOTES, 'UTF-8'); ?>
-                                    </div>
-                                    <div>
-                                        <strong>Responsable empresarial:</strong>
-                                        <?php if ($responsableEmpresarialLabel !== 'N/D'): ?>
-                                            <?php echo htmlspecialchars($responsableEmpresarialLabel, ENT_QUOTES, 'UTF-8'); ?>
-                                            <?php if (is_string($responsableEmpresarialCargo) && $responsableEmpresarialCargo !== ''): ?>
-                                                <span class="text-muted">(<?php echo htmlspecialchars($responsableEmpresarialCargo, ENT_QUOTES, 'UTF-8'); ?>)</span>
-                                            <?php endif; ?>
-                                        <?php else: ?>
-                                            <span class="text-muted">N/D</span>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
+                <!-- 📎 Información complementaria -->
+                <section class="card">
+                    <header>📎 Detalles de la Empresa Asociada</header>
+                    <div class="content">
+                        <div class="info-grid">
+                            <div>
+                                <strong>Nombre comercial:</strong>
+                                <?php if ($empresaNombre !== null): ?>
+                                    <?php echo htmlspecialchars($empresaNombre, ENT_QUOTES, 'UTF-8'); ?>
+                                <?php else: ?>
+                                    <span class="text-muted">N/D</span>
+                                <?php endif; ?>
                             </div>
-                        </section>
+                            <div>
+                                <strong>Representante / Responsable empresarial:</strong>
+                                <?php if ($responsableEmpresarialLabel !== 'N/D'): ?>
+                                    <?php echo htmlspecialchars($responsableEmpresarialLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php if (is_string($responsableEmpresarialCargo) && $responsableEmpresarialCargo !== ''): ?>
+                                        <span class="text-muted">(<?php echo htmlspecialchars($responsableEmpresarialCargo, ENT_QUOTES, 'UTF-8'); ?>)</span>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <span class="text-muted">N/D</span>
+                                <?php endif; ?>
+                            </div>
+                            <div>
+                                <strong>Teléfono:</strong>
+                                <?php if ($empresaTelefonoLabel !== 'N/D'): ?>
+                                    <?php echo htmlspecialchars($empresaTelefonoLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                <?php else: ?>
+                                    <span class="text-muted">No disponible</span>
+                                <?php endif; ?>
+                            </div>
+                            <div>
+                                <strong>Correo electrónico:</strong>
+                                <?php if ($empresaCorreoLabel !== 'N/D'): ?>
+                                    <a href="mailto:<?php echo htmlspecialchars($empresaCorreoLabel, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <?php echo htmlspecialchars($empresaCorreoLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                    </a>
+                                <?php else: ?>
+                                    <span class="text-muted">No disponible</span>
+                                <?php endif; ?>
+                            </div>
+                            <div>
+                                <strong>Dirección:</strong>
+                                <?php if ($empresaDireccionLabel !== 'N/D'): ?>
+                                    <?php echo htmlspecialchars($empresaDireccionLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                <?php else: ?>
+                                    <span class="text-muted">No disponible</span>
+                                <?php endif; ?>
+                            </div>
+                            <div>
+                                <strong>Fecha de registro en sistema:</strong>
+                                <?php if ($empresaRegistroLabel !== 'N/D'): ?>
+                                    <?php echo htmlspecialchars($empresaRegistroLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                <?php else: ?>
+                                    <span class="text-muted">No disponible</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
 
 
