@@ -198,19 +198,20 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                 </section>
 
 
-                      <!-- 📎 Información complementaria -->
+                        <!-- 📎 Información complementaria -->
 <section class="card">
   <header>📎 Detalles Administrativos</header>
   <div class="content">
     <div class="info-grid">
       <div><strong>Tipo de convenio:</strong> Marco de colaboración académica</div>
-      <div><strong>Duración total:</strong> 12 meses</div>
-      <div><strong>Renovable:</strong> Sí, con revisión previa</div>
+      <div><strong>Fecha de inicio:</strong> 01/07/2025</div>
+      <div><strong>Fecha de término:</strong> 30/06/2026</div>
       <div><strong>Responsable académico:</strong> Ing. Fernando Gómez</div>
       <div><strong>Responsable empresarial:</strong> Mtro. Luis Benítez <span class="text-muted">(Director General)</span></div>
     </div>
   </div>
 </section>
+
 
 
 
