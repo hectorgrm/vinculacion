@@ -2,6 +2,9 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../config/session.php';
+require_once __DIR__ . '/../model/PortalEmpresaEmpresaModel.php';
+
+use PortalEmpresa\Model\PortalEmpresaEmpresaModel;
 
 if (!isset($_SESSION['portal_empresa']) || !is_array($_SESSION['portal_empresa'])) {
     header('Location: login.php?error=session');
@@ -9,27 +12,79 @@ if (!isset($_SESSION['portal_empresa']) || !is_array($_SESSION['portal_empresa']
 }
 
 $portalSession = $_SESSION['portal_empresa'];
+$empresaId = (int) ($portalSession['empresa_id'] ?? 0);
 
-$empresaNombre = (string) ($portalSession['empresa_nombre'] ?? 'Empresa');
-$empresaNumeroControl = (string) ($portalSession['empresa_numero_control'] ?? '');
-$empresaEstatus = strtolower((string) ($portalSession['empresa_estatus'] ?? ''));
+$empresaModel = new PortalEmpresaEmpresaModel();
+$empresaData = [];
 
+if ($empresaId > 0) {
+    try {
+        $empresaRecord = $empresaModel->findEmpresaById($empresaId);
+        if (is_array($empresaRecord)) {
+            $empresaData = $empresaRecord;
+        }
+    } catch (\Throwable $exception) {
+        $empresaData = [];
+    }
+}
+
+$empresaNombre = (string) ($empresaData['nombre'] ?? ($portalSession['empresa_nombre'] ?? 'Empresa'));
+$empresaNumeroControl = (string) ($empresaData['numero_control'] ?? ($portalSession['empresa_numero_control'] ?? ''));
+$empresaEstatusRaw = (string) ($empresaData['estatus'] ?? ($portalSession['empresa_estatus'] ?? ''));
+$empresaEstatus = strtolower($empresaEstatusRaw);
+
+$empresaRfc = trim((string) ($empresaData['rfc'] ?? ''));
+$empresaRepresentante = trim((string) ($empresaData['representante'] ?? ''));
+$empresaCargoRepresentante = trim((string) ($empresaData['cargo_representante'] ?? ''));
+$empresaSector = trim((string) ($empresaData['sector'] ?? ''));
+$empresaCorreo = trim((string) ($empresaData['contacto_email'] ?? ''));
+$empresaTelefono = trim((string) ($empresaData['telefono'] ?? ''));
+
+$direccionPartes = array_filter([
+    isset($empresaData['direccion']) ? trim((string) $empresaData['direccion']) : '',
+    isset($empresaData['municipio']) ? trim((string) $empresaData['municipio']) : '',
+    isset($empresaData['estado']) ? trim((string) $empresaData['estado']) : '',
+    isset($empresaData['cp']) ? trim((string) $empresaData['cp']) : '',
+], static function (string $value): bool {
+    return $value !== '';
+});
+
+$empresaDireccion = $direccionPartes !== [] ? implode(', ', $direccionPartes) : '';
+
+$estatusBadgeClass = 'warn';
 switch ($empresaEstatus) {
     case 'activa':
-        $estadoConvenio = 'Aprobado';
+        $estatusBadgeClass = 'ok';
         break;
+    case 'suspendida':
     case 'inactiva':
-        $estadoConvenio = 'Vencido';
+        $estatusBadgeClass = 'danger';
         break;
     default:
-        $estadoConvenio = 'En revisión';
+        $estatusBadgeClass = 'warn';
         break;
 }
 
-$folioConvenio  = '—';
-$versionMachote = '—';
-$vigenciaInicio = '—';
-$vigenciaFin    = '—';
+$empresaNombreDisplay = $empresaNombre !== '' ? $empresaNombre : '—';
+$empresaRepresentanteDisplay = $empresaRepresentante !== '' ? $empresaRepresentante : '—';
+$empresaCargoDisplay = $empresaCargoRepresentante !== '' ? $empresaCargoRepresentante : '';
+$empresaRfcDisplay = $empresaRfc !== '' ? $empresaRfc : '—';
+$empresaSectorDisplay = $empresaSector !== '' ? $empresaSector : '—';
+$empresaCorreoDisplay = $empresaCorreo !== '' ? $empresaCorreo : '—';
+$empresaTelefonoDisplay = $empresaTelefono !== '' ? $empresaTelefono : '—';
+$empresaDireccionDisplay = $empresaDireccion !== '' ? $empresaDireccion : '—';
+$empresaEstatusDisplay = $empresaEstatusRaw !== '' ? $empresaEstatusRaw : 'En revisión';
+
+$empresaNombreEsc = htmlspecialchars($empresaNombreDisplay, ENT_QUOTES, 'UTF-8');
+$empresaRepresentanteEsc = htmlspecialchars($empresaRepresentanteDisplay, ENT_QUOTES, 'UTF-8');
+$empresaCargoEsc = $empresaCargoDisplay !== '' ? htmlspecialchars($empresaCargoDisplay, ENT_QUOTES, 'UTF-8') : '';
+$empresaRfcEsc = htmlspecialchars($empresaRfcDisplay, ENT_QUOTES, 'UTF-8');
+$empresaSectorEsc = htmlspecialchars($empresaSectorDisplay, ENT_QUOTES, 'UTF-8');
+$empresaCorreoEsc = htmlspecialchars($empresaCorreoDisplay, ENT_QUOTES, 'UTF-8');
+$empresaTelefonoEsc = htmlspecialchars($empresaTelefonoDisplay, ENT_QUOTES, 'UTF-8');
+$empresaDireccionEsc = htmlspecialchars($empresaDireccionDisplay, ENT_QUOTES, 'UTF-8');
+$empresaEstatusEsc = htmlspecialchars($empresaEstatusDisplay, ENT_QUOTES, 'UTF-8');
+$estatusBadgeClassEsc = htmlspecialchars($estatusBadgeClass, ENT_QUOTES, 'UTF-8');
 
 $kpiActivos    = 0;
 $kpiConcluidos = 0;
@@ -103,20 +158,29 @@ $kpiDocsPend   = 0;
 
   <section class="strip">
     <div class="left">
-      <h3>Estado del convenio</h3>
-      <p><strong>Folio:</strong> <?= htmlspecialchars($folioConvenio) ?> · <strong>Versión:</strong> <?= htmlspecialchars($versionMachote) ?></p>
-      <p><strong>Vigencia:</strong> <?= htmlspecialchars($vigenciaInicio) ?> — <?= htmlspecialchars($vigenciaFin) ?></p>
-      <p>
-        <strong>Estatus:</strong>
-        <?php if ($estadoConvenio === 'Aprobado'): ?>
-          <span class="badge ok">Aprobado</span>
-        <?php elseif ($estadoConvenio === 'Por vencer'): ?>
-          <span class="badge warn">Por vencer</span>
+      <h3>Información de la empresa</h3>
+
+      <p><strong>Nombre:</strong> <?= $empresaNombreEsc ?></p>
+      <p><strong>RFC:</strong> <?= $empresaRfcEsc ?></p>
+      <p><strong>Representante:</strong>
+        <?php if ($empresaRepresentanteDisplay === '—'): ?>
+          <?= $empresaRepresentanteEsc ?>
         <?php else: ?>
-          <span class="badge danger">Vencido</span>
+          <?= $empresaRepresentanteEsc ?>
+          <?php if ($empresaCargoDisplay !== ''): ?>
+            · <em><?= $empresaCargoEsc ?></em>
+          <?php endif; ?>
         <?php endif; ?>
       </p>
-      <div class="hint">Si tu convenio está por vencer, puedes solicitar renovación desde la tarjeta “Convenio”.</div>
+      <p><strong>Sector:</strong> <?= $empresaSectorEsc ?></p>
+      <p><strong>Correo:</strong> <?= $empresaCorreoEsc ?></p>
+      <p><strong>Teléfono:</strong> <?= $empresaTelefonoEsc ?></p>
+      <p><strong>Dirección:</strong> <?= $empresaDireccionEsc ?></p>
+      <p><strong>Estatus:</strong> <span class="badge <?= $estatusBadgeClassEsc ?>"><?= $empresaEstatusEsc ?></span></p>
+
+      <div class="hint">
+        Puedes actualizar tus datos de contacto o representante desde el apartado “Perfil de Empresa”.
+      </div>
     </div>
     <div class="right">
       <div class="stats">
