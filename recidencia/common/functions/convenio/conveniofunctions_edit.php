@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/conveniofunctions_auditoria.php';
+
 use Residencia\Controller\Convenio\ConvenioEditController;
 
 if (!function_exists('convenioHandleEditRequest')) {
@@ -86,6 +88,21 @@ if (!function_exists('convenioHandleEditRequest')) {
                     $updatedConvenio = $refreshedConvenio;
                     $formData = convenioHydrateFormDataFromRecord($refreshedConvenio);
                     $successMessage = 'Los cambios del convenio se guardaron correctamente.';
+
+                    $cambios = convenioAuditoriaDetectCambios($currentConvenio, $refreshedConvenio);
+                    $contextoAuditoria = convenioCurrentAuditContext();
+
+                    if ($cambios['estatusCambio']) {
+                        $accionEstatus = convenioAuditoriaActionForStatusChange(
+                            $cambios['estatusAnterior'],
+                            $cambios['estatusNuevo']
+                        );
+                        convenioRegisterAuditEvent($accionEstatus, $convenioId, $contextoAuditoria);
+                    }
+
+                    if ($cambios['otrosCambios']) {
+                        convenioRegisterAuditEvent('actualizar', $convenioId, $contextoAuditoria);
+                    }
 
                     if ($uploadRelativePath !== null && $previousRelativePath !== '' && $previousRelativePath !== $uploadRelativePath) {
                         $previousAbsolutePath = rtrim($uploadDirAbsolute, DIRECTORY_SEPARATOR)

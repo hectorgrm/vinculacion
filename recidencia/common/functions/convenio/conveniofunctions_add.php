@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/conveniofunctions_auditoria.php';
+
 use Residencia\Controller\Convenio\ConvenioAddController;
 
 if (!function_exists('convenioHandleAddRequest')) {
@@ -57,6 +59,18 @@ if (!function_exists('convenioHandleAddRequest')) {
                 $convenioId = $controller->createConvenio($payload);
                 $successMessage = 'El convenio se registró correctamente con el número #' . $convenioId . '.';
                 $formData = convenioFormDefaults();
+
+                $context = convenioCurrentAuditContext();
+                convenioRegisterAuditEvent('crear', $convenioId, $context);
+
+                $estatusActual = isset($payload['estatus'])
+                    ? convenioNormalizeStatus((string) $payload['estatus'])
+                    : 'En revisión';
+
+                if ($estatusActual !== 'En revisión') {
+                    $accionEstatus = convenioAuditoriaActionForStatusChange('En revisión', $estatusActual);
+                    convenioRegisterAuditEvent($accionEstatus, $convenioId, $context);
+                }
             } catch (\PDOException $pdoException) {
                 if ($uploadAbsolutePath !== null && is_file($uploadAbsolutePath)) {
                     @unlink($uploadAbsolutePath);

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../conveniofunction.php';
+require_once __DIR__ . '/../auditoria/auditoriafunctions.php';
 
 if (!function_exists('convenioAuditoriaDefaults')) {
     /**
@@ -14,6 +15,88 @@ if (!function_exists('convenioAuditoriaDefaults')) {
             'historial' => [],
             'error' => null,
         ];
+    }
+}
+
+if (!function_exists('convenioCurrentAuditContext')) {
+    /**
+     * @return array<string, mixed>
+     */
+    function convenioCurrentAuditContext(): array
+    {
+        $context = [];
+
+        if (isset($GLOBALS['residenciaAuthUser']) && is_array($GLOBALS['residenciaAuthUser'])) {
+            $context['actor_tipo'] = 'usuario';
+            $actorId = convenioAuditoriaNormalizePositiveInt($GLOBALS['residenciaAuthUser']['id'] ?? null);
+
+            if ($actorId !== null) {
+                $context['actor_id'] = $actorId;
+            }
+        } elseif (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
+            $context['actor_tipo'] = 'usuario';
+            $actorId = convenioAuditoriaNormalizePositiveInt($_SESSION['user']['id'] ?? null);
+
+            if ($actorId !== null) {
+                $context['actor_id'] = $actorId;
+            }
+        } elseif (isset($_SESSION['empresa']) && is_array($_SESSION['empresa'])) {
+            $context['actor_tipo'] = 'empresa';
+            $actorId = convenioAuditoriaNormalizePositiveInt($_SESSION['empresa']['id'] ?? null);
+
+            if ($actorId !== null) {
+                $context['actor_id'] = $actorId;
+            }
+        }
+
+        if (!isset($context['actor_tipo'])) {
+            $context['actor_tipo'] = 'sistema';
+        }
+
+        $ip = auditoriaObtenerIP();
+        if ($ip !== '') {
+            $context['ip'] = $ip;
+        }
+
+        return $context;
+    }
+}
+
+if (!function_exists('convenioRegisterAuditEvent')) {
+    /**
+     * @param array<string, mixed> $context
+     */
+    function convenioRegisterAuditEvent(string $accion, int $convenioId, array $context = []): bool
+    {
+        $accion = trim($accion);
+
+        if ($accion === '' || $convenioId <= 0) {
+            return false;
+        }
+
+        $payload = [
+            'accion' => $accion,
+            'entidad' => 'rp_convenio',
+            'entidad_id' => $convenioId,
+        ];
+
+        if (isset($context['actor_tipo'])) {
+            $payload['actor_tipo'] = $context['actor_tipo'];
+        }
+
+        if (isset($context['actor_id'])) {
+            $payload['actor_id'] = $context['actor_id'];
+        }
+
+        if (isset($context['ip'])) {
+            $payload['ip'] = $context['ip'];
+        }
+
+        if (!isset($payload['actor_tipo']) && isset($payload['actor_id'])) {
+            $payload['actor_tipo'] = 'usuario';
+        }
+
+        return auditoriaRegistrarEvento($payload);
     }
 }
 
@@ -53,6 +136,28 @@ if (!function_exists('convenioAuditoriaDecorateHistorial')) {
         }
 
         return $historial;
+    }
+}
+
+if (!function_exists('convenioAuditoriaActionForStatusChange')) {
+    function convenioAuditoriaActionForStatusChange(string $previousStatus, string $currentStatus): string
+    {
+        $previousStatus = convenioNormalizeStatus($previousStatus);
+        $currentStatus = convenioNormalizeStatus($currentStatus);
+
+        if ($currentStatus === 'Activa' && $previousStatus !== 'Activa') {
+            return 'aprobar';
+        }
+
+        if ($currentStatus === 'En revisión' && $previousStatus !== 'En revisión') {
+            return 'reabrir';
+        }
+
+        if ($currentStatus === 'Inactiva' && $previousStatus !== 'Inactiva') {
+            return 'rechazar';
+        }
+
+        return 'actualizar_estatus';
     }
 }
 
@@ -308,6 +413,92 @@ if (!function_exists('convenioAuditoriaNormalizePositiveInt')) {
         }
 
         return null;
+    }
+}
+
+if (!function_exists('convenioAuditoriaDetectCambios')) {
+    /**
+     * @param array<string, mixed> $previous
+     * @param array<string, mixed> $current
+     * @return array{
+     *     estatusAnterior: string,
+     *     estatusNuevo: string,
+     *     estatusCambio: bool,
+     *     otrosCambios: bool
+     * }
+     */
+    function convenioAuditoriaDetectCambios(array $previous, array $current): array
+    {
+        $normalizeString = static function (mixed $value): string {
+            if ($value === null) {
+                return '';
+            }
+
+            if (is_string($value)) {
+                return trim($value);
+            }
+
+            if (is_scalar($value)) {
+                return trim((string) $value);
+            }
+
+            return '';
+        };
+
+        $estatusAnterior = array_key_exists('estatus', $previous)
+            ? convenioNormalizeStatus($normalizeString($previous['estatus']))
+            : 'En revisión';
+        $estatusNuevo = array_key_exists('estatus', $current)
+            ? convenioNormalizeStatus($normalizeString($current['estatus']))
+            : 'En revisión';
+
+        $statusChanged = $estatusAnterior !== $estatusNuevo;
+
+        $fieldsToCompare = [
+            'empresa_id',
+            'folio',
+            'tipo_convenio',
+            'responsable_academico',
+            'fecha_inicio',
+            'fecha_fin',
+            'observaciones',
+            'borrador_path',
+            'firmado_path',
+        ];
+
+        $otherChanges = false;
+
+        foreach ($fieldsToCompare as $field) {
+            $previousValue = $previous[$field] ?? null;
+            $currentValue = $current[$field] ?? null;
+
+            if ($field === 'empresa_id') {
+                $previousValue = convenioAuditoriaNormalizePositiveInt($previousValue);
+                $currentValue = convenioAuditoriaNormalizePositiveInt($currentValue);
+
+                if ($previousValue !== $currentValue) {
+                    $otherChanges = true;
+                    break;
+                }
+
+                continue;
+            }
+
+            $normalizedPrevious = $normalizeString($previousValue);
+            $normalizedCurrent = $normalizeString($currentValue);
+
+            if ($normalizedPrevious !== $normalizedCurrent) {
+                $otherChanges = true;
+                break;
+            }
+        }
+
+        return [
+            'estatusAnterior' => $estatusAnterior,
+            'estatusNuevo' => $estatusNuevo,
+            'estatusCambio' => $statusChanged,
+            'otrosCambios' => $otherChanges,
+        ];
     }
 }
 
