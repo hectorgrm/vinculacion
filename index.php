@@ -15,7 +15,7 @@
         </div>
         <div class="card">
             <h2>Empresa </h2>
-            <a href="portalempresa/index.php" class="btn btn-rec">Ingresar</a>
+            <a href="portalempresa/view/index.php" class="btn btn-rec">Ingresar</a>
         </div>
         <div class="card">
             <h2>Servicio Social</h2>

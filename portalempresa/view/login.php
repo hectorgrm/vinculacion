@@ -131,7 +131,7 @@
 </head>
 <body>
 
-  <form class="login-card">
+  <form class="login-card" action="../handler/login_handler.php" method="post">
     <div class="logo">
       <img src="../assets/img/logo_vinculacion.png" alt="Logo Vinculación">
     </div>
@@ -145,12 +145,12 @@
 
     <div class="field">
       <label for="token">Token de acceso</label>
-      <input id="token" type="text" placeholder="Ej: 0f1c42d3-97f2-4fda-bc11-0f84b70a45de" required>
+      <input id="token" name="token" type="text" placeholder="Ej: 0f1c42d3-97f2-4fda-bc11-0f84b70a45de" required>
     </div>
 
     <div class="field">
       <label for="nip">NIP</label>
-      <input id="nip" type="text" maxlength="6" placeholder="Ej: 4567" required>
+      <input id="nip" name="nip" type="text" maxlength="6" placeholder="Ej: 4567" required>
     </div>
 
     <button class="btn" type="submit">Ingresar</button>

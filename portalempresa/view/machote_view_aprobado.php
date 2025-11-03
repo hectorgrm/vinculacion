@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal Empresa · Acuerdo Aprobado</title>
 
-  <link rel="stylesheet" href="assets/css/portal/machoteaprobado.css">
+  <link rel="stylesheet" href="../assets/css/portal/machoteaprobado.css">
   
 
 
@@ -53,7 +53,7 @@
     </div>
     <div class="userbox">
       <span class="company">Casa del Barrio</span>
-      <a href="../portalacceso/portal_list.php" class="btn small">Inicio</a>
+      <a href="portal_list.php" class="btn small">Inicio</a>
       <a href="../../common/logout.php" class="btn small">Salir</a>
     </div>
   </header>
