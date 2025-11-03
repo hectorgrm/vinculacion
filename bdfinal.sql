@@ -36,7 +36,7 @@ CREATE TABLE `auditoria` (
   PRIMARY KEY (`id`),
   KEY `idx_auditoria_entidad` (`entidad`,`entidad_id`),
   KEY `idx_auditoria_actor` (`actor_tipo`,`actor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `auditoria` (
 
 LOCK TABLES `auditoria` WRITE;
 /*!40000 ALTER TABLE `auditoria` DISABLE KEYS */;
-INSERT INTO `auditoria` VALUES (6,'usuario',1,'subir','documento',16,'::1','2025-11-01 03:06:24'),(7,'usuario',1,'subir','rp_empresa_doc',18,'::1','2025-11-01 04:40:16'),(8,'usuario',1,'subir_nueva_version','rp_empresa_doc',18,'::1','2025-11-01 04:41:08'),(9,'usuario',1,'aprobar','rp_empresa_doc',18,'::1','2025-11-01 04:41:55'),(10,'usuario',1,'reabrir','rp_empresa_doc',18,'::1','2025-11-01 05:03:02'),(11,'usuario',1,'rechazar','rp_empresa_doc',18,'::1','2025-11-01 05:03:47'),(12,'usuario',1,'actualizar_estatus','rp_empresa_doc',18,'::1','2025-11-01 05:08:32'),(13,'usuario',1,'subir_nueva_version','rp_empresa_doc',18,'::1','2025-11-01 05:11:55'),(14,'usuario',1,'subir_nueva_version','rp_empresa_doc',18,'::1','2025-11-01 05:12:23'),(15,'usuario',1,'aprobar','rp_empresa_doc',17,'::1','2025-11-01 05:12:59');
+INSERT INTO `auditoria` VALUES (23,'usuario',1,'subir','rp_empresa_doc',21,'::1','2025-11-02 07:18:36');
 /*!40000 ALTER TABLE `auditoria` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -96,7 +96,7 @@ DROP TABLE IF EXISTS `rp_convenio`;
 CREATE TABLE `rp_convenio` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `empresa_id` bigint(20) NOT NULL,
-  `tipo_convenio` varchar(50) DEFAULT NULL,
+  `tipo_convenio` varchar(100) DEFAULT NULL,
   `estatus` enum('Activa','En revisión','Inactiva','Suspendida') NOT NULL DEFAULT 'En revisión',
   `observaciones` text DEFAULT NULL,
   `fecha_inicio` date DEFAULT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE `rp_convenio` (
   PRIMARY KEY (`id`),
   KEY `idx_convenio_empresa` (`empresa_id`,`estatus`),
   CONSTRAINT `fk_convenio_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `rp_empresa` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -119,7 +119,7 @@ CREATE TABLE `rp_convenio` (
 
 LOCK TABLES `rp_convenio` WRITE;
 /*!40000 ALTER TABLE `rp_convenio` DISABLE KEYS */;
-INSERT INTO `rp_convenio` VALUES (1,1,'v1.0','Activa','Convenio vigente firmado correctamente.','2025-07-01','2026-06-30','v1.2','2025-09-09 21:48:28','CBR-2025-01','/uploads/convenios/CBR_2025_borrador.pdf','/uploads/convenios/CBR_2025_firmado.pdf','2025-10-22 23:22:40'),(2,2,'v1.0','En revisión','Pendiente de revisión por Vinculación.','2025-08-15',NULL,'v1.0','2025-09-09 21:48:28','ECT-2025-02',NULL,NULL,'2025-10-22 23:22:40'),(3,3,'v0.9','Inactiva','Convenio vencido, requiere renovación.',NULL,NULL,NULL,'2025-09-09 21:48:28','YKM-2024-05',NULL,NULL,'2025-10-22 23:22:40'),(4,1,'v1.1','Inactiva','Suspendido temporalmente por falta de documentación.','2025-11-01','2026-10-31','v1.2','2025-10-09 22:24:43','DSL-2025-07',NULL,NULL,'2025-10-25 03:52:35'),(5,32,'V1','Inactiva','Se hace el test para Hector Systems levantamiento de Convenio','2025-10-23','2025-10-31','V1','2025-10-23 03:51:02','Foliotest01','uploads/convenios/convenio_20251023_095103_a041872cf4a9a633.pdf',NULL,'2025-10-25 03:58:33'),(6,32,'V2','En revisión','TEST 2','2025-10-23','2025-10-31','V2','2025-10-23 03:55:32','Foliotest01','uploads/convenios/convenio_20251023_095533_d3e81c47690e4d2a.pdf',NULL,'2025-10-23 03:55:32'),(7,4,'V3 aditar test4','Activa','SE Tiene que remplazar un nuevo convenio.','2025-10-24','2025-10-29','V 3 editar test4','2025-10-23 04:45:12','Foliotest04','uploads/convenios/convenio_20251024_065921_20b08583237e3e66.pdf',NULL,'2025-10-25 03:51:56'),(8,2,'Verciontest','Inactiva','Test MVC 22','2025-10-25','2025-10-31','V33','2025-10-25 04:25:35','Foliotest023EditTest','uploads/convenios/convenio_20251027_095646_697b71c9336462a8.pdf',NULL,'2025-10-27 03:59:32'),(9,32,'V33','Activa','test 2ddddd','2025-10-25','2025-10-31','V33','2025-10-27 04:20:03','Foliotest023sssssss','uploads/convenios/convenio_20251027_102003_fe9143e3cfa678fb.pdf',NULL,'2025-10-27 06:47:02'),(10,34,'VtestMVC','En revisión','Agregar a Convenio','2025-10-30','2025-10-30','MVC','2025-10-30 04:22:53','TEST FOLIO','uploads/convenios/convenio_20251030_102254_44708cc38ff962bb.pdf',NULL,'2025-10-30 04:23:59');
+INSERT INTO `rp_convenio` VALUES (1,1,'Marco de GYM','Activa','Convenio vigente firmado correctamente.','2025-07-01','2026-06-30','v1.2','2025-09-09 21:48:28','CBR-2025-01','/uploads/convenios/CBR_2025_borrador.pdf','/uploads/convenios/CBR_2025_firmado.pdf','2025-11-02 09:16:32'),(2,2,'Marco de colaboración académica','En revisión','Pendiente de revisión por Vinculación.','2025-08-15',NULL,'v1.0','2025-09-09 21:48:28','ECT-2025-02',NULL,NULL,'2025-11-02 09:16:09'),(3,3,'Marco de colaboración académica','Inactiva','Convenio vencido, requiere renovación.',NULL,NULL,NULL,'2025-09-09 21:48:28','YKM-2024-05',NULL,NULL,'2025-11-02 09:16:09'),(4,1,'Marco de colaboración académica','Inactiva','Suspendido temporalmente por falta de documentación.','2025-11-01','2026-10-31','v1.2','2025-10-09 22:24:43','DSL-2025-07',NULL,NULL,'2025-11-02 09:16:09'),(5,32,'Marco de colaboración académica','Inactiva','Se hace el test para Hector Systems levantamiento de Convenio','2025-10-23','2025-10-31','V1','2025-10-23 03:51:02','Foliotest01','uploads/convenios/convenio_20251023_095103_a041872cf4a9a633.pdf',NULL,'2025-11-02 09:16:09'),(6,32,'Marco de colaboración académica','En revisión','TEST 2','2025-10-23','2025-10-31','V2','2025-10-23 03:55:32','Foliotest01','uploads/convenios/convenio_20251023_095533_d3e81c47690e4d2a.pdf',NULL,'2025-11-02 09:16:09'),(7,4,'Marco de colaboración académica','Activa','SE Tiene que remplazar un nuevo convenio.NNEWNNWNWNNw','2025-10-24','2025-10-29','V 3 editar test4','2025-10-23 04:45:12','Foliotest04','uploads/convenios/convenio_20251024_065921_20b08583237e3e66.pdf',NULL,'2025-11-02 09:16:09'),(8,2,'Marco de colaboración académica','Inactiva','Test MVC 22','2025-10-25','2025-10-31','V33','2025-10-25 04:25:35','Foliotest023EditTest','uploads/convenios/convenio_20251027_095646_697b71c9336462a8.pdf',NULL,'2025-11-02 09:16:10'),(9,32,'Marco de colaboración académica','Activa','test 2ddddd','2025-10-25','2025-10-31','V33','2025-10-27 04:20:03','Foliotest023sssssss','uploads/convenios/convenio_20251027_102003_fe9143e3cfa678fb.pdf',NULL,'2025-11-02 09:16:10'),(10,34,'Marco de colaboración académica','En revisión','Agregar a Convenio','2025-10-30','2025-10-30','MVC','2025-10-30 04:22:53','TEST FOLIO','uploads/convenios/convenio_20251030_102254_44708cc38ff962bb.pdf',NULL,'2025-11-02 09:16:10'),(11,34,'Marco de colaboración académica','Inactiva','NEWWW','2025-10-30','2025-10-30','MVC','2025-11-02 03:39:52','TEST FOLIO','uploads/convenios/convenio_20251102_093953_2826ec43826e6978.pdf',NULL,'2025-11-02 09:16:10'),(12,34,'Marco de colaboración académica','En revisión','asdfasdfasdf','2025-11-02','2025-11-04','sdf','2025-11-02 05:10:41','TEST FOLIO','uploads/convenios/convenio_20251102_111042_067f3adac6edf05b.pdf',NULL,'2025-11-02 09:16:10'),(13,34,'Marco de colaboración académica','En revisión','new','2025-11-02','2025-11-04','sdf','2025-11-02 05:18:02','TEST FOLIO','uploads/convenios/convenio_20251102_111803_7b069057b3517f8d.pdf',NULL,'2025-11-02 09:16:10'),(14,4,'Marco de colaboración académica','Activa','ee','2025-11-02','2025-11-11','eee','2025-11-02 05:24:22','Foliotest03','uploads/convenios/convenio_20251102_122633_d5ab17f0354342b8.pdf',NULL,'2025-11-02 09:16:10');
 /*!40000 ALTER TABLE `rp_convenio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -225,7 +225,7 @@ CREATE TABLE `rp_empresa` (
 
 LOCK TABLES `rp_empresa` WRITE;
 /*!40000 ALTER TABLE `rp_empresa` DISABLE KEYS */;
-INSERT INTO `rp_empresa` VALUES (1,'EMP-0001','Casa del Barrio','CDB810101AA1','José Manuel Velador','Director General','Educación / Social','https://casadelbarrio.mx','José Manuel Velador','contacto@casadelbarrio.mx','(33) 1234 5678','Jalisco','Guadalajara','44100','Av. Vallarta 1200, Col. Arcos Vallarta','En revisión','Persona Moral con fines no lucrativos','Colabora en proyectos sociales con estudiantes.','2025-09-09 21:48:19','2025-10-26 04:46:39'),(2,'EMP-0002','Tequila ECT','TEC920202BB2','María González','Gerente de Producción','Industrial / Alimentario','https://tequilaect.com.mx','María González','legal@tequilaect.com','(33) 2345 6789','Jalisco','Tequila','46400','Calle Morelos 45, Centro','Activa','Persona Moral','Empresa con convenio activo en prácticas profesionales.','2025-09-09 21:48:19','2025-10-23 00:03:42'),(3,'EMP-0003','Industrias Yakumo','IYA930303CC3','Luis Pérez','Director de Vinculación','Tecnología / Manufactura','https://yakumo.com.mx','Luis Pérez','vinculacion@yakumo.com','(55) 3456 7890','Ciudad de México','Benito Juárez','03100','Av. Universidad 300, Col. Del Valle','En revisión','Sociedad Anónima de Capital Variable','Recibe alumnos de ingeniería en informática.','2025-09-09 21:48:19','2025-10-23 00:03:42'),(4,'EMP-00044','Barbería Góme','BG1234567AA1','Hector Ruizss','Propietario','Servicios / Estética','https://barberiagomez.mx','Homero Ruizxzx','contacto@barberiagomez.mx','33 1234 5678','Jalisco','Tequila','46400','Calle Hidalgo 12','En revisión','Régimen Simplificado de Confianza','Negocio local que apoya programas de residencias profesionales.','2025-10-15 00:23:17','2025-10-27 07:04:41'),(28,'EMP-0005','NEW EMPRESA','TEST123321232','TestLegal','Test General','Education','https://www.test.com','Test Hector','hector@tech.com','(22)33-33-33-33','Activo','testtequila','40209234','tequila, av tech 3333','En revisión','Fisico','Test','2025-10-15 23:19:55','2025-10-23 00:03:42'),(30,'EMP-0006','NEW EMPRESA','TEST1233212324','TestLegal','Test General','Education','https://www.test.com','Test Hector','hector@tech.com','(22)33-33-33-33','Activo','testtequila','40209234','tequila, av tech 3333','En revisión','Fisico',NULL,'2025-10-15 23:20:53','2025-10-23 00:03:42'),(32,'EMP-0007','HECTOR SYSTEMS','TEST22233445566','TestLegal','Test General','Education','https://www.test.com','Test Hector','TEst@test.com','(22)33-33-33-33','TESTestado','testtequila','40209','CalleTest3','Inactiva','Fisico','En Revision test ','2025-10-21 20:28:33','2025-10-27 06:47:23'),(34,'EMP-2005','HECTOR MVC','TESTMVC','TestLegal','Test General','Education','https://www.test.com','Test Hector','TEst@test.com','(22)33-33-33-33','TESTestado','testtequila','40209','CalleTest3','En revisión','Fisico','MVC TEST ','2025-10-25 07:11:31',NULL),(40,'EMP 001','TEST MVC','TESTMVC001','JOSE TEST','TEST JOSE','EMORESA','https://www.test.com','jose luis','contact@test.com','33333333','Jalisco','Mexico','44342','Calle independecia11','En revisión','Fiscall','NOTE MVC ','2025-10-25 07:14:43',NULL),(46,'EMP 0011','TEST MVC','RFCTEST001','JOSE TEST','TEST JOSE','EMORESA','https://www.test.com','jose luis','contact@test.com','33333333','Jalisco','Mexico','44342','Calle independecia11','En revisión','Fiscall',NULL,'2025-10-25 07:24:58',NULL),(47,'EMP1212','BONAFONT','RFCTESTBONAFONT','JOSE TEST','TEST JOSE','EMORESA','https://www.test.com','jose luis','TEst@test.com','2233333333','TESTestado','testtequila','40209','CalleTest3','En revisión','Fiscall','BONAFONT TEST','2025-10-30 23:04:33',NULL);
+INSERT INTO `rp_empresa` VALUES (1,'EMP-0001','Casa del Barrio','CDB810101AA1','José Manuel Velador','Director General','Educación / Social','https://casadelbarrio.mx','José Manuel Velador','contacto@casadelbarrio.mx','(33) 1234 5678','Jalisco','Guadalajara','44100','Av. Vallarta 1200, Col. Arcos Vallarta','En revisión','Persona Moral con fines no lucrativos','Colabora en proyectos sociales con estudiantes.','2025-09-09 21:48:19','2025-10-26 04:46:39'),(2,'EMP-0002','Tequila ECT','TEC920202BB2','María González','Gerente de Producción','Industrial / Alimentario','https://tequilaect.com.mx','María González','legal@tequilaect.com','(33) 2345 6789','Jalisco','Tequila','46400','Calle Morelos 45, Centro','Activa','Persona Moral','Empresa con convenio activo en prácticas profesionales.','2025-09-09 21:48:19','2025-10-23 00:03:42'),(3,'EMP-0003','Industrias Yakumo','IYA930303CC3','Luis Pérez','Director de Vinculación','Tecnología / Manufactura','https://yakumo.com.mx','Luis Pérez','vinculacion@yakumo.com','(55) 3456 7890','Ciudad de México','Benito Juárez','03100','Av. Universidad 300, Col. Del Valle','En revisión','Sociedad Anónima de Capital Variable','Recibe alumnos de ingeniería en informática.','2025-09-09 21:48:19','2025-10-23 00:03:42'),(4,'EMP-00044','Barbería Góme','BG1234567AA1','Hector Rux','Propietario','Servicios / Estética','https://barberiagomez.mx','Homero Ruizxzx','contacto@barberiagomez.mx','33 1234 5678','Jalisco','Tequila','46400','Calle Hidalgo 12','Activa','Régimen Simplificado de Confianza','Negocio local que apoya programas de residencias profesionales.','2025-10-15 00:23:17','2025-11-02 06:53:36'),(28,'EMP-0005','NEW EMPRESA','TEST123321232','TestLegal','Test General','Education','https://www.test.com','Test Hector','hector@tech.com','(22)33-33-33-33','Activo','testtequila','40209234','tequila, av tech 3333','En revisión','Fisico','Test','2025-10-15 23:19:55','2025-10-23 00:03:42'),(30,'EMP-0006','NEW EMPRESA','TEST1233212324','TestLegal','Test General','Education','https://www.test.com','Test Hector','hector@tech.com','(22)33-33-33-33','Activo','testtequila','40209234','tequila, av tech 3333','En revisión','Fisico',NULL,'2025-10-15 23:20:53','2025-10-23 00:03:42'),(32,'EMP-0007','HECTOR SYSTEMS','TEST22233445566','TestLegal','Test General','Education','https://www.test.com','Test Hector','TEst@test.com','(22)33-33-33-33','TESTestado','testtequila','40209','CalleTest3','Inactiva','Fisico','En Revision test ','2025-10-21 20:28:33','2025-10-27 06:47:23'),(34,'EMP-2005','HECTOR MVC','TESTMVC','TestLegal','Test General','Education','https://www.test.com','Test Hector','TEst@test.com','(22)33-33-33-33','TESTestado','testtequila','40209','CalleTest3','En revisión','Fisico','MVC TEST ','2025-10-25 07:11:31',NULL),(40,'EMP 001','TEST MVC','TESTMVC001','JOSE TEST','TEST JOSE','EMORESA','https://www.test.com','jose luis','contact@test.com','33333333','Jalisco','Mexico','44342','Calle independecia11','En revisión','Fiscall','NOTE MVC ','2025-10-25 07:14:43',NULL),(46,'EMP 0011','TEST MVC','RFCTEST001','JOSE TEST','TEST JOSE','EMORESA','https://www.test.com','jose luis','contact@test.com','33333333','Jalisco','Mexico','44342','Calle independecia11','En revisión','Fiscall',NULL,'2025-10-25 07:24:58',NULL),(47,'EMP1212233','BONAFONT','RFCTESTBONAFONT','JOSE TEST','TEST JOSE','EMORESA','https://www.test.com','jose luis','TEst@test.com','2233333333','TESTestado','testtequila','40209','CalleTest3','En revisión','Fiscall','BONAFONT TEST1223','2025-10-30 23:04:33','2025-11-02 06:46:56');
 /*!40000 ALTER TABLE `rp_empresa` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -255,7 +255,7 @@ CREATE TABLE `rp_empresa_doc` (
   CONSTRAINT `fk_doc_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `rp_empresa` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_doc_tipo_global` FOREIGN KEY (`tipo_global_id`) REFERENCES `rp_documento_tipo` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_doc_tipo_personalizado` FOREIGN KEY (`tipo_personalizado_id`) REFERENCES `rp_documento_tipo_empresa` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -264,7 +264,7 @@ CREATE TABLE `rp_empresa_doc` (
 
 LOCK TABLES `rp_empresa_doc` WRITE;
 /*!40000 ALTER TABLE `rp_empresa_doc` DISABLE KEYS */;
-INSERT INTO `rp_empresa_doc` VALUES (17,47,26,NULL,'uploads/documento/doc_47_26_20251101_102841_7abc7b4e.pdf','aprobado','APROBAR','2025-11-01 04:06:08','2025-11-01 05:12:59'),(18,4,NULL,3,'uploads/documento/doc_4_3_20251101_111224_1889364e.pdf','pendiente',NULL,'2025-11-01 04:40:16','2025-11-01 05:12:23');
+INSERT INTO `rp_empresa_doc` VALUES (17,47,26,NULL,'uploads/documento/doc_47_26_20251102_124738_c306d0d0.pdf','pendiente',NULL,'2025-11-01 04:06:08','2025-11-02 06:47:38'),(18,4,NULL,3,'uploads/documento/doc_4_3_20251101_111224_1889364e.pdf','pendiente',NULL,'2025-11-01 04:40:16','2025-11-02 06:50:04'),(19,47,16,NULL,'uploads/documento/doc_47_16_20251101_112655_77891056.pdf','pendiente',NULL,'2025-11-01 05:26:54','2025-11-01 05:26:54'),(20,34,26,NULL,'uploads/documento/doc_34_26_20251102_111539_822069c8.pdf','pendiente','wefs','2025-11-02 05:15:38','2025-11-02 05:15:38'),(21,4,26,NULL,'uploads/documento/doc_4_26_20251102_131837_91594a5b.pdf','pendiente','oijkj','2025-11-02 07:18:36','2025-11-02 07:18:36');
 /*!40000 ALTER TABLE `rp_empresa_doc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -311,7 +311,7 @@ DROP TABLE IF EXISTS `rp_machote_revision`;
 CREATE TABLE `rp_machote_revision` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `empresa_id` bigint(20) NOT NULL,
-  `tipo_convenio` varchar(50) DEFAULT NULL,
+  `machote_version` varchar(50) DEFAULT NULL,
   `estado` enum('en_revision','acordado','cancelado') DEFAULT 'en_revision',
   `aprobado_admin` tinyint(1) DEFAULT 0,
   `aprobado_empresa` tinyint(1) DEFAULT 0,
@@ -449,7 +449,7 @@ CREATE TABLE `ss_convenio` (
   `estatus` enum('pendiente','vigente','vencido') DEFAULT 'pendiente',
   `fecha_inicio` date DEFAULT NULL,
   `fecha_fin` date DEFAULT NULL,
-  `responsable_academico` varchar(150) DEFAULT NULL,
+  `version_actual` varchar(50) DEFAULT NULL,
   `creado_en` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `fk_ssconvenio_ssempresa` (`ss_empresa_id`),
@@ -823,4 +823,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-01  5:22:19
+-- Dump completed on 2025-11-02 20:42:55
