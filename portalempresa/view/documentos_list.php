@@ -1,3 +1,11 @@
+<?php
+declare(strict_types=1);
+
+if (!isset($documentos)) {
+    require __DIR__ . '/../handler/empresa_documento_list_handler.php';
+    return;
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,49 +17,33 @@
 <body>
 
 <?php
-// ---------------------------------------------------------
-// 🔹 Placeholders — se conectarán más adelante con el Handler y Controller
-// ---------------------------------------------------------
+$empresaNombre = isset($empresaNombre) && $empresaNombre !== ''
+    ? (string) $empresaNombre
+    : 'Empresa';
 
-// (Ejemplo: datos que vendrán de $_SESSION o del Controller)
-$empresaNombre = 'Casa del Barrio'; // ← vendrá de $_SESSION['empresa_nombre']
+/** @var array<int, array<string, mixed>> $documentos */
+$documentos = isset($documentos) && is_array($documentos) ? $documentos : [];
 
-// Placeholder de documentos: esto luego se poblará desde el Model con JOIN a:
-// rp_empresa_doc + rp_documento_tipo + rp_documento_tipo_empresa
-$documentos = [
-  [
-    'id' => 1,
-    'nombre_documento' => 'INE Representante',
-    'tipo' => 'Global',
-    'estatus' => 'Aprobado',
-    'actualizado_en' => '2025-09-10',
-    'observaciones' => null,
-    'archivo_path' => 'uploads/ine_representante.pdf'
-  ],
-  [
-    'id' => 2,
-    'nombre_documento' => 'Acta Constitutiva',
-    'tipo' => 'Global',
-    'estatus' => 'Pendiente',
-    'actualizado_en' => null,
-    'observaciones' => 'Falta sello legible',
-    'archivo_path' => null
-  ],
-  [
-    'id' => 3,
-    'nombre_documento' => 'Poder Notarial',
-    'tipo' => 'Personalizado',
-    'estatus' => 'Rechazado',
-    'actualizado_en' => '2025-09-01',
-    'observaciones' => 'Página 2 borrosa',
-    'archivo_path' => 'uploads/poder_notarial.pdf'
-  ]
-];
+/** @var array{aprobado: int, pendiente: int, rechazado: int} $kpis */
+$kpis = isset($kpis) && is_array($kpis)
+    ? array_merge(['aprobado' => 0, 'pendiente' => 0, 'rechazado' => 0], $kpis)
+    : ['aprobado' => 0, 'pendiente' => 0, 'rechazado' => 0];
 
-// KPIs calculados dinámicamente (se mantendrán igual en el Controller)
-$kpiOk   = count(array_filter($documentos, fn($d)=>$d['estatus']==='Aprobado'));
-$kpiPend = count(array_filter($documentos, fn($d)=>$d['estatus']==='Pendiente'));
-$kpiRech = count(array_filter($documentos, fn($d)=>$d['estatus']==='Rechazado'));
+/** @var array{q: string, estatus: string} $filterValues */
+$filterValues = isset($filterValues) && is_array($filterValues)
+    ? array_merge(['q' => '', 'estatus' => ''], $filterValues)
+    : ['q' => '', 'estatus' => ''];
+
+/** @var array<string, string> $statusOptions */
+$statusOptions = isset($statusOptions) && is_array($statusOptions)
+    ? $statusOptions
+    : empresaDocumentoStatusOptions();
+
+$errorMessage = isset($errorMessage) && $errorMessage !== '' ? (string) $errorMessage : null;
+
+$kpiOk   = (int) ($kpis['aprobado'] ?? 0);
+$kpiPend = (int) ($kpis['pendiente'] ?? 0);
+$kpiRech = (int) ($kpis['rechazado'] ?? 0);
 ?>
 
 <!-- ======================================================= -->
@@ -107,19 +99,31 @@ $kpiRech = count(array_filter($documentos, fn($d)=>$d['estatus']==='Rechazado'))
         <header>Listado de documentos</header>
         <div class="content">
 
+          <?php if ($errorMessage !== null): ?>
+            <div class="alert error"><?= htmlspecialchars($errorMessage) ?></div>
+          <?php endif; ?>
+
           <!-- FILTROS -->
           <form class="filters" method="get" action="">
             <div class="field">
               <label for="q">Buscar</label>
-              <input type="text" id="q" name="q" placeholder="Nombre del documento…">
+              <input
+                type="text"
+                id="q"
+                name="q"
+                placeholder="Nombre del documento…"
+                value="<?= htmlspecialchars($filterValues['q']) ?>"
+              >
             </div>
             <div class="field">
               <label for="estado">Estado</label>
               <select id="estado" name="estado">
                 <option value="">Todos</option>
-                <option value="Aprobado">Aprobado</option>
-                <option value="Pendiente">Pendiente</option>
-                <option value="Rechazado">Rechazado</option>
+                <?php foreach ($statusOptions as $value => $label): ?>
+                  <option value="<?= htmlspecialchars($value) ?>" <?= $filterValues['estatus'] === $value ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($label) ?>
+                  </option>
+                <?php endforeach; ?>
               </select>
             </div>
             <button class="btn primary" type="submit">🔎 Filtrar</button>
@@ -139,31 +143,35 @@ $kpiRech = count(array_filter($documentos, fn($d)=>$d['estatus']==='Rechazado'))
                 </tr>
               </thead>
               <tbody>
-                <?php foreach($documentos as $d): ?>
-                <tr>
-                  <td><?= htmlspecialchars($d['nombre_documento']) ?></td>
-                  <td><?= htmlspecialchars($d['tipo']) ?></td>
-                  <td>
-                    <?php if($d['estatus']==='Aprobado'): ?>
-                      <span class="badge ok">Aprobado</span>
-                    <?php elseif($d['estatus']==='Pendiente'): ?>
-                      <span class="badge warn">Pendiente</span>
-                    <?php else: ?>
-                      <span class="badge danger">Rechazado</span>
-                    <?php endif; ?>
-                  </td>
-                  <td><?= $d['actualizado_en'] ? htmlspecialchars($d['actualizado_en']) : '—' ?></td>
-                  <td><?= $d['observaciones'] ? htmlspecialchars($d['observaciones']) : '—' ?></td>
-                  <td class="actions">
-                    <?php if($d['archivo_path']): ?>
-                      <a class="btn small" href="../../<?= htmlspecialchars($d['archivo_path']) ?>" target="_blank">📄 Ver</a>
-                      <a class="btn small" href="../../<?= htmlspecialchars($d['archivo_path']) ?>" download>⬇️ Descargar</a>
-                    <?php else: ?>
-                      <span class="hint">Sin archivo</span>
-                    <?php endif; ?>
-                  </td>
-                </tr>
-                <?php endforeach; ?>
+                <?php if ($documentos === []): ?>
+                  <tr>
+                    <td colspan="6" class="empty">No se encontraron documentos con los filtros seleccionados.</td>
+                  </tr>
+                <?php else: ?>
+                  <?php foreach ($documentos as $d): ?>
+                  <tr>
+                    <td><?= htmlspecialchars((string) ($d['nombre_documento'] ?? 'Documento')) ?></td>
+                    <td><?= htmlspecialchars((string) ($d['tipo'] ?? '')) ?></td>
+                    <td>
+                      <?php
+                        $badgeClass = $d['badge_class'] ?? empresaDocumentoBadgeClass($d['estatus'] ?? null);
+                        $badgeLabel = $d['estatus_label'] ?? empresaDocumentoBadgeLabel($d['estatus'] ?? null);
+                      ?>
+                      <span class="<?= htmlspecialchars($badgeClass) ?>"><?= htmlspecialchars($badgeLabel) ?></span>
+                    </td>
+                    <td><?= !empty($d['actualizado_en']) ? htmlspecialchars((string) $d['actualizado_en']) : '—' ?></td>
+                    <td><?= isset($d['observaciones']) && $d['observaciones'] !== '' ? htmlspecialchars((string) $d['observaciones']) : '—' ?></td>
+                    <td class="actions">
+                      <?php if (!empty($d['archivo_path'])): ?>
+                        <a class="btn small" href="../../recidencia/<?= htmlspecialchars((string) $d['archivo_path']) ?>" target="_blank">📄 Ver</a>
+                        <a class="btn small" href="../../recidencia/<?= htmlspecialchars((string) $d['archivo_path']) ?>" download>⬇️ Descargar</a>
+                      <?php else: ?>
+                        <span class="hint">Sin archivo</span>
+                      <?php endif; ?>
+                    </td>
+                  </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
               </tbody>
             </table>
           </div>

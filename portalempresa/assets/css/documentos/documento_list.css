@@ -26,6 +26,7 @@
     .badge.ok{background:#dcfce7;color:#166534}
     .badge.warn{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
     .badge.danger{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+    .badge.secondary{background:#e2e8f0;color:#475569}
     .hint{color:var(--muted);font-size:12px}
 
     .titlebar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
@@ -65,3 +66,8 @@
     @media (max-width:720px){.upload .row{grid-template-columns:1fr}}
     .upload input[type="file"], .upload select{padding:10px;border:1px solid var(--border);border-radius:10px}
     .upload textarea{padding:10px;border:1px solid var(--border);border-radius:10px;resize:vertical}
+
+    /* Alerts */
+    .alert{padding:10px 12px;border-radius:12px;margin-bottom:12px;font-size:14px}
+    .alert.error{background:#fee2e2;border:1px solid #fecaca;color:#991b1b}
+    .empty{text-align:center;color:var(--muted);font-style:italic}
