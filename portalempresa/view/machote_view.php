@@ -7,7 +7,7 @@
   <title>Portal Empresa · Revisión de Acuerdo</title>
 
   <!-- Reutiliza tu CSS existente si ya lo tienes -->
-  <link rel="stylesheet" href="assets/css/portal/machoteview.css">
+  <link rel="stylesheet" href="../assets/css/portal/machoteview.css">
 
 </head>
 <body>
