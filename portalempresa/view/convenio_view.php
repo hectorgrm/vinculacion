@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Empresa · Convenio</title>
 
-  <!-- HTML + CSS JUNTOS -->
   <style>
     :root{
       --primary:#1f6feb; --primary-600:#1656b8;
@@ -32,7 +31,6 @@
     .btn:hover{background:#f8fafc}
     .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
     .btn.primary:hover{background:var(--primary-600)}
-    .btn.small{padding:8px 10px;font-size:13px}
     .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
     .badge.ok{background:#dcfce7;color:#166534}
     .badge.warn{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
@@ -40,7 +38,7 @@
 
     /* Layout */
     .container{max-width:1200px;margin:20px auto;padding:0 14px}
-    .titlebar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+    .titlebar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;flex-wrap:wrap}
     .titlebar h1{margin:0 0 4px 0;font-size:22px}
     .titlebar p{margin:0;color:var(--muted)}
     .grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}
@@ -65,19 +63,11 @@
     .file-actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
     .note{color:var(--muted);font-size:12px}
 
-    /* Annex & contacts */
-    .list{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
-    .list a{text-decoration:none;color:var(--primary)}
-    .list a:hover{text-decoration:underline}
-
+    /* Contacts */
     .contact-grid{display:grid;grid-template-columns:1fr;gap:10px}
     .contact{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
     .contact h4{margin:0 0 6px 0}
     .contact p{margin:0;color:var(--muted)}
-
-    /* Renewal form (cta) */
-    .cta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .cta .hint{color:var(--muted);font-size:12px}
 
     /* Footer */
     .foot{margin-top:16px;color:var(--muted);font-size:12px;text-align:center}
@@ -85,152 +75,140 @@
 </head>
 <body>
 
-<?php
-// Datos de ejemplo (sustituye por datos reales de la BD)
-$empresaNombre  = 'Casa del Barrio';
-$folioConvenio  = 'CV-2025-012';
-$version        = 'Institucional v1.2';
-$inicio         = '2025-06-01';
-$fin            = '2026-05-30';
-$estatus        = 'Aprobado'; // 'Aprobado' | 'Por vencer' | 'Vencido'
-
-// Para demo: marcar advertencia si restan <60 días (simulado)
-$alerta = ($estatus === 'Por vencer');
-?>
-
-<header class="portal-header">
-  <div class="brand">
-    <div class="logo"></div>
-    <div>
-      <strong>Portal de Empresa</strong><br>
-      <small>Residencias Profesionales</small>
+  <!-- Encabezado -->
+  <header class="portal-header">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <strong>Portal de Empresa</strong><br>
+        <small>Residencias Profesionales</small>
+      </div>
     </div>
-  </div>
-  <div class="userbox">
-    <span class="company"><?= htmlspecialchars($empresaNombre) ?></span>
-    <a href="portal_list.php" class="btn">Inicio</a>
-    <a href="../../common/logout.php" class="btn">Salir</a>
-  </div>
-</header>
-
-<main class="container">
-
-  <section class="titlebar">
-    <div>
-      <h1>Convenio con la Universidad</h1>
-      <p>Consulta tu convenio vigente, descarga el PDF y revisa anexos y contactos.</p>
+    <div class="userbox">
+      <span class="company">Nombre de la Empresa</span>
+      <a href="#" class="btn">Inicio</a>
+      <a href="#" class="btn">Salir</a>
     </div>
-    <div class="actions">
-      <a href="../portalempresa/machote_view_aprobado.php" class="btn">📄 Documento final</a>
-    </div>
-  </section>
+  </header>
 
-  <section class="grid">
-    <!-- Columna principal: Detalle + PDF -->
-    <div class="col">
-      <div class="card">
-        <header>Datos del convenio</header>
-        <div class="content">
-          <div class="summary">
-            <div class="row"><strong>Folio:</strong> <span><?= htmlspecialchars($folioConvenio) ?></span></div>
-            <div class="row"><strong>Versión:</strong> <span><?= htmlspecialchars($version) ?></span></div>
-            <div class="row"><strong>Inicio:</strong> <span><?= htmlspecialchars($inicio) ?></span></div>
-            <div class="row"><strong>Fin:</strong> <span><?= htmlspecialchars($fin) ?></span></div>
-            <div class="row">
-              <strong>Estatus:</strong>
-              <span>
-                <?php if($estatus==='Aprobado'): ?>
-                  <span class="badge ok">Aprobado</span>
-                <?php elseif($estatus==='Por vencer'): ?>
-                  <span class="badge warn">Por vencer</span>
-                <?php else: ?>
-                  <span class="badge danger">Vencido</span>
-                <?php endif; ?>
-              </span>
-            </div>
-          </div>
+  <!-- Contenedor principal -->
+  <main class="container">
 
-          <?php if($estatus==='Por vencer'): ?>
-            <div class="strip warnbox">
-              <strong>⚠ Tu convenio está por vencer.</strong>
-              <span>Te recomendamos iniciar la solicitud de renovación.</span>
+    <!-- Título -->
+    <section class="titlebar">
+      <div>
+        <h1>Convenio con la Universidad</h1>
+        <p>Consulta tu convenio vigente, descarga el PDF y revisa tus datos principales.</p>
+      </div>
+      <div class="actions">
+        <a href="#" class="btn">📄 Documento final</a>
+      </div>
+    </section>
+
+    <section class="grid">
+      <!-- Columna izquierda -->
+      <div class="col">
+        <!-- Datos del convenio -->
+        <div class="card">
+          <header>Datos del convenio</header>
+          <div class="content">
+            <div class="summary">
+              <div class="row"><strong>Folio:</strong> <span>CV-2025-012</span></div>
+              <div class="row"><strong>Responsable académico:</strong> <span>Ing. Mariana López</span></div>
+              <div class="row"><strong>Inicio:</strong> <span>2025-06-01</span></div>
+              <div class="row"><strong>Fin:</strong> <span>2026-05-30</span></div>
+              <div class="row">
+                <strong>Estatus:</strong>
+                <span><span class="badge ok">Activa</span></span>
+              </div>
             </div>
-          <?php elseif($estatus==='Vencido'): ?>
-            <div class="strip dangerbox">
-              <strong>⛔ Convenio vencido.</strong>
-              <span>Ponte en contacto con Residencias para renovarlo cuanto antes.</span>
-            </div>
-          <?php else: ?>
-            <div class="strip okbox">
+
+            <!-- Estado visual según estatus -->
+            <div class="strip activa">
               <strong>✅ Convenio activo.</strong>
               <span>Todo en orden.</span>
             </div>
-          <?php endif; ?>
 
+            <!-- Ejemplos alternativos:
+            <div class="strip revision">
+              <strong>🕒 En revisión.</strong>
+              <span>El convenio está siendo evaluado por Vinculación.</span>
+            </div>
+
+            <div class="strip suspendida">
+              <strong>⛔ Suspendido.</strong>
+              <span>Contacta al área de Vinculación para regularizar.</span>
+            </div>
+            -->
+          </div>
+        </div>
+
+
+        <!-- PDF del convenio -->
+        <div class="card" id="pdf">
+          <header>Convenio (PDF)</header>
+          <div class="content">
+            <div class="pdf-frame">
+              <iframe src="../../uploads/convenio_vigente.pdf#view=FitH" title="Convenio PDF"></iframe>
+            </div>
+            <div class="file-actions">
+              <a class="btn" href="../../uploads/convenio_vigente.pdf" target="_blank">📄 Abrir en nueva pestaña</a>
+              <a class="btn" download href="../../uploads/convenio_vigente.pdf">⬇️ Descargar PDF</a>
+            </div>
+            <small class="note">Si no ves el PDF aquí, usa “Abrir en nueva pestaña” o “Descargar”.</small>
+          </div>
         </div>
       </div>
 
-      <div class="card" id="pdf">
-        <header>Convenio (PDF)</header>
-        <div class="content">
-          <div class="pdf-frame">
-            <!-- Cambia la ruta al PDF real del convenio -->
-            <iframe src="../../uploads/convenio_vigente.pdf#view=FitH" title="Convenio PDF"></iframe>
-          </div>
-          <div class="file-actions">
-            <a class="btn" href="../../uploads/convenio_vigente.pdf" target="_blank">📄 Abrir en nueva pestaña</a>
-            <a class="btn" download href="../../uploads/convenio_vigente.pdf">⬇️ Descargar PDF</a>
-          </div>
-          <small class="note">Si no ves el PDF aquí, usa “Abrir en nueva pestaña” o “Descargar”.</small>
-        </div>
+<!-- Contactos de Residencias -->
+<div class="card contactos">
+  <header>Contactos de Residencias</header>
+  <div class="content contact-grid">
+
+    <!-- Vinculación -->
+    <div class="contact">
+      <div class="icon-box">
+        📞
+      </div>
+      <div class="info">
+        <h4>Responsable de Vinculación</h4>
+        <p>Ing. <strong>Mariana López</strong></p>
+        <p><a href="mailto:vinculacion@universidad.mx">vinculacion@universidad.mx</a></p>
+        <p>Tel. (33) 5555 0001 · L–V 9:00–15:00</p>
       </div>
     </div>
 
-    <!-- Columna lateral: Anexos, Contactos y Renovación -->
-    <div class="col">
-      <div class="card">
-        <header>Anexos</header>
-        <div class="content">
-          <ul class="list">
-            <li><a href="../../uploads/anexo_confidencialidad.pdf" target="_blank">🔒 Confidencialidad</a></li>
-            <li><a href="../../uploads/anexo_propiedad_intelectual.pdf" target="_blank">🧠 Propiedad Intelectual</a></li>
-            <li><a href="../../uploads/anexo_seguridad.pdf" target="_blank">🛡️ Seguridad e ingreso</a></li>
-          </ul>
-        </div>
+    <!-- Área Jurídica -->
+    <div class="contact">
+      <div class="icon-box">
+        ⚖️
       </div>
-
-      <div class="card">
-        <header>Contactos de Residencias</header>
-        <div class="content contact-grid">
-          <div class="contact">
-            <h4>Responsable de Vinculación</h4>
-            <p>Ing. Mariana López · <a href="mailto:vinculacion@uni.mx">vinculacion@uni.mx</a></p>
-            <p>Tel. (33) 5555 0001 · 9:00–15:00</p>
-          </div>
-          <div class="contact">
-            <h4>Área Jurídica</h4>
-            <p>Lic. Carlos Ruiz · <a href="mailto:juridico@uni.mx">juridico@uni.mx</a></p>
-            <p>Tel. (33) 5555 0002 · 9:00–15:00</p>
-          </div>
-        </div>
+      <div class="info">
+        <h4>Área Jurídica</h4>
+        <p>Lic. <strong>Carlos Ruiz</strong></p>
+        <p><a href="mailto:juridico@universidad.mx">juridico@universidad.mx</a></p>
+        <p>Tel. (33) 5555 0002 · L–V 9:00–15:00</p>
       </div>
-
-      <div class="card" id="renovar">
-        <header>Renovación</header>
-        <div class="content">
-          <p>¿Necesitas renovar o extender la vigencia del convenio?</p>
-          <div class="cta">
-            <a class="btn primary" href="convenio_solicitar_renovacion.php">↺ Solicitar renovación</a>
-            <span class="hint">Tu solicitud será enviada a Residencias para seguimiento.</span>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </section>
 
-  <p class="foot">Portal de Empresa · Universidad · Área de Residencias</p>
-</main>
+    <!-- Residencias Profesionales -->
+    <div class="contact">
+      <div class="icon-box">
+        🎓
+      </div>
+      <div class="info">
+        <h4>Área de Residencias Profesionales</h4>
+        <p><a href="mailto:residencias@universidad.mx">residencias@universidad.mx</a></p>
+        <p>Tel. (33) 5555 0003 · L–V 9:00–15:00</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+    <p class="foot">Portal de Empresa · Universidad · Área de Residencias</p>
+  </main>
 
 </body>
 </html>
