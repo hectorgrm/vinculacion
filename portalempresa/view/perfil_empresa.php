@@ -1,8 +1,32 @@
 <?php
 declare(strict_types=1);
 
-// En el futuro se conectará con el handler y controlador:
-require_once __DIR__ . '/../handler/empresa_perfil_handler.php';
+if (!isset($empresaNombre)) {
+    require __DIR__ . '/../handler/empresa_perfil_handler.php';
+    return;
+}
+
+$empresaNombre = isset($empresaNombre) && $empresaNombre !== ''
+    ? (string) $empresaNombre
+    : 'Empresa';
+$sector = isset($sector) ? (string) $sector : '';
+$rfc = isset($rfc) ? (string) $rfc : '';
+$representante = isset($representante) ? (string) $representante : '';
+$cargoRepresentante = isset($cargoRepresentante) ? (string) $cargoRepresentante : '';
+$telefono = isset($telefono) ? (string) $telefono : '';
+$contactoEmail = isset($contactoEmail) ? (string) $contactoEmail : '';
+$sitioWeb = isset($sitioWeb) ? (string) $sitioWeb : '';
+$sitioWebUrl = isset($sitioWebUrl) ? (string) $sitioWebUrl : $sitioWeb;
+$direccion = isset($direccion) ? (string) $direccion : '';
+$municipio = isset($municipio) ? (string) $municipio : '';
+$estado = isset($estado) ? (string) $estado : '';
+$cp = isset($cp) ? (string) $cp : '';
+$estatus = isset($estatus) ? (string) $estatus : '';
+$estatusBadgeClass = isset($estatusBadgeClass) ? (string) $estatusBadgeClass : 'secondary';
+$estatusBadgeLabel = isset($estatusBadgeLabel) ? (string) $estatusBadgeLabel : ($estatus !== '' ? $estatus : 'Sin estatus');
+$perfilErrorMessage = isset($perfilErrorMessage) && $perfilErrorMessage !== ''
+    ? (string) $perfilErrorMessage
+    : null;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -47,6 +71,9 @@ require_once __DIR__ . '/../handler/empresa_perfil_handler.php';
 <div class="card">
   <header>Datos generales</header>
   <div class="content">
+    <?php if ($perfilErrorMessage !== null): ?>
+      <div class="alert error"><?= htmlspecialchars($perfilErrorMessage) ?></div>
+    <?php endif; ?>
     <div class="profile-head">
       <div class="avatar" aria-hidden="true"></div>
       <div class="meta">
@@ -54,13 +81,9 @@ require_once __DIR__ . '/../handler/empresa_perfil_handler.php';
         <small><?= htmlspecialchars($sector ?? '') ?></small>
       </div>
       <div>
-        <?php if (isset($estatus) && strtolower($estatus) === 'activa'): ?>
-          <span class="badge ok">Activa</span>
-        <?php elseif (isset($estatus) && strtolower($estatus) === 'en revisión'): ?>
-          <span class="badge warn">En revisión</span>
-        <?php else: ?>
-          <span class="badge danger"><?= htmlspecialchars($estatus ?? 'Inactiva') ?></span>
-        <?php endif; ?>
+        <span class="badge <?= htmlspecialchars($estatusBadgeClass) ?>">
+          <?= htmlspecialchars($estatusBadgeLabel) ?>
+        </span>
       </div>
     </div>
 
@@ -71,8 +94,8 @@ require_once __DIR__ . '/../handler/empresa_perfil_handler.php';
       <div class="row"><strong>Teléfono:</strong> <span><?= htmlspecialchars($telefono ?? '') ?></span></div>
       <div class="row"><strong>Correo de contacto:</strong> <span><?= htmlspecialchars($contactoEmail ?? '') ?></span></div>
       <div class="row"><strong>Sitio web:</strong>
-        <?php if (!empty($sitioWeb)): ?>
-          <a href="<?= htmlspecialchars($sitioWeb) ?>" target="_blank"><?= htmlspecialchars($sitioWeb) ?></a>
+        <?php if ($sitioWebUrl !== ''): ?>
+          <a href="<?= htmlspecialchars($sitioWebUrl) ?>" target="_blank"><?= htmlspecialchars($sitioWeb !== '' ? $sitioWeb : $sitioWebUrl) ?></a>
         <?php else: ?>
           <span>—</span>
         <?php endif; ?>

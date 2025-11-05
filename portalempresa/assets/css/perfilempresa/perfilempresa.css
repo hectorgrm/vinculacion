@@ -32,6 +32,8 @@
     .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
     .card header{padding:12px 14px;border-bottom:1px solid var(--border);font-weight:700}
     .card .content{padding:14px}
+    .alert{padding:10px 12px;border-radius:12px;margin-bottom:12px;font-size:14px}
+    .alert.error{background:#fee2e2;border:1px solid #fecaca;color:#991b1b}
 
     /* Perfil empresa */
     .profile-head{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
@@ -40,6 +42,8 @@
     .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
     .badge.ok{background:#dcfce7;color:#166534}
     .badge.warn{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
+    .badge.danger{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+    .badge.secondary{background:#e2e8f0;color:#334155;border:1px solid #cbd5f5}
 
     .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
     @media (max-width:720px){.info-grid{grid-template-columns:1fr}}
