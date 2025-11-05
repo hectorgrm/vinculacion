@@ -10,6 +10,10 @@ $errors = $handlerResult['errors'];
 $successMessage = $handlerResult['successMessage'];
 $controllerError = $handlerResult['controllerError'];
 $controllerAvailable = $handlerResult['controllerAvailable'];
+$empresaLockedId = isset($handlerResult['empresaLockedId']) && $handlerResult['empresaLockedId'] !== null
+  ? (string) $handlerResult['empresaLockedId']
+  : null;
+$empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -78,7 +82,12 @@ $controllerAvailable = $handlerResult['controllerAvailable'];
               <!-- Empresa -->
               <div class="field col-span-2">
                 <label for="empresa_id" class="required">Empresa *</label>
-                <select name="empresa_id" id="empresa_id" required <?php echo $controllerAvailable ? '' : 'disabled'; ?>>
+                <?php if ($empresaLockedId !== null): ?>
+                <input type="hidden" name="empresa_id"
+                  value="<?php echo htmlspecialchars($empresaLockedId, ENT_QUOTES, 'UTF-8'); ?>" />
+                <?php endif; ?>
+                <select name="empresa_id" id="empresa_id" required
+                  <?php echo $empresaSelectDisabled ? 'disabled="disabled"' : ''; ?>>
                   <option value="">-- Selecciona una empresa --</option>
                   <?php foreach ($empresaOptions as $empresa): ?>
                   <?php

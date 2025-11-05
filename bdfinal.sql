@@ -36,7 +36,7 @@ CREATE TABLE `auditoria` (
   PRIMARY KEY (`id`),
   KEY `idx_auditoria_entidad` (`entidad`,`entidad_id`),
   KEY `idx_auditoria_actor` (`actor_tipo`,`actor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `auditoria` (
 
 LOCK TABLES `auditoria` WRITE;
 /*!40000 ALTER TABLE `auditoria` DISABLE KEYS */;
-INSERT INTO `auditoria` VALUES (23,'usuario',1,'subir','rp_empresa_doc',21,'::1','2025-11-02 07:18:36');
+INSERT INTO `auditoria` VALUES (23,'usuario',1,'subir','rp_empresa_doc',21,'::1','2025-11-02 07:18:36'),(24,'sistema',NULL,'reabrir','rp_convenio',1,'::1','2025-11-02 22:40:32'),(25,'sistema',NULL,'actualizar','rp_convenio',1,'::1','2025-11-02 22:42:39'),(26,'usuario',1,'subir_nueva_version','rp_empresa_doc',21,'::1','2025-11-02 23:42:21'),(27,'usuario',1,'subir_nueva_version','rp_empresa_doc',21,'::1','2025-11-02 23:42:40'),(28,'usuario',1,'aprobar','rp_empresa_doc',21,'::1','2025-11-02 23:43:27'),(29,'usuario',1,'reabrir','rp_empresa_doc',21,'::1','2025-11-02 23:44:00'),(30,'usuario',1,'aprobar','rp_empresa_doc',21,'::1','2025-11-03 00:57:36'),(31,'usuario',1,'reabrir','rp_empresa_doc',21,'::1','2025-11-03 00:58:03'),(32,'usuario',1,'aprobar','rp_empresa_doc',21,'::1','2025-11-03 01:00:18'),(33,'sistema',NULL,'reabrir','rp_convenio',7,'::1','2025-11-04 00:41:35'),(34,'sistema',NULL,'aprobar','rp_convenio',7,'::1','2025-11-04 01:28:22'),(35,'sistema',NULL,'actualizar','rp_convenio',7,'::1','2025-11-04 01:28:22'),(36,'sistema',NULL,'crear','rp_convenio',15,'::1','2025-11-04 01:50:42'),(37,'usuario',1,'aprobar','rp_empresa_doc',17,'::1','2025-11-04 07:11:25'),(38,'usuario',1,'aprobar','rp_empresa_doc',19,'::1','2025-11-04 08:08:13'),(39,'usuario',1,'subir','rp_empresa_doc',22,'::1','2025-11-04 08:16:28'),(40,'usuario',1,'aprobar','rp_empresa_doc',22,'::1','2025-11-04 08:20:32'),(41,'usuario',1,'aprobar','rp_empresa_doc',22,'::1','2025-11-04 08:22:05'),(42,'usuario',1,'actualizar_estatus','rp_empresa_doc',22,'::1','2025-11-04 08:22:11'),(43,'usuario',1,'subir_nueva_version','rp_empresa_doc',22,'::1','2025-11-04 08:23:05'),(44,'usuario',1,'subir_nueva_version','rp_empresa_doc',22,'::1','2025-11-04 08:23:39'),(45,'usuario',1,'aprobar','rp_empresa_doc',24,'::1','2025-11-04 23:34:42'),(46,'sistema',NULL,'crear','rp_convenio',1,'::1','2025-11-05 03:14:21'),(47,'sistema',NULL,'actualizar','rp_convenio',1,'::1','2025-11-05 04:04:29'),(48,'sistema',NULL,'aprobar','rp_convenio',1,'::1','2025-11-05 04:12:09'),(49,'sistema',NULL,'actualizar','rp_convenio',1,'::1','2025-11-05 04:12:09'),(50,'usuario',1,'subir','rp_empresa_doc',1,'::1','2025-11-05 04:19:00'),(51,'usuario',1,'aprobar','rp_empresa_doc',1,'::1','2025-11-05 04:24:12'),(52,'usuario',1,'reabrir','rp_empresa_doc',1,'::1','2025-11-05 04:25:16'),(53,'usuario',1,'subir_nueva_version','rp_empresa_doc',1,'::1','2025-11-05 04:26:51');
 /*!40000 ALTER TABLE `auditoria` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -110,7 +110,7 @@ CREATE TABLE `rp_convenio` (
   PRIMARY KEY (`id`),
   KEY `idx_convenio_empresa` (`empresa_id`,`estatus`),
   CONSTRAINT `fk_convenio_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `rp_empresa` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -119,7 +119,7 @@ CREATE TABLE `rp_convenio` (
 
 LOCK TABLES `rp_convenio` WRITE;
 /*!40000 ALTER TABLE `rp_convenio` DISABLE KEYS */;
-INSERT INTO `rp_convenio` VALUES (1,1,'Marco de GYM','Activa','Convenio vigente firmado correctamente.','2025-07-01','2026-06-30','v1.2','2025-09-09 21:48:28','CBR-2025-01','/uploads/convenios/CBR_2025_borrador.pdf','/uploads/convenios/CBR_2025_firmado.pdf','2025-11-02 09:16:32'),(2,2,'Marco de colaboración académica','En revisión','Pendiente de revisión por Vinculación.','2025-08-15',NULL,'v1.0','2025-09-09 21:48:28','ECT-2025-02',NULL,NULL,'2025-11-02 09:16:09'),(3,3,'Marco de colaboración académica','Inactiva','Convenio vencido, requiere renovación.',NULL,NULL,NULL,'2025-09-09 21:48:28','YKM-2024-05',NULL,NULL,'2025-11-02 09:16:09'),(4,1,'Marco de colaboración académica','Inactiva','Suspendido temporalmente por falta de documentación.','2025-11-01','2026-10-31','v1.2','2025-10-09 22:24:43','DSL-2025-07',NULL,NULL,'2025-11-02 09:16:09'),(5,32,'Marco de colaboración académica','Inactiva','Se hace el test para Hector Systems levantamiento de Convenio','2025-10-23','2025-10-31','V1','2025-10-23 03:51:02','Foliotest01','uploads/convenios/convenio_20251023_095103_a041872cf4a9a633.pdf',NULL,'2025-11-02 09:16:09'),(6,32,'Marco de colaboración académica','En revisión','TEST 2','2025-10-23','2025-10-31','V2','2025-10-23 03:55:32','Foliotest01','uploads/convenios/convenio_20251023_095533_d3e81c47690e4d2a.pdf',NULL,'2025-11-02 09:16:09'),(7,4,'Marco de colaboración académica','Activa','SE Tiene que remplazar un nuevo convenio.NNEWNNWNWNNw','2025-10-24','2025-10-29','V 3 editar test4','2025-10-23 04:45:12','Foliotest04','uploads/convenios/convenio_20251024_065921_20b08583237e3e66.pdf',NULL,'2025-11-02 09:16:09'),(8,2,'Marco de colaboración académica','Inactiva','Test MVC 22','2025-10-25','2025-10-31','V33','2025-10-25 04:25:35','Foliotest023EditTest','uploads/convenios/convenio_20251027_095646_697b71c9336462a8.pdf',NULL,'2025-11-02 09:16:10'),(9,32,'Marco de colaboración académica','Activa','test 2ddddd','2025-10-25','2025-10-31','V33','2025-10-27 04:20:03','Foliotest023sssssss','uploads/convenios/convenio_20251027_102003_fe9143e3cfa678fb.pdf',NULL,'2025-11-02 09:16:10'),(10,34,'Marco de colaboración académica','En revisión','Agregar a Convenio','2025-10-30','2025-10-30','MVC','2025-10-30 04:22:53','TEST FOLIO','uploads/convenios/convenio_20251030_102254_44708cc38ff962bb.pdf',NULL,'2025-11-02 09:16:10'),(11,34,'Marco de colaboración académica','Inactiva','NEWWW','2025-10-30','2025-10-30','MVC','2025-11-02 03:39:52','TEST FOLIO','uploads/convenios/convenio_20251102_093953_2826ec43826e6978.pdf',NULL,'2025-11-02 09:16:10'),(12,34,'Marco de colaboración académica','En revisión','asdfasdfasdf','2025-11-02','2025-11-04','sdf','2025-11-02 05:10:41','TEST FOLIO','uploads/convenios/convenio_20251102_111042_067f3adac6edf05b.pdf',NULL,'2025-11-02 09:16:10'),(13,34,'Marco de colaboración académica','En revisión','new','2025-11-02','2025-11-04','sdf','2025-11-02 05:18:02','TEST FOLIO','uploads/convenios/convenio_20251102_111803_7b069057b3517f8d.pdf',NULL,'2025-11-02 09:16:10'),(14,4,'Marco de colaboración académica','Activa','ee','2025-11-02','2025-11-11','eee','2025-11-02 05:24:22','Foliotest03','uploads/convenios/convenio_20251102_122633_d5ab17f0354342b8.pdf',NULL,'2025-11-02 09:16:10');
+INSERT INTO `rp_convenio` VALUES (1,1,'Convenio Bonafont Edit','Activa','Convenio Bonafont 1 Editacion convenio\r\n\r\n[2025-11-05 10:09:21] Motivo de desactivación: Convenio Cancelado','2025-11-05','2025-11-30','Diego Diego','2025-11-05 03:14:21','Bonfont FL20 Edit','uploads/convenios/convenio_20251105_100430_fd8ab0db93383368.pdf',NULL,'2025-11-05 04:12:09');
 /*!40000 ALTER TABLE `rp_convenio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,7 +148,7 @@ CREATE TABLE `rp_documento_tipo` (
 
 LOCK TABLES `rp_documento_tipo` WRITE;
 /*!40000 ALTER TABLE `rp_documento_tipo` DISABLE KEYS */;
-INSERT INTO `rp_documento_tipo` VALUES (15,'Constancia de situación fiscal (SAT)','Copia de constancia del SAT emitida por la autoridad fiscal.',1,'fisica',1),(16,'Comprobante de domicilio','Documento vigente no mayor a tres meses.',1,'fisica',1),(17,'INE del titular','Identificación oficial del titular del negocio.',1,'fisica',1),(18,'Logotipo del negocio','Archivo JPG o PNG con el logotipo del negocio (opcional).',0,'fisica',1),(19,'Acta constitutiva','Carátula o documento donde se observe su constitución y objeto social.',1,'ambas',0),(20,'Poder notarial (si aplica)','Copia del poder notariado y la INE del apoderado legal (solo si aplica).',0,'moral',1),(21,'INE del representante legal','Identificación oficial vigente del representante legal.',1,'moral',1),(22,'Logotipo de la empresa','Archivo JPG o PNG con el logotipo institucional (opcional).',0,'moral',1),(25,'Logotipo de Mascota','MASCOTA LOGO',1,'ambas',1),(26,'Another ONE','Another one',1,'ambas',1);
+INSERT INTO `rp_documento_tipo` VALUES (15,'Constancia de situación fiscal (SAT)','Copia de constancia del SAT emitida por la autoridad fiscal.',1,'fisica',1),(16,'Comprobante de domicilio','Documento vigente no mayor a tres meses.',1,'fisica',1),(17,'INE del titular','Identificación oficial del titular del negocio.',1,'fisica',1),(18,'Logotipo del negocio','Archivo JPG o PNG con el logotipo del negocio (opcional).',0,'fisica',1),(19,'Acta constitutiva','Carátula o documento donde se observe su constitución y objeto social.',1,'ambas',0),(20,'Poder notarial (si aplica)','Copia del poder notariado y la INE del apoderado legal (solo si aplica).',0,'moral',1),(21,'INE del representante legal','Identificación oficial vigente del representante legal.',1,'moral',1),(22,'Logotipo de la empresa','Archivo JPG o PNG con el logotipo institucional (opcional).',0,'moral',1);
 /*!40000 ALTER TABLE `rp_documento_tipo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -171,7 +171,7 @@ CREATE TABLE `rp_documento_tipo_empresa` (
   PRIMARY KEY (`id`),
   KEY `idx_tipo_empresa` (`empresa_id`),
   CONSTRAINT `fk_tipo_empresa_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `rp_empresa` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -180,7 +180,7 @@ CREATE TABLE `rp_documento_tipo_empresa` (
 
 LOCK TABLES `rp_documento_tipo_empresa` WRITE;
 /*!40000 ALTER TABLE `rp_documento_tipo_empresa` DISABLE KEYS */;
-INSERT INTO `rp_documento_tipo_empresa` VALUES (1,47,'CIel','Ciel',1,1,'2025-10-31 04:16:33','2025-10-31 04:16:33'),(2,47,'bonafont test de entrada','bonafont test de entrada',1,1,'2025-10-31 04:39:42','2025-10-31 06:16:15'),(3,4,'CIel','SE EDITA',1,1,'2025-11-01 00:55:21','2025-11-01 05:06:49');
+INSERT INTO `rp_documento_tipo_empresa` VALUES (1,1,'Archivo Individual','Archivo individual',1,1,'2025-11-05 05:02:11','2025-11-05 05:02:11');
 /*!40000 ALTER TABLE `rp_documento_tipo_empresa` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -216,7 +216,7 @@ CREATE TABLE `rp_empresa` (
   UNIQUE KEY `uk_empresa_rfc` (`rfc`),
   UNIQUE KEY `numero_control` (`numero_control`),
   KEY `idx_empresa_nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -225,7 +225,7 @@ CREATE TABLE `rp_empresa` (
 
 LOCK TABLES `rp_empresa` WRITE;
 /*!40000 ALTER TABLE `rp_empresa` DISABLE KEYS */;
-INSERT INTO `rp_empresa` VALUES (1,'EMP-0001','Casa del Barrio','CDB810101AA1','José Manuel Velador','Director General','Educación / Social','https://casadelbarrio.mx','José Manuel Velador','contacto@casadelbarrio.mx','(33) 1234 5678','Jalisco','Guadalajara','44100','Av. Vallarta 1200, Col. Arcos Vallarta','En revisión','Persona Moral con fines no lucrativos','Colabora en proyectos sociales con estudiantes.','2025-09-09 21:48:19','2025-10-26 04:46:39'),(2,'EMP-0002','Tequila ECT','TEC920202BB2','María González','Gerente de Producción','Industrial / Alimentario','https://tequilaect.com.mx','María González','legal@tequilaect.com','(33) 2345 6789','Jalisco','Tequila','46400','Calle Morelos 45, Centro','Activa','Persona Moral','Empresa con convenio activo en prácticas profesionales.','2025-09-09 21:48:19','2025-10-23 00:03:42'),(3,'EMP-0003','Industrias Yakumo','IYA930303CC3','Luis Pérez','Director de Vinculación','Tecnología / Manufactura','https://yakumo.com.mx','Luis Pérez','vinculacion@yakumo.com','(55) 3456 7890','Ciudad de México','Benito Juárez','03100','Av. Universidad 300, Col. Del Valle','En revisión','Sociedad Anónima de Capital Variable','Recibe alumnos de ingeniería en informática.','2025-09-09 21:48:19','2025-10-23 00:03:42'),(4,'EMP-00044','Barbería Góme','BG1234567AA1','Hector Rux','Propietario','Servicios / Estética','https://barberiagomez.mx','Homero Ruizxzx','contacto@barberiagomez.mx','33 1234 5678','Jalisco','Tequila','46400','Calle Hidalgo 12','Activa','Régimen Simplificado de Confianza','Negocio local que apoya programas de residencias profesionales.','2025-10-15 00:23:17','2025-11-02 06:53:36'),(28,'EMP-0005','NEW EMPRESA','TEST123321232','TestLegal','Test General','Education','https://www.test.com','Test Hector','hector@tech.com','(22)33-33-33-33','Activo','testtequila','40209234','tequila, av tech 3333','En revisión','Fisico','Test','2025-10-15 23:19:55','2025-10-23 00:03:42'),(30,'EMP-0006','NEW EMPRESA','TEST1233212324','TestLegal','Test General','Education','https://www.test.com','Test Hector','hector@tech.com','(22)33-33-33-33','Activo','testtequila','40209234','tequila, av tech 3333','En revisión','Fisico',NULL,'2025-10-15 23:20:53','2025-10-23 00:03:42'),(32,'EMP-0007','HECTOR SYSTEMS','TEST22233445566','TestLegal','Test General','Education','https://www.test.com','Test Hector','TEst@test.com','(22)33-33-33-33','TESTestado','testtequila','40209','CalleTest3','Inactiva','Fisico','En Revision test ','2025-10-21 20:28:33','2025-10-27 06:47:23'),(34,'EMP-2005','HECTOR MVC','TESTMVC','TestLegal','Test General','Education','https://www.test.com','Test Hector','TEst@test.com','(22)33-33-33-33','TESTestado','testtequila','40209','CalleTest3','En revisión','Fisico','MVC TEST ','2025-10-25 07:11:31',NULL),(40,'EMP 001','TEST MVC','TESTMVC001','JOSE TEST','TEST JOSE','EMORESA','https://www.test.com','jose luis','contact@test.com','33333333','Jalisco','Mexico','44342','Calle independecia11','En revisión','Fiscall','NOTE MVC ','2025-10-25 07:14:43',NULL),(46,'EMP 0011','TEST MVC','RFCTEST001','JOSE TEST','TEST JOSE','EMORESA','https://www.test.com','jose luis','contact@test.com','33333333','Jalisco','Mexico','44342','Calle independecia11','En revisión','Fiscall',NULL,'2025-10-25 07:24:58',NULL),(47,'EMP1212233','BONAFONT','RFCTESTBONAFONT','JOSE TEST','TEST JOSE','EMORESA','https://www.test.com','jose luis','TEst@test.com','2233333333','TESTestado','testtequila','40209','CalleTest3','En revisión','Fiscall','BONAFONT TEST1223','2025-10-30 23:04:33','2025-11-02 06:46:56');
+INSERT INTO `rp_empresa` VALUES (1,'EMP1212','BONAFONT Edit','RFCTESTBONAFONT','JOSE Legal','Carlos Representante','EMORESA','https://www.test.com','jose luis Edit','Jose@empresa.com','2233333333','Jalisco','Tequila','40209','tequila, av tech 3333','En revisión','Fiscall','Se crea primera empresa\r\nSe edita nota de Observación','2025-11-05 02:41:50','2025-11-05 06:04:44');
 /*!40000 ALTER TABLE `rp_empresa` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -242,7 +242,7 @@ CREATE TABLE `rp_empresa_doc` (
   `tipo_global_id` bigint(20) DEFAULT NULL,
   `tipo_personalizado_id` bigint(20) DEFAULT NULL,
   `ruta` varchar(255) NOT NULL,
-  `estatus` enum('pendiente','aprobado','rechazado') NOT NULL DEFAULT 'pendiente',
+  `estatus` enum('pendiente','aprobado','rechazado','revision') NOT NULL DEFAULT 'pendiente',
   `observacion` text DEFAULT NULL,
   `creado_en` datetime NOT NULL DEFAULT current_timestamp(),
   `actualizado_en` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -255,7 +255,7 @@ CREATE TABLE `rp_empresa_doc` (
   CONSTRAINT `fk_doc_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `rp_empresa` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_doc_tipo_global` FOREIGN KEY (`tipo_global_id`) REFERENCES `rp_documento_tipo` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_doc_tipo_personalizado` FOREIGN KEY (`tipo_personalizado_id`) REFERENCES `rp_documento_tipo_empresa` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -264,7 +264,6 @@ CREATE TABLE `rp_empresa_doc` (
 
 LOCK TABLES `rp_empresa_doc` WRITE;
 /*!40000 ALTER TABLE `rp_empresa_doc` DISABLE KEYS */;
-INSERT INTO `rp_empresa_doc` VALUES (17,47,26,NULL,'uploads/documento/doc_47_26_20251102_124738_c306d0d0.pdf','pendiente',NULL,'2025-11-01 04:06:08','2025-11-02 06:47:38'),(18,4,NULL,3,'uploads/documento/doc_4_3_20251101_111224_1889364e.pdf','pendiente',NULL,'2025-11-01 04:40:16','2025-11-02 06:50:04'),(19,47,16,NULL,'uploads/documento/doc_47_16_20251101_112655_77891056.pdf','pendiente',NULL,'2025-11-01 05:26:54','2025-11-01 05:26:54'),(20,34,26,NULL,'uploads/documento/doc_34_26_20251102_111539_822069c8.pdf','pendiente','wefs','2025-11-02 05:15:38','2025-11-02 05:15:38'),(21,4,26,NULL,'uploads/documento/doc_4_26_20251102_131837_91594a5b.pdf','pendiente','oijkj','2025-11-02 07:18:36','2025-11-02 07:18:36');
 /*!40000 ALTER TABLE `rp_empresa_doc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -288,7 +287,7 @@ CREATE TABLE `rp_machote_comentario` (
   KEY `fk_mc_usuario` (`usuario_id`),
   CONSTRAINT `fk_mc_convenio` FOREIGN KEY (`convenio_id`) REFERENCES `rp_convenio` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_mc_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -297,7 +296,6 @@ CREATE TABLE `rp_machote_comentario` (
 
 LOCK TABLES `rp_machote_comentario` WRITE;
 /*!40000 ALTER TABLE `rp_machote_comentario` DISABLE KEYS */;
-INSERT INTO `rp_machote_comentario` VALUES (4,1,NULL,'Cláusula 3','Se solicita aclarar las obligaciones de la empresa.','pendiente','2025-09-19 02:09:54'),(5,1,NULL,'Cláusula 5','Modificar la vigencia a 18 meses en lugar de 12.','pendiente','2025-09-19 02:09:54'),(6,2,NULL,'Cláusula 2','Se requiere ajustar la redacción sobre confidencialidad.','pendiente','2025-09-19 02:09:54'),(7,2,NULL,'Cláusula 7','Eliminar apartado de penalizaciones por retraso.','pendiente','2025-09-19 02:09:54');
 /*!40000 ALTER TABLE `rp_machote_comentario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -330,7 +328,7 @@ CREATE TABLE `rp_machote_revision` (
 
 LOCK TABLES `rp_machote_revision` WRITE;
 /*!40000 ALTER TABLE `rp_machote_revision` DISABLE KEYS */;
-INSERT INTO `rp_machote_revision` VALUES (1,1,'Inst v1.2','en_revision',1,1,'2025-10-09 22:18:52','2025-10-26 04:46:03','2025-10-09 22:24:29');
+INSERT INTO `rp_machote_revision` VALUES (1,1,'Inst v1.2','en_revision',1,1,'2025-10-09 22:18:52','2025-11-05 06:04:44','2025-10-09 22:24:29');
 /*!40000 ALTER TABLE `rp_machote_revision` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -411,7 +409,6 @@ DROP TABLE IF EXISTS `rp_portal_acceso`;
 CREATE TABLE `rp_portal_acceso` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `empresa_id` bigint(20) NOT NULL,
-  `convenio_id` bigint(20) DEFAULT NULL,
   `token` char(36) NOT NULL,
   `nip` varchar(10) DEFAULT NULL,
   `activo` tinyint(1) NOT NULL DEFAULT 1,
@@ -420,10 +417,8 @@ CREATE TABLE `rp_portal_acceso` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_portal_token` (`token`),
   KEY `idx_portal_empresa` (`empresa_id`,`activo`),
-  KEY `fk_portal_convenio` (`convenio_id`),
-  CONSTRAINT `fk_portal_convenio` FOREIGN KEY (`convenio_id`) REFERENCES `rp_convenio` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_portal_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `rp_empresa` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -432,7 +427,7 @@ CREATE TABLE `rp_portal_acceso` (
 
 LOCK TABLES `rp_portal_acceso` WRITE;
 /*!40000 ALTER TABLE `rp_portal_acceso` DISABLE KEYS */;
-INSERT INTO `rp_portal_acceso` VALUES (1,1,NULL,'11111111-1111-1111-1111-111111111111',NULL,1,NULL,'2025-09-09 21:49:01'),(2,2,NULL,'22222222-2222-2222-2222-222222222222',NULL,1,NULL,'2025-09-09 21:49:01'),(3,3,NULL,'33333333-3333-3333-3333-333333333333',NULL,1,NULL,'2025-09-09 21:49:01');
+INSERT INTO `rp_portal_acceso` VALUES (4,4,'d2613fc5-00c6-4c3f-9761-91d6100ebf10','202020',1,'2025-11-07 02:58:00','2025-11-03 02:59:11'),(5,47,'f44a3309-74ee-474e-9ce2-73654c0cebb0','303030',1,'2025-11-07 03:06:00','2025-11-03 03:06:44');
 /*!40000 ALTER TABLE `rp_portal_acceso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -823,4 +818,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-02 20:42:55
+-- Dump completed on 2025-11-05  6:50:00

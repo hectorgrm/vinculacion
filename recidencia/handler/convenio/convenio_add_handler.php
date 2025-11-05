@@ -21,7 +21,7 @@ try {
 }
 
 if ($controller !== null) {
-    $viewData = $controller->handle($_POST, $_FILES, $_SERVER);
+    $viewData = $controller->handle($_POST, $_FILES, $_SERVER, $_GET);
 } else {
     $viewData = [
         'estatusOptions' => convenioStatusOptions(),
@@ -31,6 +31,7 @@ if ($controller !== null) {
         'successMessage' => null,
         'controllerError' => $controllerError,
         'controllerAvailable' => false,
+        'empresaLockedId' => null,
     ];
 
     $method = isset($_SERVER['REQUEST_METHOD'])

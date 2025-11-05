@@ -57,10 +57,11 @@ class ConvenioAddController
      *     errors: array<int, string>,
      *     successMessage: ?string,
      *     controllerError: ?string,
-     *     controllerAvailable: bool
+     *     controllerAvailable: bool,
+     *     empresaLockedId: ?string
      * }
      */
-    public function handle(array $post, array $files, array $server): array
+    public function handle(array $post, array $files, array $server, array $query = []): array
     {
         $estatusOptions = convenioStatusOptions();
         $formData = convenioFormDefaults();
@@ -68,6 +69,7 @@ class ConvenioAddController
         $successMessage = null;
         $controllerError = null;
         $empresaOptions = [];
+        $empresaLockedId = null;
 
         try {
             $empresaOptions = $this->getEmpresasForSelect();
@@ -76,6 +78,14 @@ class ConvenioAddController
             $controllerError = $message !== ''
                 ? $message
                 : 'No se pudieron obtener las empresas disponibles.';
+        }
+
+        if ($controllerError === null) {
+            $empresaLockedId = $this->resolveEmpresaFromQuery($query, $empresaOptions);
+
+            if ($empresaLockedId !== null) {
+                $formData['empresa_id'] = $empresaLockedId;
+            }
         }
 
         $controllerAvailable = $controllerError === null;
@@ -88,6 +98,10 @@ class ConvenioAddController
                 $errors[] = $controllerError
                     ?? 'No se pudo procesar la solicitud. Intenta nuevamente más tarde.';
             } else {
+                if ($empresaLockedId !== null) {
+                    $post['empresa_id'] = $empresaLockedId;
+                }
+
                 $handleResult = convenioHandleAddRequest(
                     $this,
                     $post,
@@ -99,6 +113,10 @@ class ConvenioAddController
                 $formData = $handleResult['formData'];
                 $errors = array_merge($errors, $handleResult['errors']);
                 $successMessage = $handleResult['successMessage'];
+
+                if ($empresaLockedId !== null) {
+                    $formData['empresa_id'] = $empresaLockedId;
+                }
             }
         }
 
@@ -114,6 +132,45 @@ class ConvenioAddController
             'successMessage' => $successMessage,
             'controllerError' => $controllerError,
             'controllerAvailable' => $controllerAvailable,
+            'empresaLockedId' => $empresaLockedId,
         ];
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $empresaOptions
+     */
+    private function resolveEmpresaFromQuery(array $query, array $empresaOptions): ?string
+    {
+        if (!isset($query['empresa'])) {
+            return null;
+        }
+
+        $raw = $query['empresa'];
+
+        if (!is_scalar($raw)) {
+            return null;
+        }
+
+        $value = trim((string) $raw);
+
+        if ($value === '') {
+            return null;
+        }
+
+        $normalized = preg_replace('/[^0-9]/', '', $value);
+
+        if ($normalized === null || $normalized === '') {
+            return null;
+        }
+
+        foreach ($empresaOptions as $empresa) {
+            $empresaId = isset($empresa['id']) ? (string) $empresa['id'] : '';
+
+            if ($empresaId === $normalized) {
+                return $normalized;
+            }
+        }
+
+        return null;
     }
 }
