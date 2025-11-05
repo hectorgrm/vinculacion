@@ -19,6 +19,7 @@ if (!function_exists('empresaDocumentoStatusOptions')) {
             'aprobado' => 'Aprobado',
             'pendiente' => 'Pendiente',
             'rechazado' => 'Rechazado',
+            'revision' => 'En revisión',
         ];
     }
 }
@@ -108,6 +109,7 @@ if (!function_exists('empresaDocumentoBadgeClass')) {
             'aprobado' => 'badge ok',
             'rechazado' => 'badge danger',
             'pendiente' => 'badge warn',
+            'revision' => 'badge warn',
             default => 'badge secondary',
         };
     }
@@ -139,10 +141,16 @@ if (!function_exists('empresaDocumentoHydrateRecords')) {
 
         foreach ($records as $record) {
             $status = empresaDocumentoNormalizeStatus(isset($record['documento_estatus']) ? (string) $record['documento_estatus'] : null) ?? 'pendiente';
+            $scope = ($record['scope'] ?? 'global') === 'custom' ? 'custom' : 'global';
+            $tipoId = isset($record['tipo_id']) ? (int) $record['tipo_id'] : null;
+            $documentoId = isset($record['documento_id']) ? (int) $record['documento_id'] : null;
 
             $hydrated[] = [
-                'id' => isset($record['documento_id']) ? (int) $record['documento_id'] : null,
-                'tipo' => ($record['scope'] ?? 'global') === 'custom' ? 'Personalizado' : 'Global',
+                'id' => $documentoId,
+                'documento_id' => $documentoId,
+                'tipo' => $scope === 'custom' ? 'Personalizado' : 'Global',
+                'tipo_scope' => $scope,
+                'tipo_documento_id' => $tipoId,
                 'nombre_documento' => (string) ($record['tipo_nombre'] ?? ''),
                 'descripcion' => $record['tipo_descripcion'] ?? null,
                 'obligatorio' => (int) ($record['tipo_obligatorio'] ?? 0) === 1,
@@ -150,7 +158,7 @@ if (!function_exists('empresaDocumentoHydrateRecords')) {
                 'estatus_label' => empresaDocumentoBadgeLabel($status),
                 'badge_class' => empresaDocumentoBadgeClass($status),
                 'observaciones' => $record['documento_observacion'] ?? null,
-                'archivo_path' => $record['documento_ruta'] ?? null,
+                'archivo_path' => isset($record['documento_ruta']) ? trim((string) $record['documento_ruta']) : null,
                 'actualizado_en' => $record['documento_actualizado_en'] ?? $record['documento_creado_en'] ?? null,
                 'creado_en' => $record['documento_creado_en'] ?? null,
             ];

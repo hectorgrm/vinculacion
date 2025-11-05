@@ -8,6 +8,7 @@ use PortalEmpresa\Model\EmpresaDocumentoListModel;
 
 require_once __DIR__ . '/../model/EmpresaDocumentoListModel.php';
 require_once __DIR__ . '/../helpers/empresadocumentofunction.php';
+require_once __DIR__ . '/../common/functions/empresadocumentofunctions.php';
 
 class EmpresaDocumentoListController
 {
@@ -56,6 +57,7 @@ class EmpresaDocumentoListController
             'kpis' => $kpis,
             'filters' => $normalizedFilters,
             'statusOptions' => empresaDocumentoStatusOptions(),
+            'uploadOptions' => empresaDocumentoUploadBuildOptions($documents),
         ];
     }
 }

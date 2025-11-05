@@ -6,6 +6,7 @@ use PortalEmpresa\Controller\EmpresaDocumentoListController;
 
 require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../helpers/empresadocumentofunction.php';
+require_once __DIR__ . '/../common/functions/empresadocumentofunctions.php';
 require_once __DIR__ . '/../controller/EmpresaDocumentoListController.php';
 
 if (!isset($_SESSION['portal_empresa']) || !is_array($_SESSION['portal_empresa'])) {
@@ -36,6 +37,7 @@ try {
         'kpis' => ['aprobado' => 0, 'pendiente' => 0, 'rechazado' => 0],
         'filters' => empresaDocumentoNormalizeFilters($rawFilters),
         'statusOptions' => empresaDocumentoStatusOptions(),
+        'uploadOptions' => [],
     ];
     $errorMessage = 'No se pudo cargar la información de los documentos. Intenta nuevamente más tarde.';
 }
@@ -45,5 +47,11 @@ $documentos = $payload['documentos'];
 $kpis = $payload['kpis'];
 $filterValues = $payload['filters'];
 $statusOptions = $payload['statusOptions'];
+$tiposDocumentos = $payload['uploadOptions'] ?? [];
+
+$statusCode = isset($_GET['status']) ? (string) $_GET['status'] : '';
+$documentLabel = isset($_GET['doc']) ? (string) $_GET['doc'] : null;
+$reasonCode = isset($_GET['reason']) ? (string) $_GET['reason'] : null;
+$uploadFlash = empresaDocumentoUploadStatusMessage($statusCode, $documentLabel, $reasonCode);
 
 require __DIR__ . '/../view/documentos_list.php';

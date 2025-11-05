@@ -39,11 +39,22 @@ $statusOptions = isset($statusOptions) && is_array($statusOptions)
     ? $statusOptions
     : empresaDocumentoStatusOptions();
 
+$tiposDocumentos = isset($tiposDocumentos) && is_array($tiposDocumentos)
+    ? $tiposDocumentos
+    : [];
+
+/** @var array{type: string, message: string}|null $uploadFlash */
+$uploadFlash = isset($uploadFlash) && is_array($uploadFlash)
+    ? $uploadFlash
+    : null;
+
 $errorMessage = isset($errorMessage) && $errorMessage !== '' ? (string) $errorMessage : null;
 
 $kpiOk   = (int) ($kpis['aprobado'] ?? 0);
 $kpiPend = (int) ($kpis['pendiente'] ?? 0);
 $kpiRech = (int) ($kpis['rechazado'] ?? 0);
+
+$hasUploadOptions = $tiposDocumentos !== [];
 ?>
 
 <!-- ======================================================= -->
@@ -187,18 +198,34 @@ $kpiRech = (int) ($kpis['rechazado'] ?? 0);
         <div class="content">
           <p class="hint">Solo usa este formulario si Residencias te solicitó reemplazar un documento pendiente o rechazado.</p>
 
-          <!-- FUTURE: Se conectará con empresa_documento_upload_handler.php -->
+          <?php if ($uploadFlash !== null): ?>
+            <div class="alert <?= $uploadFlash['type'] === 'success' ? 'success' : 'error' ?>">
+              <?= htmlspecialchars($uploadFlash['message']) ?>
+            </div>
+          <?php endif; ?>
+
           <form class="upload" method="post" enctype="multipart/form-data" action="../handler/empresa_documento_upload_handler.php">
             <div class="field">
               <label for="doc_tipo">Tipo de documento</label>
-              <select id="doc_tipo" name="doc_tipo" required>
+              <select id="doc_tipo" name="doc_tipo" <?= $hasUploadOptions ? '' : 'disabled' ?> required>
                 <option value="">Selecciona…</option>
-                <!-- Placeholder dinámico: se llenará desde rp_documento_tipo y rp_documento_tipo_empresa -->
-                <?php /*
-                  foreach ($tiposDocumentos as $tipo) {
-                    echo "<option value='{$tipo['id']}'>" . htmlspecialchars($tipo['nombre']) . "</option>";
-                  }
-                */ ?>
+                <?php foreach ($tiposDocumentos as $tipo): ?>
+                  <?php
+                    $optionValue = isset($tipo['value']) ? (string) $tipo['value'] : '';
+                    if ($optionValue === '') {
+                        continue;
+                    }
+
+                    $optionLabel = isset($tipo['label']) ? (string) $tipo['label'] : 'Documento';
+                    $optionDisabled = !empty($tipo['disabled']);
+                  ?>
+                  <option value="<?= htmlspecialchars($optionValue) ?>" <?= $optionDisabled ? 'disabled' : '' ?>>
+                    <?= htmlspecialchars($optionLabel) ?>
+                  </option>
+                <?php endforeach; ?>
+                <?php if ($tiposDocumentos === []): ?>
+                  <option value="" disabled>No hay documentos disponibles para subir.</option>
+                <?php endif; ?>
               </select>
             </div>
 
@@ -213,9 +240,13 @@ $kpiRech = (int) ($kpis['rechazado'] ?? 0);
             </div>
 
             <div class="actions">
-              <button class="btn primary" type="submit">⬆️ Subir documento</button>
+              <button class="btn primary" type="submit" <?= $hasUploadOptions ? '' : 'disabled' ?>>⬆️ Subir documento</button>
               <a class="btn" href="#top">Cancelar</a>
             </div>
+
+            <?php if (!$hasUploadOptions): ?>
+              <p class="hint">Todos los documentos asignados están aprobados o no requieren cambios por ahora.</p>
+            <?php endif; ?>
           </form>
         </div>
       </div>
