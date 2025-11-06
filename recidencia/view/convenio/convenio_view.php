@@ -196,7 +196,7 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
 
                         <div class="actions" style="justify-content:flex-start; margin-top:14px;">
                             <?php if ($convenioId !== null && isset($convenio['empresa_id'])): ?>
-                                <a href="convenio_add.php?empresa=<?php echo urlencode((string) $convenio['empresa_id']); ?>&copy=<?php echo urlencode((string) $convenioId); ?>" class="btn">🔁 Renovar (nueva versión)</a>
+                                <a href="convenio_renovar.php?empresa=<?php echo urlencode((string) $convenio['empresa_id']); ?>&copy=<?php echo urlencode((string) $convenioId); ?>" class="btn">🔁 Renovar (nueva versión)</a>
                             <?php endif; ?>
                             <?php if ($empresaUrl !== null): ?>
                                 <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">🏢 Ver empresa</a>
