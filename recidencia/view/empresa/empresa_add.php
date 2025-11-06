@@ -220,7 +220,7 @@ $controllerError = $handlerResult['controllerError'];
   <?php endif; ?>
 
 
-  <script src="../../assets/js/validaciones/form-validation-es.js"></script>
+  <!-- <script src="../../assets/js/validaciones/form-validation-es.js"></script> -->
 
 
 </body>
