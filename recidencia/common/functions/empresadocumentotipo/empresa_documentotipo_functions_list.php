@@ -236,14 +236,38 @@ if (!function_exists('empresaDocumentoTipoListObligatorioClass')) {
     }
 }
 
+if (!function_exists('empresaDocumentoTipoListNormalizeEstado')) {
+    function empresaDocumentoTipoListNormalizeEstado(?string $estado): string
+    {
+        $estado = trim((string) $estado);
+
+        if ($estado === '') {
+            return 'pendiente';
+        }
+
+        if (function_exists('mb_strtolower')) {
+            $estado = mb_strtolower($estado, 'UTF-8');
+        } else {
+            $estado = strtolower($estado);
+        }
+
+        return match ($estado) {
+            'aprobado' => 'aprobado',
+            'rechazado' => 'rechazado',
+            'revision', 'en revisión', 'en revision', 'revisión' => 'revision',
+            'pendiente', 'reabierto', 'reabierto (pendiente)' => 'pendiente',
+            default => 'pendiente',
+        };
+    }
+}
+
 if (!function_exists('empresaDocumentoTipoListEstadoLabel')) {
     function empresaDocumentoTipoListEstadoLabel(?string $estado): string
     {
-        $estado = strtolower(trim((string) $estado));
-
-        return match ($estado) {
+        return match (empresaDocumentoTipoListNormalizeEstado($estado)) {
             'aprobado' => 'Aprobado',
             'rechazado' => 'Rechazado',
+            'revision' => 'En revisión',
             default => 'Pendiente',
         };
     }
@@ -252,11 +276,10 @@ if (!function_exists('empresaDocumentoTipoListEstadoLabel')) {
 if (!function_exists('empresaDocumentoTipoListEstadoClass')) {
     function empresaDocumentoTipoListEstadoClass(?string $estado): string
     {
-        $estado = strtolower(trim((string) $estado));
-
-        return match ($estado) {
+        return match (empresaDocumentoTipoListNormalizeEstado($estado)) {
             'aprobado' => 'badge ok',
             'rechazado' => 'badge rechazado',
+            'revision' => 'badge en_revision',
             default => 'badge pendiente',
         };
     }
@@ -271,8 +294,9 @@ if (!function_exists('empresaDocumentoTipoListDecorateGlobalDocument')) {
     {
         $obligatorio = empresaDocumentoTipoListCastBool($row['tipo_obligatorio'] ?? null);
         $documentoId = isset($row['documento_id']) ? (int) $row['documento_id'] : null;
-        $estadoRaw = $documentoId !== null ? strtolower(trim((string) ($row['documento_estatus'] ?? ''))) : '';
-        $estado = $estadoRaw !== '' ? $estadoRaw : 'pendiente';
+        $estado = $documentoId !== null
+            ? empresaDocumentoTipoListNormalizeEstado($row['documento_estatus'] ?? null)
+            : 'pendiente';
         $rutaOriginal = $documentoId !== null ? empresaDocumentoTipoListValueOrDefault($row['documento_ruta'] ?? null, '') : '';
         $archivoNombre = $rutaOriginal !== '' ? basename($rutaOriginal) : null;
         $archivoUrl = $rutaOriginal !== '' ? empresaDocumentoTipoListBuildArchivoUrl($rutaOriginal) : null;
@@ -332,8 +356,9 @@ if (!function_exists('empresaDocumentoTipoListDecorateCustomDocument')) {
     {
         $obligatorio = empresaDocumentoTipoListCastBool($row['obligatorio'] ?? null);
         $documentoId = isset($row['documento_id']) ? (int) $row['documento_id'] : null;
-        $estadoRaw = $documentoId !== null ? strtolower(trim((string) ($row['documento_estatus'] ?? ''))) : '';
-        $estado = $estadoRaw !== '' ? $estadoRaw : 'pendiente';
+        $estado = $documentoId !== null
+            ? empresaDocumentoTipoListNormalizeEstado($row['documento_estatus'] ?? null)
+            : 'pendiente';
         $rutaOriginal = $documentoId !== null ? empresaDocumentoTipoListValueOrDefault($row['documento_ruta'] ?? null, '') : '';
         $archivoNombre = $rutaOriginal !== '' ? basename($rutaOriginal) : null;
         $archivoUrl = $rutaOriginal !== '' ? empresaDocumentoTipoListBuildArchivoUrl($rutaOriginal) : null;

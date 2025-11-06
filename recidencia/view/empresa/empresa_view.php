@@ -372,11 +372,14 @@ $progreso = $documentosStats['porcentaje'];
             </tbody>
           </table>
 
+          
           <!-- 🔗 Acción principal -->
           <div class="actions" style="margin-top:16px; justify-content:flex-end;">
             <a href="<?php echo htmlspecialchars($documentosGestionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📁 Gestionar Documentos</a>
           </div>
         </div>
+
+        
       </section>
 
 

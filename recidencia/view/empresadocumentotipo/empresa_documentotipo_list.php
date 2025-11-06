@@ -52,165 +52,9 @@ $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . ur
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
   <link rel="stylesheet" href="../../assets/css/empresas/empresadocs.css" />
+  <link rel="stylesheet" href="../../assets/css/documentotipo/documentotipolist.css" />
 
-  <style>
-    .docs-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
 
-    .docs-summary {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 20px;
-      background: #f7f8fa;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin-bottom: 20px;
-    }
-
-    .docs-summary strong {
-      color: #333;
-    }
-
-    .progress-bar {
-      width: 200px;
-      height: 10px;
-      background: #eee;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 10px;
-      background: #4caf50;
-      width: 0;
-      transition: width 0.4s ease;
-    }
-
-    .docs-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    .docs-table th,
-    .docs-table td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #e0e0e0;
-      text-align: left;
-    }
-
-    .docs-table th {
-      background: #f1f1f1;
-      font-weight: 600;
-    }
-
-    .docs-table td span.badge {
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .docs-table tr.row-custom {
-      background: #f9fafc;
-    }
-
-    .docs-table tr.row-custom:hover {
-      background: #eef3ff;
-    }
-
-    .badge.ok {
-      background: #c8f7c5;
-      color: #2e7d32;
-    }
-
-    .badge.pendiente {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .badge.rechazado {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #ddd;
-      padding: 8px 14px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 600;
-      color: #222;
-      transition: 0.2s;
-    }
-
-    .btn:hover {
-      background: #ccc;
-    }
-
-    .btn.primary {
-      background: #007bff;
-      color: #fff;
-    }
-
-    .btn.primary:hover {
-      background: #0069d9;
-    }
-
-    .btn.small {
-      padding: 6px 10px;
-      font-size: 13px;
-    }
-
-    .btn.danger {
-      background: #f44336;
-      color: #fff;
-    }
-
-    .btn.danger:hover {
-      background: #d32f2f;
-    }
-
-    .btn.secondary {
-      background: #e0e0e0;
-      color: #222;
-    }
-
-    .btn.secondary:hover {
-      background: #d5d5d5;
-    }
-
-    .docs-table tr.section-divider td {
-      background: #f9fafc;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: #555;
-    }
-
-    .text-muted {
-      color: #666;
-      font-size: 13px;
-    }
-  </style>
 </head>
 
 <body>
@@ -328,8 +172,25 @@ $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . ur
                   if ($uploadParams !== []) {
                       $uploadUrl .= '?' . http_build_query($uploadParams);
                   }
+                  if ($origen === 'global') {
+                      $uploadUrlParams = [];
+                      if ($empresaIdQuery !== '') {
+                          $uploadUrlParams['empresa'] = $empresaIdQuery;
+                      }
+                      $uploadUrlParams['origen'] = 'global';
+                      if ($tipoGlobalId !== null) {
+                          $uploadUrlParams['tipo'] = (string) $tipoGlobalId;
+                      }
+                      if ($estatusValue !== '') {
+                          $uploadUrlParams['estatus'] = $estatusValue;
+                      }
+                      $uploadUrl = '../documentos/documento_upload.php';
+                      if ($uploadUrlParams !== []) {
+                          $uploadUrl .= '?' . http_build_query($uploadUrlParams);
+                      }
+                  }
                   $detalleUrl = $documentoId !== null ? '../documentos/documento_view.php?id=' . urlencode((string) $documentoId) : null;
-                  $reviewUrl = ($documentoId !== null && $estatusValue !== 'aprobado') ? '../documentos/documento_review.php?id=' . urlencode((string) $documentoId) : null;
+                  $reviewUrl = $documentoId !== null ? '../documentos/documento_review.php?id=' . urlencode((string) $documentoId) : null;
                   $editTipoUrl = null;
                   $deleteTipoUrl = null;
                   if ($origen === 'personalizado' && $tipoPersonalizadoId !== null) {
@@ -375,17 +236,32 @@ $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . ur
                     </td>
                     <td>
                       <div class="actions" style="justify-content:flex-start; margin-top:0;">
-                        <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary"><?php echo htmlspecialchars($uploadLabel, ENT_QUOTES, 'UTF-8'); ?></a>
-                        <?php if ($detalleUrl !== null): ?>
-                          <a href="<?php echo htmlspecialchars($detalleUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Detalle</a>
-                        <?php endif; ?>
-                        <?php if ($reviewUrl !== null): ?>
-                          <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Revisar</a>
-                        <?php endif; ?>
-                        <?php if ($origen === 'personalizado' && $editTipoUrl !== null): ?>
-                          <a href="<?php echo htmlspecialchars($editTipoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Editar tipo</a>
-                          <?php if ($deleteTipoUrl !== null): ?>
-                            <a href="<?php echo htmlspecialchars($deleteTipoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small danger">Eliminar tipo</a>
+                        <?php if ($origen === 'global'): ?>
+                          <?php if ($ruta !== null): ?>
+                            <a href="<?php echo htmlspecialchars($ruta, ENT_QUOTES, 'UTF-8'); ?>" class="btn small" target="_blank" rel="noopener noreferrer">📄 Ver</a>
+                          <?php endif; ?>
+                          <?php if (trim($uploadUrl) !== '' && $estatusValue !== 'aprobado' && $estatusValue !== 'revision'): ?>
+                            <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">📁 Subir</a>
+                          <?php endif; ?>
+                          <?php if ($estatusValue === 'aprobado' && $detalleUrl !== null): ?>
+                            <a href="<?php echo htmlspecialchars($detalleUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">🔍 Detalle</a>
+                          <?php endif; ?>
+                          <?php if ($estatusValue === 'revision' && $reviewUrl !== null): ?>
+                            <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">📝 Revisar</a>
+                          <?php endif; ?>
+                        <?php else: ?>
+                          <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary"><?php echo htmlspecialchars($uploadLabel, ENT_QUOTES, 'UTF-8'); ?></a>
+                          <?php if ($detalleUrl !== null): ?>
+                            <a href="<?php echo htmlspecialchars($detalleUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Detalle</a>
+                          <?php endif; ?>
+                          <?php if ($reviewUrl !== null && $estatusValue !== 'aprobado'): ?>
+                            <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Revisar</a>
+                          <?php endif; ?>
+                          <?php if ($origen === 'personalizado' && $editTipoUrl !== null): ?>
+                            <a href="<?php echo htmlspecialchars($editTipoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Editar tipo</a>
+                            <?php if ($deleteTipoUrl !== null): ?>
+                              <a href="<?php echo htmlspecialchars($deleteTipoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small danger">Eliminar tipo</a>
+                            <?php endif; ?>
                           <?php endif; ?>
                         <?php endif; ?>
                       </div>
