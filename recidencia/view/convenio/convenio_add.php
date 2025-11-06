@@ -179,6 +179,8 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
       </section>
     </main>
   </div>
+    <script src="../../assets/js/validaciones/form-validation-es.js"></script>
+
 </body>
 
 </html>
