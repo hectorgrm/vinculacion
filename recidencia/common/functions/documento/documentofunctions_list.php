@@ -71,6 +71,7 @@ if (!function_exists('documentoStatusOptions')) {
         return [
             'aprobado' => 'Aprobado',
             'pendiente' => 'Pendiente',
+            'revision' => 'En revisión',
             'rechazado' => 'Rechazado',
         ];
     }
@@ -177,6 +178,7 @@ if (!function_exists('documentoRenderBadgeClass')) {
         return match ($estatus) {
             'aprobado' => 'badge ok',
             'rechazado' => 'badge err',
+            'revision' => 'badge en_revision',
             'pendiente' => 'badge warn',
             default => 'badge secondary',
         };

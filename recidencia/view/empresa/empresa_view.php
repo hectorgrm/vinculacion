@@ -323,6 +323,7 @@ $progreso = $documentosStats['porcentaje'];
 
                   $documentoNombre = (string) ($documento['nombre'] ?? 'Documento');
                   $documentoOpcional = isset($documento['obligatorio']) ? !((bool) $documento['obligatorio']) : false;
+                  $documentoEstatus = (string) ($documento['estatus'] ?? 'pendiente');
                   $documentoEstadoClass = (string) ($documento['estatus_badge_class'] ?? 'badge pendiente');
                   $documentoEstadoLabel = (string) ($documento['estatus_label'] ?? 'Pendiente');
                   $documentoActualizado = (string) ($documento['ultima_actualizacion_label'] ?? '—');
@@ -332,6 +333,15 @@ $progreso = $documentosStats['porcentaje'];
                   $accionClass = $accionVariant === 'view' ? 'btn small' : 'btn small primary';
                   $accionPrefix = $accionVariant === 'view' ? '📄 ' : '📁 ';
                   $accionAttrs = $accionVariant === 'view' ? ' target="_blank" rel="noopener noreferrer"' : '';
+                  $uploadUrl = isset($documento['upload_url']) && is_string($documento['upload_url'])
+                      ? trim($documento['upload_url'])
+                      : '';
+                  $detailUrl = isset($documento['detail_url']) && is_string($documento['detail_url'])
+                      ? trim($documento['detail_url'])
+                      : '';
+                  $reviewUrl = isset($documento['review_url']) && is_string($documento['review_url'])
+                      ? trim($documento['review_url'])
+                      : '';
                   ?>
                   <tr>
                     <td>
@@ -345,6 +355,15 @@ $progreso = $documentosStats['porcentaje'];
                     <td>
                       <?php if ($accionUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($accionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($accionClass, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $accionAttrs; ?>><?php echo htmlspecialchars($accionPrefix . $accionLabel, ENT_QUOTES, 'UTF-8'); ?></a>
+                      <?php endif; ?>
+                      <?php if ($accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
+                        <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">📁 Subir</a>
+                      <?php endif; ?>
+                      <?php if ($documentoEstatus === 'aprobado' && $detailUrl !== '') : ?>
+                        <a href="<?php echo htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">🔍 Detalle</a>
+                      <?php endif; ?>
+                      <?php if ($documentoEstatus === 'revision' && $reviewUrl !== '') : ?>
+                        <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">📝 Revisar</a>
                       <?php endif; ?>
                     </td>
                   </tr>

@@ -105,7 +105,12 @@ class EmpresaViewController
 
         $documentos = $this->getDocumentos($empresaId, is_string($tipoEmpresaInferido) ? $tipoEmpresaInferido : null);
         $gestionUrl = empresaViewBuildGestionDocumentosUrl($empresaId);
-        $documentosDecorated = empresaViewDecorateDocumentos($documentos['global'], $documentos['custom'], $gestionUrl);
+        $documentosDecorated = empresaViewDecorateDocumentos(
+            $documentos['global'],
+            $documentos['custom'],
+            $gestionUrl,
+            $empresaId
+        );
 
         $viewData['documentos'] = $documentosDecorated['items'];
         $viewData['documentosStats'] = $documentosDecorated['stats'];

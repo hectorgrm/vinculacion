@@ -273,7 +273,8 @@ if (!function_exists('empresaViewNormalizeDocumentStatus')) {
         return match ($status) {
             'aprobado' => 'aprobado',
             'rechazado' => 'rechazado',
-            'pendiente', 'en revisión', 'en revision', 'reabierto', 'reabierto (pendiente)' => 'pendiente',
+            'revision', 'en revisión', 'en revision', 'revisión' => 'revision',
+            'pendiente', 'reabierto', 'reabierto (pendiente)' => 'pendiente',
             default => 'pendiente',
         };
     }
@@ -285,6 +286,7 @@ if (!function_exists('empresaViewDocumentStatusLabel')) {
         return match ($status) {
             'aprobado' => 'Aprobado',
             'rechazado' => 'Rechazado',
+            'revision' => 'En revisión',
             default => 'Pendiente',
         };
     }
@@ -296,6 +298,7 @@ if (!function_exists('empresaViewDocumentStatusBadgeClass')) {
         return match ($status) {
             'aprobado' => 'badge ok',
             'rechazado' => 'badge rechazado',
+            'revision' => 'badge en_revision',
             default => 'badge pendiente',
         };
     }
@@ -306,8 +309,12 @@ if (!function_exists('empresaViewDecorateDocumentoRegistro')) {
      * @param array<string, mixed> $record
      * @return array<string, mixed>
      */
-    function empresaViewDecorateDocumentoRegistro(array $record, string $origen, string $gestionUrl): array
-    {
+    function empresaViewDecorateDocumentoRegistro(
+        array $record,
+        string $origen,
+        string $gestionUrl,
+        ?int $empresaId = null
+    ): array {
         $nombreKey = $origen === 'global' ? 'tipo_nombre' : 'nombre';
         $descripcionKey = $origen === 'global' ? 'tipo_descripcion' : 'descripcion';
         $obligatorioKey = $origen === 'global' ? 'tipo_obligatorio' : 'obligatorio';
@@ -328,14 +335,32 @@ if (!function_exists('empresaViewDecorateDocumentoRegistro')) {
             ?? $record['documento_creado_en']
             ?? null;
 
+        $resolvedEmpresaId = $empresaId ?? (isset($record['empresa_id']) ? (int) $record['empresa_id'] : null);
+        $tipoGlobalId = $origen === 'global' && isset($record['tipo_id']) ? (int) $record['tipo_id'] : null;
+        $tipoPersonalizadoId = $origen === 'personalizado' && isset($record['id']) ? (int) $record['id'] : null;
+
         $accionVariant = 'upload';
         $accionLabel = 'Subir';
-        $accionUrl = $gestionUrl;
+        $accionUrl = empresaViewBuildDocumentoUploadUrl(
+            $resolvedEmpresaId,
+            $origen,
+            $tipoGlobalId,
+            $tipoPersonalizadoId,
+            $status
+        );
 
         if ($archivoUrl !== null) {
             $accionVariant = 'view';
             $accionLabel = 'Ver';
             $accionUrl = $archivoUrl;
+        }
+
+        $detailUrl = null;
+        $reviewUrl = null;
+
+        if ($documentoId !== null) {
+            $detailUrl = '../documentos/documento_view.php?id=' . urlencode((string) $documentoId);
+            $reviewUrl = '../documentos/documento_review.php?id=' . urlencode((string) $documentoId);
         }
 
         return [
@@ -353,9 +378,51 @@ if (!function_exists('empresaViewDecorateDocumentoRegistro')) {
             'accion_variant' => $accionVariant,
             'archivo_url' => $archivoUrl,
             'tiene_archivo' => $archivoUrl !== null,
+            'detail_url' => $detailUrl,
+            'review_url' => $reviewUrl,
             'documento_id' => $documentoId,
             'origen' => $origen,
+            'upload_url' => empresaViewBuildDocumentoUploadUrl(
+                $resolvedEmpresaId,
+                $origen,
+                $tipoGlobalId,
+                $tipoPersonalizadoId,
+                $status
+            ),
         ];
+    }
+}
+
+if (!function_exists('empresaViewBuildDocumentoUploadUrl')) {
+    function empresaViewBuildDocumentoUploadUrl(
+        ?int $empresaId,
+        string $origen,
+        ?int $tipoGlobalId,
+        ?int $tipoPersonalizadoId,
+        ?string $estatus
+    ): string {
+        $base = '../documentos/documento_upload.php';
+        $params = [];
+
+        if ($empresaId !== null) {
+            $params['empresa'] = (string) $empresaId;
+        }
+
+        $params['origen'] = $origen;
+
+        if ($origen === 'global' && $tipoGlobalId !== null) {
+            $params['tipo'] = (string) $tipoGlobalId;
+        } elseif ($origen === 'personalizado' && $tipoPersonalizadoId !== null) {
+            $params['personalizado'] = (string) $tipoPersonalizadoId;
+        }
+
+        if ($estatus !== null && $estatus !== '') {
+            $params['estatus'] = $estatus;
+        }
+
+        $query = http_build_query($params);
+
+        return $base . ($query !== '' ? '?' . $query : '');
     }
 }
 
@@ -365,8 +432,12 @@ if (!function_exists('empresaViewDecorateDocumentos')) {
      * @param array<int, array<string, mixed>> $customDocs
      * @return array{items: array<int, array<string, mixed>>, stats: array{total: int, subidos: int, aprobados: int, porcentaje: int}}
      */
-    function empresaViewDecorateDocumentos(array $globalDocs, array $customDocs, string $gestionUrl): array
-    {
+    function empresaViewDecorateDocumentos(
+        array $globalDocs,
+        array $customDocs,
+        string $gestionUrl,
+        ?int $empresaId = null
+    ): array {
         $items = [];
         $total = 0;
         $subidos = 0;
@@ -377,7 +448,7 @@ if (!function_exists('empresaViewDecorateDocumentos')) {
                 continue;
             }
 
-            $decorated = empresaViewDecorateDocumentoRegistro($record, 'global', $gestionUrl);
+            $decorated = empresaViewDecorateDocumentoRegistro($record, 'global', $gestionUrl, $empresaId);
             $items[] = $decorated;
             $total++;
 
@@ -395,7 +466,7 @@ if (!function_exists('empresaViewDecorateDocumentos')) {
                 continue;
             }
 
-            $decorated = empresaViewDecorateDocumentoRegistro($record, 'personalizado', $gestionUrl);
+            $decorated = empresaViewDecorateDocumentoRegistro($record, 'personalizado', $gestionUrl, $empresaId);
             $items[] = $decorated;
             $total++;
 
