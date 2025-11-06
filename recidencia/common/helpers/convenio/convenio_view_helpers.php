@@ -24,7 +24,14 @@ if (!function_exists('convenio_prepare_view_metadata')) {
      *     empresaDireccionLabel: string,
      *     empresaRegistroLabel: string,
      *     estatusBadgeClass: string,
-     *     estatusBadgeLabel: string
+     *     estatusBadgeLabel: string,
+     *     parentId: ?int,
+     *     parentUrl: ?string,
+     *     parentEmpresaNombre: ?string,
+     *     parentFechaInicioLabel: string,
+     *     parentFechaFinLabel: string,
+     *     parentEstatusBadgeClass: string,
+     *     parentEstatusBadgeLabel: string
      * }
      */
     function convenio_prepare_view_metadata(?array $convenio): array
@@ -48,6 +55,13 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             'empresaRegistroLabel' => 'N/D',
             'estatusBadgeClass' => 'badge secondary',
             'estatusBadgeLabel' => 'Sin especificar',
+            'parentId' => null,
+            'parentUrl' => null,
+            'parentEmpresaNombre' => null,
+            'parentFechaInicioLabel' => 'N/D',
+            'parentFechaFinLabel' => 'N/D',
+            'parentEstatusBadgeClass' => 'badge secondary',
+            'parentEstatusBadgeLabel' => 'Sin especificar',
         ];
 
         if ($convenio === null) {
@@ -200,6 +214,59 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             : '';
         if ($empresaRegistro !== '') {
             $metadata['empresaRegistroLabel'] = $empresaRegistro;
+        }
+
+        $parentId = isset($convenio['parent_id']) && is_int($convenio['parent_id'])
+            ? $convenio['parent_id']
+            : null;
+
+        if ($parentId !== null) {
+            $metadata['parentId'] = $parentId;
+
+            $parentUrl = isset($convenio['parent_url'])
+                ? trim((string) $convenio['parent_url'])
+                : '';
+            if ($parentUrl !== '') {
+                $metadata['parentUrl'] = $parentUrl;
+            }
+
+            $parentEmpresaNombre = isset($convenio['parent_empresa_nombre_label'])
+                ? trim((string) $convenio['parent_empresa_nombre_label'])
+                : '';
+            if ($parentEmpresaNombre === '' && isset($convenio['empresa_nombre_label'])) {
+                $parentEmpresaNombre = trim((string) $convenio['empresa_nombre_label']);
+            }
+            if ($parentEmpresaNombre !== '') {
+                $metadata['parentEmpresaNombre'] = $parentEmpresaNombre;
+            }
+
+            $parentFechaInicio = isset($convenio['parent_fecha_inicio_label'])
+                ? trim((string) $convenio['parent_fecha_inicio_label'])
+                : '';
+            if ($parentFechaInicio !== '') {
+                $metadata['parentFechaInicioLabel'] = $parentFechaInicio;
+            }
+
+            $parentFechaFin = isset($convenio['parent_fecha_fin_label'])
+                ? trim((string) $convenio['parent_fecha_fin_label'])
+                : '';
+            if ($parentFechaFin !== '') {
+                $metadata['parentFechaFinLabel'] = $parentFechaFin;
+            }
+
+            $parentBadgeClass = isset($convenio['parent_estatus_badge_class'])
+                ? trim((string) $convenio['parent_estatus_badge_class'])
+                : '';
+            if ($parentBadgeClass !== '') {
+                $metadata['parentEstatusBadgeClass'] = $parentBadgeClass;
+            }
+
+            $parentBadgeLabel = isset($convenio['parent_estatus_badge_label'])
+                ? trim((string) $convenio['parent_estatus_badge_label'])
+                : '';
+            if ($parentBadgeLabel !== '') {
+                $metadata['parentEstatusBadgeLabel'] = $parentBadgeLabel;
+            }
         }
 
         if (isset($convenio['estatus_badge_class'])) {

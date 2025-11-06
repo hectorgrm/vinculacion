@@ -15,6 +15,11 @@ class ConvenioModel
         $this->pdo = $pdo;
     }
 
+    protected function getConnection(): PDO
+    {
+        return $this->pdo;
+    }
+
     /**
      * @return array<string, mixed>|null
      */

@@ -205,6 +205,39 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                     </div>
                 </section>
 
+                <?php if ($metadata['parentId'] !== null): ?>
+                    <?php
+                        $parentEmpresaNombre = $metadata['parentEmpresaNombre'] ?? $empresaNombre ?? 'Sin empresa';
+                        $parentUrl = $metadata['parentUrl'];
+                    ?>
+                    <section class="card related">
+                        <header>📜 Convenio anterior</header>
+                        <div class="content">
+                            <p>
+                                Este convenio es una renovación del convenio #<?php echo htmlspecialchars((string) $metadata['parentId'], ENT_QUOTES, 'UTF-8'); ?>
+                                con la empresa <strong><?php echo htmlspecialchars((string) $parentEmpresaNombre, ENT_QUOTES, 'UTF-8'); ?></strong>
+                            </p>
+                            <p>
+                                <strong>Vigencia anterior:</strong>
+                                <?php echo htmlspecialchars($metadata['parentFechaInicioLabel'], ENT_QUOTES, 'UTF-8'); ?>
+                                —
+                                <?php echo htmlspecialchars($metadata['parentFechaFinLabel'], ENT_QUOTES, 'UTF-8'); ?>
+                            </p>
+                            <p>
+                                <strong>Estatus anterior:</strong>
+                                <span class="<?php echo htmlspecialchars($metadata['parentEstatusBadgeClass'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php echo htmlspecialchars($metadata['parentEstatusBadgeLabel'], ENT_QUOTES, 'UTF-8'); ?>
+                                </span>
+                            </p>
+                            <?php if ($parentUrl !== null): ?>
+                                <a href="<?php echo htmlspecialchars($parentUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️ Ver convenio anterior</a>
+                            <?php else: ?>
+                                <span class="text-muted">Enlace no disponible</span>
+                            <?php endif; ?>
+                        </div>
+                    </section>
+                <?php endif; ?>
+
 
                 <!-- 📎 Información complementaria -->
                 <section class="card">

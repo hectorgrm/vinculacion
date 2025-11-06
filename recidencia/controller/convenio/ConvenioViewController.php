@@ -161,6 +161,22 @@ class ConvenioViewController
         $firmadoPath = $this->normalizePath($convenio['firmado_path'] ?? null);
         $borradorPath = $this->normalizePath($convenio['borrador_path'] ?? null);
 
+        $parentId = $this->normalizeId($convenio['parent_id'] ?? $convenio['renovado_de'] ?? null);
+        $parentEmpresaNombreRaw = isset($convenio['parent_empresa_nombre'])
+            ? trim((string) $convenio['parent_empresa_nombre'])
+            : '';
+        $parentEmpresaNombreLabel = $parentEmpresaNombreRaw !== '' ? $parentEmpresaNombreRaw : null;
+        $parentFechaInicio = isset($convenio['parent_fecha_inicio'])
+            ? (string) $convenio['parent_fecha_inicio']
+            : null;
+        $parentFechaFin = isset($convenio['parent_fecha_fin'])
+            ? (string) $convenio['parent_fecha_fin']
+            : null;
+        $parentEstatus = isset($convenio['parent_estatus']) ? (string) $convenio['parent_estatus'] : null;
+        $parentUrl = $parentId !== null
+            ? 'convenio_view.php?id=' . urlencode((string) $parentId)
+            : null;
+
         return array_merge($convenio, [
             'empresa_nombre_label' => convenioValueOrDefault($convenio['empresa_nombre'] ?? null, 'Sin empresa'),
             'empresa_numero_control_label' => convenioValueOrDefault($convenio['empresa_numero_control'] ?? null, 'N/A'),
@@ -175,6 +191,14 @@ class ConvenioViewController
             'dias_restantes' => $diasRestantes,
             'firma_public_url' => $firmadoPath,
             'borrador_public_url' => $borradorPath,
+            'renovado_de' => $parentId,
+            'parent_id' => $parentId,
+            'parent_url' => $parentUrl,
+            'parent_empresa_nombre_label' => $parentEmpresaNombreLabel,
+            'parent_fecha_inicio_label' => convenioFormatDate($parentFechaInicio),
+            'parent_fecha_fin_label' => convenioFormatDate($parentFechaFin),
+            'parent_estatus_badge_class' => convenioRenderBadgeClass($parentEstatus),
+            'parent_estatus_badge_label' => convenioRenderBadgeLabel($parentEstatus),
         ]);
     }
 

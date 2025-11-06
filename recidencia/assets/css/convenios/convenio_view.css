@@ -198,6 +198,27 @@ td.actions .btn {
     justify-content: flex-start
 }
 
+/* ---------- Convenio relacionado ---------- */
+.card.related {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+}
+
+.card.related header {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.card.related .content p {
+    margin: 6px 0;
+    color: #334155;
+}
+
+.card.related .btn.small {
+    margin-top: 12px;
+}
+
 /* ---------- Responsivo ---------- */
 @media (max-width: 920px) {
     .info-grid {

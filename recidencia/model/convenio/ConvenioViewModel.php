@@ -47,9 +47,17 @@ class ConvenioViewModel
                    c.actualizado_en,
                    c.observaciones,
                    c.borrador_path,
-                   c.firmado_path
+                   c.firmado_path,
+                   c.renovado_de,
+                   p.id AS parent_id,
+                   p.estatus AS parent_estatus,
+                   p.fecha_inicio AS parent_fecha_inicio,
+                   p.fecha_fin AS parent_fecha_fin,
+                   pe.nombre AS parent_empresa_nombre
               FROM rp_convenio AS c
               JOIN rp_empresa AS e ON e.id = c.empresa_id
+              LEFT JOIN rp_convenio AS p ON p.id = c.renovado_de
+              LEFT JOIN rp_empresa AS pe ON pe.id = p.empresa_id
              WHERE c.id = :id
              LIMIT 1
         SQL;
