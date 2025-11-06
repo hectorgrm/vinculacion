@@ -2,13 +2,9 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../config/session.php';
+require_once __DIR__ . '/../common/functions/portal_session_guard.php';
 
-if (!isset($_SESSION['portal_empresa']) || !is_array($_SESSION['portal_empresa'])) {
-    header('Location: login.php?error=session');
-    exit;
-}
-
-$portalSession = $_SESSION['portal_empresa'];
+$portalSession = portalEmpresaRequireSession('login.php');
 $empresaNombre = trim((string) ($portalSession['empresa_nombre'] ?? ''));
 
 if ($empresaNombre === '') {

@@ -7,20 +7,11 @@ use PortalEmpresa\Controller\EmpresaDocumentoUploadController;
 require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../helpers/empresadocumentofunction.php';
 require_once __DIR__ . '/../common/functions/empresadocumentofunctions.php';
+require_once __DIR__ . '/../common/functions/portal_session_guard.php';
 require_once __DIR__ . '/../controller/EmpresaDocumentoUploadController.php';
 
-if (!isset($_SESSION['portal_empresa']) || !is_array($_SESSION['portal_empresa'])) {
-    header('Location: ../view/login.php');
-    exit;
-}
-
-$sessionEmpresa = $_SESSION['portal_empresa'];
-$empresaId = isset($sessionEmpresa['empresa_id']) ? (int) $sessionEmpresa['empresa_id'] : 0;
-
-if ($empresaId <= 0) {
-    header('Location: ../view/login.php');
-    exit;
-}
+$sessionEmpresa = portalEmpresaRequireSession('../view/login.php');
+$empresaId = (int) ($sessionEmpresa['empresa_id'] ?? 0);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: empresa_documento_list_handler.php');

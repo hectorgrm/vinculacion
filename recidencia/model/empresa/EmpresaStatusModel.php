@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Residencia\Model\Empresa;
 
 require_once __DIR__ . '/../../../common/model/db.php';
+require_once __DIR__ . '/../../common/helpers/convenio/empresa_function_helper.php';
 
 use Common\Model\Database;
 use PDO;
@@ -30,24 +31,35 @@ class EmpresaStatusModel
                        actualizado_en = NOW()
                  WHERE id = :id
             SQL;
-            $this->pdo->prepare($sqlEmpresa)->execute([':id' => $empresaId]);
+            $statementEmpresa = $this->pdo->prepare($sqlEmpresa);
+            $statementEmpresa->execute([':id' => $empresaId]);
 
             $sqlConvenios = <<<'SQL'
                 UPDATE rp_convenio
+                   SET estatus = 'Inactiva'
+                 WHERE empresa_id = :id
+            SQL;
+            $statementConvenios = $this->pdo->prepare($sqlConvenios);
+            $statementConvenios->execute([':id' => $empresaId]);
+
+            $sqlDocumentos = <<<'SQL'
+                UPDATE rp_empresa_doc
                    SET estatus = CASE
-                       WHEN estatus IN ('pendiente', 'en_revision', 'vigente') THEN 'vencido'
+                       WHEN estatus IN ('aprobado', 'pendiente', 'revision') THEN 'revision'
                        ELSE estatus
                    END
                  WHERE empresa_id = :id
             SQL;
-            $this->pdo->prepare($sqlConvenios)->execute([':id' => $empresaId]);
+            $statementDocumentos = $this->pdo->prepare($sqlDocumentos);
+            $statementDocumentos->execute([':id' => $empresaId]);
 
             $sqlPortal = <<<'SQL'
                 UPDATE rp_portal_acceso
                    SET activo = 0
                  WHERE empresa_id = :id
             SQL;
-            $this->pdo->prepare($sqlPortal)->execute([':id' => $empresaId]);
+            $statementPortal = $this->pdo->prepare($sqlPortal);
+            $statementPortal->execute([':id' => $empresaId]);
 
             $sqlMachoteRevision = <<<'SQL'
                 UPDATE rp_machote_revision
@@ -65,6 +77,18 @@ class EmpresaStatusModel
             $this->pdo->prepare($sqlAsignaciones)->execute([':id' => $empresaId]);
 
             $this->pdo->commit();
+
+            $conveniosActualizados = $statementConvenios->rowCount();
+            $documentosActualizados = $statementDocumentos->rowCount();
+            $accesosActualizados = $statementPortal->rowCount();
+
+            empresaRegistrarEventoDesactivacion(
+                $empresaId,
+                $byUserId,
+                $conveniosActualizados,
+                $documentosActualizados,
+                $accesosActualizados
+            );
 
             return true;
         } catch (PDOException $exception) {
@@ -84,24 +108,27 @@ class EmpresaStatusModel
                        actualizado_en = NOW()
                  WHERE id = :id
             SQL;
-            $this->pdo->prepare($sqlEmpresa)->execute([':id' => $empresaId]);
+            $statementEmpresa = $this->pdo->prepare($sqlEmpresa);
+            $statementEmpresa->execute([':id' => $empresaId]);
 
             $sqlConvenios = <<<'SQL'
                 UPDATE rp_convenio
                    SET estatus = CASE
-                       WHEN estatus = 'vencido' THEN 'en_revision'
+                       WHEN estatus = 'Inactiva' THEN 'En revisión'
                        ELSE estatus
                    END
                  WHERE empresa_id = :id
             SQL;
-            $this->pdo->prepare($sqlConvenios)->execute([':id' => $empresaId]);
+            $statementConvenios = $this->pdo->prepare($sqlConvenios);
+            $statementConvenios->execute([':id' => $empresaId]);
 
             $sqlPortal = <<<'SQL'
                 UPDATE rp_portal_acceso
                    SET activo = 1
                  WHERE empresa_id = :id
             SQL;
-            $this->pdo->prepare($sqlPortal)->execute([':id' => $empresaId]);
+            $statementPortal = $this->pdo->prepare($sqlPortal);
+            $statementPortal->execute([':id' => $empresaId]);
 
             $sqlMachoteRevision = <<<'SQL'
                 UPDATE rp_machote_revision
@@ -120,6 +147,16 @@ class EmpresaStatusModel
             $this->pdo->prepare($sqlAsignaciones)->execute([':id' => $empresaId]);
 
             $this->pdo->commit();
+
+            $conveniosActualizados = $statementConvenios->rowCount();
+            $accesosActualizados = $statementPortal->rowCount();
+
+            empresaRegistrarEventoReactivacion(
+                $empresaId,
+                $byUserId,
+                $conveniosActualizados,
+                $accesosActualizados
+            );
 
             return true;
         } catch (PDOException $exception) {

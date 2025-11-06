@@ -58,6 +58,22 @@ class PortalEmpresaLoginController
             ];
         }
 
+        $empresaStatus = trim((string) ($record['empresa_estatus'] ?? ''));
+        $statusNormalized = $empresaStatus;
+
+        if ($statusNormalized !== '') {
+            $statusNormalized = function_exists('mb_strtolower')
+                ? mb_strtolower($statusNormalized, 'UTF-8')
+                : strtolower($statusNormalized);
+        }
+
+        if ($statusNormalized !== 'activa') {
+            return [
+                'success' => false,
+                'reason' => 'empresa_inactiva',
+            ];
+        }
+
         $expirationRaw = $record['expiracion'] ?? null;
 
         if ($expirationRaw !== null) {
@@ -83,7 +99,7 @@ class PortalEmpresaLoginController
             'token' => (string) $record['token'],
             'empresa_nombre' => (string) ($record['empresa_nombre'] ?? ''),
             'empresa_numero_control' => (string) ($record['empresa_numero_control'] ?? ''),
-            'empresa_estatus' => (string) ($record['empresa_estatus'] ?? ''),
+            'empresa_estatus' => $empresaStatus,
             'autenticado_en' => (new DateTimeImmutable('now'))->format('Y-m-d H:i:s'),
         ];
 

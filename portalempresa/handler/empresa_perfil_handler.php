@@ -8,19 +8,10 @@ require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../controller/EmpresaPerfilController.php';
 require_once __DIR__ . '/../helpers/empresaperfil_helper_function.php';
 require_once __DIR__ . '/../common/functions/empresaperfil_function.php';
+require_once __DIR__ . '/../common/functions/portal_session_guard.php';
 
-if (!isset($_SESSION['portal_empresa']) || !is_array($_SESSION['portal_empresa'])) {
-    header('Location: ../view/login.php');
-    exit;
-}
-
-$sessionEmpresa = $_SESSION['portal_empresa'];
-$empresaId = isset($sessionEmpresa['empresa_id']) ? (int) $sessionEmpresa['empresa_id'] : 0;
-
-if ($empresaId <= 0) {
-    header('Location: ../view/login.php');
-    exit;
-}
+$sessionEmpresa = portalEmpresaRequireSession('../view/login.php');
+$empresaId = (int) ($sessionEmpresa['empresa_id'] ?? 0);
 
 $controller = new EmpresaPerfilController();
 $perfilErrorMessage = null;

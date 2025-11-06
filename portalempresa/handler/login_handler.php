@@ -39,6 +39,7 @@ $reason = isset($result['reason']) ? (string) $result['reason'] : 'invalid_crede
 switch ($reason) {
     case 'access_inactive':
     case 'access_expired':
+    case 'empresa_inactiva':
         $errorCode = 'expired';
         break;
     case 'missing_fields':

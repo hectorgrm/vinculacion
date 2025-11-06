@@ -22,6 +22,9 @@ switch ($errorKey) {
     case 'session':
         $errorMessage = 'Tu sesión finalizó. Ingresa nuevamente.';
         break;
+    case 'inactive':
+        $errorMessage = 'Tu acceso fue deshabilitado por el administrador.';
+        break;
     case 'server':
         $errorMessage = 'Ocurrió un problema al validar tus datos. Intenta otra vez en unos minutos.';
         break;

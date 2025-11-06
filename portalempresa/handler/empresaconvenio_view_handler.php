@@ -8,19 +8,10 @@ use PortalEmpresa\Helpers\EmpresaConvenioHelper;
 require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../controller/EmpresaConvenioViewController.php';
 require_once __DIR__ . '/../helpers/empresaconveniofunction.php';
+require_once __DIR__ . '/../common/functions/portal_session_guard.php';
 
-if (!isset($_SESSION['portal_empresa']) || !is_array($_SESSION['portal_empresa'])) {
-    header('Location: ../view/login.php?error=session');
-    exit;
-}
-
-$portalSession = $_SESSION['portal_empresa'];
-$empresaId = isset($portalSession['empresa_id']) ? (int) $portalSession['empresa_id'] : 0;
-
-if ($empresaId <= 0) {
-    header('Location: ../view/login.php?error=session');
-    exit;
-}
+$portalSession = portalEmpresaRequireSession('../view/login.php');
+$empresaId = (int) ($portalSession['empresa_id'] ?? 0);
 
 $controller = new EmpresaConvenioViewController();
 $viewState = $controller->buildViewData($empresaId);
