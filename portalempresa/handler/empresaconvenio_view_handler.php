@@ -13,8 +13,18 @@ require_once __DIR__ . '/../common/functions/portal_session_guard.php';
 $portalSession = portalEmpresaRequireSession('../view/login.php');
 $empresaId = (int) ($portalSession['empresa_id'] ?? 0);
 
+$selectedConvenioId = null;
+
+if (isset($_GET['id_convenio'])) {
+    $maybeId = (int) $_GET['id_convenio'];
+
+    if ($maybeId > 0) {
+        $selectedConvenioId = $maybeId;
+    }
+}
+
 $controller = new EmpresaConvenioViewController();
-$viewState = $controller->buildViewData($empresaId);
+$viewState = $controller->buildViewData($empresaId, $selectedConvenioId);
 
 $empresaData = isset($viewState['empresa']) && is_array($viewState['empresa'])
     ? $viewState['empresa']
@@ -30,6 +40,10 @@ $statusMeta = isset($viewState['status']) && is_array($viewState['status'])
 
 $viewErrors = isset($viewState['errors']) && is_array($viewState['errors'])
     ? $viewState['errors']
+    : [];
+
+$listaConvenios = isset($viewState['historial']) && is_array($viewState['historial'])
+    ? $viewState['historial']
     : [];
 
 $empresaNombre = $empresaData['nombre'] ?? (string) ($portalSession['empresa_nombre'] ?? 'Empresa');

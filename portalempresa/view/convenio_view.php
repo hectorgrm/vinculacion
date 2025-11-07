@@ -239,33 +239,35 @@ require_once __DIR__ . '/../handler/empresaconvenio_view_handler.php';
         </thead>
         <tbody>
           <?php foreach ($listaConvenios as $c): ?>
-            <tr class="<?= ($c['id'] == ($convenioData['id'] ?? 0)) ? 'active-row' : '' ?>">
+            <?php $isActive = ($c['id'] ?? 0) === ($convenioData['id'] ?? 0); ?>
+            <tr class="<?= $isActive ? 'active-row' : '' ?>">
               <td><?= htmlspecialchars($c['folio'] ?? '—') ?></td>
               <td><?= htmlspecialchars($c['version_label'] ?? '—') ?></td>
-              <td><?= htmlspecialchars($c['fecha_inicio'] ?? '—') ?></td>
-              <td><?= htmlspecialchars($c['fecha_fin'] ?? '—') ?></td>
+              <td><?= htmlspecialchars($c['fecha_inicio_label'] ?? '—') ?></td>
+              <td><?= htmlspecialchars($c['fecha_fin_label'] ?? '—') ?></td>
               <td>
-                <span class="badge <?= strtolower($c['estatus']) === 'activo' ? 'ok' :
-                                      (strtolower($c['estatus']) === 'vencido' ? 'danger' : 'secondary') ?>">
-                  <?= htmlspecialchars(ucfirst($c['estatus'])) ?>
+                <span class="badge <?= htmlspecialchars($c['estatus_variant'] ?? 'secondary') ?>">
+                  <?= htmlspecialchars($c['estatus_label'] ?? 'Sin estatus') ?>
                 </span>
               </td>
               <td>
-                <?php if (!empty($c['convenio_padre_id'])): ?>
-                  <span class="muted">Hijo de #<?= htmlspecialchars($c['convenio_padre_id']) ?></span>
-                <?php else: ?>
-                  <span class="muted">Principal</span>
-                <?php endif; ?>
+                <span class="muted">
+                  <?= htmlspecialchars($c['origen_label'] ?? 'Convenio principal') ?>
+                </span>
               </td>
               <td>
                 <?php if (!empty($c['document_url'])): ?>
-                  <a href="<?= htmlspecialchars($c['document_url']) ?>" target="_blank">📄 Ver</a>
+                  <a href="<?= htmlspecialchars((string) $c['document_url']) ?>" target="_blank">📄 Ver</a>
                 <?php else: ?>
                   <span class="muted">No disponible</span>
                 <?php endif; ?>
               </td>
               <td>
-                <a class="btn small" href="?id_convenio=<?= urlencode((string)$c['id']) ?>">🔍 Ver detalle</a>
+                <?php if ($isActive): ?>
+                  <span class="muted">Mostrando</span>
+                <?php else: ?>
+                  <a class="btn small" href="?id_convenio=<?= urlencode((string) $c['id']) ?>">🔍 Ver detalle</a>
+                <?php endif; ?>
               </td>
             </tr>
           <?php endforeach; ?>

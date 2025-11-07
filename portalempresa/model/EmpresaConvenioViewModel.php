@@ -98,4 +98,39 @@ class EmpresaConvenioViewModel
 
         return $record !== false ? $record : null;
     }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findConveniosByEmpresaId(int $empresaId): array
+    {
+        $sql = <<<'SQL'
+            SELECT c.id,
+                   c.empresa_id,
+                   c.tipo_convenio,
+                   c.estatus,
+                   c.observaciones,
+                   c.fecha_inicio,
+                   c.fecha_fin,
+                   c.responsable_academico,
+                   c.creado_en,
+                   c.folio,
+                   c.borrador_path,
+                   c.firmado_path,
+                   c.actualizado_en,
+                   c.renovado_de
+              FROM rp_convenio AS c
+             WHERE c.empresa_id = :empresa_id
+             ORDER BY c.actualizado_en DESC, c.creado_en DESC, c.id DESC
+        SQL;
+
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([
+            ':empresa_id' => $empresaId,
+        ]);
+
+        $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return is_array($records) ? $records : [];
+    }
 }

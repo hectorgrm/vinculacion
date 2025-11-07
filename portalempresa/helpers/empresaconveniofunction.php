@@ -101,7 +101,20 @@ class EmpresaConvenioHelper
             'Activa' => 'ok',
             'En revisión' => 'warn',
             'Suspendida', 'Inactiva' => 'danger',
+            'Completado' => 'ok',
             default => 'warn',
+        };
+    }
+
+    public static function mapConvenioBadgeVariant(?string $estatus): string
+    {
+        $estatus = is_string($estatus) ? mb_strtolower(trim($estatus)) : '';
+
+        return match ($estatus) {
+            'activa', 'completado' => 'ok',
+            'en revisión' => 'warn',
+            'suspendida', 'inactiva' => 'danger',
+            default => 'secondary',
         };
     }
 
@@ -178,6 +191,7 @@ class EmpresaConvenioHelper
         }
 
         $estatus = isset($convenio['estatus']) ? trim((string) $convenio['estatus']) : '';
+        $id = isset($convenio['id']) ? (int) $convenio['id'] : null;
         $folio = self::valueOrDefault($convenio['folio'] ?? null, 'Sin folio');
         $tipo = self::valueOrDefault($convenio['tipo_convenio'] ?? null, 'No especificado');
         $responsable = self::valueOrDefault($convenio['responsable_academico'] ?? null, 'Sin asignar');
@@ -210,7 +224,9 @@ class EmpresaConvenioHelper
         };
 
         return array_merge($convenio, [
+            'id' => $id,
             'estatus' => $estatus !== '' ? $estatus : null,
+            'estatus_label' => $estatus !== '' ? $estatus : 'Sin estatus',
             'folio_label' => $folio,
             'tipo_label' => $tipo,
             'responsable_label' => $responsable,
@@ -310,5 +326,152 @@ class EmpresaConvenioHelper
         }
 
         return $parts !== [] ? implode(', ', $parts) : 'Sin dirección registrada';
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $convenios
+     * @return array<int, array<string, mixed>>
+     */
+    public static function decorateConvenioHistory(array $convenios, ?int $selectedId = null): array
+    {
+        if ($convenios === []) {
+            return [];
+        }
+
+        $indexed = [];
+
+        foreach ($convenios as $record) {
+            if (!isset($record['id'])) {
+                continue;
+            }
+
+            $indexed[(int) $record['id']] = $record;
+        }
+
+        $ascending = $convenios;
+        usort($ascending, static function (array $a, array $b): int {
+            $aCreated = (string) ($a['creado_en'] ?? '');
+            $bCreated = (string) ($b['creado_en'] ?? '');
+
+            return $aCreated <=> $bCreated;
+        });
+
+        $versionCounters = [];
+        $versionLabels = [];
+
+        foreach ($ascending as $record) {
+            if (!isset($record['id'])) {
+                continue;
+            }
+
+            $id = (int) $record['id'];
+            $rootId = self::resolveRootConvenioId($id, $indexed);
+            $versionCounters[$rootId] = ($versionCounters[$rootId] ?? 0) + 1;
+            $versionLabels[$id] = 'Versión ' . $versionCounters[$rootId];
+        }
+
+        $ordered = $convenios;
+        usort($ordered, static function (array $a, array $b): int {
+            $aUpdated = (string) ($a['actualizado_en'] ?? ($a['creado_en'] ?? ''));
+            $bUpdated = (string) ($b['actualizado_en'] ?? ($b['creado_en'] ?? ''));
+
+            if ($aUpdated !== $bUpdated) {
+                return $bUpdated <=> $aUpdated;
+            }
+
+            return ((int) ($b['id'] ?? 0)) <=> ((int) ($a['id'] ?? 0));
+        });
+
+        $today = new DateTimeImmutable('today');
+        $decorated = [];
+
+        foreach ($ordered as $record) {
+            if (!isset($record['id'])) {
+                continue;
+            }
+
+            $id = (int) $record['id'];
+            $folio = self::valueOrDefault($record['folio'] ?? null, 'Sin folio');
+            $fechaInicioRaw = isset($record['fecha_inicio']) ? (string) $record['fecha_inicio'] : null;
+            $fechaFinRaw = isset($record['fecha_fin']) ? (string) $record['fecha_fin'] : null;
+            $fechaFin = null;
+            $expired = false;
+
+            if ($fechaFinRaw !== null && $fechaFinRaw !== '') {
+                try {
+                    $fechaFin = new DateTimeImmutable($fechaFinRaw);
+                    $expired = $fechaFin < $today;
+                } catch (\Throwable) {
+                    $fechaFin = null;
+                }
+            }
+
+            $estatusRaw = isset($record['estatus']) ? trim((string) $record['estatus']) : '';
+            $estatusLabel = $estatusRaw !== '' ? $estatusRaw : 'Sin estatus';
+            $estatusVariant = self::mapConvenioBadgeVariant($estatusRaw);
+
+            if ($expired) {
+                $estatusLabel = 'Vencido';
+                $estatusVariant = 'danger';
+            }
+
+            $parentId = isset($record['renovado_de']) ? (int) $record['renovado_de'] : 0;
+            $origenLabel = 'Convenio principal';
+
+            if ($parentId > 0) {
+                $parentFolio = null;
+
+                if (isset($indexed[$parentId])) {
+                    $parentFolio = self::valueOrDefault($indexed[$parentId]['folio'] ?? null, '#' . $parentId);
+                }
+
+                $origenLabel = 'Derivado de ' . ($parentFolio ?? ('#' . $parentId));
+            }
+
+            $documentUrl = self::normalizePath($record['firmado_path'] ?? null)
+                ?? self::normalizePath($record['borrador_path'] ?? null);
+
+            $decorated[] = [
+                'id' => $id,
+                'folio' => $folio,
+                'version_label' => $versionLabels[$id] ?? 'Versión',
+                'fecha_inicio_label' => self::formatDate($fechaInicioRaw, '—'),
+                'fecha_fin_label' => self::formatDate($fechaFinRaw, '—'),
+                'estatus_label' => $estatusLabel,
+                'estatus_variant' => $estatusVariant,
+                'convenio_padre_id' => $parentId > 0 ? $parentId : null,
+                'origen_label' => $origenLabel,
+                'document_url' => $documentUrl,
+                'is_selected' => $selectedId !== null && $id === $selectedId,
+            ];
+        }
+
+        return $decorated;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $indexed
+     */
+    private static function resolveRootConvenioId(int $id, array $indexed): int
+    {
+        $current = $id;
+        $safety = 0;
+
+        while ($safety < 25) {
+            if (!isset($indexed[$current]['renovado_de'])) {
+                break;
+            }
+
+            $parentId = (int) $indexed[$current]['renovado_de'];
+
+            if ($parentId <= 0 || !isset($indexed[$parentId])) {
+                break;
+            }
+
+            $current = $parentId;
+            $safety++;
+        }
+
+        return $current;
     }
 }

@@ -20,15 +20,22 @@ class EmpresaConvenioViewController
     }
 
     /**
-     * @return array{empresa: array<string, mixed>|null, convenio: array<string, mixed>|null, status: array<string, mixed>, errors: array<int, string>}
+     * @return array{
+     *     empresa: array<string, mixed>|null,
+     *     convenio: array<string, mixed>|null,
+     *     status: array<string, mixed>,
+     *     historial: array<int, array<string, mixed>>,
+     *     errors: array<int, string>
+     * }
      */
-    public function buildViewData(int $empresaId): array
+    public function buildViewData(int $empresaId, ?int $selectedConvenioId = null): array
     {
         if ($empresaId <= 0) {
             return [
                 'empresa' => null,
                 'convenio' => null,
                 'status' => EmpresaConvenioHelper::statusMeta(null, false),
+                'historial' => [],
                 'errors' => ['missing_empresa_id'],
             ];
         }
@@ -40,6 +47,7 @@ class EmpresaConvenioViewController
                 'empresa' => null,
                 'convenio' => null,
                 'status' => EmpresaConvenioHelper::statusMeta(null, false),
+                'historial' => [],
                 'errors' => ['database_error'],
             ];
         }
@@ -49,6 +57,7 @@ class EmpresaConvenioViewController
                 'empresa' => null,
                 'convenio' => null,
                 'status' => EmpresaConvenioHelper::statusMeta(null, false),
+                'historial' => [],
                 'errors' => ['empresa_not_found'],
             ];
         }
@@ -56,24 +65,42 @@ class EmpresaConvenioViewController
         $empresaDecorated = EmpresaConvenioHelper::decorateEmpresa($empresa);
 
         try {
-            $convenio = $this->model->findLatestConvenioByEmpresaId($empresaId);
+            $convenios = $this->model->findConveniosByEmpresaId($empresaId);
         } catch (\Throwable) {
             return [
                 'empresa' => $empresaDecorated,
                 'convenio' => null,
                 'status' => EmpresaConvenioHelper::statusMeta(null, false),
+                'historial' => [],
                 'errors' => ['database_error'],
             ];
         }
 
-        $convenioDecorated = EmpresaConvenioHelper::decorateConvenio($convenio);
+        $selectedConvenio = null;
+
+        if ($selectedConvenioId !== null) {
+            foreach ($convenios as $registro) {
+                if ((int) ($registro['id'] ?? 0) === $selectedConvenioId) {
+                    $selectedConvenio = $registro;
+                    break;
+                }
+            }
+        }
+
+        if ($selectedConvenio === null && $convenios !== []) {
+            $selectedConvenio = $convenios[0];
+        }
+
+        $convenioDecorated = EmpresaConvenioHelper::decorateConvenio($selectedConvenio);
         $hasConvenio = $convenioDecorated !== null;
         $status = EmpresaConvenioHelper::statusMeta($convenioDecorated['estatus'] ?? null, $hasConvenio);
+        $historialDecorated = EmpresaConvenioHelper::decorateConvenioHistory($convenios, $convenioDecorated['id'] ?? null);
 
         return [
             'empresa' => $empresaDecorated,
             'convenio' => $convenioDecorated,
             'status' => $status,
+            'historial' => $historialDecorated,
             'errors' => [],
         ];
     }
