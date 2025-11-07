@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eliminar Estudiante · Residencia Profesional</title>
+  <title>Desactivar Estudiante · Residencia Profesional</title>
 
   <link rel="stylesheet" href="../../assets/css/global.css" />
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
@@ -122,7 +122,7 @@
       <header>🗑️ Confirmar eliminación</header>
       <div class="content">
         <div class="warning-icon">⚠️</div>
-        <p class="alert-title">¿Estás seguro de eliminar este estudiante?</p>
+        <p class="alert-title">¿Estás seguro de Desactivar este estudiante?</p>
         <p class="alert-text">Esta acción no podrá deshacerse. El estudiante y su relación con la empresa y convenio dejarán de estar activos en el sistema.</p>
 
         <div class="data-box">
@@ -135,7 +135,7 @@
         </div>
 
         <div class="actions">
-          <button class="btn danger">✅ Sí, eliminar</button>
+          <button class="btn danger">✅ Sí, Desactivar</button>
           <a href="estudiante_list.php" class="btn secondary">Cancelar</a>
         </div>
       </div>

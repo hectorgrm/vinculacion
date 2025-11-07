@@ -257,7 +257,7 @@ require __DIR__ . '/../../handler/estudiante/estudiante_list_handler.php';
                     <td class="actions-cell">
                       <a href="estudiante_view.php?id=<?php echo urlencode((string) $estudianteId); ?>" class="btn secondary">👁 Ver</a>
                       <a href="estudiante_edit.php?id=<?php echo urlencode((string) $estudianteId); ?>" class="btn">✏️ Editar</a>
-                      <a href="estudiante_delete.php?id=<?php echo urlencode((string) $estudianteId); ?>" class="btn" style="background:#e74c3c;">🗑 Eliminar</a>
+                      <a href="estudiante_deactivate.php?id=<?php echo urlencode((string) $estudianteId); ?>" class="btn" style="background:#e74c3c;">🗑 Desactivar</a>
                     </td>
                   </tr>
                 <?php endforeach; ?>
