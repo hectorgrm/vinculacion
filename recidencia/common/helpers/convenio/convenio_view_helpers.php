@@ -10,6 +10,7 @@ if (!function_exists('convenio_prepare_view_metadata')) {
      *     empresaNombre: ?string,
      *     empresaUrl: ?string,
      *     downloadUrl: ?string,
+     *     previewUrl: ?string,
      *     downloadLabel: string,
      *     diasRestantesLabel: string,
      *     observacionesLabel: string,
@@ -40,6 +41,7 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             'empresaNombre' => null,
             'empresaUrl' => null,
             'downloadUrl' => null,
+            'previewUrl' => null,
             'downloadLabel' => 'Ver PDF',
             'diasRestantesLabel' => 'N/D',
             'observacionesLabel' => 'Sin observaciones registradas.',
@@ -95,9 +97,11 @@ if (!function_exists('convenio_prepare_view_metadata')) {
 
         if ($firmaUrl !== '') {
             $metadata['downloadUrl'] = $firmaUrl;
+            $metadata['previewUrl'] = $firmaUrl;
             $metadata['downloadLabel'] = 'Ver PDF firmado';
         } elseif ($borradorUrl !== '') {
             $metadata['downloadUrl'] = $borradorUrl;
+            $metadata['previewUrl'] = $borradorUrl;
             $metadata['downloadLabel'] = 'Ver PDF borrador';
         }
 

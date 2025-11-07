@@ -27,6 +27,7 @@ $metadata = convenio_prepare_view_metadata($convenio);
 $empresaNombre = $metadata['empresaNombre'];
 $empresaUrl = $metadata['empresaUrl'];
 $downloadUrl = $metadata['downloadUrl'];
+$previewUrl = $metadata['previewUrl'];
 $downloadLabel = $metadata['downloadLabel'];
 $diasRestantesLabel = $metadata['diasRestantesLabel'];
 $observacionesLabel = $metadata['observacionesLabel'];
@@ -204,6 +205,15 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                         </div>
                     </div>
                 </section>
+
+                <?php if ($previewUrl !== null): ?>
+                    <section class="card">
+                        <header>Vista rapida</header>
+                        <div class="content preview">
+                            <iframe src="<?php echo htmlspecialchars($previewUrl, ENT_QUOTES, 'UTF-8'); ?>" style="width:100%; height:420px; border:0;" title="Vista previa del documento"></iframe>
+                        </div>
+                    </section>
+                <?php endif; ?>
 
                 <?php if ($metadata['parentId'] !== null): ?>
                     <?php
