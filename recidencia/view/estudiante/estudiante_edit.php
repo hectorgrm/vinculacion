@@ -31,6 +31,10 @@ $canEdit = $controllerError === null && $loadError === null;
 $returnUrl = $estudianteId !== null
     ? 'estudiante_view.php?id=' . rawurlencode((string) $estudianteId)
     : 'estudiante_list.php';
+$isLocked = $canEdit && isset($formData['estatus']) && $formData['estatus'] === 'Inactivo';
+$empresaSelectDisabled = ($empresas === []) || $isLocked;
+$convenioSelectDisabled = ($convenios === []) || $isLocked;
+$submitDisabled = ($empresas === [] && !$isLocked);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -144,6 +148,15 @@ $returnUrl = $estudianteId !== null
       border: 1px solid #e74c3c;
       color: #c0392b;
     }
+    .infobox {
+      padding: 0.9rem 1.2rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      background: #eef3ff;
+      border: 1px solid #4c6ef5;
+      color: #1c3faa;
+    }
     .dangerbox ul {
       margin: 0.5rem 0 0;
       padding-left: 1.2rem;
@@ -217,47 +230,53 @@ $returnUrl = $estudianteId !== null
       <header>Datos generales del estudiante</header>
       <div class="content">
         <?php if ($canEdit): ?>
+        <?php if ($isLocked): ?>
+          <div class="infobox">
+            <strong>Estudiante inactivo.</strong>
+            Solo puedes modificar el estatus para reactivarlo; los demás campos permanecen bloqueados.
+          </div>
+        <?php endif; ?>
         <form method="post" class="form-grid">
           <input type="hidden" name="estudiante_id" value="<?= htmlspecialchars((string) ($estudianteId ?? '')) ?>">
 
           <div class="form-group">
             <label for="nombre">Nombre(s)</label>
-            <input type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($formData['nombre']) ?>" required>
+            <input type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($formData['nombre']) ?>" required<?= $isLocked ? ' readonly' : '' ?>>
           </div>
 
           <div class="form-group">
             <label for="apellido_paterno">Apellido paterno</label>
-            <input type="text" id="apellido_paterno" name="apellido_paterno" value="<?= htmlspecialchars($formData['apellido_paterno']) ?>">
+            <input type="text" id="apellido_paterno" name="apellido_paterno" value="<?= htmlspecialchars($formData['apellido_paterno']) ?>"<?= $isLocked ? ' readonly' : '' ?>>
           </div>
 
           <div class="form-group">
             <label for="apellido_materno">Apellido materno</label>
-            <input type="text" id="apellido_materno" name="apellido_materno" value="<?= htmlspecialchars($formData['apellido_materno']) ?>">
+            <input type="text" id="apellido_materno" name="apellido_materno" value="<?= htmlspecialchars($formData['apellido_materno']) ?>"<?= $isLocked ? ' readonly' : '' ?>>
           </div>
 
           <div class="form-group">
             <label for="matricula">Matrícula</label>
-            <input type="text" id="matricula" name="matricula" value="<?= htmlspecialchars($formData['matricula']) ?>" required>
+            <input type="text" id="matricula" name="matricula" value="<?= htmlspecialchars($formData['matricula']) ?>" required<?= $isLocked ? ' readonly' : '' ?>>
           </div>
 
           <div class="form-group">
             <label for="carrera">Carrera</label>
-            <input type="text" id="carrera" name="carrera" value="<?= htmlspecialchars($formData['carrera']) ?>">
+            <input type="text" id="carrera" name="carrera" value="<?= htmlspecialchars($formData['carrera']) ?>"<?= $isLocked ? ' readonly' : '' ?>>
           </div>
 
           <div class="form-group">
             <label for="correo_institucional">Correo institucional</label>
-            <input type="email" id="correo_institucional" name="correo_institucional" value="<?= htmlspecialchars($formData['correo_institucional']) ?>">
+            <input type="email" id="correo_institucional" name="correo_institucional" value="<?= htmlspecialchars($formData['correo_institucional']) ?>"<?= $isLocked ? ' readonly' : '' ?>>
           </div>
 
           <div class="form-group">
             <label for="telefono">Teléfono</label>
-            <input type="text" id="telefono" name="telefono" value="<?= htmlspecialchars($formData['telefono']) ?>">
+            <input type="text" id="telefono" name="telefono" value="<?= htmlspecialchars($formData['telefono']) ?>"<?= $isLocked ? ' readonly' : '' ?>>
           </div>
 
           <div class="form-group">
             <label for="empresa_id">Empresa</label>
-            <select id="empresa_id" name="empresa_id" required <?= $empresas === [] ? 'disabled' : '' ?>>
+            <select id="empresa_id" name="empresa_id" required <?= $empresaSelectDisabled ? 'disabled' : '' ?>>
               <option value="">Selecciona una empresa...</option>
               <?php foreach ($empresas as $empresa): ?>
                 <option value="<?= htmlspecialchars($empresa['id']) ?>" <?= $formData['empresa_id'] === $empresa['id'] ? 'selected' : '' ?>>
@@ -265,11 +284,14 @@ $returnUrl = $estudianteId !== null
                 </option>
               <?php endforeach; ?>
             </select>
+            <?php if ($isLocked): ?>
+              <input type="hidden" name="empresa_id" value="<?= htmlspecialchars($formData['empresa_id']) ?>">
+            <?php endif; ?>
           </div>
 
           <div class="form-group">
             <label for="convenio_id">Convenio</label>
-            <select id="convenio_id" name="convenio_id" <?= $convenios === [] ? 'disabled' : '' ?>>
+            <select id="convenio_id" name="convenio_id" <?= $convenioSelectDisabled ? 'disabled' : '' ?>>
               <option value="">Sin asignar</option>
               <?php foreach ($convenios as $convenio): ?>
                 <option value="<?= htmlspecialchars($convenio['id']) ?>" <?= $formData['convenio_id'] === $convenio['id'] ? 'selected' : '' ?>>
@@ -280,6 +302,9 @@ $returnUrl = $estudianteId !== null
                 </option>
               <?php endforeach; ?>
             </select>
+            <?php if ($isLocked): ?>
+              <input type="hidden" name="convenio_id" value="<?= htmlspecialchars($formData['convenio_id']) ?>">
+            <?php endif; ?>
           </div>
 
           <div class="form-group">
@@ -294,7 +319,7 @@ $returnUrl = $estudianteId !== null
           </div>
 
           <div class="form-actions">
-            <button type="submit" class="btn primary" <?= $empresas === [] ? 'disabled' : '' ?>>💾 Guardar cambios</button>
+            <button type="submit" class="btn primary" <?= $submitDisabled ? 'disabled' : '' ?>>💾 Guardar cambios</button>
             <a href="<?= htmlspecialchars($returnUrl) ?>" class="btn secondary">Cancelar</a>
           </div>
         </form>
