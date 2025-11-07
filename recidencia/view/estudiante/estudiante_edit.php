@@ -1,3 +1,37 @@
+<?php
+declare(strict_types=1);
+
+/** @var array{
+ *     estudianteId: ?int,
+ *     formData: array<string, string>,
+ *     empresas: array<int, array<string, string>>,
+ *     convenios: array<int, array<string, string>>,
+ *     errors: array<int, string>,
+ *     success: bool,
+ *     successMessage: ?string,
+ *     controllerError: ?string,
+ *     loadError: ?string,
+ *     estatusOptions: array<int, string>
+ * } $handlerResult
+ */
+$handlerResult = require __DIR__ . '/../../handler/estudiante/estudiante_edit_handler.php';
+
+$formData = $handlerResult['formData'];
+$empresas = $handlerResult['empresas'];
+$convenios = $handlerResult['convenios'];
+$viewErrors = $handlerResult['errors'];
+$viewSuccess = $handlerResult['success'];
+$successMessage = $handlerResult['successMessage'];
+$controllerError = $handlerResult['controllerError'];
+$loadError = $handlerResult['loadError'];
+$estatusOptions = $handlerResult['estatusOptions'];
+$estudianteId = $handlerResult['estudianteId'];
+
+$canEdit = $controllerError === null && $loadError === null;
+$returnUrl = $estudianteId !== null
+    ? 'estudiante_view.php?id=' . rawurlencode((string) $estudianteId)
+    : 'estudiante_list.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -34,9 +68,15 @@
       border-radius: 6px;
       text-decoration: none;
       font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
     }
     .btn.secondary {
       background: #7f8c8d;
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
     .card {
       background: #fff;
@@ -104,121 +144,165 @@
       border: 1px solid #e74c3c;
       color: #c0392b;
     }
+    .dangerbox ul {
+      margin: 0.5rem 0 0;
+      padding-left: 1.2rem;
+    }
     .foot {
       text-align: center;
       color: #888;
       margin-top: 2rem;
       font-size: 0.9rem;
     }
+    .empty-state {
+      padding: 1.5rem;
+      text-align: center;
+      color: #555;
+      background: #fff8f6;
+      border: 1px solid #f2d7d5;
+      border-radius: 8px;
+    }
   </style>
 </head>
 
 <body>
- <div class="app">  
+ <div class="app">
          <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
   <main class="main">
 
-    <!-- Encabezado -->
     <header class="topbar">
       <div>
         <h2>✏️ Editar Estudiante</h2>
         <p class="subtitle">Modifica los datos de un estudiante y su asignación a empresa y convenio.</p>
       </div>
       <div class="actions">
-        <a href="estudiante_view.php" class="btn secondary">← Cancelar</a>
+        <a href="<?= htmlspecialchars($returnUrl) ?>" class="btn secondary">← Regresar</a>
       </div>
     </header>
 
-    <!-- Mensajes de estado -->
-    <div class="successbox" style="display:none;">
-      ✅ Cambios guardados correctamente.
-    </div>
-    <div class="dangerbox" style="display:none;">
-      ⚠️ No se pudo actualizar el registro. Verifique los datos.
-    </div>
+    <?php if ($controllerError !== null): ?>
+      <div class="dangerbox">
+        <strong>⚠️ Error:</strong>
+        <span><?= htmlspecialchars($controllerError) ?></span>
+      </div>
+    <?php endif; ?>
 
-    <!-- Formulario -->
+    <?php if ($loadError !== null): ?>
+      <div class="dangerbox">
+        <strong>⚠️ No se pudo cargar la información.</strong>
+        <span><?= htmlspecialchars($loadError) ?></span>
+      </div>
+    <?php endif; ?>
+
+    <?php if ($viewSuccess && $successMessage !== null): ?>
+      <div class="successbox">
+        <strong>✅ Cambios guardados.</strong>
+        <span><?= htmlspecialchars($successMessage) ?></span>
+      </div>
+    <?php endif; ?>
+
+    <?php if ($viewErrors !== []): ?>
+      <div class="dangerbox">
+        <strong>⚠️ Corrige los siguientes puntos:</strong>
+        <ul>
+          <?php foreach ($viewErrors as $error): ?>
+            <li><?= htmlspecialchars($error) ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+
     <section class="card">
       <header>Datos generales del estudiante</header>
       <div class="content">
-        <form class="form-grid">
+        <?php if ($canEdit): ?>
+        <form method="post" class="form-grid">
+          <input type="hidden" name="estudiante_id" value="<?= htmlspecialchars((string) ($estudianteId ?? '')) ?>">
 
-          <!-- Datos personales -->
           <div class="form-group">
             <label for="nombre">Nombre(s)</label>
-            <input type="text" id="nombre" name="nombre" value="Juan Carlos" required>
+            <input type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($formData['nombre']) ?>" required>
           </div>
 
           <div class="form-group">
             <label for="apellido_paterno">Apellido paterno</label>
-            <input type="text" id="apellido_paterno" name="apellido_paterno" value="Pérez" required>
+            <input type="text" id="apellido_paterno" name="apellido_paterno" value="<?= htmlspecialchars($formData['apellido_paterno']) ?>">
           </div>
 
           <div class="form-group">
             <label for="apellido_materno">Apellido materno</label>
-            <input type="text" id="apellido_materno" name="apellido_materno" value="López">
+            <input type="text" id="apellido_materno" name="apellido_materno" value="<?= htmlspecialchars($formData['apellido_materno']) ?>">
           </div>
 
           <div class="form-group">
             <label for="matricula">Matrícula</label>
-            <input type="text" id="matricula" name="matricula" value="20230145" readonly>
+            <input type="text" id="matricula" name="matricula" value="<?= htmlspecialchars($formData['matricula']) ?>" required>
           </div>
 
           <div class="form-group">
             <label for="carrera">Carrera</label>
-            <input type="text" id="carrera" name="carrera" value="Ingeniería en Informática" required>
+            <input type="text" id="carrera" name="carrera" value="<?= htmlspecialchars($formData['carrera']) ?>">
           </div>
 
           <div class="form-group">
             <label for="correo_institucional">Correo institucional</label>
-            <input type="email" id="correo_institucional" name="correo_institucional" value="juan.perez@universidad.mx" required>
+            <input type="email" id="correo_institucional" name="correo_institucional" value="<?= htmlspecialchars($formData['correo_institucional']) ?>">
           </div>
 
           <div class="form-group">
             <label for="telefono">Teléfono</label>
-            <input type="text" id="telefono" name="telefono" value="3312345678">
+            <input type="text" id="telefono" name="telefono" value="<?= htmlspecialchars($formData['telefono']) ?>">
           </div>
 
-          <!-- Empresa -->
           <div class="form-group">
             <label for="empresa_id">Empresa</label>
-            <select id="empresa_id" name="empresa_id" required>
+            <select id="empresa_id" name="empresa_id" required <?= $empresas === [] ? 'disabled' : '' ?>>
               <option value="">Selecciona una empresa...</option>
-              <option value="1" selected>Barbería Gómez</option>
-              <option value="2">Homero Burgers</option>
-              <option value="3">Estética Lupita</option>
+              <?php foreach ($empresas as $empresa): ?>
+                <option value="<?= htmlspecialchars($empresa['id']) ?>" <?= $formData['empresa_id'] === $empresa['id'] ? 'selected' : '' ?>>
+                  <?= htmlspecialchars($empresa['nombre']) ?>
+                </option>
+              <?php endforeach; ?>
             </select>
           </div>
 
-          <!-- Convenio -->
           <div class="form-group">
             <label for="convenio_id">Convenio</label>
-            <select id="convenio_id" name="convenio_id">
+            <select id="convenio_id" name="convenio_id" <?= $convenios === [] ? 'disabled' : '' ?>>
               <option value="">Sin asignar</option>
-              <option value="1" selected>CVN-2025-001</option>
-              <option value="2">CVN-2025-002</option>
-              <option value="3">CVN-2025-003</option>
+              <?php foreach ($convenios as $convenio): ?>
+                <option value="<?= htmlspecialchars($convenio['id']) ?>" <?= $formData['convenio_id'] === $convenio['id'] ? 'selected' : '' ?>>
+                  <?= htmlspecialchars($convenio['folio'] !== '' ? $convenio['folio'] : 'Sin folio') ?>
+                  <?php if ($convenio['empresa_nombre'] !== ''): ?>
+                    · <?= htmlspecialchars($convenio['empresa_nombre']) ?>
+                  <?php endif; ?>
+                </option>
+              <?php endforeach; ?>
             </select>
           </div>
 
-          <!-- Estatus -->
           <div class="form-group">
             <label for="estatus">Estatus</label>
             <select id="estatus" name="estatus">
-              <option value="Activo" selected>Activo</option>
-              <option value="Finalizado">Finalizado</option>
-              <option value="Inactivo">Inactivo</option>
+              <?php foreach ($estatusOptions as $option): ?>
+                <option value="<?= htmlspecialchars($option) ?>" <?= $formData['estatus'] === $option ? 'selected' : '' ?>>
+                  <?= htmlspecialchars($option) ?>
+                </option>
+              <?php endforeach; ?>
             </select>
           </div>
 
-          <!-- Botones -->
           <div class="form-actions">
-            <button type="submit" class="btn primary">💾 Guardar cambios</button>
-            <a href="rp_estudiante_view.php" class="btn secondary">Cancelar</a>
+            <button type="submit" class="btn primary" <?= $empresas === [] ? 'disabled' : '' ?>>💾 Guardar cambios</button>
+            <a href="<?= htmlspecialchars($returnUrl) ?>" class="btn secondary">Cancelar</a>
           </div>
-
         </form>
+        <?php else: ?>
+          <div class="empty-state">
+            No es posible editar este registro en este momento.
+          </div>
+        <?php endif; ?>
       </div>
     </section>
 
