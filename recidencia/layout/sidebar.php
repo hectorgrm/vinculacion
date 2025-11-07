@@ -15,6 +15,9 @@
     <a href="../machote/machote_list.php">📝 Machote Comentarios</a>
     <a href="../documentotipo/documentotipo_list.php">🗂️ Documento Tipo</a>
     <a href="../portalacceso/portal_list.php">🔐 Portal Acceso</a>
+    <a href="../estudiante/estudiante_list.php">🧑‍🎓 Estudiante</a>
+
+
 
     <!-- Reportes con submenú -->
     <!-- <div class="submenu">
