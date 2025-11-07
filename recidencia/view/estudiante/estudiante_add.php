@@ -1,7 +1,27 @@
 <?php
 declare(strict_types=1);
 
-// require_once __DIR__ . '/handler/rp_estudiante_add_handler.php';
+/** @var array{
+ *     formData: array<string, string>,
+ *     empresas: array<int, array<string, string>>,
+ *     convenios: array<int, array<string, string>>,
+ *     errors: array<int, string>,
+ *     success: bool,
+ *     successMessage: ?string,
+ *     controllerError: ?string,
+ *     estatusOptions: array<int, string>
+ * } $handlerResult
+ */
+$handlerResult = require __DIR__ . '/../../handler/estudiante/estudiante_add_handler.php';
+
+$formData = $handlerResult['formData'];
+$empresas = $handlerResult['empresas'];
+$convenios = $handlerResult['convenios'];
+$viewErrors = $handlerResult['errors'];
+$viewSuccess = $handlerResult['success'];
+$successMessage = $handlerResult['successMessage'];
+$controllerError = $handlerResult['controllerError'];
+$estatusOptions = $handlerResult['estatusOptions'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -36,15 +56,28 @@ declare(strict_types=1);
             </header>
 
             <!-- Mensajes -->
-            <?php if (!empty($viewSuccess)): ?>
-                <div class="strip successbox">
-                    <strong>✅ Registro completado.</strong>
-                    <span>El estudiante fue agregado correctamente.</span>
-                </div>
-            <?php elseif (!empty($viewErrors)): ?>
+            <?php if ($controllerError !== null): ?>
                 <div class="strip dangerbox">
                     <strong>⚠️ Error:</strong>
-                    <span>Hubo un problema al guardar el estudiante. Verifica los datos.</span>
+                    <span><?= htmlspecialchars($controllerError) ?></span>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($viewSuccess && $successMessage !== null): ?>
+                <div class="strip successbox">
+                    <strong>✅ Registro completado.</strong>
+                    <span><?= htmlspecialchars($successMessage) ?></span>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($viewErrors !== []): ?>
+                <div class="strip dangerbox">
+                    <strong>⚠️ Error:</strong>
+                    <ul>
+                        <?php foreach ($viewErrors as $error): ?>
+                            <li><?= htmlspecialchars($error) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
             <?php endif; ?>
 
@@ -57,53 +90,53 @@ declare(strict_types=1);
                         <div class="form-group">
                             <label for="nombre">Nombre(s)</label>
                             <input type="text" id="nombre" name="nombre" required placeholder="Ej. Juan Carlos"
-                                value="<?= htmlspecialchars($_POST['nombre'] ?? '') ?>">
+                                value="<?= htmlspecialchars($formData['nombre']) ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="apellido_paterno">Apellido paterno</label>
                             <input type="text" id="apellido_paterno" name="apellido_paterno" placeholder="Ej. Pérez"
-                                value="<?= htmlspecialchars($_POST['apellido_paterno'] ?? '') ?>">
+                                value="<?= htmlspecialchars($formData['apellido_paterno']) ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="apellido_materno">Apellido materno</label>
                             <input type="text" id="apellido_materno" name="apellido_materno" placeholder="Ej. López"
-                                value="<?= htmlspecialchars($_POST['apellido_materno'] ?? '') ?>">
+                                value="<?= htmlspecialchars($formData['apellido_materno']) ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="matricula">Matrícula</label>
                             <input type="text" id="matricula" name="matricula" required maxlength="20"
-                                placeholder="Ej. 20230145" value="<?= htmlspecialchars($_POST['matricula'] ?? '') ?>">
+                                placeholder="Ej. 20230145" value="<?= htmlspecialchars($formData['matricula']) ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="carrera">Carrera</label>
                             <input type="text" id="carrera" name="carrera" placeholder="Ej. Ingeniería en Informática"
-                                value="<?= htmlspecialchars($_POST['carrera'] ?? '') ?>">
+                                value="<?= htmlspecialchars($formData['carrera']) ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="correo_institucional">Correo institucional</label>
                             <input type="email" id="correo_institucional" name="correo_institucional"
                                 placeholder="Ej. juan.perez@universidad.mx"
-                                value="<?= htmlspecialchars($_POST['correo_institucional'] ?? '') ?>">
+                                value="<?= htmlspecialchars($formData['correo_institucional']) ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="telefono">Teléfono</label>
                             <input type="text" id="telefono" name="telefono" maxlength="20" placeholder="Ej. 3312345678"
-                                value="<?= htmlspecialchars($_POST['telefono'] ?? '') ?>">
+                                value="<?= htmlspecialchars($formData['telefono']) ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="empresa_id">Empresa</label>
-                            <select name="empresa_id" id="empresa_id" required>
+                            <select name="empresa_id" id="empresa_id" required <?= $empresas === [] ? 'disabled' : ''; ?>>
                                 <option value="">Selecciona una empresa...</option>
                                 <?php foreach ($empresas as $empresa): ?>
-                                    <option value="<?= htmlspecialchars((string) $empresa['id']) ?>"
-                                        <?= (($_POST['empresa_id'] ?? '') == $empresa['id']) ? 'selected' : '' ?>>
+                                    <option value="<?= htmlspecialchars($empresa['id']) ?>"
+                                        <?= ($formData['empresa_id'] === $empresa['id']) ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($empresa['nombre']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -112,12 +145,15 @@ declare(strict_types=1);
 
                         <div class="form-group">
                             <label for="convenio_id">Convenio</label>
-                            <select name="convenio_id" id="convenio_id">
+                            <select name="convenio_id" id="convenio_id" <?= $convenios === [] ? 'disabled' : ''; ?>>
                                 <option value="">Sin asignar</option>
                                 <?php foreach ($convenios as $convenio): ?>
-                                    <option value="<?= htmlspecialchars((string) $convenio['id']) ?>"
-                                        <?= (($_POST['convenio_id'] ?? '') == $convenio['id']) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($convenio['folio'] ?? 'Sin folio') ?>
+                                    <option value="<?= htmlspecialchars($convenio['id']) ?>"
+                                        <?= ($formData['convenio_id'] === $convenio['id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($convenio['folio'] !== '' ? $convenio['folio'] : 'Sin folio') ?>
+                                        <?php if ($convenio['empresa_nombre'] !== ''): ?>
+                                            · <?= htmlspecialchars($convenio['empresa_nombre']) ?>
+                                        <?php endif; ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -126,15 +162,17 @@ declare(strict_types=1);
                         <div class="form-group">
                             <label for="estatus">Estatus</label>
                             <select name="estatus" id="estatus">
-                                <option value="Activo" <?= (($_POST['estatus'] ?? '') === 'Activo') ? 'selected' : '' ?>>
-                                    Activo</option>
-                                <option value="Finalizado" <?= (($_POST['estatus'] ?? '') === 'Finalizado') ? 'selected' : '' ?>>Finalizado</option>
-                                <option value="Inactivo" <?= (($_POST['estatus'] ?? '') === 'Inactivo') ? 'selected' : '' ?>>Inactivo</option>
+                                <?php foreach ($estatusOptions as $option): ?>
+                                    <option value="<?= htmlspecialchars($option) ?>"
+                                        <?= ($formData['estatus'] === $option) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($option) ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" name="guardar" class="btn primary">💾 Guardar estudiante</button>
+                            <button type="submit" name="guardar" class="btn primary" <?= $empresas === [] ? 'disabled' : ''; ?>>💾 Guardar estudiante</button>
                             <a href="rp_estudiante_list.php" class="btn secondary">Cancelar</a>
                         </div>
 
