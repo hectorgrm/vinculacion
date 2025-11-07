@@ -111,6 +111,9 @@ $progreso = $documentosStats['porcentaje'];
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css">
   <!-- Si ya tienes estilos específicos para esta vista, mantenlos: -->
   <link rel="stylesheet" href="../../assets/css/empresas/empresaview.css">
+  <link rel="stylesheet" href="../../assets/css/empresas/empresalogo.css">
+
+
 </head>
 
 <body>
@@ -120,18 +123,37 @@ $progreso = $documentosStats['porcentaje'];
 
     <!-- Main -->
     <main class="main">
-      <header class="topbar">
-        <div>
-          <h2>🏢 Detalle de Empresa · Residencias Profesionales</h2>
-          <p>Consulta y gestiona la información general, convenios y documentación de la empresa.</p>
-        </div>
-        <div class="actions">
-          <!-- Progreso (misma carpeta) -->
-          <a href="<?php echo htmlspecialchars($empresaProgresoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📊 Ver Progreso</a>
-          <!-- Volver al listado -->
-          <a href="empresa_list.php" class="btn secondary">⬅ Volver</a>
-        </div>
-      </header>
+  <!-- 🏢 Banner con logotipo y lápiz -->
+  <section class="empresa-banner">
+    <div class="empresa-brand">
+      <div class="empresa-logo">
+        <!-- Placeholder del logo (simula imagen) -->
+        <div class="empresa-placeholder">🏢</div>
+
+        <!-- Botón ✏️ de edición -->
+        <label class="upload-btn">
+          ✏️
+          <input type="file" accept="image/png, image/jpeg">
+        </label>
+      </div>
+
+      <div class="empresa-titles">
+        <h1>Barbería Gómez</h1>
+        <p>Vinculada a Residencias Profesionales</p>
+      </div>
+    </div>
+
+    <div class="empresa-actions">
+      <a href="#" class="btn">📊 Ver Progreso</a>
+      <a href="#" class="btn secondary">⬅ Volver</a>
+    </div>
+  </section>
+
+  <p style="color:#475569; font-size:0.9rem;">
+    💡 <strong>Vista de ejemplo:</strong> El logotipo puede reemplazarse al hacer clic en el ✏️.
+    <br>Cuando se seleccione un archivo, el formulario se enviará automáticamente.
+  </p>
+
 
       <!-- 🏢 Información General -->
       <section class="card">
