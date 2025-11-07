@@ -76,6 +76,35 @@
       display: none;
     }
 
+    .upload-btn.is-loading {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .logo-upload-form {
+      margin: 0;
+    }
+
+    .logo-upload-feedback {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: #475569;
+    }
+
+    .logo-upload-feedback--success {
+      color: #166534;
+    }
+
+    .logo-upload-feedback--error {
+      color: #b91c1c;
+    }
+
+    .empresa-logo-hint {
+      color: #475569;
+      font-size: 0.9rem;
+      margin: 0 0 1.5rem;
+    }
+
     /* Títulos del bloque */
     .empresa-titles h1 {
       margin: 0;

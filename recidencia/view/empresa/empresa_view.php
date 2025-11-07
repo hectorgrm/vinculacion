@@ -67,6 +67,8 @@ $estatusClass = 'badge secondary';
 $estatusLabel = 'Sin estatus';
 $creadoEn = 'N/A';
 $actualizadoEn = 'Sin actualizar';
+$numeroControl = '';
+$logoUrl = null;
 
 if (is_array($empresa)) {
     $nombre = (string) ($empresa['nombre_label'] ?? ($empresa['nombre'] ?? $nombre));
@@ -78,7 +80,23 @@ if (is_array($empresa)) {
     $estatusLabel = (string) ($empresa['estatus_badge_label'] ?? $estatusLabel);
     $creadoEn = (string) ($empresa['creado_en_label'] ?? $creadoEn);
     $actualizadoEn = (string) ($empresa['actualizado_en_label'] ?? $actualizadoEn);
+    $numeroControl = isset($empresa['numero_control']) ? (string) $empresa['numero_control'] : '';
+    $logoUrl = isset($empresa['logo_url']) && $empresa['logo_url'] !== null
+        ? (string) $empresa['logo_url']
+        : null;
 }
+
+$empresaSubtitulo = $numeroControl !== ''
+    ? 'Número de control: ' . $numeroControl
+    : 'RFC: ' . $rfc;
+$logoAltText = 'Logotipo de ' . $nombre;
+$logoUploadAction = '../../handler/empresa/empresa_logo_upload_handler.php';
+$logoBaseUrl = '../../';
+$canUploadLogo = $empresaId !== null
+    && $controllerError === null
+    && $inputError === null
+    && $notFoundMessage === null
+    && is_array($empresa);
 
 $empresaIdQuery = $empresaId !== null ? (string) $empresaId : '';
 $nuevoConvenioUrl = '../convenio/convenio_add.php';
@@ -126,33 +144,61 @@ $progreso = $documentosStats['porcentaje'];
   <!-- 🏢 Banner con logotipo y lápiz -->
   <section class="empresa-banner">
     <div class="empresa-brand">
-      <div class="empresa-logo">
-        <!-- Placeholder del logo (simula imagen) -->
-        <div class="empresa-placeholder">🏢</div>
+      <div class="empresa-logo" data-logo-container>
+        <?php if ($logoUrl !== null) : ?>
+          <img src="<?php echo htmlspecialchars($logoUrl, ENT_QUOTES, 'UTF-8'); ?>"
+               alt="<?php echo htmlspecialchars($logoAltText, ENT_QUOTES, 'UTF-8'); ?>"
+               class="empresa-logo__image"
+               data-logo-image>
+        <?php else : ?>
+          <div class="empresa-placeholder" data-logo-placeholder aria-hidden="true">🏢</div>
+        <?php endif; ?>
 
-        <!-- Botón ✏️ de edición -->
-        <label class="upload-btn">
-          ✏️
-          <input type="file" accept="image/png, image/jpeg">
-        </label>
+        <?php if ($canUploadLogo) : ?>
+          <form id="logo-upload-form"
+                class="logo-upload-form"
+                action="<?php echo htmlspecialchars($logoUploadAction, ENT_QUOTES, 'UTF-8'); ?>"
+                method="post"
+                enctype="multipart/form-data"
+                data-logo-base-url="<?php echo htmlspecialchars($logoBaseUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                data-logo-alt="<?php echo htmlspecialchars($logoAltText, ENT_QUOTES, 'UTF-8'); ?>">
+            <input type="hidden" name="empresa_id" value="<?php echo htmlspecialchars($empresaIdQuery, ENT_QUOTES, 'UTF-8'); ?>">
+            <label for="logo-upload-input"
+                   class="upload-btn"
+                   id="logo-upload-button"
+                   title="Cambiar logotipo"
+                   data-logo-button>
+              ✏️
+              <input type="file"
+                     name="logo"
+                     id="logo-upload-input"
+                     accept="image/png,image/jpeg"
+                     data-logo-input>
+            </label>
+          </form>
+        <?php endif; ?>
       </div>
 
       <div class="empresa-titles">
-        <h1>Barbería Gómez</h1>
-        <p>Vinculada a Residencias Profesionales</p>
+        <h1><?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></h1>
+        <p><?php echo htmlspecialchars($empresaSubtitulo, ENT_QUOTES, 'UTF-8'); ?></p>
       </div>
     </div>
 
     <div class="empresa-actions">
-      <a href="#" class="btn">📊 Ver Progreso</a>
-      <a href="#" class="btn secondary">⬅ Volver</a>
+      <a href="<?php echo htmlspecialchars($empresaProgresoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">📊 Ver Progreso</a>
+      <a href="empresa_list.php" class="btn secondary">⬅ Volver</a>
     </div>
   </section>
 
-  <p style="color:#475569; font-size:0.9rem;">
-    💡 <strong>Vista de ejemplo:</strong> El logotipo puede reemplazarse al hacer clic en el ✏️.
-    <br>Cuando se seleccione un archivo, el formulario se enviará automáticamente.
-  </p>
+  <?php if ($canUploadLogo) : ?>
+    <div id="logo-upload-feedback" class="logo-upload-feedback" aria-live="polite" hidden></div>
+
+    <p class="empresa-logo-hint">
+      💡 <strong>Tip:</strong> Haz clic en el lápiz para seleccionar una imagen PNG o JPG.
+      El logotipo se actualizará al instante sin recargar la página.
+    </p>
+  <?php endif; ?>
 
 
       <!-- 🏢 Información General -->
@@ -479,6 +525,173 @@ $progreso = $documentosStats['porcentaje'];
           <a href="<?php echo htmlspecialchars($empresaDeleteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn danger">🗑️ Eliminar Empresa</a>
         </div>
       </section>
+
+      <?php if ($canUploadLogo) : ?>
+        <script>
+          (() => {
+            const form = document.getElementById('logo-upload-form');
+            if (!form) {
+              return;
+            }
+
+            const input = form.querySelector('[data-logo-input]');
+            if (!input) {
+              return;
+            }
+
+            const button = form.querySelector('[data-logo-button]');
+            const feedback = document.getElementById('logo-upload-feedback');
+            const container = document.querySelector('[data-logo-container]');
+            const baseUrl = form.dataset.logoBaseUrl || '';
+            const altText = form.dataset.logoAlt || '';
+
+            const normalizeBaseUrl = (base) => {
+              if (!base) {
+                return '';
+              }
+
+              return base.endsWith('/') ? base : `${base}/`;
+            };
+
+            const setMessage = (message, type) => {
+              if (!feedback) {
+                return;
+              }
+
+              feedback.textContent = message || '';
+              feedback.hidden = !message;
+              feedback.classList.remove('logo-upload-feedback--success', 'logo-upload-feedback--error');
+
+              if (!message) {
+                return;
+              }
+
+              feedback.classList.add(type === 'success' ? 'logo-upload-feedback--success' : 'logo-upload-feedback--error');
+            };
+
+            const setLoading = (isLoading) => {
+              if (button) {
+                button.classList.toggle('is-loading', isLoading);
+                button.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+              }
+
+              input.disabled = isLoading;
+            };
+
+            const updateLogo = (relativePath) => {
+              if (!relativePath || !container) {
+                return;
+              }
+
+              const normalizedBase = normalizeBaseUrl(baseUrl);
+              const sanitizedPath = String(relativePath).replace(/^\/+/, '');
+              const imageUrl = `${normalizedBase}${sanitizedPath}?v=${Date.now()}`;
+              let image = container.querySelector('[data-logo-image]');
+              const placeholder = container.querySelector('[data-logo-placeholder]');
+
+              if (!image) {
+                image = document.createElement('img');
+                image.className = 'empresa-logo__image';
+                image.setAttribute('data-logo-image', '');
+                image.alt = altText || '';
+                const referenceNode = form.parentNode === container ? form : container.querySelector('form');
+
+                if (referenceNode) {
+                  container.insertBefore(image, referenceNode);
+                } else {
+                  container.appendChild(image);
+                }
+              }
+
+              image.src = imageUrl;
+
+              if (altText) {
+                image.alt = altText;
+              }
+
+              if (placeholder) {
+                placeholder.remove();
+              }
+            };
+
+            form.addEventListener('submit', (event) => {
+              event.preventDefault();
+            });
+
+            input.addEventListener('change', async () => {
+              if (!input.files || input.files.length === 0) {
+                return;
+              }
+
+              const formData = new FormData(form);
+              const file = input.files[0];
+
+              if (file) {
+                formData.set('logo', file);
+              }
+
+              setMessage('', '');
+              setLoading(true);
+
+              try {
+                const response = await fetch(form.action, {
+                  method: 'POST',
+                  body: formData,
+                  credentials: 'same-origin'
+                });
+
+                let payload = null;
+
+                try {
+                  payload = await response.json();
+                } catch (jsonError) {
+                  payload = null;
+                }
+
+                if (!response.ok) {
+                  const errorMessage = payload && typeof payload.message === 'string'
+                    ? payload.message
+                    : 'No se pudo actualizar el logotipo. Intenta de nuevo.';
+
+                  throw new Error(errorMessage);
+                }
+
+                const isSuccessful = payload && (
+                  payload.success === true ||
+                  payload.success === 'true' ||
+                  payload.success === 1 ||
+                  payload.success === '1'
+                );
+
+                if (!isSuccessful) {
+                  const message = payload && typeof payload.message === 'string'
+                    ? payload.message
+                    : 'No se pudo actualizar el logotipo. Intenta de nuevo.';
+
+                  throw new Error(message);
+                }
+
+                updateLogo(payload.logoPath || '');
+
+                const successMessage = typeof payload.message === 'string' && payload.message !== ''
+                  ? payload.message
+                  : 'Logotipo actualizado correctamente.';
+
+                setMessage(successMessage, 'success');
+              } catch (error) {
+                const message = error instanceof Error && error.message
+                  ? error.message
+                  : 'No se pudo actualizar el logotipo. Intenta de nuevo.';
+
+                setMessage(message, 'error');
+              } finally {
+                setLoading(false);
+                input.value = '';
+              }
+            });
+          })();
+        </script>
+      <?php endif; ?>
 
     </main>
   </div>

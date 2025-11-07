@@ -24,23 +24,11 @@ if ($empresaNombre === '') {
 
 </head>
 <body>
+<?php include __DIR__ . '/../layout/portal_empresa_header.php'; ?>
 
-<header class="portal-header">
-  <div class="brand">
-    <div class="logo"></div>
-    <div>
-      <strong>Portal de Empresa</strong><br>
-      <small>Residencias Profesionales</small>
-    </div>
-  </div>
-  <div class="userbox">
-    <span class="company"><?= htmlspecialchars($empresaNombre) ?></span>
-    <a href="../portalempresa/portal_list.php" class="btn">Inicio</a>
-    <a href="../../common/logout.php" class="btn">Salir</a>
-  </div>
-</header>
+<main class="container"></main>
 
-<main class="container">
+
 
   <!-- Bienvenida + resumen de convenio -->
   <section class="welcome">

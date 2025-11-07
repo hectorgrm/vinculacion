@@ -1,0 +1,35 @@
+.portal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 12px 24px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-bottom: 3px solid #004aad;
+}
+
+.portal-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.portal-header .logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+.portal-header .nav a {
+  margin-left: 16px;
+  text-decoration: none;
+  color: #004aad;
+  font-weight: 500;
+}
+
+.portal-header .nav a:hover {
+  text-decoration: underline;
+}

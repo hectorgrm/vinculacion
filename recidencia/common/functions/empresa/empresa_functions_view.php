@@ -165,6 +165,8 @@ if (!function_exists('empresaViewDecorate')) {
         $empresa['telefono_label'] = empresaViewValueOrDefault($empresa['telefono'] ?? null, 'No registrado');
         $empresa['correo_label'] = empresaViewValueOrDefault($empresa['contacto_email'] ?? null, 'No registrado');
         $empresa['tipo_empresa_inferido'] = empresaViewInferTipoEmpresa($empresa['regimen_fiscal'] ?? null);
+        $empresa['logo_path'] = empresaViewNormalizeLogoPath($empresa['logo_path'] ?? null);
+        $empresa['logo_url'] = empresaViewBuildLogoUrl($empresa['logo_path']);
 
         return $empresa;
     }
@@ -200,6 +202,57 @@ if (!function_exists('empresaViewInferTipoEmpresa')) {
         }
 
         return null;
+    }
+}
+
+if (!function_exists('empresaViewNormalizeLogoPath')) {
+    function empresaViewNormalizeLogoPath(mixed $value): ?string
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        if (preg_match('/^https?:\/\//i', $value) === 1) {
+            return $value;
+        }
+
+        $value = str_replace('\\', '/', $value);
+        $value = preg_replace('#/{2,}#', '/', $value);
+
+        if (!is_string($value)) {
+            $value = (string) $value;
+        }
+
+        $value = ltrim($value, '/');
+
+        if ($value === '' || str_contains($value, '..')) {
+            return null;
+        }
+
+        return $value;
+    }
+}
+
+if (!function_exists('empresaViewBuildLogoUrl')) {
+    function empresaViewBuildLogoUrl(mixed $logoPath): ?string
+    {
+        $normalized = empresaViewNormalizeLogoPath($logoPath);
+
+        if ($normalized === null) {
+            return null;
+        }
+
+        if (preg_match('/^https?:\/\//i', $normalized) === 1) {
+            return $normalized;
+        }
+
+        return '../../' . $normalized;
     }
 }
 
