@@ -58,6 +58,8 @@ class EmpresaViewModel
     }
 
     /**
+     * Obtiene los convenios de la empresa con estatus "Activa" o "En revisión".
+     *
      * @return array<int, array<string, mixed>>
      */
     public function findActiveConveniosByEmpresaId(int $empresaId): array
@@ -78,7 +80,7 @@ class EmpresaViewModel
                    actualizado_en
               FROM rp_convenio
              WHERE empresa_id = :empresa_id
-               AND estatus = 'Activa'
+               AND estatus IN ('Activa', 'En revisión')
              ORDER BY fecha_fin DESC,
                       fecha_inicio DESC,
                       id DESC

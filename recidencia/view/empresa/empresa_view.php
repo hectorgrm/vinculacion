@@ -161,7 +161,7 @@ $progreso = $documentosStats['porcentaje'];
 
       <!-- 📜 Convenios asociados -->
       <section class="card">
-        <header>📜 Convenios Activos</header>
+        <header>📜 Convenios activos y en revisión</header>
         <div class="content">
           <table>
             <thead>
@@ -181,7 +181,7 @@ $progreso = $documentosStats['porcentaje'];
                 </tr>
               <?php elseif ($conveniosActivos === []): ?>
                 <tr>
-                  <td colspan="6" style="text-align:center;">No existen convenios activos registrados para esta empresa.</td>
+                  <td colspan="6" style="text-align:center;">No existen convenios activos o en revisión registrados para esta empresa.</td>
                 </tr>
               <?php else: ?>
                 <?php foreach ($conveniosActivos as $convenio): ?>
