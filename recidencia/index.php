@@ -34,7 +34,8 @@ if (!is_array($user) || !in_array(strtolower((string) ($user['role'] ?? '')), $a
         <a href="view/empresa/empresa_list.php">🏢 Empresas</a>
         <a href="view/convenio/convenio_list.php">📑 Convenios</a>
         <a href="view/documentos/documento_list.php">📂 Documentos</a>
-        <a href="view/machote/machote_list.php">📝 Machotes</a>
+        <a href="view/machote/machote_list.php">📝 Machote Comentario</a>
+        <a href="view/machoteglobal/machote_global_list.php">📝 Machote global</a>
         <a href="view/documentotipo/documentotipo_list.php">🗂️ Tipo de Documento</a>
         <a href="view/portalacceso/portal_list.php">🔐 Portal Empresa</a>
         <a href="view/estudiante/estudiante_list.php">🧑‍🎓 Estudiante</a>

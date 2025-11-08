@@ -81,6 +81,7 @@
                 <td><span class="badge cancelado">Cancelado</span></td>
                 <td class="actions">
                   <a href="machote_edit.php?id=3" class="btn small">✏️ Editar</a>
+                  <a href="machote_revision_view.php?id=3" class="btn small">✏️ Revisar/view</a>
                 </td>
               </tr>
             </tbody>

@@ -13,6 +13,7 @@
     <a href="../convenio/convenio_list.php">📑 Convenios</a>
     <a href="../documentos/documento_list.php">📂 Documentos</a>
     <a href="../machote/machote_list.php">📝 Machote Comentarios</a>
+    <a href="../machoteglobal/machote_global_list.php">📝 Machote Global</a>
     <a href="../documentotipo/documentotipo_list.php">🗂️ Documento Tipo</a>
     <a href="../portalacceso/portal_list.php">🔐 Portal Acceso</a>
     <a href="../estudiante/estudiante_list.php">🧑‍🎓 Estudiante</a>
