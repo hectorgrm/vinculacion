@@ -47,4 +47,69 @@ final class MachoteGlobalModel
             return null;
         }
     }
+
+    /**
+     * Inserta un nuevo machote institucional.
+     *
+     * @param array<string, mixed> $data
+     */
+    public function insertMachote(array $data): bool
+    {
+        try {
+            $sql = "INSERT INTO rp_machote (version, descripcion, estado, contenido_html)
+                    VALUES (:version, :descripcion, :estado, :contenido_html)";
+            $stmt = $this->connection->prepare($sql);
+            return $stmt->execute([
+                'version' => $data['version'],
+                'descripcion' => $data['descripcion'] !== '' ? $data['descripcion'] : null,
+                'estado' => $data['estado'],
+                'contenido_html' => $data['contenido_html'] !== '' ? $data['contenido_html'] : null,
+            ]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza un machote existente.
+     *
+     * @param array<string, mixed> $data
+     */
+    public function updateMachote(array $data): bool
+    {
+        try {
+            $sql = "UPDATE rp_machote
+                    SET version = :version,
+                        descripcion = :descripcion,
+                        estado = :estado,
+                        contenido_html = :contenido_html
+                    WHERE id = :id";
+            $stmt = $this->connection->prepare($sql);
+            return $stmt->execute([
+                'id' => $data['id'],
+                'version' => $data['version'],
+                'descripcion' => $data['descripcion'] !== '' ? $data['descripcion'] : null,
+                'estado' => $data['estado'],
+                'contenido_html' => $data['contenido_html'] !== '' ? $data['contenido_html'] : null,
+            ]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Marca un machote como archivado.
+     */
+    public function deleteMachote(int $id): bool
+    {
+        try {
+            $sql = "UPDATE rp_machote
+                    SET estado = 'archivado'
+                    WHERE id = :id";
+            $stmt = $this->connection->prepare($sql);
+            return $stmt->execute(['id' => $id]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }
