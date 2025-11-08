@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Residencia\Controller\MachoteGlobal;
 
+require_once __DIR__ . '/../../model/machoteglobal/MachoteGlobalModel.php';
+require_once __DIR__ . '/../../../common/model/db.php';
+
 use Common\Model\Database;
 use Residencia\Model\MachoteGlobal\MachoteGlobalModel;
 use PDO;

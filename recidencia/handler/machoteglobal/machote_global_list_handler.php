@@ -12,7 +12,8 @@ declare(strict_types=1);
 use Residencia\Controller\MachoteGlobal\MachoteGlobalController;
 
 // Cargar el autoload o rutas necesarias
-require_once __DIR__ . '/../../../controller/machoteglobal/MachoteGlobalController.php';
+require_once __DIR__ . '/../../common/helpers/machoteglobal_helper.php';
+require_once __DIR__ . '/../../controller/machoteglobal/MachoteGlobalController.php';
 
 // Crear instancia del controlador
 $controller = new MachoteGlobalController();
@@ -32,4 +33,4 @@ $machotes = $controller->listarMachotes();
 // }
 
 // Cargar la vista y pasarle los datos
-include __DIR__ . '/../../../view/machoteglobal/machote_global_list.php';
+include __DIR__ . '/../../view/machoteglobal/machote_global_list.php';

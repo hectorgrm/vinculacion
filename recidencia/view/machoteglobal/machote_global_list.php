@@ -1,3 +1,9 @@
+<?php
+if (!isset($machotes)) {
+    require __DIR__ . '/../../handler/machoteglobal/machote_global_list_handler.php';
+    return;
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -87,59 +93,48 @@
               </tr>
             </thead>
             <tbody>
-              <!-- FILA EJEMPLO 1 -->
-              <tr>
-                <td>1</td>
-                <td><strong>Inst v1.3</strong></td>
-                <td><span class="badge vigente">Vigente</span></td>
-                <td>Cláusula de confidencialidad actualizada; formato de encabezado renovado.</td>
-                <td>2025-11-01</td>
-                <td>2025-11-08</td>
-                <td>
-                  <a href="machote_edit.php?version=1.3" class="btn small">✏️ Editar</a>
-                  <a href="machote_revisar.php?version=1.3" class="btn small">🔍 Ver revisiones</a>
-                  <button class="btn small" title="(Demo) Duplicar">📄 Duplicar</button>
-                  <button class="btn small danger" title="(Demo) Archivar">🗄️ Archivar</button>
-                </td>
-              </tr>
-
-              <!-- FILA EJEMPLO 2 -->
-              <tr>
-                <td>2</td>
-                <td><strong>Inst v1.2</strong></td>
-                <td><span class="badge archivado">Archivado</span></td>
-                <td>Versión anterior (vigente hasta Oct-2025).</td>
-                <td>2025-05-10</td>
-                <td>2025-10-31</td>
-                <td>
-                  <button class="btn small" disabled>✏️ Editar</button>
-                  <a href="machote_edit.php?version=1.2&read=1" class="btn small">👁️ Ver</a>
-                  <button class="btn small" title="(Demo) Duplicar">📄 Duplicar</button>
-                </td>
-              </tr>
-
-              <!-- FILA EJEMPLO 3 -->
-              <tr>
-                <td>3</td>
-                <td><strong>Inst v1.4 (borrador)</strong></td>
-                <td><span class="badge borrador">Borrador</span></td>
-                <td>Ensayo de cláusulas para 2026; revisión legal en curso.</td>
-                <td>2025-11-07</td>
-                <td>2025-11-08</td>
-                <td>
-                  <a href="machote_edit.php?version=1.4" class="btn small">✏️ Editar</a>
-                  <button class="btn small" title="(Demo) Activar como vigente">✅ Marcar vigente</button>
-                  <button class="btn small danger" title="(Demo) Eliminar">🗑️ Eliminar</button>
-                </td>
-              </tr>
-
-              <!-- Más filas… cuando conectes con BD (rp_machote) -->
+              <?php if (empty($machotes)) : ?>
+                <tr>
+                  <td colspan="7" style="text-align:center; padding:20px;" class="muted">
+                    No se encontraron machotes registrados.
+                  </td>
+                </tr>
+              <?php else : ?>
+                <?php foreach ($machotes as $index => $machote) :
+                    $id = (int)($machote['id'] ?? 0);
+                    $version = htmlspecialchars((string)($machote['version'] ?? ''), ENT_QUOTES, 'UTF-8');
+                    $estado = (string)($machote['estado'] ?? 'borrador');
+                    $descripcion = trim((string)($machote['descripcion'] ?? ''));
+                    $descripcion = $descripcion !== ''
+                        ? nl2br(htmlspecialchars($descripcion, ENT_QUOTES, 'UTF-8'))
+                        : '<span class="muted">Sin descripción</span>';
+                    $creado = machote_global_format_datetime($machote['creado_en'] ?? null);
+                    $actualizado = machote_global_format_datetime($machote['actualizado_en'] ?? null);
+                    $badgeClass = machote_global_estado_badge($estado);
+                    $estadoLabel = machote_global_estado_label($estado);
+                ?>
+                  <tr>
+                    <td><?php echo $index + 1; ?></td>
+                    <td><strong><?php echo $version !== '' ? $version : '—'; ?></strong></td>
+                    <td><span class="<?php echo $badgeClass; ?>"><?php echo $estadoLabel; ?></span></td>
+                    <td><?php echo $descripcion; ?></td>
+                    <td><?php echo $creado; ?></td>
+                    <td><?php echo $actualizado; ?></td>
+                    <td>
+                      <a href="machote_edit.php?id=<?php echo $id; ?>" class="btn small">✏️ Editar</a>
+                      <a href="machote_revisar.php?id=<?php echo $id; ?>" class="btn small">🔍 Ver revisiones</a>
+                      <button class="btn small" type="button" title="Duplicar registro #<?php echo $id; ?>">📄 Duplicar</button>
+                      <button class="btn small danger" type="button" title="Archivar registro #<?php echo $id; ?>">🗄️ Archivar</button>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              <?php endif; ?>
             </tbody>
           </table>
         </div>
 
         <p class="muted" style="margin-top:8px">
-          Esta vista se llenará con <code>rp_machote</code> (version, estado, descripcion, creado_en, actualizado_en).
+          Información obtenida de <code>rp_machote</code> (versión, estado, descripción, creado_en, actualizado_en).
           Las acciones se convertirán en endpoints cuando conectes el backend.
         </p>
       </section>
