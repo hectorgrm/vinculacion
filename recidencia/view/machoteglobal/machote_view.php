@@ -129,7 +129,7 @@ if ($version !== null && $version !== '') {
         <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap;">
           <a href="../../view/machoteglobal/machote_global_list.php" class="btn">← Volver al listado</a>
           <?php if ($viewerError === null && $machote !== null): ?>
-            <a href="../../handler/machoteglobal/machote_edit_handler.php?id=<?= (int)$machote['id'] ?>" class="btn primary">✏️ Editar</a>
+            <a href="../../view/machoteglobal/machote_edit.php?id=<?= (int)$machote['id'] ?>" class="btn primary">✏️ Editar</a>
             <button type="button" class="btn print" onclick="window.print()">🖨️ Imprimir</button>
             <a
               href="../../handler/machoteglobal/machote_export_pdf_handler.php?id=<?= (int)$machote['id'] ?>"

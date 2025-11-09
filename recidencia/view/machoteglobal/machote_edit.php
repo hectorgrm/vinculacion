@@ -15,36 +15,20 @@ $descripcionValue = (string)($machoteData['descripcion'] ?? '');
 $estadoValue = (string)($machoteData['estado'] ?? 'borrador');
 $contenidoHtmlValue = (string)($machoteData['contenido_html'] ?? '');
 
-$defaultHtml = <<<HTML
-<h2 style="text-align:center;">Convenio de Colaboración para la Realización de Residencias Profesionales</h2>
-<p>Celebran por una parte el <strong>Instituto Tecnológico de Ejemplo</strong> y por la otra la empresa <strong>{{empresa_nombre}}</strong>, quienes convienen lo siguiente:</p>
-
-<h3>Cláusula Primera: Objeto</h3>
-<p>El presente machote establece las bases de colaboración para residencias profesionales realizadas por estudiantes de la institución.</p>
-
-<h3>Cláusula Segunda: Obligaciones de la Empresa</h3>
-<ul>
-  <li>Designar un responsable técnico.</li>
-  <li>Proporcionar medios y apoyos necesarios.</li>
-  <li>Permitir seguimiento y evaluación.</li>
-</ul>
-
-<h3>Cláusula de Confidencialidad</h3>
-<p>La información compartida durante la residencia será confidencial y no podrá divulgarse sin consentimiento de ambas partes.</p>
-
-<h3>Vigencia</h3>
-<p>La vigencia del convenio será del <strong>{{fecha_inicio}}</strong> al <strong>{{fecha_fin}}</strong>.</p>
-
-<p style="margin-top:24px"><em>Variables disponibles: {{empresa_nombre}}, {{fecha_inicio}}, {{fecha_fin}}, {{direccion_empresa}}, {{rfc_empresa}}.</em></p>
-HTML;
-
-if ($contenidoHtmlValue === '' && empty($machoteId)) {
-    $contenidoHtmlValue = $defaultHtml;
+// Solo cargar el machote oficial si es NUEVO (no hay contenido en BD)
+if (empty($machoteId) && trim($contenidoHtmlValue) === '') {
+    $templatePath = __DIR__ . '/../../templates/machote_oficial_v1_content.html';
+    if (file_exists($templatePath)) {
+        $contenidoHtmlValue = file_get_contents($templatePath);
+    } else {
+        $contenidoHtmlValue = '<p style="color:red;">⚠️ No se encontró la plantilla oficial (machote_oficial_v1_content.html)</p>';
+    }
 }
 
 $versionHtml = htmlspecialchars($versionValue, ENT_QUOTES, 'UTF-8');
 $descripcionHtml = htmlspecialchars($descripcionValue, ENT_QUOTES, 'UTF-8');
-$contenidoHtml = htmlspecialchars($contenidoHtmlValue, ENT_NOQUOTES, 'UTF-8');
+$contenidoHtml = $contenidoHtmlValue; // ✅ NO ESCAPAR: CKEditor necesita HTML limpio
+
 $estadoSeleccionado = in_array($estadoValue, ['vigente', 'borrador', 'archivado'], true)
     ? $estadoValue
     : 'borrador';
@@ -62,57 +46,8 @@ $actionUrl = 'machote_edit.php' . ($machoteId ? '?id=' . urlencode((string)$mach
 
   <!-- Estilos globales -->
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
-  <!-- Puedes crear un CSS específico si lo deseas: ../../assets/css/machote/machote_edit.css -->
-
-  <style>
-    :root{
-      --bg:#f6f7fb; --card:#fff; --border:#e5e7eb; --text:#334155;
-      --primary:#0d6efd; --success:#16a34a; --warn:#f59e0b; --danger:#ef4444;
-      --radius:12px;
-    }
-    body{background:var(--bg); color:var(--text)}
-    .app{min-height:100vh}
-    .topbar{display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#fff; border-bottom:1px solid var(--border)}
-    .title h2{margin:0}
-    .subtitle{margin:4px 0 0 0; color:#64748b}
-    .actions{display:flex; gap:8px; flex-wrap:wrap}
-    .btn{border:1px solid var(--border); background:#fff; padding:.5rem .85rem; border-radius:10px; cursor:pointer; text-decoration:none; color:inherit}
-    .btn:hover{background:#f5f5f5}
-    .btn.primary{background:var(--primary); color:#fff; border-color:var(--primary)}
-    .btn.success{background:var(--success); color:#fff; border-color:var(--success)}
-    .btn.warn{background:var(--warn); color:#fff; border-color:var(--warn)}
-    .btn.danger{background:var(--danger); color:#fff; border-color:var(--danger)}
-    .btn.small{padding:.35rem .6rem; border-radius:8px; font-size:.92rem}
-
-    main.main{padding:16px}
-    .grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-    @media (max-width: 1024px){ .grid{grid-template-columns:1fr} }
-
-    .card{background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:14px}
-    .card header{font-weight:700; margin-bottom:10px}
-    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    .row .full{grid-column:1/-1}
-    label{font-size:.92rem; color:#475569; margin-bottom:4px; display:block}
-    input[type="text"], textarea, select{
-      width:100%; border:1px solid #cbd5e1; border-radius:10px; padding:8px; font-family:inherit
-    }
-    .hint{color:#64748b; font-size:.9rem}
-    .alert{border-radius:10px; padding:12px 14px; margin:16px 0; display:flex; gap:10px; align-items:flex-start}
-    .alert.error{background:#fee2e2; border:1px solid #fecaca; color:#991b1b}
-    .alert.info{background:#e0f2fe; border:1px solid #bae6fd; color:#0c4a6e}
-
-    /* Tabla de versiones */
-    table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden}
-    thead th{background:#f1f5f9; text-align:left; padding:10px; font-size:.9rem; color:#475569}
-    tbody td{padding:10px; border-top:1px solid var(--border)}
-    tbody tr:hover{background:#f8fafc}
-    .badge{border-radius:999px; padding:2px 8px; font-weight:700; font-size:.75rem; color:#fff}
-    .badge.vigente{background:#16a34a}
-    .badge.archivado{background:#64748b}
-    .badge.borrador{background:#f59e0b}
-
-    .ck-editor__editable{min-height:560px; border-radius:12px}
-  </style>
+  <link rel="stylesheet" href="../../assets/css/machoteglobal/machoteglobaledit.css" />
+  <link rel="stylesheet" href="../../templates/machote_oficial_v1_content.css" /> <!-- ✅ Carga estilos institucionales -->
 </head>
 <body>
   <div class="app">
@@ -269,7 +204,19 @@ $actionUrl = 'machote_edit.php' . ($machoteId ? '?id=' . urlencode((string)$mach
 
     ClassicEditor
       .create(document.querySelector('#editor'), {
-        toolbar: ['undo','redo','|','bold','italic','link','|','numberedList','bulletedList','|','insertTable','blockQuote']
+        toolbar: [
+          'undo', 'redo', '|',
+          'bold', 'italic', 'link', '|',
+          'numberedList', 'bulletedList', '|',
+          'insertTable', 'blockQuote'
+        ],
+        ckfinder: { uploadUrl: '' },
+        heading: { options: [
+          { model: 'paragraph', title: 'Párrafo', class: 'ck-heading_paragraph' },
+          { model: 'heading2', view: 'h2', title: 'Título 2', class: 'ck-heading_heading2' },
+          { model: 'heading3', view: 'h3', title: 'Título 3', class: 'ck-heading_heading3' }
+        ]},
+        fontSize: { options: [ 'default', 11, 12, 13, 14, 16 ] }
       })
       .then(newEditor => {
         editor = newEditor;
@@ -277,26 +224,32 @@ $actionUrl = 'machote_edit.php' . ($machoteId ? '?id=' . urlencode((string)$mach
       .catch(console.error);
 
     const previewButtons = document.querySelectorAll('[data-preview]');
-    function previewDraft(){
-      if (!editor) {
-        return;
-      }
+    function previewDraft() {
+      if (!editor) return;
       const w = window.open('', '_blank');
       const html = editor.getData();
-      w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Previsualización · ${document.getElementById('version').value}</title></head><body>${html}</body></html>`);
+      w.document.write(`
+        <!doctype html>
+        <html lang="es">
+          <head>
+            <meta charset="utf-8">
+            <title>Previsualización · ${document.getElementById('version').value}</title>
+            <link rel="stylesheet" href="../../templates/machote_oficial_v1_content.css">
+          </head>
+          <body>${html}</body>
+        </html>
+      `);
       w.document.close();
     }
 
-    previewButtons.forEach(btn => btn.addEventListener('click', (event) => {
-      event.preventDefault();
+    previewButtons.forEach(btn => btn.addEventListener('click', e => {
+      e.preventDefault();
       previewDraft();
     }));
 
     if (form) {
       form.addEventListener('submit', () => {
-        if (editor) {
-          editor.updateSourceElement();
-        }
+        if (editor) editor.updateSourceElement();
       });
     }
   </script>

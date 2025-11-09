@@ -1,0 +1,175 @@
+/* ===============================
+   ESTILOS INSTITUCIONALES · MACHOTE OFICIAL
+   =============================== */
+
+/* --- Configuración de página para PDF --- */
+@page {
+  margin: 3cm 2.5cm;
+}
+
+body {
+  font-family: "DejaVu Serif", "Times New Roman", serif;
+  font-size: 11pt;
+  color: #111;
+  line-height: 1.6;
+  text-align: justify;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Header con logos --- */
+header.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.logo-left img {
+  width: 160px;
+  height: auto;
+}
+
+.logo-right {
+  width: 220px;
+  height: 95px;
+  border: 1px solid #cfcfcf;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  background: #fafafa;
+  font-size: 10pt;
+  text-align: center;
+}
+
+/* --- Footer fijo --- */
+footer.page-footer {
+  position: fixed;
+  bottom: 1.5cm;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #444;
+  font-size: 9pt;
+  border-top: 1px solid #ddd;
+  padding-top: 6px;
+}
+
+/* --- Títulos principales --- */
+h1 {
+  text-align: center;
+  font-size: 14pt;
+  text-transform: uppercase;
+  margin: 8px 0 16px 0;
+}
+
+h2 {
+  font-size: 12.5pt;
+  font-weight: bold;
+  margin: 18px 0 8px;
+  text-transform: uppercase;
+}
+
+h3 {
+  font-size: 12pt;
+  font-weight: bold;
+  margin: 14px 0 6px;
+}
+
+/* --- Párrafos y listas --- */
+p {
+  margin: 0 0 10px;
+}
+
+ul {
+  margin: 6px 0 10px 22px;
+}
+
+li {
+  margin-bottom: 4px;
+}
+
+/* --- Secciones de firmas --- */
+.signature-section {
+  margin-top: 22px;
+}
+
+.signature-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  text-align: center;
+}
+
+.signature-table td {
+  width: 50%;
+  vertical-align: top;
+  padding: 24px 14px;
+}
+
+.line {
+  border-top: 1px solid #000;
+  padding-top: 4px;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+.center {
+  text-align: center;
+}
+
+/* --- Separador entre páginas --- */
+.page-break {
+  page-break-after: always;
+}
+
+/* --- Mejoras visuales al editar desde CKEditor --- */
+.ck-content {
+  min-height: 700px;
+  padding: 30px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.ck-content h1,
+.ck-content h2,
+.ck-content h3 {
+  color: #000;
+}
+
+.ck-content p {
+  color: #111;
+}
+
+/* --- Compatibilidad con Dompdf --- */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+strong {
+  font-weight: bold;
+}
+em {
+  font-style: italic;
+}
+
+/* --- Evitar quiebres extraños en párrafos largos --- */
+p, li {
+  orphans: 2;
+  widows: 2;
+}
+
+/* --- Forzar que los headers no se separen del contenido siguiente --- */
+h1, h2, h3 {
+  page-break-after: avoid;
+}
