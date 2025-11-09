@@ -131,9 +131,12 @@ if ($version !== null && $version !== '') {
           <?php if ($viewerError === null && $machote !== null): ?>
             <a href="../../handler/machoteglobal/machote_edit_handler.php?id=<?= (int)$machote['id'] ?>" class="btn primary">✏️ Editar</a>
             <button type="button" class="btn print" onclick="window.print()">🖨️ Imprimir</button>
-            <a href="../../handler/machoteglobal/machote_export_pdf_handler.php?id=<?= (int)$machote['id'] ?>" 
-   class="btn primary" target="_blank">📄 Exportar PDF</a>
-
+            <a
+              href="../../handler/machoteglobal/machote_export_pdf_handler.php?id=<?= (int)$machote['id'] ?>"
+              class="btn primary"
+              target="_blank"
+              rel="noopener"
+            >📄 Exportar a PDF</a>
           <?php endif; ?>
         </div>
       </header>
