@@ -89,6 +89,7 @@ if (!isset($machotes)) {
                 <th>Descripción</th>
                 <th>Creado</th>
                 <th>Actualizado</th>
+                <th style="min-width:140px">Vista</th>
                 <th style="min-width:280px">Acciones</th>
               </tr>
             </thead>
@@ -120,6 +121,13 @@ if (!isset($machotes)) {
                     <td><?php echo $descripcion; ?></td>
                     <td><?php echo $creado; ?></td>
                     <td><?php echo $actualizado; ?></td>
+                    <td>
+                      <a
+                        href="../../view/machoteglobal/machote_view.php?id=<?php echo $id; ?>"
+                        class="btn small"
+                        title="Ver machote #<?php echo $id; ?> en modo lectura"
+                      >👁️ Ver</a>
+                    </td>
                     <td>
                       <a href="machote_edit.php?id=<?php echo $id; ?>" class="btn small">✏️ Editar</a>
                       <a href="machote_revisar.php?id=<?php echo $id; ?>" class="btn small">🔍 Ver revisiones</a>
