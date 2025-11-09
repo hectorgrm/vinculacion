@@ -8,20 +8,45 @@ if (!isset($controller) || !($controller instanceof MachoteGlobalController)) {
 
 require_once __DIR__ . '/../../common/helpers/machoteglobal_helper.php';
 
+if (!function_exists('machote_global_load_template_body')) {
+    /**
+     * Devuelve unicamente el contenido del <body> de la plantilla oficial.
+     */
+    function machote_global_load_template_body(string $filePath): string
+    {
+        if (!is_file($filePath)) {
+            return '';
+        }
+
+        $raw = file_get_contents($filePath);
+        if ($raw === false) {
+            return '';
+        }
+
+        if (preg_match('/<body[^>]*>(.*?)<\/body>/is', $raw, $matches)) {
+            return trim($matches[1]);
+        }
+
+        return trim($raw);
+    }
+}
+
 $machoteData = is_array($machote) ? $machote : [];
 $machoteId = $machoteData['id'] ?? ($id ?? null);
 $versionValue = (string)($machoteData['version'] ?? '');
 $descripcionValue = (string)($machoteData['descripcion'] ?? '');
 $estadoValue = (string)($machoteData['estado'] ?? 'borrador');
 $contenidoHtmlValue = (string)($machoteData['contenido_html'] ?? '');
+$templateCssWebPath = '../../templates/machote_oficial_v1_content.css';
+$templateHtmlPath = __DIR__ . '/../../templates/machote_oficial_v1_content.html';
 
-// Solo cargar el machote oficial si es NUEVO (no hay contenido en BD)
-if (empty($machoteId) && trim($contenidoHtmlValue) === '') {
-    $templatePath = __DIR__ . '/../../templates/machote_oficial_v1_content.html';
-    if (file_exists($templatePath)) {
-        $contenidoHtmlValue = file_get_contents($templatePath);
+// Inyectar la plantilla oficial siempre que no haya contenido guardado
+if (trim($contenidoHtmlValue) === '') {
+    $contenidoDesdePlantilla = machote_global_load_template_body($templateHtmlPath);
+    if ($contenidoDesdePlantilla !== '') {
+        $contenidoHtmlValue = $contenidoDesdePlantilla;
     } else {
-        $contenidoHtmlValue = '<p style="color:red;">⚠️ No se encontró la plantilla oficial (machote_oficial_v1_content.html)</p>';
+        $contenidoHtmlValue = '<p style="color:#b91c1c;">No se encontro la plantilla oficial (machote_oficial_v1_content.html)</p>';
     }
 }
 
@@ -47,7 +72,7 @@ $actionUrl = 'machote_edit.php' . ($machoteId ? '?id=' . urlencode((string)$mach
   <!-- Estilos globales -->
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/machoteglobal/machoteglobaledit.css" />
-  <link rel="stylesheet" href="../../templates/machote_oficial_v1_content.css" /> <!-- ✅ Carga estilos institucionales -->
+  <link rel="stylesheet" href="<?php echo htmlspecialchars($templateCssWebPath, ENT_QUOTES, 'UTF-8'); ?>" /> <!-- ✅ Carga estilos institucionales -->
 </head>
 <body>
   <div class="app">
@@ -201,6 +226,7 @@ $actionUrl = 'machote_edit.php' . ($machoteId ? '?id=' . urlencode((string)$mach
   <script>
     let editor;
     const form = document.getElementById('machoteForm');
+    const templateCssPath = <?php echo json_encode($templateCssWebPath, JSON_UNESCAPED_SLASHES); ?>;
 
     ClassicEditor
       .create(document.querySelector('#editor'), {
@@ -216,7 +242,18 @@ $actionUrl = 'machote_edit.php' . ($machoteId ? '?id=' . urlencode((string)$mach
           { model: 'heading2', view: 'h2', title: 'Título 2', class: 'ck-heading_heading2' },
           { model: 'heading3', view: 'h3', title: 'Título 3', class: 'ck-heading_heading3' }
         ]},
-        fontSize: { options: [ 'default', 11, 12, 13, 14, 16 ] }
+        fontSize: { options: [ 'default', 11, 12, 13, 14, 16 ] },
+        contentsCss: [templateCssPath],
+        htmlSupport: {
+          allow: [
+            {
+              name: /.*/,
+              attributes: true,
+              classes: true,
+              styles: true
+            }
+          ]
+        }
       })
       .then(newEditor => {
         editor = newEditor;
@@ -234,7 +271,7 @@ $actionUrl = 'machote_edit.php' . ($machoteId ? '?id=' . urlencode((string)$mach
           <head>
             <meta charset="utf-8">
             <title>Previsualización · ${document.getElementById('version').value}</title>
-            <link rel="stylesheet" href="../../templates/machote_oficial_v1_content.css">
+            <link rel="stylesheet" href="${templateCssPath}">
           </head>
           <body>${html}</body>
         </html>

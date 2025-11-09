@@ -43,8 +43,17 @@ if (file_exists($logoPath)) {
 $cssPath = __DIR__ . '/../../templates/machote_oficial_v1_content.css';
 $css = file_exists($cssPath) ? file_get_contents($cssPath) : 'body{font-family:"DejaVu Serif"; font-size:11pt;}';
 
-// === 4. Insertar el logo base64 directamente si el HTML original hace referencia a ../../assets/pdf/Logo.jpg ===
-$htmlContent = str_replace('../../assets/pdf/Logo.jpg', $logoUri, $htmlContent);
+// === 4. Insertar el logo base64 directamente si el HTML original hace referencia al recurso institucional ===
+if ($logoUri !== '') {
+    $logoSearchPaths = [
+        '../../assets/pdf/Logo.jpg',
+        '../assets/pdf/Logo.jpg',
+        './assets/pdf/Logo.jpg',
+        'assets/pdf/Logo.jpg',
+    ];
+
+    $htmlContent = str_ireplace($logoSearchPaths, $logoUri, $htmlContent);
+}
 
 // === 5. Configurar Dompdf ===
 $options = new Options();

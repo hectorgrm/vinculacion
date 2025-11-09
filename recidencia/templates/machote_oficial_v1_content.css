@@ -1,14 +1,16 @@
-/* ===============================
-   ESTILOS INSTITUCIONALES · MACHOTE OFICIAL
-   =============================== */
+/* ===========================
+   machote_oficial_v1_content.css
+   Estilo institucional base
+   =========================== */
 
-/* --- Configuración de página para PDF --- */
+/* --- Márgenes de página (para impresión o PDF) --- */
 @page {
   margin: 3cm 2.5cm;
 }
 
+/* --- Cuerpo del documento --- */
 body {
-  font-family: "DejaVu Serif", "Times New Roman", serif;
+  font-family: "Times New Roman", serif;
   font-size: 11pt;
   color: #111;
   line-height: 1.6;
@@ -18,12 +20,14 @@ body {
   padding: 0;
 }
 
-/* --- Header con logos --- */
+/* --- Encabezado --- */
 header.page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
 }
 
 .logo-left img {
@@ -38,62 +42,56 @@ header.page-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #444;
+  color: #555;
   background: #fafafa;
   font-size: 10pt;
-  text-align: center;
-}
-
-/* --- Footer fijo --- */
-footer.page-footer {
-  position: fixed;
-  bottom: 1.5cm;
-  left: 0;
-  right: 0;
-  text-align: center;
-  color: #444;
-  font-size: 9pt;
-  border-top: 1px solid #ddd;
-  padding-top: 6px;
+  font-family: "Arial", sans-serif;
 }
 
 /* --- Títulos principales --- */
-h1 {
+h1, h2, h3 {
+  font-weight: bold;
   text-align: center;
-  font-size: 14pt;
+  color: #111;
+  margin: 12px 0;
+}
+
+h1 {
   text-transform: uppercase;
-  margin: 8px 0 16px 0;
+  font-size: 13pt;
+  margin-top: 10px;
 }
 
 h2 {
-  font-size: 12.5pt;
-  font-weight: bold;
-  margin: 18px 0 8px;
-  text-transform: uppercase;
+  font-size: 12pt;
+  text-align: left;
+  margin-top: 20px;
 }
 
 h3 {
-  font-size: 12pt;
-  font-weight: bold;
-  margin: 14px 0 6px;
+  font-size: 11pt;
+  text-align: left;
+  margin-top: 15px;
 }
 
 /* --- Párrafos y listas --- */
 p {
   margin: 0 0 10px;
+  text-align: justify;
 }
 
 ul {
-  margin: 6px 0 10px 22px;
+  margin: 6px 0 10px 24px;
+  padding: 0;
 }
 
 li {
   margin-bottom: 4px;
 }
 
-/* --- Secciones de firmas --- */
+/* --- Tablas de firmas --- */
 .signature-section {
-  margin-top: 22px;
+  margin-top: 30px;
 }
 
 .signature-table {
@@ -106,7 +104,7 @@ li {
 .signature-table td {
   width: 50%;
   vertical-align: top;
-  padding: 24px 14px;
+  padding: 30px 14px;
 }
 
 .line {
@@ -114,62 +112,123 @@ li {
   padding-top: 4px;
   display: inline-block;
   margin-top: 2px;
+  width: 85%;
 }
 
+/* --- Footer --- */
+footer.page-footer {
+  text-align: center;
+  color: #444;
+  font-size: 9pt;
+  border-top: 1px solid #ddd;
+  padding-top: 6px;
+  margin-top: 40px;
+}
+
+/* --- Utilidades --- */
 .center {
   text-align: center;
 }
 
-/* --- Separador entre páginas --- */
 .page-break {
   page-break-after: always;
 }
+/* ================================
+   CSS base para Convenio (Word → HTML)
+   ================================ */
 
-/* --- Mejoras visuales al editar desde CKEditor --- */
-.ck-content {
-  min-height: 700px;
-  padding: 30px;
-  border: 1px solid #d0d0d0;
-  border-radius: 8px;
-  background: #fff;
+/* Página para impresión / PDF */
+@page {
+  size: Letter;              /* 8.5in x 11in */
+  margin: 2.5cm 3cm;         /* top/bottom 2.5cm, left/right 3cm */
 }
 
-.ck-content h1,
-.ck-content h2,
-.ck-content h3 {
+/* Contenedor principal que Word genera: div.WordSection1 */
+.WordSection1 {
+  /* No hace falta margin aquí, ya lo maneja @page y el body */
+}
+
+/* Estilo general del documento */
+body {
+  font-family: "Arial", sans-serif;
+  font-size: 11pt;
+  line-height: 1.15;
   color: #000;
+  text-align: justify;
+  background: #fff;
+  margin: 0;                 /* Márgenes ya definidos en @page */
 }
 
-.ck-content p {
-  color: #111;
+/* Párrafos normales (Word usa p.MsoNormal) */
+p.MsoNormal,
+div.MsoNormal,
+li.MsoNormal {
+  margin: 0 0 8pt 0;         /* 8pt después, igual que Word */
+  line-height: 1.15;
+  font-family: "Arial", sans-serif;
+  font-size: 11pt;
+  text-align: justify;
 }
 
-/* --- Compatibilidad con Dompdf --- */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+/* Párrafos con sangría de lista (I., a), etc.) */
+p.MsoListParagraph,
+div.MsoListParagraph,
+li.MsoListParagraph,
+p.MsoListParagraphCxSpFirst,
+p.MsoListParagraphCxSpMiddle,
+p.MsoListParagraphCxSpLast {
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 1.27cm;       /* ~0.5 in de sangría */
+  line-height: 1.15;
+  font-family: "Arial", sans-serif;
+  font-size: 11pt;
+  text-align: justify;
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
+/* Títulos centrados tipo “DECLARACIONES”, “CLÁUSULAS” */
+p.titulo-centro,
+p[style*="text-align:center"] b u span {
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
-strong {
+/* Si quieres un h1/h2 “limpios” para futuros docs */
+h1, h2 {
+  font-family: "Arial", sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0 0 8pt 0;
+}
+h1 { font-size: 14pt; }
+h2 { font-size: 12pt; }
+
+/* Listas generales (por si las conviertes a <ol>/<ul>) */
+ol, ul {
+  margin: 0 0 8pt 1.27cm;
+  padding: 0;
+}
+li {
+  margin-bottom: 4pt;
+}
+
+/* Negritas */
+b, strong {
   font-weight: bold;
 }
-em {
-  font-style: italic;
-}
 
-/* --- Evitar quiebres extraños en párrafos largos --- */
-p, li {
-  orphans: 2;
-  widows: 2;
+/* Quitar subrayados feos que vienen de Word si no te gustan */
+/*
+u {
+  text-decoration: none;
 }
+*/
 
-/* --- Forzar que los headers no se separen del contenido siguiente --- */
-h1, h2, h3 {
-  page-break-after: avoid;
+/* Evitar cortes raros al imprimir */
+@media print {
+  body {
+    margin: 0;
+  }
 }

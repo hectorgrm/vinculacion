@@ -52,6 +52,7 @@ if ($version !== null && $version !== '') {
   <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
 
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../templates/machote_oficial_v1_content.css" media="print" />
   <style>
     body{background:#f6f7fb;color:#0f172a;}
     .viewer-card{
