@@ -69,7 +69,9 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
             <!-- Topbar -->
             <header class="topbar">
                 <div>
-                    <h2>📑 Detalle del Convenio<?php echo $convenioId !== null ? ' #' . htmlspecialchars((string) $convenioId, ENT_QUOTES, 'UTF-8') : ''; ?></h2>
+                    <h2>📑 Detalle del
+                        Convenio<?php echo $convenioId !== null ? ' #' . htmlspecialchars((string) $convenioId, ENT_QUOTES, 'UTF-8') : ''; ?>
+                    </h2>
                     <nav class="breadcrumb">
                         <a href="../../index.php">Inicio</a>
                         <span>›</span>
@@ -80,10 +82,13 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                 </div>
                 <div class="top-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
                     <?php if ($convenioId !== null): ?>
-                        <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn">✏️ Editar</a>
+                        <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn">✏️
+                            Editar</a>
                     <?php endif; ?>
                     <?php if ($downloadUrl !== null): ?>
-                        <a href="<?php echo htmlspecialchars($downloadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn" target="_blank" rel="noopener noreferrer"><?php echo htmlspecialchars($downloadLabel, ENT_QUOTES, 'UTF-8'); ?></a>
+                        <a href="<?php echo htmlspecialchars($downloadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn"
+                            target="_blank"
+                            rel="noopener noreferrer"><?php echo htmlspecialchars($downloadLabel, ENT_QUOTES, 'UTF-8'); ?></a>
                     <?php endif; ?>
                     <a href="convenio_list.php" class="btn secondary">⬅ Volver</a>
                 </div>
@@ -129,7 +134,9 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                                 <label>Empresa</label>
                                 <div>
                                     <?php if ($empresaUrl !== null): ?>
-                                        <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">🏢 <?php echo htmlspecialchars((string) $empresaNombre, ENT_QUOTES, 'UTF-8'); ?></a>
+                                        <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                            class="btn">🏢
+                                            <?php echo htmlspecialchars((string) $empresaNombre, ENT_QUOTES, 'UTF-8'); ?></a>
                                     <?php else: ?>
                                         <?php echo htmlspecialchars((string) ($empresaNombre ?? 'Sin empresa'), ENT_QUOTES, 'UTF-8'); ?>
                                     <?php endif; ?>
@@ -138,12 +145,16 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
 
                             <div class="field">
                                 <label>Estatus</label>
-                                <div><span class="<?php echo htmlspecialchars($estatusBadgeClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($estatusBadgeLabel, ENT_QUOTES, 'UTF-8'); ?></span></div>
+                                <div><span
+                                        class="<?php echo htmlspecialchars($estatusBadgeClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($estatusBadgeLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                                </div>
                             </div>
 
                             <div class="field">
                                 <label>Folio</label>
-                                <div><?php echo htmlspecialchars((string) ($convenio['folio'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></div>
+                                <div>
+                                    <?php echo htmlspecialchars((string) ($convenio['folio'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?>
+                                </div>
                             </div>
 
                             <div class="field">
@@ -160,17 +171,23 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
 
                             <div class="field">
                                 <label>Última actualización</label>
-                                <div><?php echo htmlspecialchars((string) ($convenio['actualizado_en_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></div>
+                                <div>
+                                    <?php echo htmlspecialchars((string) ($convenio['actualizado_en_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?>
+                                </div>
                             </div>
 
                             <div class="field">
                                 <label>Fecha de inicio</label>
-                                <div><?php echo htmlspecialchars((string) ($convenio['fecha_inicio_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></div>
+                                <div>
+                                    <?php echo htmlspecialchars((string) ($convenio['fecha_inicio_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?>
+                                </div>
                             </div>
 
                             <div class="field">
                                 <label>Fecha de término</label>
-                                <div><?php echo htmlspecialchars((string) ($convenio['fecha_fin_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></div>
+                                <div>
+                                    <?php echo htmlspecialchars((string) ($convenio['fecha_fin_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?>
+                                </div>
                             </div>
 
                             <div class="field">
@@ -182,7 +199,8 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                                 <label>Archivo adjunto (PDF)</label>
                                 <div>
                                     <?php if ($downloadUrl !== null): ?>
-                                        <a class="btn" href="<?php echo htmlspecialchars($downloadUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">📥 Descargar</a>
+                                        <a class="btn" href="<?php echo htmlspecialchars($downloadUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                            target="_blank" rel="noopener noreferrer">📥 Descargar</a>
                                     <?php else: ?>
                                         <span class="text-muted">No disponible</span>
                                     <?php endif; ?>
@@ -197,12 +215,22 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
 
                         <div class="actions" style="justify-content:flex-start; margin-top:14px;">
                             <?php if ($convenioId !== null && isset($convenio['empresa_id'])): ?>
-                                <a href="convenio_renovar.php?empresa=<?php echo urlencode((string) $convenio['empresa_id']); ?>&copy=<?php echo urlencode((string) $convenioId); ?>" class="btn">🔁 Renovar (nueva versión)</a>
+                                <a href="convenio_renovar.php?empresa=<?php echo urlencode((string) $convenio['empresa_id']); ?>&copy=<?php echo urlencode((string) $convenioId); ?>"
+                                    class="btn">🔁 Renovar (nueva versión)</a>
                             <?php endif; ?>
                             <?php if ($empresaUrl !== null): ?>
-                                <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">🏢 Ver empresa</a>
+                                <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">🏢 Ver
+                                    empresa</a>
                             <?php endif; ?>
                         </div>
+                        <!-- Botón para generar machote -->
+                        <div class="form-group" style="margin-top: 1rem;">
+                            <button type="button" class="btn btn-outline"
+                                onclick="window.location.href='../../handler/machote/machote_generate_handler.php?empresa_id=<?= $convenio['empresa_id'] ?>&convenio_id=<?= $convenio['id'] ?>'">
+                                📄 Generar machote desde plantilla global
+                            </button>
+                        </div>
+
                     </div>
                 </section>
 
@@ -210,22 +238,25 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                     <section class="card">
                         <header>Vista rapida</header>
                         <div class="content preview">
-                            <iframe src="<?php echo htmlspecialchars($previewUrl, ENT_QUOTES, 'UTF-8'); ?>" style="width:100%; height:420px; border:0;" title="Vista previa del documento"></iframe>
+                            <iframe src="<?php echo htmlspecialchars($previewUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                style="width:100%; height:420px; border:0;" title="Vista previa del documento"></iframe>
                         </div>
                     </section>
                 <?php endif; ?>
 
                 <?php if ($metadata['parentId'] !== null): ?>
                     <?php
-                        $parentEmpresaNombre = $metadata['parentEmpresaNombre'] ?? $empresaNombre ?? 'Sin empresa';
-                        $parentUrl = $metadata['parentUrl'];
+                    $parentEmpresaNombre = $metadata['parentEmpresaNombre'] ?? $empresaNombre ?? 'Sin empresa';
+                    $parentUrl = $metadata['parentUrl'];
                     ?>
                     <section class="card related">
                         <header>📜 Convenio anterior</header>
                         <div class="content">
                             <p>
-                                Este convenio es una renovación del convenio #<?php echo htmlspecialchars((string) $metadata['parentId'], ENT_QUOTES, 'UTF-8'); ?>
-                                con la empresa <strong><?php echo htmlspecialchars((string) $parentEmpresaNombre, ENT_QUOTES, 'UTF-8'); ?></strong>
+                                Este convenio es una renovación del convenio
+                                #<?php echo htmlspecialchars((string) $metadata['parentId'], ENT_QUOTES, 'UTF-8'); ?>
+                                con la empresa
+                                <strong><?php echo htmlspecialchars((string) $parentEmpresaNombre, ENT_QUOTES, 'UTF-8'); ?></strong>
                             </p>
                             <p>
                                 <strong>Vigencia anterior:</strong>
@@ -235,12 +266,14 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                             </p>
                             <p>
                                 <strong>Estatus anterior:</strong>
-                                <span class="<?php echo htmlspecialchars($metadata['parentEstatusBadgeClass'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <span
+                                    class="<?php echo htmlspecialchars($metadata['parentEstatusBadgeClass'], ENT_QUOTES, 'UTF-8'); ?>">
                                     <?php echo htmlspecialchars($metadata['parentEstatusBadgeLabel'], ENT_QUOTES, 'UTF-8'); ?>
                                 </span>
                             </p>
                             <?php if ($parentUrl !== null): ?>
-                                <a href="<?php echo htmlspecialchars($parentUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️ Ver convenio anterior</a>
+                                <a href="<?php echo htmlspecialchars($parentUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️ Ver
+                                    convenio anterior</a>
                             <?php else: ?>
                                 <span class="text-muted">Enlace no disponible</span>
                             <?php endif; ?>
@@ -267,7 +300,8 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                                 <?php if ($responsableEmpresarialLabel !== 'N/D'): ?>
                                     <?php echo htmlspecialchars($responsableEmpresarialLabel, ENT_QUOTES, 'UTF-8'); ?>
                                     <?php if (is_string($responsableEmpresarialCargo) && $responsableEmpresarialCargo !== ''): ?>
-                                        <span class="text-muted">(<?php echo htmlspecialchars($responsableEmpresarialCargo, ENT_QUOTES, 'UTF-8'); ?>)</span>
+                                        <span
+                                            class="text-muted">(<?php echo htmlspecialchars($responsableEmpresarialCargo, ENT_QUOTES, 'UTF-8'); ?>)</span>
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <span class="text-muted">N/D</span>
@@ -336,15 +370,19 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
 
                 <div class="field">
                     <label>Fecha de registro</label>
-                    <div><?php echo htmlspecialchars((string) ($convenio['creado_en_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?></div>
+                    <div>
+                        <?php echo htmlspecialchars((string) ($convenio['creado_en_label'] ?? 'N/D'), ENT_QUOTES, 'UTF-8'); ?>
+                    </div>
                 </div>
 
                 <!-- Acciones finales -->
                 <section class="card">
                     <div class="content actions">
                         <?php if ($convenioId !== null): ?>
-                            <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">✏️ Editar Convenio</a>
-                            <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn danger">🗑️ Eliminar Convenio</a>
+                            <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">✏️
+                                Editar Convenio</a>
+                            <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>"
+                                class="btn danger">🗑️ Eliminar Convenio</a>
                         <?php endif; ?>
                     </div>
                 </section>

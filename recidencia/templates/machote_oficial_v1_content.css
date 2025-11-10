@@ -1,154 +1,14 @@
-/* ===========================
-   machote_oficial_v1_content.css
-   Estilo institucional base
-   =========================== */
+/* =====================================================
+   CONFIGURACIÓN GENERAL DEL DOCUMENTO
+   ===================================================== */
 
-/* --- Márgenes de página (para impresión o PDF) --- */
+/* Configuración de página para PDF / impresión */
 @page {
-  margin: 3cm 2.5cm;
+  size: letter;              /* Tamaño carta */
+  margin: 2.5cm;             /* Márgenes aproximados a Word */
 }
 
-/* --- Cuerpo del documento --- */
-body {
-  font-family: "Times New Roman", serif;
-  font-size: 11pt;
-  color: #111;
-  line-height: 1.6;
-  text-align: justify;
-  background: #fff;
-  margin: 0;
-  padding: 0;
-}
-
-/* --- Encabezado --- */
-header.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 8px;
-}
-
-.logo-left img {
-  width: 160px;
-  height: auto;
-}
-
-.logo-right {
-  width: 220px;
-  height: 95px;
-  border: 1px solid #cfcfcf;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #555;
-  background: #fafafa;
-  font-size: 10pt;
-  font-family: "Arial", sans-serif;
-}
-
-/* --- Títulos principales --- */
-h1, h2, h3 {
-  font-weight: bold;
-  text-align: center;
-  color: #111;
-  margin: 12px 0;
-}
-
-h1 {
-  text-transform: uppercase;
-  font-size: 13pt;
-  margin-top: 10px;
-}
-
-h2 {
-  font-size: 12pt;
-  text-align: left;
-  margin-top: 20px;
-}
-
-h3 {
-  font-size: 11pt;
-  text-align: left;
-  margin-top: 15px;
-}
-
-/* --- Párrafos y listas --- */
-p {
-  margin: 0 0 10px;
-  text-align: justify;
-}
-
-ul {
-  margin: 6px 0 10px 24px;
-  padding: 0;
-}
-
-li {
-  margin-bottom: 4px;
-}
-
-/* --- Tablas de firmas --- */
-.signature-section {
-  margin-top: 30px;
-}
-
-.signature-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 18px;
-  text-align: center;
-}
-
-.signature-table td {
-  width: 50%;
-  vertical-align: top;
-  padding: 30px 14px;
-}
-
-.line {
-  border-top: 1px solid #000;
-  padding-top: 4px;
-  display: inline-block;
-  margin-top: 2px;
-  width: 85%;
-}
-
-/* --- Footer --- */
-footer.page-footer {
-  text-align: center;
-  color: #444;
-  font-size: 9pt;
-  border-top: 1px solid #ddd;
-  padding-top: 6px;
-  margin-top: 40px;
-}
-
-/* --- Utilidades --- */
-.center {
-  text-align: center;
-}
-
-.page-break {
-  page-break-after: always;
-}
-/* ================================
-   CSS base para Convenio (Word → HTML)
-   ================================ */
-
-/* Página para impresión / PDF */
-@page {
-  size: Letter;              /* 8.5in x 11in */
-  margin: 2.5cm 3cm;         /* top/bottom 2.5cm, left/right 3cm */
-}
-
-/* Contenedor principal que Word genera: div.WordSection1 */
-.WordSection1 {
-  /* No hace falta margin aquí, ya lo maneja @page y el body */
-}
-
-/* Estilo general del documento */
+/* Estilo base del documento */
 body {
   font-family: "Arial", sans-serif;
   font-size: 11pt;
@@ -156,79 +16,163 @@ body {
   color: #000;
   text-align: justify;
   background: #fff;
-  margin: 0;                 /* Márgenes ya definidos en @page */
-}
-
-/* Párrafos normales (Word usa p.MsoNormal) */
-p.MsoNormal,
-div.MsoNormal,
-li.MsoNormal {
-  margin: 0 0 8pt 0;         /* 8pt después, igual que Word */
-  line-height: 1.15;
-  font-family: "Arial", sans-serif;
-  font-size: 11pt;
-  text-align: justify;
-}
-
-/* Párrafos con sangría de lista (I., a), etc.) */
-p.MsoListParagraph,
-div.MsoListParagraph,
-li.MsoListParagraph,
-p.MsoListParagraphCxSpFirst,
-p.MsoListParagraphCxSpMiddle,
-p.MsoListParagraphCxSpLast {
-  margin-top: 0;
-  margin-bottom: 0;
-  margin-left: 1.27cm;       /* ~0.5 in de sangría */
-  line-height: 1.15;
-  font-family: "Arial", sans-serif;
-  font-size: 11pt;
-  text-align: justify;
-}
-
-/* Títulos centrados tipo “DECLARACIONES”, “CLÁUSULAS” */
-p.titulo-centro,
-p[style*="text-align:center"] b u span {
-  text-align: center;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-/* Si quieres un h1/h2 “limpios” para futuros docs */
-h1, h2 {
-  font-family: "Arial", sans-serif;
-  font-weight: bold;
-  text-transform: uppercase;
-  text-align: center;
-  margin: 0 0 8pt 0;
-}
-h1 { font-size: 14pt; }
-h2 { font-size: 12pt; }
-
-/* Listas generales (por si las conviertes a <ol>/<ul>) */
-ol, ul {
-  margin: 0 0 8pt 1.27cm;
+  margin: 0;
   padding: 0;
 }
-li {
-  margin-bottom: 4pt;
+
+/* Párrafos generales */
+p {
+  margin: 0 0 8pt 0;
+  line-height: 1.15;
 }
 
-/* Negritas */
+/* Negritas generales */
 b, strong {
   font-weight: bold;
 }
 
-/* Quitar subrayados feos que vienen de Word si no te gustan */
-/*
-u {
-  text-decoration: none;
-}
-*/
+/* =====================================================
+   TITULARES Y SECCIONES
+   ===================================================== */
 
-/* Evitar cortes raros al imprimir */
-@media print {
-  body {
-    margin: 0;
-  }
+/* Título principal del convenio */
+.titulo-convenio {
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0 0 12pt 0;
+}
+
+/* Encabezados de secciones (DECLARACIONES, CLÁUSULAS...) */
+.titulo-seccion {
+  text-align: center;
+  font-weight: bold;
+  font-size: 11pt;
+  text-decoration: underline;
+  margin: 12pt 0 8pt 0;
+}
+
+/* Párrafos dentro del convenio */
+.parrafo-convenio {
+  text-align: justify;
+  line-height: 1.15;
+}
+
+/* Párrafos de incisos (I., II., III., etc.) */
+.parrafo-inciso {
+  text-align: justify;
+  line-height: 1.15;
+  margin-left: 1.5cm;
+}
+
+/* =====================================================
+   LISTAS Y NUMERACIONES
+   ===================================================== */
+
+/* Listas simples sin viñetas */
+.lista-objetos {
+  margin: 0 0 8pt 2cm;
+  padding: 0;
+  list-style-type: none;
+}
+
+.lista-objetos > li {
+  text-align: justify;
+  margin-bottom: 4pt;
+  line-height: 1.15;
+}
+
+/* Listas romanas (I., II., III., ...) */
+.lista-romana {
+  counter-reset: inciso;
+  margin: 0 0 8pt 1.5cm;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-romana > li {
+  counter-increment: inciso;
+  text-align: justify;
+  line-height: 1.15;
+  margin-bottom: 4pt;
+}
+
+.lista-romana > li::before {
+  content: counter(inciso, upper-roman) ". ";
+  font-weight: bold;
+}
+
+/* =====================================================
+   TABLA DE FIRMAS INSTITUCIONAL
+   ===================================================== */
+.tabla-firmas {
+  width: 100%;
+  border-collapse: separate;   /* Evita solapamientos */
+  border-spacing: 0;
+  margin: 24pt 0;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+/* Celdas generales */
+.tabla-firmas td {
+  vertical-align: bottom;      /* Alinea las firmas desde abajo */
+  padding: 12pt 8pt 4pt 8pt;
+
+}
+
+/* Columnas principales */
+.firma-col {
+  width: 45%;
+  border-bottom: 1px solid #000;  /* Línea recta para firmas */
+  height: 80px;                   /* Altura uniforme */
+}
+
+/* Espaciado central */
+.espacio {
+  width: 10%;
+}
+
+/* Encabezados de columnas */
+.empresa-titulo,
+.instituto-titulo {
+  font-family: "Arial", sans-serif;
+  font-size: 10pt;
+  font-weight: bold;
+  margin: 6pt 0 4pt 0;
+  text-align: center;
+}
+
+/* Título de la sección de testigos */
+.testigos-titulo {
+  text-align: center;
+  font-family: "Arial", sans-serif;
+  font-size: 11pt;
+  font-weight: bold;
+  padding-top: 16pt;
+ 
+}
+
+/* Texto general dentro de tabla */
+.tabla-firmas p {
+  font-family: "Arial", sans-serif;
+  font-size: 10pt;
+  line-height: 1.15;
+  margin: 4pt 0;
+  text-align: center;
+}
+
+/* =====================================================
+   RESALTADOS (DATOS EDITABLES)
+   ===================================================== */
+.highlight-yellow {
+  background-color: #fff59d; /* Amarillo suave */
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+.highlight-green {
+  background-color: #bbf7d0; /* Verde suave */
+  padding: 1px 3px;
+  border-radius: 3px;
 }
