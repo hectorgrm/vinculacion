@@ -1,0 +1,234 @@
+/* =====================================================
+   MACHOTE CONVENIO HIJO - Estilo institucional PDF
+   Autor: Héctor Ruiz
+   Descripción: Plantilla visual para convenios generados
+   desde el sistema de Vinculación ITSJ.
+   ===================================================== */
+
+/* -----------------------------------------------------
+   CONFIGURACIÓN GENERAL DEL DOCUMENTO
+   ----------------------------------------------------- */
+
+/* Configuración de página para PDF / impresión */
+@page {
+  size: letter;              /* Tamaño carta */
+  margin: 2.5cm;             /* Márgenes aproximados a Word */
+}
+
+/* Estilo base del documento */
+body {
+  font-family: "Arial", sans-serif;
+  font-size: 11pt;
+  line-height: 1.15;
+  color: #000;
+  text-align: justify;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+/* Párrafos generales */
+p {
+  margin: 0 0 8pt 0;
+  line-height: 1.15;
+}
+
+/* Negritas generales */
+b, strong {
+  font-weight: bold;
+}
+
+/* -----------------------------------------------------
+   ENCABEZADO CON LOGOS
+   ----------------------------------------------------- */
+
+.page-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #003366;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+}
+
+.logo-left img {
+  height: 55px;              /* Logo institucional (ITSJ) */
+}
+
+.logo-right img {
+  height: 55px;              /* Logo empresa */
+}
+
+/* Si no hay logo de empresa, usa texto alternativo */
+.logo-right {
+  font-size: 10pt;
+  font-weight: bold;
+  color: #444;
+  margin-right 200px;
+  text-transform: uppercase;
+}
+
+/* -----------------------------------------------------
+   TITULARES Y SECCIONES
+   ----------------------------------------------------- */
+
+/* Título principal del convenio */
+.logo-right {
+  font-size: 10pt;
+  font-weight: bold;
+  color: #444;
+  margin-right: 200px;
+  text-transform: uppercase;
+}
+
+
+/* Encabezados de secciones (DECLARACIONES, CLÁUSULAS...) */
+.titulo-seccion {
+  text-align: center;
+  font-weight: bold;
+  font-size: 11pt;
+  text-decoration: underline;
+  margin: 12pt 0 8pt 0;
+}
+
+/* Párrafos dentro del convenio */
+.parrafo-convenio {
+  text-align: justify;
+  line-height: 1.15;
+}
+
+/* Párrafos de incisos (I., II., III., etc.) */
+.parrafo-inciso {
+  text-align: justify;
+  line-height: 1.15;
+  margin-left: 1.5cm;
+}
+
+/* -----------------------------------------------------
+   LISTAS Y NUMERACIONES
+   ----------------------------------------------------- */
+
+/* Listas simples sin viñetas */
+.lista-objetos {
+  margin: 0 0 8pt 2cm;
+  padding: 0;
+  list-style-type: none;
+}
+
+.lista-objetos > li {
+  text-align: justify;
+  margin-bottom: 4pt;
+  line-height: 1.15;
+}
+
+/* Listas romanas (I., II., III., ...) */
+.lista-romana {
+  counter-reset: inciso;
+  margin: 0 0 8pt 1.5cm;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-romana > li {
+  counter-increment: inciso;
+  text-align: justify;
+  line-height: 1.15;
+  margin-bottom: 4pt;
+}
+
+.lista-romana > li::before {
+  content: counter(inciso, upper-roman) ". ";
+  font-weight: bold;
+}
+
+/* -----------------------------------------------------
+   TABLA DE FIRMAS INSTITUCIONAL
+   ----------------------------------------------------- */
+.tabla-firmas {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 24pt 0;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+/* Celdas generales */
+.tabla-firmas td {
+  vertical-align: bottom;
+  padding: 12pt 8pt 4pt 8pt;
+}
+
+/* Columnas principales */
+.firma-col {
+  width: 45%;
+  border-bottom: 1px solid #000;  /* Línea para firmas */
+  height: 80px;
+}
+
+/* Espaciado central */
+.espacio {
+  width: 10%;
+}
+
+/* Encabezados de columnas */
+.empresa-titulo,
+.instituto-titulo {
+  font-family: "Arial", sans-serif;
+  font-size: 10pt;
+  font-weight: bold;
+  margin: 6pt 0 4pt 0;
+  text-align: center;
+}
+
+/* Título de la sección de testigos */
+.testigos-titulo {
+  text-align: center;
+  font-family: "Arial", sans-serif;
+  font-size: 11pt;
+  font-weight: bold;
+  padding-top: 16pt;
+}
+
+/* Texto general dentro de tabla */
+.tabla-firmas p {
+  font-family: "Arial", sans-serif;
+  font-size: 10pt;
+  line-height: 1.15;
+  margin: 4pt 0;
+  text-align: center;
+}
+
+/* -----------------------------------------------------
+   RESALTADOS (DATOS EDITABLES)
+   ----------------------------------------------------- */
+
+.highlight-yellow {
+  background-color: #fff59d; /* Amarillo suave */
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+.highlight-green {
+  background-color: #bbf7d0; /* Verde suave */
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+/* -----------------------------------------------------
+   PIE DE PÁGINA (OPCIONAL)
+   ----------------------------------------------------- */
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 25px;
+  border-top: 1px solid #003366;
+  text-align: center;
+  font-size: 9pt;
+  color: #333;
+  padding-top: 4px;
+}

@@ -1,7 +1,19 @@
 <?php
+/**
+ * ===============================================================
+ * GENERAR MACHOTE HIJO DESDE PLANTILLA GLOBAL
+ * ---------------------------------------------------------------
+ * Crea un machote hijo (por convenio) copiando el contenido
+ * institucional del machote global (padre), limpiando los logos
+ * antiguos, y vinculándolo con el convenio correspondiente.
+ * ===============================================================
+ */
 
 declare(strict_types=1);
 
+// ===============================================================
+// 1️⃣ DEPENDENCIAS Y MODELOS
+// ===============================================================
 require_once __DIR__ . '/../../../common/model/db.php';
 require_once __DIR__ . '/../../model/machoteglobal/MachoteGlobalModel.php';
 require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
@@ -10,22 +22,32 @@ use Common\Model\Database;
 use Residencia\Model\Convenio\ConvenioMachoteModel;
 use Residencia\Model\MachoteGlobal\MachoteGlobalModel;
 
-$empresaId = filter_input(INPUT_GET, 'empresa_id', FILTER_VALIDATE_INT);
+// ===============================================================
+// 2️⃣ VALIDAR PARÁMETROS DE ENTRADA
+// ===============================================================
+$empresaId  = filter_input(INPUT_GET, 'empresa_id', FILTER_VALIDATE_INT);
 $convenioId = filter_input(INPUT_GET, 'convenio_id', FILTER_VALIDATE_INT);
 
 if ($convenioId === false || $convenioId === null) {
     redirectToConvenio(null, 'missing_params');
 }
 
+// ===============================================================
+// 3️⃣ CONEXIÓN A LA BASE DE DATOS Y MODELADO
+// ===============================================================
 $connection = Database::getConnection();
 $convenioMachoteModel = new ConvenioMachoteModel($connection);
 
+// Si ya existe un machote hijo asociado al convenio → redirigir a editar
 $existingMachote = $convenioMachoteModel->getByConvenio($convenioId);
 if ($existingMachote !== null) {
     header('Location: ../../view/machote/machote_edit.php?id=' . urlencode((string) $existingMachote['id']));
     exit;
 }
 
+// ===============================================================
+// 4️⃣ OBTENER EL MACHOTE GLOBAL (PADRE)
+// ===============================================================
 $machoteGlobalModel = new MachoteGlobalModel($connection);
 $global = $machoteGlobalModel->getLatest();
 
@@ -33,36 +55,76 @@ if ($global === null) {
     redirectToConvenio($convenioId, 'no_global');
 }
 
-$contenidoHtml = isset($global['contenido_html']) ? (string) $global['contenido_html'] : '';
 $machotePadreId = (int) ($global['id'] ?? 0);
-
 if ($machotePadreId <= 0) {
     redirectToConvenio($convenioId, 'no_global');
 }
 
+// ===============================================================
+// 5️⃣ LIMPIAR CONTENIDO DEL MACHOTE PADRE 🧹
+// ---------------------------------------------------------------
+// Solo se limpia el contenido del machote padre, para que el hijo
+// no herede logos fijos ni textos estáticos. El encabezado oficial
+// (ITSJ y empresa) se maneja dinámicamente al generar el PDF.
+// ===============================================================
+$contenidoOriginal = (string) $global['contenido_html'];
+
+// 🔸 Eliminar imagen del logo institucional anterior (LogoITSJ)
+$contenidoLimpio = preg_replace(
+    '/<img[^>]*LogoITSJ[^>]*>/i',
+    '',
+    $contenidoOriginal
+);
+
+// 🔸 Eliminar texto fijo del encabezado (“LOGOTIPO DE LA EMPRESA”)
+$contenidoLimpio = preg_replace(
+    '/LOGOTIPO\s+DE\s+LA\s+EMPRESA/i',
+    '',
+    $contenidoLimpio
+);
+
+// 🔸 Quitar espacios o etiquetas residuales
+$contenidoFinal = trim($contenidoLimpio);
+
+// ===============================================================
+// 6️⃣ CREAR MACHOTE HIJO EN LA BASE DE DATOS
+// ===============================================================
 try {
-    $nuevoMachoteId = $convenioMachoteModel->create($convenioId, $machotePadreId, $contenidoHtml, 'v1.0');
-} catch (\PDOException) {
+    $nuevoMachoteId = $convenioMachoteModel->create(
+        $convenioId,
+        $machotePadreId,
+        $contenidoFinal,
+        'v1.0'
+    );
+} catch (\PDOException $e) {
+    error_log('Error al crear machote hijo: ' . $e->getMessage());
     redirectToConvenio($convenioId, 'create_failed');
 }
 
+// ===============================================================
+// 7️⃣ ENLAZAR EL MACHOTE HIJO CON EL CONVENIO
+// ===============================================================
 try {
     $statement = $connection->prepare('UPDATE rp_convenio SET machote_id = :machote_id WHERE id = :id');
     $statement->execute([
         ':machote_id' => $nuevoMachoteId,
         ':id' => $convenioId,
     ]);
-} catch (\PDOException) {
+} catch (\PDOException $e) {
+    error_log('Error al enlazar machote con convenio: ' . $e->getMessage());
     redirectToConvenio($convenioId, 'link_failed');
 }
 
+// ===============================================================
+// 8️⃣ REDIRECCIONAR AL EDITOR DEL MACHOTE HIJO
+// ===============================================================
 $redirectUrl = '../../view/machote/machote_edit.php?id=' . urlencode((string) $nuevoMachoteId) . '&machote_status=created';
 header('Location: ' . $redirectUrl);
 exit;
 
-/**
- * @param int|null $convenioId
- */
+// ===============================================================
+// 🔁 FUNCIÓN AUXILIAR DE REDIRECCIÓN
+// ===============================================================
 function redirectToConvenio(?int $convenioId, string $code): void
 {
     $params = [];
