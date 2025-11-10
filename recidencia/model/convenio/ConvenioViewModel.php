@@ -49,6 +49,11 @@ class ConvenioViewModel
                    c.borrador_path,
                    c.firmado_path,
                    c.renovado_de,
+                   c.machote_id,
+                   cm.version_local AS machote_version_local,
+                   cm.machote_padre_id,
+                   cm.creado_en AS machote_creado_en,
+                   cm.actualizado_en AS machote_actualizado_en,
                    p.id AS parent_id,
                    p.estatus AS parent_estatus,
                    p.fecha_inicio AS parent_fecha_inicio,
@@ -56,6 +61,7 @@ class ConvenioViewModel
                    pe.nombre AS parent_empresa_nombre
               FROM rp_convenio AS c
               JOIN rp_empresa AS e ON e.id = c.empresa_id
+              LEFT JOIN rp_convenio_machote AS cm ON cm.id = c.machote_id
               LEFT JOIN rp_convenio AS p ON p.id = c.renovado_de
               LEFT JOIN rp_empresa AS pe ON pe.id = p.empresa_id
              WHERE c.id = :id

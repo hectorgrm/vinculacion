@@ -43,6 +43,50 @@ $empresaDireccionLabel = $metadata['empresaDireccionLabel'];
 $empresaRegistroLabel = $metadata['empresaRegistroLabel'];
 $estatusBadgeClass = $metadata['estatusBadgeClass'];
 $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
+$machoteChildId = $metadata['machoteChildId'];
+$machotePadreId = $metadata['machotePadreId'];
+$machoteVersionLabel = $metadata['machoteVersionLabel'];
+$machoteCreadoLabel = $metadata['machoteCreadoLabel'];
+$machoteActualizadoLabel = $metadata['machoteActualizadoLabel'];
+
+$machoteStatusParam = isset($_GET['machote_status']) ? (string) $_GET['machote_status'] : null;
+$machoteErrorParam = isset($_GET['machote_error']) ? (string) $_GET['machote_error'] : null;
+
+$machoteSuccessMessage = null;
+if ($machoteStatusParam === 'created') {
+    $machoteSuccessMessage = 'Se generó el machote del convenio a partir de la plantilla institucional.';
+}
+
+$machoteErrorMessage = null;
+switch ($machoteErrorParam) {
+    case 'missing_params':
+        $machoteErrorMessage = 'No fue posible generar el machote porque faltaron datos del convenio.';
+        break;
+    case 'no_global':
+        $machoteErrorMessage = 'No existe un machote institucional vigente para copiar.';
+        break;
+    case 'create_failed':
+        $machoteErrorMessage = 'Ocurrió un error al crear el machote del convenio.';
+        break;
+    case 'link_failed':
+        $machoteErrorMessage = 'El machote se generó pero no pudo vincularse al convenio. Intenta nuevamente.';
+        break;
+}
+
+$machoteGenerateUrl = null;
+if ($convenioId !== null && isset($convenio['empresa_id'])) {
+    $machoteGenerateUrl = '../../handler/machote/machote_generate_handler.php?' . http_build_query([
+        'empresa_id' => (int) $convenio['empresa_id'],
+        'convenio_id' => $convenioId,
+    ]);
+}
+
+$machoteEditUrl = $machoteChildId !== null
+    ? '../machote/machote_edit.php?id=' . urlencode((string) $machoteChildId)
+    : null;
+$machotePdfUrl = $machoteChildId !== null
+    ? '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((string) $machoteChildId)
+    : null;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -119,6 +163,26 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                     <div class="content">
                         <div class="alert alert-warning">
                             <?php echo htmlspecialchars($notFoundMessage, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($machoteSuccessMessage !== null): ?>
+                <section class="card">
+                    <div class="content">
+                        <div class="alert alert-success" role="status">
+                            <?php echo htmlspecialchars($machoteSuccessMessage, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($machoteErrorMessage !== null): ?>
+                <section class="card">
+                    <div class="content">
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo htmlspecialchars($machoteErrorMessage, ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                     </div>
                 </section>
@@ -223,12 +287,31 @@ $estatusBadgeLabel = $metadata['estatusBadgeLabel'];
                                     empresa</a>
                             <?php endif; ?>
                         </div>
-                        <!-- Botón para generar machote -->
-                        <div class="form-group" style="margin-top: 1rem;">
-                            <button type="button" class="btn btn-outline"
-                                onclick="window.location.href='../../handler/machote/machote_generate_handler.php?empresa_id=<?= $convenio['empresa_id'] ?>&convenio_id=<?= $convenio['id'] ?>'">
-                                📄 Generar machote desde plantilla global
-                            </button>
+                        <div class="form-group" style="margin-top: 16px;">
+                            <?php if ($machoteChildId !== null && $machoteEditUrl !== null): ?>
+                                <div class="machote-summary" style="display:flex; flex-direction:column; gap:8px;">
+                                    <div>
+                                        <strong>Machote del convenio:</strong>
+                                        versión <?php echo htmlspecialchars($machoteVersionLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                        <?php if ($machoteActualizadoLabel !== 'N/D'): ?>
+                                            · actualizado el <?php echo htmlspecialchars($machoteActualizadoLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                        <?php endif; ?>
+                                        <?php if ($machotePadreId !== null): ?>
+                                            <span class="text-muted">(plantilla institucional #<?php echo htmlspecialchars((string) $machotePadreId, ENT_QUOTES, 'UTF-8'); ?>)</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="actions" style="display:flex; gap:12px; flex-wrap:wrap;">
+                                        <a href="<?php echo htmlspecialchars($machoteEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">✏️ Editar machote</a>
+                                        <?php if ($machotePdfUrl !== null): ?>
+                                            <a href="<?php echo htmlspecialchars($machotePdfUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-outline" target="_blank" rel="noopener noreferrer">📄 Generar PDF</a>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php elseif ($machoteGenerateUrl !== null): ?>
+                                <a class="btn btn-outline" href="<?php echo htmlspecialchars($machoteGenerateUrl, ENT_QUOTES, 'UTF-8'); ?>">
+                                    📄 Generar machote desde plantilla global
+                                </a>
+                            <?php endif; ?>
                         </div>
 
                     </div>

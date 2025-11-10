@@ -1,34 +1,38 @@
 <?php
+
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../model/Conexion.php';
+require_once __DIR__ . '/../../../common/model/db.php';
 require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
-require_once __DIR__ . '/../../../vendor/autoload.php'; // ruta a dompdf/autoload.php
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
+use Common\Model\Database;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Residencia\Model\Convenio\ConvenioMachoteModel;
 
-// Validar ID
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-if ($id <= 0) {
-    die('ID de machote inválido.');
+$machoteId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+if ($machoteId === false || $machoteId === null) {
+    exit('ID de machote inválido.');
 }
 
-// Obtener machote hijo
-$machote = ConvenioMachoteModel::getById($id);
-if (!$machote) {
-    die('Machote no encontrado.');
+$connection = Database::getConnection();
+$machoteModel = new ConvenioMachoteModel($connection);
+$machote = $machoteModel->getById($machoteId);
+
+if ($machote === null) {
+    exit('Machote no encontrado.');
 }
 
-// Configuración de Dompdf
 $options = new Options();
 $options->set('isHtml5ParserEnabled', true);
 $options->set('isRemoteEnabled', true);
 $dompdf = new Dompdf($options);
 
-// Contenido del machote
-$html = '
-<html>
+$contenido = isset($machote['contenido_html']) ? (string) $machote['contenido_html'] : '';
+
+$html = '<html>
 <head>
   <meta charset="UTF-8">
   <style>
@@ -42,17 +46,14 @@ $html = '
     p { text-align: justify; }
   </style>
 </head>
-<body>
-' . $machote['contenido_html'] . '
-</body>
+<body>' . $contenido . '</body>
 </html>';
 
-// Cargar y generar PDF
 $dompdf->loadHtml($html);
 $dompdf->setPaper('letter', 'portrait');
 $dompdf->render();
 
-// Descargar o mostrar
-$filename = 'Machote_Convenio_' . $machote['convenio_id'] . '.pdf';
-$dompdf->stream($filename, ["Attachment" => false]);
+$convenioId = isset($machote['convenio_id']) ? (int) $machote['convenio_id'] : 0;
+$filename = 'Machote_Convenio_' . ($convenioId > 0 ? $convenioId : $machoteId) . '.pdf';
+$dompdf->stream($filename, ['Attachment' => false]);
 exit;

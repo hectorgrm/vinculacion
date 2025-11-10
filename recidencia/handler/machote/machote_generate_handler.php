@@ -1,39 +1,84 @@
 <?php
+
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../model/Conexion.php';
-require_once __DIR__ . '/../../model/MachoteGlobalModel.php';
-require_once __DIR__ . '/../../model/ConvenioMachoteModel.php';
+require_once __DIR__ . '/../../../common/model/db.php';
+require_once __DIR__ . '/../../model/machoteglobal/MachoteGlobalModel.php';
+require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
 
-$empresaId  = $_GET['empresa_id'] ?? null;
-$convenioId = $_GET['convenio_id'] ?? null;
+use Common\Model\Database;
+use Residencia\Model\Convenio\ConvenioMachoteModel;
+use Residencia\Model\MachoteGlobal\MachoteGlobalModel;
 
-if (!$empresaId || !$convenioId) {
-    die('Faltan parámetros.');
+$empresaId = filter_input(INPUT_GET, 'empresa_id', FILTER_VALIDATE_INT);
+$convenioId = filter_input(INPUT_GET, 'convenio_id', FILTER_VALIDATE_INT);
+
+if ($convenioId === false || $convenioId === null) {
+    redirectToConvenio(null, 'missing_params');
 }
 
-// Obtener el machote global más reciente
-$global = MachoteGlobalModel::getLatest();
-if (!$global) {
-    die('No existe machote global registrado.');
+$connection = Database::getConnection();
+$convenioMachoteModel = new ConvenioMachoteModel($connection);
+
+$existingMachote = $convenioMachoteModel->getByConvenio($convenioId);
+if ($existingMachote !== null) {
+    header('Location: ../../view/machote/machote_edit.php?id=' . urlencode((string) $existingMachote['id']));
+    exit;
 }
 
-// Crear un machote hijo para el convenio
-$newId = ConvenioMachoteModel::create([
-    'convenio_id'      => (int)$convenioId,
-    'machote_padre_id' => (int)$global['id'],
-    'contenido_html'   => $global['contenido_html'],
-    'version_local'    => 'v1.0',
-]);
+$machoteGlobalModel = new MachoteGlobalModel($connection);
+$global = $machoteGlobalModel->getLatest();
 
-// Vincular el machote hijo al convenio
-$pdo = Conexion::getConexion();
-$stmt = $pdo->prepare("UPDATE rp_convenio SET machote_id = :machote_id WHERE id = :id");
-$stmt->execute([
-    ':machote_id' => $newId,
-    ':id' => $convenioId
-]);
+if ($global === null) {
+    redirectToConvenio($convenioId, 'no_global');
+}
 
-// Redirigir al editor
-header("Location: ../../view/machote/machote_edit.php?id=$newId");
+$contenidoHtml = isset($global['contenido_html']) ? (string) $global['contenido_html'] : '';
+$machotePadreId = (int) ($global['id'] ?? 0);
+
+if ($machotePadreId <= 0) {
+    redirectToConvenio($convenioId, 'no_global');
+}
+
+try {
+    $nuevoMachoteId = $convenioMachoteModel->create($convenioId, $machotePadreId, $contenidoHtml, 'v1.0');
+} catch (\PDOException) {
+    redirectToConvenio($convenioId, 'create_failed');
+}
+
+try {
+    $statement = $connection->prepare('UPDATE rp_convenio SET machote_id = :machote_id WHERE id = :id');
+    $statement->execute([
+        ':machote_id' => $nuevoMachoteId,
+        ':id' => $convenioId,
+    ]);
+} catch (\PDOException) {
+    redirectToConvenio($convenioId, 'link_failed');
+}
+
+$redirectUrl = '../../view/machote/machote_edit.php?id=' . urlencode((string) $nuevoMachoteId) . '&machote_status=created';
+header('Location: ' . $redirectUrl);
 exit;
+
+/**
+ * @param int|null $convenioId
+ */
+function redirectToConvenio(?int $convenioId, string $code): void
+{
+    $params = [];
+
+    if ($convenioId !== null) {
+        $params['id'] = $convenioId;
+    }
+
+    $params['machote_error'] = $code;
+
+    $query = http_build_query($params);
+    $url = '../../view/convenio/convenio_view.php';
+    if ($query !== '') {
+        $url .= '?' . $query;
+    }
+
+    header('Location: ' . $url);
+    exit;
+}

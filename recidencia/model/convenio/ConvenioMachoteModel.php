@@ -1,70 +1,92 @@
 <?php
+
 declare(strict_types=1);
 
-require_once __DIR__ . '/Conexion.php';
+namespace Residencia\Model\Convenio;
 
-class ConvenioMachoteModel
+require_once __DIR__ . '/../../../common/model/db.php';
+
+use Common\Model\Database;
+use PDO;
+use PDOException;
+
+final class ConvenioMachoteModel
 {
+    public function __construct(private PDO $connection)
+    {
+    }
+
     /**
      * Crea un machote hijo (copiado desde el global)
+     *
+     * @throws PDOException
      */
-    public static function create(array $data): int
+    public function create(int $convenioId, int $machotePadreId, string $contenidoHtml, string $versionLocal = 'v1.0'): int
     {
-        $pdo = Conexion::getConexion();
+        $statement = $this->connection->prepare(
+            'INSERT INTO rp_convenio_machote (convenio_id, machote_padre_id, contenido_html, version_local, creado_en)
+             VALUES (:convenio_id, :machote_padre_id, :contenido_html, :version_local, NOW())'
+        );
 
-        $stmt = $pdo->prepare("
-            INSERT INTO rp_convenio_machote
-                (convenio_id, machote_padre_id, contenido_html, version_local, creado_en)
-            VALUES
-                (:convenio_id, :machote_padre_id, :contenido_html, :version_local, NOW())
-        ");
-
-        $stmt->execute([
-            ':convenio_id'      => $data['convenio_id'],
-            ':machote_padre_id' => $data['machote_padre_id'],
-            ':contenido_html'   => $data['contenido_html'],
-            ':version_local'    => $data['version_local'] ?? 'v1.0',
+        $statement->execute([
+            ':convenio_id' => $convenioId,
+            ':machote_padre_id' => $machotePadreId,
+            ':contenido_html' => $contenidoHtml,
+            ':version_local' => $versionLocal,
         ]);
 
-        return (int)$pdo->lastInsertId();
+        return (int) $this->connection->lastInsertId();
     }
 
     /**
-     * Obtiene el machote hijo vinculado a un convenio
+     * Obtiene el machote hijo vinculado a un convenio.
+     *
+     * @return array<string, mixed>|null
      */
-    public static function getByConvenio(int $convenioId): ?array
+    public function getByConvenio(int $convenioId): ?array
     {
-        $pdo = Conexion::getConexion();
-        $stmt = $pdo->prepare("SELECT * FROM rp_convenio_machote WHERE convenio_id = ?");
-        $stmt->execute([$convenioId]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        $statement = $this->connection->prepare('SELECT * FROM rp_convenio_machote WHERE convenio_id = :convenio_id LIMIT 1');
+        $statement->execute([':convenio_id' => $convenioId]);
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result !== false ? $result : null;
     }
 
     /**
-     * Obtiene un machote hijo por ID
+     * Obtiene un machote hijo por su identificador.
+     *
+     * @return array<string, mixed>|null
      */
-    public static function getById(int $id): ?array
+    public function getById(int $id): ?array
     {
-        $pdo = Conexion::getConexion();
-        $stmt = $pdo->prepare("SELECT * FROM rp_convenio_machote WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        $statement = $this->connection->prepare('SELECT * FROM rp_convenio_machote WHERE id = :id LIMIT 1');
+        $statement->execute([':id' => $id]);
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result !== false ? $result : null;
     }
 
     /**
-     * Actualiza el contenido HTML del machote hijo
+     * Actualiza el contenido HTML del machote hijo.
      */
-    public static function updateContent(int $id, string $contenido): bool
+    public function updateContent(int $id, string $contenido): bool
     {
-        $pdo = Conexion::getConexion();
-        $stmt = $pdo->prepare("
-            UPDATE rp_convenio_machote 
-            SET contenido_html = :contenido_html, actualizado_en = NOW()
-            WHERE id = :id
-        ");
-        return $stmt->execute([
+        $statement = $this->connection->prepare(
+            'UPDATE rp_convenio_machote
+             SET contenido_html = :contenido_html, actualizado_en = NOW()
+             WHERE id = :id'
+        );
+
+        return $statement->execute([
             ':contenido_html' => $contenido,
-            ':id' => $id
+            ':id' => $id,
         ]);
+    }
+
+    public static function createWithDefaultConnection(): self
+    {
+        return new self(Database::getConnection());
     }
 }

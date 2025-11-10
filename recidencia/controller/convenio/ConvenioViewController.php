@@ -140,6 +140,16 @@ class ConvenioViewController
         $creadoEn = isset($convenio['creado_en']) ? (string) $convenio['creado_en'] : null;
         $empresaCreadoEn = isset($convenio['empresa_creado_en']) ? (string) $convenio['empresa_creado_en'] : null;
 
+        $machoteId = isset($convenio['machote_id']) ? (int) $convenio['machote_id'] : null;
+        $machotePadreId = isset($convenio['machote_padre_id']) ? (int) $convenio['machote_padre_id'] : null;
+        $machoteVersionLocal = isset($convenio['machote_version_local'])
+            ? trim((string) $convenio['machote_version_local'])
+            : '';
+        $machoteCreadoEn = isset($convenio['machote_creado_en']) ? (string) $convenio['machote_creado_en'] : null;
+        $machoteActualizadoEn = isset($convenio['machote_actualizado_en'])
+            ? (string) $convenio['machote_actualizado_en']
+            : null;
+
         $diasRestantes = null;
 
         if ($fechaFin !== null && $fechaFin !== '') {
@@ -199,6 +209,11 @@ class ConvenioViewController
             'parent_fecha_fin_label' => convenioFormatDate($parentFechaFin),
             'parent_estatus_badge_class' => convenioRenderBadgeClass($parentEstatus),
             'parent_estatus_badge_label' => convenioRenderBadgeLabel($parentEstatus),
+            'machote_id' => $machoteId,
+            'machote_padre_id' => $machotePadreId,
+            'machote_version_local' => $machoteVersionLocal !== '' ? $machoteVersionLocal : null,
+            'machote_creado_en_label' => convenioFormatDateTime($machoteCreadoEn),
+            'machote_actualizado_en_label' => convenioFormatDateTime($machoteActualizadoEn),
         ]);
     }
 

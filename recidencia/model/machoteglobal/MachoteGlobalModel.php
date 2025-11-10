@@ -14,6 +14,28 @@ final class MachoteGlobalModel
     }
 
     /**
+     * Obtiene el machote institucional más reciente.
+     */
+    public function getLatest(): ?array
+    {
+        try {
+            $vigenteSql = "SELECT * FROM rp_machote WHERE estado = 'vigente' ORDER BY id DESC LIMIT 1";
+            $statement = $this->connection->query($vigenteSql);
+            $result = $statement !== false ? $statement->fetch(PDO::FETCH_ASSOC) : false;
+
+            if ($result === false) {
+                $fallbackSql = 'SELECT * FROM rp_machote ORDER BY id DESC LIMIT 1';
+                $statement = $this->connection->query($fallbackSql);
+                $result = $statement !== false ? $statement->fetch(PDO::FETCH_ASSOC) : false;
+            }
+
+            return $result !== false ? $result : null;
+        } catch (PDOException) {
+            return null;
+        }
+    }
+
+    /**
      * Obtener todos los machotes institucionales
      * @return array<int, array<string, mixed>>
      */
@@ -40,12 +62,19 @@ final class MachoteGlobalModel
         try {
             $sql = "SELECT * FROM rp_machote WHERE id = :id LIMIT 1";
             $stmt = $this->connection->prepare($sql);
-            $stmt->execute(['id' => $id]);
+            $stmt->execute([':id' => $id]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row ?: null;
         } catch (PDOException $e) {
             return null;
         }
+    }
+
+    public static function createWithDefaultConnection(): self
+    {
+        require_once __DIR__ . '/../../common/model/db.php';
+
+        return new self(\Common\Model\Database::getConnection());
     }
 
     /**

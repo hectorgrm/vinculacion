@@ -32,7 +32,12 @@ if (!function_exists('convenio_prepare_view_metadata')) {
      *     parentFechaInicioLabel: string,
      *     parentFechaFinLabel: string,
      *     parentEstatusBadgeClass: string,
-     *     parentEstatusBadgeLabel: string
+     *     parentEstatusBadgeLabel: string,
+     *     machoteChildId: ?int,
+     *     machotePadreId: ?int,
+     *     machoteVersionLabel: string,
+     *     machoteCreadoLabel: string,
+     *     machoteActualizadoLabel: string
      * }
      */
     function convenio_prepare_view_metadata(?array $convenio): array
@@ -64,6 +69,11 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             'parentFechaFinLabel' => 'N/D',
             'parentEstatusBadgeClass' => 'badge secondary',
             'parentEstatusBadgeLabel' => 'Sin especificar',
+            'machoteChildId' => null,
+            'machotePadreId' => null,
+            'machoteVersionLabel' => 'N/D',
+            'machoteCreadoLabel' => 'N/D',
+            'machoteActualizadoLabel' => 'N/D',
         ];
 
         if ($convenio === null) {
@@ -285,6 +295,37 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             if ($badgeLabel !== '') {
                 $metadata['estatusBadgeLabel'] = $badgeLabel;
             }
+        }
+
+        $machoteId = isset($convenio['machote_id']) ? (int) $convenio['machote_id'] : null;
+        if ($machoteId !== null && $machoteId > 0) {
+            $metadata['machoteChildId'] = $machoteId;
+        }
+
+        $machotePadreId = isset($convenio['machote_padre_id']) ? (int) $convenio['machote_padre_id'] : null;
+        if ($machotePadreId !== null && $machotePadreId > 0) {
+            $metadata['machotePadreId'] = $machotePadreId;
+        }
+
+        $machoteVersion = isset($convenio['machote_version_local'])
+            ? trim((string) $convenio['machote_version_local'])
+            : '';
+        if ($machoteVersion !== '') {
+            $metadata['machoteVersionLabel'] = $machoteVersion;
+        }
+
+        $machoteCreado = isset($convenio['machote_creado_en_label'])
+            ? trim((string) $convenio['machote_creado_en_label'])
+            : '';
+        if ($machoteCreado !== '') {
+            $metadata['machoteCreadoLabel'] = $machoteCreado;
+        }
+
+        $machoteActualizado = isset($convenio['machote_actualizado_en_label'])
+            ? trim((string) $convenio['machote_actualizado_en_label'])
+            : '';
+        if ($machoteActualizado !== '') {
+            $metadata['machoteActualizadoLabel'] = $machoteActualizado;
         }
 
         return $metadata;
