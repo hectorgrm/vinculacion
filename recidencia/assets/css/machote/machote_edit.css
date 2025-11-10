@@ -79,3 +79,28 @@ small {
     grid-column: auto;
   }
 }
+.card header {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 700px;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.cke_editable {
+  font-family: "Segoe UI", sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: #333 !important;
+  background-color: #fff !important;
+  padding: 16px !important;
+}

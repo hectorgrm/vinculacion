@@ -31,7 +31,7 @@ if (!$machote) {
 // Variables
 $contenido = $machote['contenido_html'] ?? '';
 $convenioId = $machote['convenio_id'] ?? null;
-$contenidoEscapado = htmlspecialchars($contenido, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$contenidoEscapado = $contenido;
 
 $editorAction = '../../handler/machote/machote_update_handler.php';
 $volverUrl = $convenioId
@@ -47,7 +47,7 @@ $pdfUrl = '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((stri
     <title>Editar Machote · Convenio <?= htmlspecialchars((string)$convenioId) ?></title>
     <link rel="stylesheet" href="../../assets/stylesrecidencia.css">
     <link rel="stylesheet" href="../../assets/css/machote/machote_edit.css">
-    <script src="../../assets/ckeditor/ckeditor.js"></script>
+   
 </head>
 
 <body>
@@ -77,14 +77,46 @@ $pdfUrl = '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((stri
         </section>
     </main>
 </div>
-
+<!-- CKEditor 5 (desde CDN) -->
+<script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
 <script>
-CKEDITOR.replace('editor', {
-    height: 700,
-    language: 'es',
-    removePlugins: 'elementspath',
-    resize_enabled: true
-});
+  let editor;
+
+  ClassicEditor
+    .create(document.querySelector('#editor'), {
+      toolbar: [
+        'undo', 'redo', '|',
+        'heading', '|',
+        'bold', 'italic', 'link', '|',
+        'numberedList', 'bulletedList', '|',
+        'insertTable', 'blockQuote', '|',
+        'alignment:left', 'alignment:center', 'alignment:right', '|',
+        'fontColor', 'fontBackgroundColor'
+      ],
+      language: 'es',
+      fontSize: { options: [ 'default', 11, 12, 13, 14, 16, 18 ] },
+      htmlSupport: {
+        allow: [ {
+          name: /.*/,
+          attributes: true,
+          classes: true,
+          styles: true
+        } ]
+      }
+    })
+    .then(newEditor => {
+      editor = newEditor;
+    })
+    .catch(console.error);
+
+  // Actualiza el contenido antes de guardar
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', () => {
+      if (editor) form.querySelector('#editor').value = editor.getData();
+    });
+  }
 </script>
+
 </body>
 </html>
