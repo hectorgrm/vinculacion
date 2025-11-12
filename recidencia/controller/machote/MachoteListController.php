@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace Residencia\Controller\Machote;
 
-require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
+require_once __DIR__ . '/../../model/machote/ConvenioMachoteModel.php';
 require_once __DIR__ . '/../../../common/model/db.php';
-require_once __DIR__ . '/../../../common/helpers/machote/machote_helper.php';
+require_once __DIR__ . '/../../common/helpers/machote/machote_helper.php';
 
-use Residencia\Model\Convenio\ConvenioMachoteModel;
-use Common\Model\Database;
+use Residencia\Model\Machote\ConvenioMachoteModel;
 
 class MachoteListController
 {

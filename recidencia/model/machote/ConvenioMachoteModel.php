@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Residencia\Model\Convenio;
+namespace Residencia\Model\Machote;
 
 use PDO;
 use Common\Model\Database;
@@ -23,10 +23,10 @@ class ConvenioMachoteModel
     public function getAll(?string $search = null): array
     {
         $sql = "
-            SELECT 
+            SELECT
                 m.id,
                 e.nombre AS empresa_nombre,
-                m.version AS machote_version,
+                m.version_local AS machote_version,
                 DATE_FORMAT(m.creado_en, '%Y-%m-%d') AS fecha,
                 c.estatus AS estado_convenio
             FROM rp_convenio_machote m
@@ -35,7 +35,7 @@ class ConvenioMachoteModel
         ";
 
         if (!empty($search)) {
-            $sql .= " WHERE e.nombre LIKE :search OR m.version LIKE :search ";
+            $sql .= " WHERE e.nombre LIKE :search OR m.version_local LIKE :search ";
         }
 
         $sql .= " ORDER BY m.creado_en DESC ";
@@ -55,7 +55,7 @@ class ConvenioMachoteModel
     public function getById(int $id): ?array
     {
         $stmt = $this->db->prepare("
-            SELECT 
+            SELECT
                 m.*,
                 e.nombre AS empresa_nombre,
                 c.folio AS convenio_folio
