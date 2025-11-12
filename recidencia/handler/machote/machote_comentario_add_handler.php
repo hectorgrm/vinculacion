@@ -4,7 +4,7 @@ declare(strict_types=1);
 use Common\Model\Database;
 use Residencia\Model\Machote\MachoteComentarioModel;
 
-require_once __DIR__ . '/../../../common/auth.php';
+require_once __DIR__ . '/../../common/auth.php';
 require_once __DIR__ . '/../../../common/model/db.php';
 require_once __DIR__ . '/../../model/machote/MachoteComentarioModel.php';
 
