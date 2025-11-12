@@ -55,7 +55,7 @@ $query = http_build_query(array_filter([
     'comentario_error' => $error,
 ]));
 
-$redirect = '../../view/machote_view.php?id=' . ($machoteId !== null && $machoteId !== false ? (int) $machoteId : 0);
+$redirect = '../view/machote_view.php?id=' . ($machoteId !== null && $machoteId !== false ? (int) $machoteId : 0);
 $redirect .= $query !== '' ? '&' . $query : '';
 
 header('Location: ' . $redirect);
