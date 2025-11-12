@@ -82,7 +82,8 @@ class EmpresaConvenioViewModel
                    folio,
                    borrador_path,
                    firmado_path,
-                   actualizado_en
+                   actualizado_en,
+                   machote_id
               FROM rp_convenio
              WHERE empresa_id = :empresa_id
              ORDER BY actualizado_en DESC, creado_en DESC, id DESC

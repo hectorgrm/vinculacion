@@ -1,55 +1,185 @@
 <?php
+declare(strict_types=1);
+
 namespace PortalEmpresa\Controller\Machote;
 
-require_once __DIR__ . '/../../../model/machote/MachoteViewModel.php';
+require_once __DIR__ . '/../helpers/empresaconveniofunction.php';
+require_once __DIR__ . '/../model/MachoteViewModel.php';
+require_once __DIR__ . '/../../recidencia/common/helpers/machote/machote_revisar_helper.php';
 
+use DateTimeImmutable;
+use PortalEmpresa\Helpers\EmpresaConvenioHelper;
 use PortalEmpresa\Model\Machote\MachoteViewModel;
-use Throwable;
+use RuntimeException;
+use function Residencia\Common\Helpers\Machote\resumenComentarios;
 
 class MachoteViewController
 {
     private MachoteViewModel $model;
 
-    public function __construct()
+    public function __construct(?MachoteViewModel $model = null)
     {
-        $this->model = new MachoteViewModel();
+        $this->model = $model ?? new MachoteViewModel();
     }
 
-    public function handleView(int $machoteId): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function handleView(int $machoteId, int $empresaId): array
     {
         if ($machoteId <= 0) {
-            throw new \Exception("ID de machote inválido.");
+            throw new RuntimeException('El machote solicitado no es válido.');
         }
 
-        $machote = $this->model->getMachoteById($machoteId);
-        if (!$machote) {
-            throw new \Exception("No se encontró el machote especificado.");
+        if ($empresaId <= 0) {
+            throw new RuntimeException('La sesión de la empresa no es válida.');
+        }
+
+        $record = $this->model->getMachoteForEmpresa($machoteId, $empresaId);
+
+        if ($record === null) {
+            throw new RuntimeException('No se encontró el machote solicitado.');
         }
 
         $comentarios = $this->model->getComentariosByMachote($machoteId);
-        $total = count($comentarios);
-        $pendientes = count(array_filter($comentarios, fn($c) => $c['estatus'] === 'pendiente'));
-        $resueltos = $total - $pendientes;
+        $resumen = resumenComentarios($comentarios);
+        $comentariosDecorados = array_map(fn (array $comentario): array => $this->mapComentario($comentario), $comentarios);
 
-        $avance = $total > 0 ? round(($resueltos / $total) * 100) : 0;
+        $documento = $this->buildDocumentoMeta($record);
+
+        $machote = [
+            'id' => $machoteId,
+            'version_local' => (string) ($record['version_local'] ?? 'v1.0'),
+            'confirmado' => (int) ($record['confirmacion_empresa'] ?? 0) === 1,
+            'contenido_html' => (string) ($record['contenido_html'] ?? ''),
+            'actualizado_en' => $record['machote_actualizado_en'] ?? null,
+        ];
+
+        $empresa = [
+            'id' => (int) ($record['empresa_id'] ?? 0),
+            'nombre' => (string) ($record['empresa_nombre'] ?? ''),
+            'logo_path' => $record['empresa_logo'] ?? null,
+        ];
+
+        $convenio = [
+            'id' => (int) ($record['convenio_id'] ?? 0),
+            'estatus' => $record['convenio_estatus'] ?? null,
+            'folio' => $record['convenio_folio'] ?? null,
+            'fecha_inicio' => $record['convenio_fecha_inicio'] ?? null,
+            'fecha_fin' => $record['convenio_fecha_fin'] ?? null,
+            'observaciones' => $record['convenio_observaciones'] ?? null,
+        ];
+
+        $puedeComentar = $this->puedeAgregarComentarios($convenio['estatus'] ?? null, $machote['confirmado']);
+        $puedeConfirmar = !$machote['confirmado'] && (int) ($resumen['pendientes'] ?? 0) === 0;
 
         return [
-            'empresa' => [
-                'nombre' => $machote['empresa_nombre'],
-                'logo'   => $machote['empresa_logo']
+            'empresa' => $empresa,
+            'machote' => $machote,
+            'convenio' => $convenio,
+            'documento' => $documento,
+            'comentarios' => $comentariosDecorados,
+            'stats' => [
+                'total' => (int) ($resumen['total'] ?? 0),
+                'pendientes' => (int) ($resumen['pendientes'] ?? 0),
+                'resueltos' => (int) ($resumen['resueltos'] ?? 0),
+                'progreso' => (int) ($resumen['progreso'] ?? 0),
+                'estado' => (string) ($resumen['estado'] ?? 'En revisión'),
             ],
-            'machote' => [
-                'id' => $machoteId,
-                'version_local' => $machote['version_local'],
-                'confirmacion_empresa' => (bool) $machote['confirmacion_empresa']
+            'permisos' => [
+                'puede_comentar' => $puedeComentar,
+                'puede_confirmar' => $puedeConfirmar,
             ],
-            'convenio' => [
-                'estatus' => $machote['estatus']
-            ],
-            'comentarios' => $comentarios,
-            'comentarios_pendientes' => $pendientes,
-            'comentarios_resueltos' => $resueltos,
-            'progreso' => $avance
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $comentario
+     * @return array<string, mixed>
+     */
+    private function mapComentario(array $comentario): array
+    {
+        $autorRol = ($comentario['usuario_id'] ?? null) !== null ? 'admin' : 'empresa';
+        $autorNombre = $autorRol === 'admin'
+            ? (string) ($comentario['usuario_nombre'] ?? 'Residencias')
+            : 'Empresa';
+
+        $fechaIso = $comentario['creado_en'] ?? null;
+
+        return [
+            'id' => (int) ($comentario['id'] ?? 0),
+            'clausula' => (string) ($comentario['clausula'] ?? ''),
+            'comentario' => (string) ($comentario['comentario'] ?? ''),
+            'estatus' => (string) ($comentario['estatus'] ?? 'pendiente'),
+            'autor_rol' => $autorRol,
+            'autor_nombre' => $autorNombre,
+            'fecha_iso' => $fechaIso,
+            'fecha_label' => $this->formatFecha($fechaIso),
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $record
+     * @return array<string, mixed>
+     */
+    private function buildDocumentoMeta(array $record): array
+    {
+        $contenidoHtml = (string) ($record['contenido_html'] ?? '');
+        $borrador = EmpresaConvenioHelper::normalizePath($record['convenio_borrador_path'] ?? null);
+        $firmado = EmpresaConvenioHelper::normalizePath($record['convenio_firmado_path'] ?? null);
+
+        $principal = $firmado ?? $borrador;
+        $embed = $principal;
+
+        if ($embed !== null && strpos($embed, '#') === false) {
+            $embed .= '#view=FitH';
+        }
+
+        $fuente = null;
+        if ($firmado !== null) {
+            $fuente = 'firmado';
+        } elseif ($borrador !== null) {
+            $fuente = 'borrador';
+        }
+
+        return [
+            'has_html' => $contenidoHtml !== '',
+            'html' => $contenidoHtml,
+            'has_pdf' => $principal !== null,
+            'pdf_url' => $principal,
+            'pdf_embed_url' => $embed,
+            'fuente' => $fuente,
+        ];
+    }
+
+    private function formatFecha(?string $value): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        try {
+            $date = new DateTimeImmutable($value);
+            return $date->format('d/m/Y H:i');
+        } catch (\Throwable) {
+            return $value;
+        }
+    }
+
+    private function puedeAgregarComentarios(?string $estatusConvenio, bool $machoteConfirmado): bool
+    {
+        if ($machoteConfirmado) {
+            return false;
+        }
+
+        if ($estatusConvenio === null) {
+            return false;
+        }
+
+        $estatusNormalizado = function_exists('mb_strtolower')
+            ? mb_strtolower($estatusConvenio, 'UTF-8')
+            : strtolower($estatusConvenio);
+
+        return $estatusNormalizado === 'en revisión' || $estatusNormalizado === 'en revision';
     }
 }
