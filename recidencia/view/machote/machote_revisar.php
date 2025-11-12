@@ -1,61 +1,30 @@
 <?php
-// ====== Datos simulados (reemplaza por tu controlador/BD) ======
-$empresaNombre   = 'Casa del Barrio';
-$empresaId       = 45;
+// Variables esperadas desde el handler:
+// $machote, $empresa, $convenio, $comentarios, $progreso, $estado, $errorMessage
 
-$revisionId      = 123;
-$docNombre       = 'Institucional v1.2';
-$rutaPdfActual   = "../../uploads/machote_v12_borrador.pdf"; // <- desde BD
-$cacheBusting    = "?rev=" . urlencode((string)$revisionId);
+// Fallbacks por si algo viene vacío (para evitar notices)
+$empresaNombre   = isset($empresa['nombre']) ? (string)$empresa['nombre'] : '—';
+$empresaId       = isset($empresa['id']) ? (int)$empresa['id'] : 0;
+$machoteId       = isset($machote['id']) ? (int)$machote['id'] : 0;
+$versionLocal    = isset($machote['version_local']) ? (string)$machote['version_local'] : 'v1.0';
+$contenidoHtml   = isset($machote['contenido_html']) ? (string)$machote['contenido_html'] : '';
+$comentarios     = is_array($comentarios ?? null) ? $comentarios : [];
+$progreso        = isset($progreso) ? max(0, min(100, (int)$progreso)) : 0;
+$estado          = $estado ?? 'En revisión';
 
-$estadoRevision  = 'En revisión'; // 'En revisión' | 'Con observaciones' | 'Aprobado'
-$comentAbiertos  = 1;
-$comentResueltos = 3;
-$avancePct       = 75;
+// KPIs rápidos
+$comentAbiertos  = count(array_filter($comentarios, fn($c) => ($c['estatus'] ?? '') === 'pendiente'));
+$comentResueltos = count(array_filter($comentarios, fn($c) => ($c['estatus'] ?? '') === 'resuelto'));
 
-$aprobAdmin      = false;  // desde BD (toggle admin)
-$aprobEmpresa    = false;  // desde BD (toggle empresa)
-$puedeGenerar    = ($comentAbiertos === 0 && $aprobAdmin && $aprobEmpresa);
-
-// ====== Ejemplo de hilos (luego sácalos de BD) ======
-$hilos = [
-  [
-    'id' => 101,
-    'estatus' => 'abierto',           // abierto | resuelto
-    'autor_rol' => 'empresa',         // empresa | admin
-    'asunto' => 'Ajustar vigencia',
-    'resumen' => 'Proponemos 18 meses por motivos de calendario…',
-    'hace' => 'hace 2 días',
-    'adjuntos' => 1,
-  ],
-  [
-    'id' => 99,
-    'estatus' => 'resuelto',
-    'autor_rol' => 'admin',
-    'asunto' => 'Confidencialidad',
-    'resumen' => 'Se integró un anexo de confidencialidad estándar.',
-    'hace' => 'hace 5 días',
-    'adjuntos' => 0,
-  ],
-];
-
-// Hilo seleccionado por defecto (simulado)
-$hiloSeleccionado = 101;
-// Mensajes del hilo seleccionado (simulados)
-$mensajes = [
-  [
-    'autor_rol' => 'empresa',
-    'fecha'     => '2025-10-01 10:12',
-    'texto'     => 'Proponemos 18 meses por calendario de proyectos…',
-    'archivos'  => ['borrador_v1.pdf'],
-  ],
-  [
-    'autor_rol' => 'admin',
-    'fecha'     => '2025-10-01 12:20',
-    'texto'     => 'Recibido. Prepararemos la versión 2 y la compartimos hoy.',
-    'archivos'  => [],
-  ],
-];
+// Helpers de UI
+function badgeEstado(string $estado): string {
+  $map = [
+    'Aprobado'          => '<span class="badge aprobado">Aprobado</span>',
+    'Con observaciones' => '<span class="badge con_observaciones">Con observaciones</span>',
+    'En revisión'       => '<span class="badge en_revision">En revisión</span>',
+  ];
+  return $map[$estado] ?? '<span class="badge en_revision">En revisión</span>';
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -68,7 +37,8 @@ $mensajes = [
   <link rel="stylesheet" href="../../assets/css/machote/revisar.css">
 
   <style>
-    /* Estilos mínimos de apoyo (puedes moverlos a tu CSS) */
+    /* —— Estilos de apoyo (puedes moverlos a tu CSS del módulo) —— */
+    body{background:#f6f7fb;color:#0f172a;}
     .kpis.card{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:center}
     .kpi{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px}
     .kpi h4{margin:0 0 6px 0;font-size:14px;color:#334155}
@@ -77,34 +47,31 @@ $mensajes = [
     .progress{width:100%;height:10px;background:#e5e7eb;border-radius:6px;overflow:hidden}
     .progress .bar{height:100%;background:#16a34a}
 
-    .approvals{display:flex;flex-direction:column;gap:8px}
-    .switch{display:flex;align-items:center;gap:10px}
-    .switch .label{font-weight:600;color:#334155}
-    .badge.en_revision{background:#fff3cd;color:#7a5c00;padding:4px 8px;border-radius:999px;font-weight:700}
-    .badge.con_observaciones{background:#fee2e2;color:#991b1b;padding:4px 8px;border-radius:999px;font-weight:700}
-    .badge.aprobado{background:#dcfce7;color:#166534;padding:4px 8px;border-radius:999px;font-weight:700}
+    .badge{border-radius:999px;font-weight:700;padding:4px 10px}
+    .badge.en_revision{background:#fff3cd;color:#7a5c00}
+    .badge.con_observaciones{background:#fee2e2;color:#991b1b}
+    .badge.aprobado{background:#dcfce7;color:#166534}
 
-    .split{display:grid;grid-template-columns:1fr 1.1fr;gap:14px}
-    @media (max-width: 1024px){.split{grid-template-columns:1fr}}
+    .split{display:grid;grid-template-columns:1.15fr 0.85fr;gap:14px}
+    @media (max-width: 1100px){.split{grid-template-columns:1fr}}
+
+    .editor-card .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px}
+    .editor-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:10px}
 
     .threads .thread{border-bottom:1px solid #e5e7eb;padding:12px 8px}
-    .threads .thread.active{background:#f8fafc;border-radius:12px}
     .threads .meta{display:flex;gap:8px;align-items:center;margin-bottom:6px;color:#64748b;font-size:12px}
     .threads .badge.abierto{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;border-radius:999px;padding:2px 8px;font-weight:700}
     .threads .badge.resuelto{background:#dcfce7;color:#166534;border-radius:999px;padding:2px 8px;font-weight:700}
-    .threads .author.admin{color:#0f172a;font-weight:700}
-    .threads .author.empresa{color:#1f6feb;font-weight:700}
-    .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-
-    .thread-detail .message{border:1px solid #e5e7eb;border-radius:12px;padding:10px;margin-bottom:10px}
+    .threads h4{margin:0 0 4px 0}
+    .thread-detail .message{border:1px solid #e5e7eb;border-radius:12px;padding:10px;margin-bottom:10px;background:#fff}
     .thread-detail .head{display:flex;justify-content:space-between;margin-bottom:6px}
-    .pill.admin{background:#e2e8f0;color:#0f172a;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}
-    .pill.empresa{background:#dbeafe;color:#1e40af;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}
+    .pill{border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}
+    .pill.admin{background:#e2e8f0;color:#0f172a}
+    .pill.empresa{background:#dbeafe;color:#1e40af}
     .files a{font-size:13px}
     .reply .row{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
 
-    .pdf-frame{border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff;height:520px}
-    .pdf-frame iframe{width:100%;height:100%;border:0}
+    .viewer-error{padding:14px;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;border-radius:10px;font-weight:700}
   </style>
 </head>
 <body>
@@ -116,30 +83,31 @@ $mensajes = [
         <div>
           <h2>📝 Revisión de Machote</h2>
           <p class="subtitle">
-            Empresa: <strong><?= htmlspecialchars($empresaNombre) ?></strong> · Revisión <strong>#<?= (int)$revisionId ?></strong> · Documento: <strong><?= htmlspecialchars($docNombre) ?></strong> ·
-            Estado:
-            <?php if ($estadoRevision === 'Aprobado'): ?>
-              <span class="badge aprobado">Aprobado</span>
-            <?php elseif ($estadoRevision === 'Con observaciones'): ?>
-              <span class="badge con_observaciones">Con observaciones</span>
-            <?php else: ?>
-              <span class="badge en_revision">En revisión</span>
-            <?php endif; ?>
+            Empresa: <strong><?= htmlspecialchars($empresaNombre) ?></strong>
+            · Machote <strong>#<?= (int)$machoteId ?></strong>
+            · Versión local: <strong><?= htmlspecialchars($versionLocal) ?></strong>
+            · Estado: <?= badgeEstado($estado) ?>
           </p>
         </div>
         <div class="actions">
-          <form action="revision_generate_convenio_action.php" method="post" style="display:inline;">
-            <input type="hidden" name="revision_id" value="<?= (int)$revisionId ?>">
-            <button class="btn primary" <?= $puedeGenerar ? '' : 'disabled' ?>
-              title="Se habilita cuando no hay comentarios abiertos y ambas aprobaciones están activas">
-              📄 Generar convenio
-            </button>
-          </form>
-          <a href="../empresa/empresa_view.php?id=<?= (int)$empresaId ?>" class="btn secondary">⬅ Volver a la empresa</a>
+          <a
+            class="btn primary"
+            href="../../handler/machote/machote_generate_pdf.php?id=<?= (int)$machoteId ?>"
+            target="_blank" rel="noopener"
+            title="Generar vista PDF desde el HTML actual"
+          >📄 Ver PDF</a>
+
+          <?php if ($empresaId > 0): ?>
+            <a href="../empresa/empresa_view.php?id=<?= (int)$empresaId ?>" class="btn secondary">⬅ Volver a la empresa</a>
+          <?php endif; ?>
         </div>
       </header>
 
-      <!-- KPIs + Aprobaciones -->
+      <?php if (!empty($errorMessage)): ?>
+        <section class="viewer-error"><?= htmlspecialchars($errorMessage) ?></section>
+      <?php endif; ?>
+
+      <!-- KPIs -->
       <section class="kpis card">
         <div class="kpi">
           <h4>Comentarios abiertos</h4>
@@ -151,211 +119,153 @@ $mensajes = [
         </div>
         <div class="kpi wide">
           <h4>Avance de la revisión</h4>
-          <div class="progress"><div class="bar" style="width: <?= max(0,min(100,(int)$avancePct)) ?>%"></div></div>
-          <small><?= (int)$avancePct ?>% completado</small>
+          <div class="progress"><div class="bar" style="width: <?= (int)$progreso ?>%"></div></div>
+          <small><?= (int)$progreso ?>% completado</small>
         </div>
 
-        <div class="approvals">
-          <!-- Toggle aprobación admin -->
-          <form action="revision_toggle_approve_action.php" method="post" class="switch"
-                title="Se habilita cuando no hay comentarios abiertos">
-            <input type="hidden" name="revision_id" value="<?= (int)$revisionId ?>">
-            <input type="hidden" name="who" value="admin">
-            <input type="checkbox" id="aprob_admin" name="state"
-                   <?= $aprobAdmin ? 'checked' : '' ?> <?= $comentAbiertos ? 'disabled' : '' ?>>
-            <span class="slider"></span>
-            <label class="label" for="aprob_admin">Aprobación del administrador</label>
-          </form>
-
-          <!-- Toggle aprobación empresa -->
-          <form action="revision_toggle_approve_action.php" method="post" class="switch"
-                title="Se habilita cuando no hay comentarios abiertos">
-            <input type="hidden" name="revision_id" value="<?= (int)$revisionId ?>">
-            <input type="hidden" name="who" value="empresa">
-            <input type="checkbox" id="aprob_empresa" name="state"
-                   <?= $aprobEmpresa ? 'checked' : '' ?> <?= $comentAbiertos ? 'disabled' : '' ?>>
-            <span class="slider"></span>
-            <label class="label" for="aprob_empresa">Aprobación de la empresa</label>
-          </form>
+        <div class="kpi">
+          <h4>Estado</h4>
+          <div><?= badgeEstado($estado) ?></div>
         </div>
       </section>
 
-      <!-- 📄 Documento a revisar -->
-      <section class="card">
-        <header>Documento a revisar: <strong><?= htmlspecialchars($docNombre) ?></strong></header>
-        <div class="content">
-          <div class="pdf-frame">
-            <iframe
-              src="<?= htmlspecialchars($rutaPdfActual . $cacheBusting) ?>#toolbar=1&navpanes=0&statusbar=0&view=FitH"
-              title="Machote - <?= htmlspecialchars($docNombre) ?>"
-              loading="lazy"
-            ></iframe>
-          </div>
+      <!-- Split: Editor + Comentarios -->
+      <section class="split">
+        <!-- 📄 Editor (CKEditor) -->
+        <div class="card editor-card">
+          <header>Documento a revisar (HTML editable)</header>
+          <div class="content">
+            <form method="POST" action="../../handler/machote/machote_update_handler.php">
+              <input type="hidden" name="id" value="<?= (int)$machoteId ?>">
+              <textarea id="editor" name="contenido" rows="24"><?= $contenidoHtml ?></textarea>
 
-          <div class="file-actions" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-            <a class="btn" href="<?= htmlspecialchars($rutaPdfActual . $cacheBusting) ?>" target="_blank" rel="noopener">📄 Abrir en nueva pestaña</a>
-            <a class="btn" download href="<?= htmlspecialchars($rutaPdfActual . $cacheBusting) ?>">⬇️ Descargar PDF</a>
-
-            <!-- Solo Admin: Subir nueva versión -->
-            <form action="revision_upload_version_action.php" method="post" enctype="multipart/form-data" style="margin-left:auto;display:flex;gap:8px;align-items:center">
-              <input type="hidden" name="revision_id" value="<?= (int)$revisionId ?>">
-              <input type="file" name="archivo_pdf" accept="application/pdf" required>
-              <button class="btn">⬆️ Subir nueva versión</button>
+              <div class="editor-actions">
+                <button class="btn" type="button" onclick="togglePreview()">👁️ Vista limpia</button>
+                <button class="btn primary" type="submit">💾 Guardar cambios</button>
+                <a class="btn" target="_blank" rel="noopener"
+                   href="../../handler/machote/machote_generate_pdf.php?id=<?= (int)$machoteId ?>">📄 Previsualizar PDF</a>
+              </div>
             </form>
           </div>
-
-          <small class="note" style="display:block; margin-top:8px; color:#64748b;">
-            Si no se visualiza el PDF embebido, ábrelo en nueva pestaña o descárgalo.
-          </small>
         </div>
-      </section>
 
-      <!-- 💬 Nuevo comentario -->
-      <section class="card">
-        <header style="display:flex;justify-content:space-between;align-items:center;">
-          <span>💬 Nuevo comentario</span>
-          <button type="button" class="btn" onclick="toggleNewComment()">➕ Mostrar/Ocultar</button>
-        </header>
-        <div class="content" id="newComment" style="display:none;">
-          <form class="grid-2" action="revision_thread_create_action.php" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="revision_id" value="<?= (int)$revisionId ?>">
-
-            <div class="full">
-              <label for="asunto">Título del comentario</label>
-              <input type="text" id="asunto" name="asunto" placeholder="Ej. Vigencia del convenio" required>
-            </div>
-
-            <div class="full">
-              <label for="cuerpo">Descripción</label>
-              <textarea id="cuerpo" name="cuerpo" rows="4" placeholder="Describe el cambio o la aclaración que solicitas…" required></textarea>
-            </div>
-
-            <div>
-              <label for="adjunto">Adjunto (opcional)</label>
-              <input type="file" id="adjunto" name="adjunto" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
-            </div>
-
-            <div class="actions">
-              <button type="submit" class="btn primary">Publicar comentario</button>
-              <button type="button" class="btn" onclick="toggleNewComment()">Cancelar</button>
-            </div>
-          </form>
-        </div>
-      </section>
-
-      <!-- 💬 Listado de comentarios + Detalle -->
-      <section class="split">
-        <!-- Lista de comentarios -->
+        <!-- 💬 Comentarios -->
         <div class="card">
           <header style="display:flex;justify-content:space-between;align-items:center;">
             <span>💬 Comentarios</span>
             <div class="filters">
-              <a href="#" class="chip active">Abiertos (<?= (int)$comentAbiertos ?>)</a>
-              <a href="#" class="chip">Resueltos (<?= (int)$comentResueltos ?>)</a>
-              <a href="#" class="chip">Todos (<?= (int)($comentAbiertos + $comentResueltos) ?>)</a>
+              <span class="chip">Abiertos (<?= (int)$comentAbiertos ?>)</span>
+              <span class="chip">Resueltos (<?= (int)$comentResueltos ?>)</span>
+              <span class="chip">Todos (<?= (int)($comentAbiertos + $comentResueltos) ?>)</span>
             </div>
           </header>
 
-          <div class="content threads">
-            <?php foreach ($hilos as $h): ?>
-              <article class="thread <?= $h['id'] === $hiloSeleccionado ? 'active' : '' ?>">
-                <div class="meta">
-                  <?php if ($h['estatus'] === 'abierto'): ?>
-                    <span class="badge abierto">Abierto</span>
-                  <?php else: ?>
-                    <span class="badge resuelto">Resuelto</span>
-                  <?php endif; ?>
-                  <span class="author <?= $h['autor_rol'] === 'admin' ? 'admin' : 'empresa' ?>">
-                    <?= $h['autor_rol'] === 'admin' ? 'Administrador' : 'Empresa' ?>
-                  </span>
-                  <span class="time"><?= htmlspecialchars($h['hace']) ?></span>
-                </div>
-                <h4><?= htmlspecialchars($h['asunto']) ?></h4>
-                <p><?= htmlspecialchars($h['resumen']) ?></p>
-                <div class="row-actions">
-                  <button class="btn small" onclick="selectComment(<?= (int)$h['id'] ?>)">👁️ Ver detalle</button>
-                  <a class="btn small" href="#">📎 Archivos (<?= (int)$h['adjuntos'] ?>)</a>
-
-                  <?php if ($h['estatus'] === 'abierto'): ?>
-                    <form action="revision_thread_resolve_action.php" method="post" style="display:inline;" onsubmit="return confirm('¿Marcar como resuelto?');">
-                      <input type="hidden" name="revision_id" value="<?= (int)$revisionId ?>">
-                      <input type="hidden" name="hilo_id" value="<?= (int)$h['id'] ?>">
-                      <button class="btn small danger">✓ Marcar como resuelto</button>
-                    </form>
-                  <?php else: ?>
-                    <form action="revision_thread_reopen_action.php" method="post" style="display:inline;">
-                      <input type="hidden" name="revision_id" value="<?= (int)$revisionId ?>">
-                      <input type="hidden" name="hilo_id" value="<?= (int)$h['id'] ?>">
-                      <button class="btn small">↺ Reabrir comentario</button>
-                    </form>
-                  <?php endif; ?>
-                </div>
-              </article>
-            <?php endforeach; ?>
-          </div>
-        </div>
-
-        <!-- Detalle del comentario seleccionado -->
-        <div class="card">
-          <header>📌 Detalle del comentario</header>
-          <div class="content thread-detail" id="detailBox" aria-live="polite">
-            <?php foreach ($mensajes as $m): ?>
-              <div class="message">
-                <div class="head">
-                  <span class="pill <?= $m['autor_rol'] === 'admin' ? 'admin' : 'empresa' ?>">
-                    <?= $m['autor_rol'] === 'admin' ? 'Administrador' : 'Empresa' ?>
-                  </span>
-                  <time><?= htmlspecialchars($m['fecha']) ?></time>
-                </div>
-                <p><?= htmlspecialchars($m['texto']) ?></p>
-                <?php if (!empty($m['archivos'])): ?>
-                  <div class="files">
-                    <?php foreach ($m['archivos'] as $file): ?>
-                      <a href="#"><?= htmlspecialchars($file) ?></a>
-                    <?php endforeach; ?>
+          <div class="content" style="display:grid;grid-template-columns:1fr;gap:10px">
+            <!-- Crear nuevo comentario -->
+            <details class="card" open>
+              <summary style="cursor:pointer;font-weight:700;">➕ Nuevo comentario</summary>
+              <div class="content" style="margin-top:8px">
+                <form action="../../handler/machote/machote_comentario_add_handler.php" method="post" enctype="multipart/form-data">
+                  <input type="hidden" name="machote_id" value="<?= (int)$machoteId ?>">
+                  <div style="display:grid;gap:10px">
+                    <div>
+                      <label for="clausula">Sección / cláusula (opcional)</label>
+                      <input type="text" id="clausula" name="clausula" placeholder="Ej. CLÁUSULA PRIMERA · Vigencia" />
+                    </div>
+                    <div>
+                      <label for="comentario">Comentario</label>
+                      <textarea id="comentario" name="comentario" rows="3" required placeholder="Describe el ajuste, duda o cambio que solicitas…"></textarea>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                      <input type="file" name="adjunto" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                      <button class="btn primary">Publicar</button>
+                    </div>
                   </div>
-                <?php endif; ?>
+                </form>
               </div>
-            <?php endforeach; ?>
+            </details>
 
-            <!-- Responder -->
-            <form class="reply" action="revision_reply_create_action.php" method="post" enctype="multipart/form-data">
-              <input type="hidden" name="revision_id" value="<?= (int)$revisionId ?>">
-              <input type="hidden" name="hilo_id" id="reply_hilo_id" value="<?= (int)$hiloSeleccionado ?>">
-              <label for="respuesta">Responder</label>
-              <textarea id="respuesta" name="cuerpo" rows="3" placeholder="Escribe tu respuesta…" required></textarea>
+            <!-- Lista simple de comentarios -->
+            <div class="threads">
+              <?php if (empty($comentarios)): ?>
+                <p style="color:#64748b">Sin comentarios aún.</p>
+              <?php else: ?>
+                <?php foreach ($comentarios as $c): ?>
+                  <?php
+                    $isAbierto = (($c['estatus'] ?? 'pendiente') === 'pendiente');
+                  ?>
+                  <article class="thread">
+                    <div class="meta">
+                      <span class="badge <?= $isAbierto ? 'abierto' : 'resuelto' ?>">
+                        <?= $isAbierto ? 'Abierto' : 'Resuelto' ?>
+                      </span>
+                      <?php if (!empty($c['clausula'])): ?>
+                        <span>· <?= htmlspecialchars($c['clausula']) ?></span>
+                      <?php endif; ?>
+                      <?php if (!empty($c['creado_en'])): ?>
+                        <span>· <?= htmlspecialchars($c['creado_en']) ?></span>
+                      <?php endif; ?>
+                    </div>
+                    <h4 style="margin:0 0 6px 0"><?= htmlspecialchars(mb_strimwidth((string)$c['comentario'], 0, 120, '…')) ?></h4>
 
-              <div class="row">
-                <input type="file" name="adjunto" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
-                <div class="actions">
-                  <button class="btn">Adjuntar</button>
-                  <button class="btn primary">Enviar</button>
-                  <button class="btn danger" formaction="revision_thread_resolve_action.php" onclick="return confirm('¿Marcar como resuelto?');">
-                    ✓ Marcar como resuelto
-                  </button>
-                </div>
-              </div>
-            </form>
+                    <div class="row-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+                      <?php if ($isAbierto): ?>
+                        <form action="../../handler/machote/machote_comentario_resolver_handler.php" method="post" onsubmit="return confirm('¿Marcar como resuelto?')">
+                          <input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
+                          <input type="hidden" name="machote_id" value="<?= (int)$machoteId ?>">
+                          <button class="btn small danger">✓ Marcar como resuelto</button>
+                        </form>
+                      <?php else: ?>
+                        <form action="../../handler/machote/machote_comentario_reabrir_handler.php" method="post">
+                          <input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
+                          <input type="hidden" name="machote_id" value="<?= (int)$machoteId ?>">
+                          <button class="btn small">↺ Reabrir</button>
+                        </form>
+                      <?php endif; ?>
+                    </div>
+                  </article>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </div>
           </div>
         </div>
       </section>
 
       <footer class="hint" style="margin-top:10px;color:#64748b">
-        <small>El botón “Generar convenio” se habilitará cuando no existan comentarios abiertos y ambas aprobaciones estén activas.</small>
+        <small>Consejo: guarda con frecuencia. El PDF refleja los cambios del HTML actual.</small>
       </footer>
     </main>
   </div>
 
+  <!-- CKEditor -->
+  <script src="../../assets/ckeditor/ckeditor.js"></script>
   <script>
-    function toggleNewComment(){
-      const box = document.getElementById('newComment');
-      box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
-    }
-    function selectComment(id){
-      // TODO: Cargar por AJAX el detalle del comentario seleccionado
-      document.getElementById('reply_hilo_id').value = id;
-      // Opcional: resaltar en la lista, recargar mensajes, etc.
+    // Inicializa CKEditor
+    CKEDITOR.replace('editor', {
+      height: 650,
+      language: 'es',
+      removePlugins: 'elementspath',
+      resize_enabled: true
+    });
+
+    // Vista "limpia" del editor (toggle contenidoEditable -> no cambia HTML, solo UI)
+    function togglePreview(){
+      const ed = CKEDITOR.instances.editor;
+      if (!ed) return;
+      const body = ed.document.getBody();
+      // Toggle una clase sencilla que quite el contorno de selección
+      const cls = 'preview-clean';
+      if (body.hasClass(cls)) {
+        body.removeClass(cls);
+      } else {
+        body.addClass(cls);
+      }
     }
   </script>
+
+  <style>
+    /* Reduce hints visuales de CKEditor cuando activas "Vista limpia" */
+    .cke_editable.preview-clean *{ outline: none !important; }
+  </style>
 </body>
 </html>
