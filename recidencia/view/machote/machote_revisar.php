@@ -1,20 +1,29 @@
 <?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../../handler/machote/machote_revisar_handler.php';
+
 // Variables esperadas desde el handler:
-// $machote, $empresa, $convenio, $comentarios, $progreso, $estado, $errorMessage
+// $machote, $empresa, $convenio, $comentarios, $progreso, $estado, $errorMessage, $totales, $currentUser
 
 // Fallbacks por si algo viene vacío (para evitar notices)
-$empresaNombre   = isset($empresa['nombre']) ? (string)$empresa['nombre'] : '—';
-$empresaId       = isset($empresa['id']) ? (int)$empresa['id'] : 0;
-$machoteId       = isset($machote['id']) ? (int)$machote['id'] : 0;
-$versionLocal    = isset($machote['version_local']) ? (string)$machote['version_local'] : 'v1.0';
-$contenidoHtml   = isset($machote['contenido_html']) ? (string)$machote['contenido_html'] : '';
+$empresaNombre   = isset($empresa['nombre']) ? (string) $empresa['nombre'] : '—';
+$empresaId       = isset($empresa['id']) ? (int) $empresa['id'] : 0;
+$machoteId       = isset($machote['id']) ? (int) $machote['id'] : (int) ($_GET['id'] ?? 0);
+$versionLocal    = isset($machote['version_local']) ? (string) $machote['version_local'] : 'v1.0';
+$contenidoHtml   = isset($machote['contenido_html']) ? (string) $machote['contenido_html'] : '';
 $comentarios     = is_array($comentarios ?? null) ? $comentarios : [];
-$progreso        = isset($progreso) ? max(0, min(100, (int)$progreso)) : 0;
+$progreso        = isset($progreso) ? max(0, min(100, (int) $progreso)) : 0;
 $estado          = $estado ?? 'En revisión';
+$totales         = is_array($totales ?? null) ? $totales : ['pendientes' => 0, 'resueltos' => 0, 'total' => 0, 'progreso' => 0, 'estado' => 'En revisión'];
+
+$currentUser     = is_array($currentUser ?? null) ? $currentUser : [];
+$currentUserId   = isset($currentUser['id']) ? (int) $currentUser['id'] : 0;
+$currentUserName = isset($currentUser['name']) ? (string) $currentUser['name'] : '';
 
 // KPIs rápidos
-$comentAbiertos  = count(array_filter($comentarios, fn($c) => ($c['estatus'] ?? '') === 'pendiente'));
-$comentResueltos = count(array_filter($comentarios, fn($c) => ($c['estatus'] ?? '') === 'resuelto'));
+$comentAbiertos  = (int) ($totales['pendientes'] ?? 0);
+$comentResueltos = (int) ($totales['resueltos'] ?? 0);
 
 // Helpers de UI
 function badgeEstado(string $estado): string {
@@ -24,6 +33,34 @@ function badgeEstado(string $estado): string {
     'En revisión'       => '<span class="badge en_revision">En revisión</span>',
   ];
   return $map[$estado] ?? '<span class="badge en_revision">En revisión</span>';
+}
+
+$flashMessages = [];
+if (isset($_GET['machote_status']) && $_GET['machote_status'] === 'saved') {
+    $flashMessages[] = ['type' => 'success', 'text' => 'Cambios guardados correctamente.'];
+}
+if (!empty($_GET['machote_error'])) {
+    $flashMessages[] = ['type' => 'error', 'text' => 'No se pudieron guardar los cambios.'];
+}
+if (!empty($_GET['comentario_status'])) {
+    $status = (string) $_GET['comentario_status'];
+    $messages = [
+        'added'    => 'Comentario agregado correctamente.',
+        'resolved' => 'Comentario marcado como resuelto.',
+        'reopened' => 'Comentario reabierto.',
+    ];
+    if (isset($messages[$status])) {
+        $flashMessages[] = ['type' => 'success', 'text' => $messages[$status]];
+    }
+}
+if (!empty($_GET['comentario_error'])) {
+    $errorKey = (string) $_GET['comentario_error'];
+    $messages = [
+        'invalid'   => 'Datos incompletos para procesar el comentario.',
+        'not_found' => 'El comentario solicitado no existe.',
+        'internal'  => 'Ocurrió un error al actualizar los comentarios.',
+    ];
+    $flashMessages[] = ['type' => 'error', 'text' => $messages[$errorKey] ?? 'Ocurrió un error al gestionar el comentario.'];
 }
 ?>
 <!DOCTYPE html>
@@ -52,6 +89,10 @@ function badgeEstado(string $estado): string {
     .badge.con_observaciones{background:#fee2e2;color:#991b1b}
     .badge.aprobado{background:#dcfce7;color:#166534}
 
+    .flash{border-radius:12px;padding:12px;margin-bottom:12px;font-weight:600}
+    .flash.success{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
+    .flash.error{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+
     .split{display:grid;grid-template-columns:1.15fr 0.85fr;gap:14px}
     @media (max-width: 1100px){.split{grid-template-columns:1fr}}
 
@@ -59,7 +100,7 @@ function badgeEstado(string $estado): string {
     .editor-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:10px}
 
     .threads .thread{border-bottom:1px solid #e5e7eb;padding:12px 8px}
-    .threads .meta{display:flex;gap:8px;align-items:center;margin-bottom:6px;color:#64748b;font-size:12px}
+    .threads .meta{display:flex;gap:8px;align-items:center;margin-bottom:6px;color:#64748b;font-size:12px;flex-wrap:wrap}
     .threads .badge.abierto{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;border-radius:999px;padding:2px 8px;font-weight:700}
     .threads .badge.resuelto{background:#dcfce7;color:#166534;border-radius:999px;padding:2px 8px;font-weight:700}
     .threads h4{margin:0 0 4px 0}
@@ -84,7 +125,7 @@ function badgeEstado(string $estado): string {
           <h2>📝 Revisión de Machote</h2>
           <p class="subtitle">
             Empresa: <strong><?= htmlspecialchars($empresaNombre) ?></strong>
-            · Machote <strong>#<?= (int)$machoteId ?></strong>
+            · Machote <strong>#<?= (int) $machoteId ?></strong>
             · Versión local: <strong><?= htmlspecialchars($versionLocal) ?></strong>
             · Estado: <?= badgeEstado($estado) ?>
           </p>
@@ -92,16 +133,22 @@ function badgeEstado(string $estado): string {
         <div class="actions">
           <a
             class="btn primary"
-            href="../../handler/machote/machote_generate_pdf.php?id=<?= (int)$machoteId ?>"
+            href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>"
             target="_blank" rel="noopener"
             title="Generar vista PDF desde el HTML actual"
           >📄 Ver PDF</a>
 
           <?php if ($empresaId > 0): ?>
-            <a href="../empresa/empresa_view.php?id=<?= (int)$empresaId ?>" class="btn secondary">⬅ Volver a la empresa</a>
+            <a href="../empresa/empresa_view.php?id=<?= (int) $empresaId ?>" class="btn secondary">⬅ Volver a la empresa</a>
           <?php endif; ?>
         </div>
       </header>
+
+      <?php foreach ($flashMessages as $flash): ?>
+        <section class="flash <?= htmlspecialchars($flash['type']) ?>">
+          <?= htmlspecialchars($flash['text']) ?>
+        </section>
+      <?php endforeach; ?>
 
       <?php if (!empty($errorMessage)): ?>
         <section class="viewer-error"><?= htmlspecialchars($errorMessage) ?></section>
@@ -111,16 +158,16 @@ function badgeEstado(string $estado): string {
       <section class="kpis card">
         <div class="kpi">
           <h4>Comentarios abiertos</h4>
-          <div class="kpi-num"><?= (int)$comentAbiertos ?></div>
+          <div class="kpi-num"><?= (int) $comentAbiertos ?></div>
         </div>
         <div class="kpi">
           <h4>Comentarios resueltos</h4>
-          <div class="kpi-num"><?= (int)$comentResueltos ?></div>
+          <div class="kpi-num"><?= (int) $comentResueltos ?></div>
         </div>
         <div class="kpi wide">
           <h4>Avance de la revisión</h4>
-          <div class="progress"><div class="bar" style="width: <?= (int)$progreso ?>%"></div></div>
-          <small><?= (int)$progreso ?>% completado</small>
+          <div class="progress"><div class="bar" style="width: <?= (int) $progreso ?>%"></div></div>
+          <small><?= (int) $progreso ?>% completado</small>
         </div>
 
         <div class="kpi">
@@ -136,14 +183,15 @@ function badgeEstado(string $estado): string {
           <header>Documento a revisar (HTML editable)</header>
           <div class="content">
             <form method="POST" action="../../handler/machote/machote_update_handler.php">
-              <input type="hidden" name="id" value="<?= (int)$machoteId ?>">
+              <input type="hidden" name="id" value="<?= (int) $machoteId ?>">
+              <input type="hidden" name="redirect" value="machote_revisar">
               <textarea id="editor" name="contenido" rows="24"><?= $contenidoHtml ?></textarea>
 
               <div class="editor-actions">
                 <button class="btn" type="button" onclick="togglePreview()">👁️ Vista limpia</button>
                 <button class="btn primary" type="submit">💾 Guardar cambios</button>
                 <a class="btn" target="_blank" rel="noopener"
-                   href="../../handler/machote/machote_generate_pdf.php?id=<?= (int)$machoteId ?>">📄 Previsualizar PDF</a>
+                   href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>">📄 Previsualizar PDF</a>
               </div>
             </form>
           </div>
@@ -154,9 +202,9 @@ function badgeEstado(string $estado): string {
           <header style="display:flex;justify-content:space-between;align-items:center;">
             <span>💬 Comentarios</span>
             <div class="filters">
-              <span class="chip">Abiertos (<?= (int)$comentAbiertos ?>)</span>
-              <span class="chip">Resueltos (<?= (int)$comentResueltos ?>)</span>
-              <span class="chip">Todos (<?= (int)($comentAbiertos + $comentResueltos) ?>)</span>
+              <span class="chip">Abiertos (<?= (int) $comentAbiertos ?>)</span>
+              <span class="chip">Resueltos (<?= (int) $comentResueltos ?>)</span>
+              <span class="chip">Todos (<?= (int) ($totales['total'] ?? ($comentAbiertos + $comentResueltos)) ?>)</span>
             </div>
           </header>
 
@@ -165,8 +213,11 @@ function badgeEstado(string $estado): string {
             <details class="card" open>
               <summary style="cursor:pointer;font-weight:700;">➕ Nuevo comentario</summary>
               <div class="content" style="margin-top:8px">
-                <form action="../../handler/machote/machote_comentario_add_handler.php" method="post" enctype="multipart/form-data">
-                  <input type="hidden" name="machote_id" value="<?= (int)$machoteId ?>">
+                <form action="../../handler/machote/machote_comentario_add_handler.php" method="post">
+                  <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
+                  <?php if ($currentUserId > 0): ?>
+                    <input type="hidden" name="usuario_id" value="<?= (int) $currentUserId ?>">
+                  <?php endif; ?>
                   <div style="display:grid;gap:10px">
                     <div>
                       <label for="clausula">Sección / cláusula (opcional)</label>
@@ -177,7 +228,6 @@ function badgeEstado(string $estado): string {
                       <textarea id="comentario" name="comentario" rows="3" required placeholder="Describe el ajuste, duda o cambio que solicitas…"></textarea>
                     </div>
                     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                      <input type="file" name="adjunto" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
                       <button class="btn primary">Publicar</button>
                     </div>
                   </div>
@@ -193,32 +243,36 @@ function badgeEstado(string $estado): string {
                 <?php foreach ($comentarios as $c): ?>
                   <?php
                     $isAbierto = (($c['estatus'] ?? 'pendiente') === 'pendiente');
+                    $autor = trim((string) ($c['usuario_nombre'] ?? '')); 
                   ?>
                   <article class="thread">
                     <div class="meta">
                       <span class="badge <?= $isAbierto ? 'abierto' : 'resuelto' ?>">
                         <?= $isAbierto ? 'Abierto' : 'Resuelto' ?>
                       </span>
+                      <?php if ($autor !== ''): ?>
+                        <span>· <?= htmlspecialchars($autor) ?></span>
+                      <?php endif; ?>
                       <?php if (!empty($c['clausula'])): ?>
-                        <span>· <?= htmlspecialchars($c['clausula']) ?></span>
+                        <span>· <?= htmlspecialchars((string) $c['clausula']) ?></span>
                       <?php endif; ?>
                       <?php if (!empty($c['creado_en'])): ?>
-                        <span>· <?= htmlspecialchars($c['creado_en']) ?></span>
+                        <span>· <?= htmlspecialchars((string) $c['creado_en']) ?></span>
                       <?php endif; ?>
                     </div>
-                    <h4 style="margin:0 0 6px 0"><?= htmlspecialchars(mb_strimwidth((string)$c['comentario'], 0, 120, '…')) ?></h4>
+                    <h4 style="margin:0 0 6px 0"><?= htmlspecialchars(mb_strimwidth((string) ($c['comentario'] ?? ''), 0, 160, '…')) ?></h4>
 
                     <div class="row-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
                       <?php if ($isAbierto): ?>
                         <form action="../../handler/machote/machote_comentario_resolver_handler.php" method="post" onsubmit="return confirm('¿Marcar como resuelto?')">
-                          <input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
-                          <input type="hidden" name="machote_id" value="<?= (int)$machoteId ?>">
+                          <input type="hidden" name="id" value="<?= (int) ($c['id'] ?? 0) ?>">
+                          <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
                           <button class="btn small danger">✓ Marcar como resuelto</button>
                         </form>
                       <?php else: ?>
                         <form action="../../handler/machote/machote_comentario_reabrir_handler.php" method="post">
-                          <input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
-                          <input type="hidden" name="machote_id" value="<?= (int)$machoteId ?>">
+                          <input type="hidden" name="id" value="<?= (int) ($c['id'] ?? 0) ?>">
+                          <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
                           <button class="btn small">↺ Reabrir</button>
                         </form>
                       <?php endif; ?>
@@ -237,31 +291,46 @@ function badgeEstado(string $estado): string {
     </main>
   </div>
 
-  <!-- CKEditor -->
-  <script src="../../assets/ckeditor/ckeditor.js"></script>
-  <script>
-    // Inicializa CKEditor
-    CKEDITOR.replace('editor', {
-      height: 650,
-      language: 'es',
-      removePlugins: 'elementspath',
-      resize_enabled: true
-    });
+<!-- CKEditor 5 (desde CDN) -->
+<script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
+<script>
+  let editor;
 
-    // Vista "limpia" del editor (toggle contenidoEditable -> no cambia HTML, solo UI)
-    function togglePreview(){
-      const ed = CKEDITOR.instances.editor;
-      if (!ed) return;
-      const body = ed.document.getBody();
-      // Toggle una clase sencilla que quite el contorno de selección
-      const cls = 'preview-clean';
-      if (body.hasClass(cls)) {
-        body.removeClass(cls);
-      } else {
-        body.addClass(cls);
+  ClassicEditor
+    .create(document.querySelector('#editor'), {
+      toolbar: [
+        'undo', 'redo', '|',
+        'heading', '|',
+        'bold', 'italic', 'link', '|',
+        'numberedList', 'bulletedList', '|',
+        'insertTable', 'blockQuote', '|',
+        'alignment:left', 'alignment:center', 'alignment:right', '|',
+        'fontColor', 'fontBackgroundColor'
+      ],
+      language: 'es',
+      fontSize: { options: [ 'default', 11, 12, 13, 14, 16, 18 ] },
+      htmlSupport: {
+        allow: [ {
+          name: /.*/,
+          attributes: true,
+          classes: true,
+          styles: true
+        } ]
       }
-    }
-  </script>
+    })
+    .then(newEditor => {
+      editor = newEditor;
+    })
+    .catch(console.error);
+
+  // Actualiza el contenido antes de guardar
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', () => {
+      if (editor) form.querySelector('#editor').value = editor.getData();
+    });
+  }
+</script>
 
   <style>
     /* Reduce hints visuales de CKEditor cuando activas "Vista limpia" */

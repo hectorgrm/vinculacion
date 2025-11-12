@@ -3,37 +3,45 @@ declare(strict_types=1);
 
 namespace Residencia\Controller\Machote;
 
+require_once __DIR__ . '/../../../common/model/db.php';
 require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
 require_once __DIR__ . '/../../model/machote/MachoteComentarioModel.php';
 require_once __DIR__ . '/../../common/helpers/machote/machote_revisar_helper.php';
-require_once __DIR__ . '/../../common/model/Database.php';
 
+use Common\Model\Database;
+use PDO;
 use Residencia\Model\Convenio\ConvenioMachoteModel;
 use Residencia\Model\Machote\MachoteComentarioModel;
-use Common\Model\Database;
-use Exception;
+use RuntimeException;
+use function Residencia\Common\Helpers\Machote\resumenComentarios;
 
-class MachoteRevisarController
+final class MachoteRevisarController
 {
-    private $db;
+    private PDO $db;
 
     public function __construct()
     {
-        $this->db = (new Database())->getConnection();
+        $this->db = Database::getConnection();
     }
 
     /**
-     * Maneja la carga de un machote con sus comentarios.
+     * Maneja la carga de un machote con sus comentarios y datos relacionados.
+     *
+     * @return array<string, mixed>
      */
     public function handle(int $machoteId): array
     {
+        if ($machoteId <= 0) {
+            throw new RuntimeException('El identificador del machote es inválido.');
+        }
+
         $modelMachote = new ConvenioMachoteModel($this->db);
         $modelComentarios = new MachoteComentarioModel($this->db);
 
         // 1️⃣ Cargar el machote hijo
         $machote = $modelMachote->getById($machoteId);
-        if (!$machote) {
-            throw new Exception("Machote no encontrado o eliminado.");
+        if ($machote === null) {
+            throw new RuntimeException('Machote no encontrado o eliminado.');
         }
 
         // 2️⃣ Cargar datos relacionados
@@ -42,21 +50,17 @@ class MachoteRevisarController
 
         // 3️⃣ Cargar comentarios
         $comentarios = $modelComentarios->getByMachote($machoteId);
-        $total = count($comentarios);
-        $resueltos = count(array_filter($comentarios, fn($c) => $c['estatus'] === 'resuelto'));
-        $progreso = $total > 0 ? round(($resueltos / $total) * 100) : 0;
-
-        // 4️⃣ Estado dinámico
-        $estado = $progreso === 100 ? 'Aprobado' : ($resueltos > 0 ? 'Con observaciones' : 'En revisión');
+        $resumen = resumenComentarios($comentarios);
 
         return [
             'machote'     => $machote,
             'empresa'     => $empresa,
             'convenio'    => $convenio,
             'comentarios' => $comentarios,
-            'progreso'    => $progreso,
-            'estado'      => $estado,
-            'error'       => null
+            'progreso'    => $resumen['progreso'],
+            'estado'      => $resumen['estado'],
+            'totales'     => $resumen,
+            'error'       => null,
         ];
     }
 }

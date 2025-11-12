@@ -3,28 +3,42 @@ declare(strict_types=1);
 
 use Residencia\Controller\Machote\MachoteRevisarController;
 
+require_once __DIR__ . '/../../common/auth.php';
 require_once __DIR__ . '/../../controller/machote/MachoteRevisarController.php';
 
+$machote      = [];
+$comentarios  = [];
+$empresa      = [];
+$convenio     = [];
+$progreso     = 0;
+$estado       = 'En revisión';
+$errorMessage = null;
+$totales      = [
+    'total'      => 0,
+    'resueltos'  => 0,
+    'pendientes' => 0,
+    'progreso'   => 0,
+    'estado'     => 'En revisión',
+];
+
 try {
-    $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-    if ($id <= 0) {
-        throw new Exception("ID de machote inválido o no especificado.");
+    $machoteId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    if ($machoteId === false || $machoteId === null) {
+        throw new \RuntimeException('ID de machote inválido o no especificado.');
     }
 
     $controller = new MachoteRevisarController();
-    $data = $controller->handle($id);
+    $data = $controller->handle($machoteId);
 
-    // Desestructuramos el resultado
-    $machote      = $data['machote'] ?? [];
-    $comentarios  = $data['comentarios'] ?? [];
-    $empresa      = $data['empresa'] ?? [];
-    $convenio     = $data['convenio'] ?? [];
-    $progreso     = $data['progreso'] ?? 0;
-    $estado       = $data['estado'] ?? 'En revisión';
-    $errorMessage = $data['error'] ?? null;
-
-    include __DIR__ . '/../../view/machote/machote_revisar.php';
-} catch (Throwable $e) {
-    $errorMessage = $e->getMessage();
-    include __DIR__ . '/../../view/errors/error_generic.php';
+    $machote     = $data['machote'] ?? [];
+    $comentarios = $data['comentarios'] ?? [];
+    $empresa     = $data['empresa'] ?? [];
+    $convenio    = $data['convenio'] ?? [];
+    $progreso    = (int) ($data['progreso'] ?? 0);
+    $estado      = (string) ($data['estado'] ?? 'En revisión');
+    $totales     = $data['totales'] ?? $totales;
+} catch (\Throwable $exception) {
+    $errorMessage = $exception->getMessage();
 }
+
+$currentUser = $user ?? null;

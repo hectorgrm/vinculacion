@@ -15,9 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 $contenido = isset($_POST['contenido']) ? (string) $_POST['contenido'] : '';
+$redirect = isset($_POST['redirect']) ? (string) $_POST['redirect'] : '';
 
 if ($id === false || $id === null) {
-    redirectWithStatus(null, 'invalid_id');
+    redirectWithStatus(null, 'invalid_id', $redirect);
 }
 
 $connection = Database::getConnection();
@@ -30,20 +31,33 @@ try {
 }
 
 $status = $guardado ? 'saved' : 'save_error';
-redirectWithStatus($id, $status);
+redirectWithStatus($id, $status, $redirect);
 
-function redirectWithStatus(?int $machoteId, string $status): void
+function redirectWithStatus(?int $machoteId, string $status, string $redirect): void
 {
-    if ($machoteId === null) {
-        header('Location: ../../view/convenio/convenio_list.php');
-        exit;
+    $params = [];
+
+    if ($machoteId !== null) {
+        $params['id'] = $machoteId;
     }
 
-    $params = [
-        'id' => $machoteId,
-        $status === 'saved' ? 'guardado' : 'error' => $status,
-    ];
+    if ($status === 'saved') {
+        $params['machote_status'] = $status;
+    } else {
+        $params['machote_error'] = $status;
+    }
 
-    header('Location: ../../view/machote/machote_edit.php?' . http_build_query($params));
+    if ($machoteId === null) {
+        $target = '../../view/convenio/convenio_list.php';
+    } elseif ($redirect === 'machote_revisar') {
+        $target = '../../view/machote/machote_revisar.php';
+    } else {
+        $target = '../../view/machote/machote_edit.php';
+    }
+
+    $query = http_build_query($params);
+    $url = $target . ($query !== '' ? '?' . $query : '');
+
+    header('Location: ' . $url);
     exit;
 }

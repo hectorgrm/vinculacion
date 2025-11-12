@@ -69,6 +69,49 @@ final class ConvenioMachoteModel
     }
 
     /**
+     * Obtiene la empresa asociada al machote hijo.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getEmpresaByMachote(int $machoteId): ?array
+    {
+        $sql = 'SELECT e.*
+                FROM rp_convenio_machote m
+                INNER JOIN rp_convenio c ON m.convenio_id = c.id
+                INNER JOIN rp_empresa e ON c.empresa_id = e.id
+                WHERE m.id = :machote_id
+                LIMIT 1';
+
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([':machote_id' => $machoteId]);
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result !== false ? $result : null;
+    }
+
+    /**
+     * Obtiene el convenio asociado al machote hijo.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getConvenioByMachote(int $machoteId): ?array
+    {
+        $sql = 'SELECT c.*
+                FROM rp_convenio_machote m
+                INNER JOIN rp_convenio c ON m.convenio_id = c.id
+                WHERE m.id = :machote_id
+                LIMIT 1';
+
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([':machote_id' => $machoteId]);
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result !== false ? $result : null;
+    }
+
+    /**
      * Actualiza el contenido HTML del machote hijo.
      */
     public function updateContent(int $id, string $contenido): bool

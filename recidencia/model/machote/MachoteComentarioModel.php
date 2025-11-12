@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Residencia\Model\Machote;
 
 use PDO;
-use PDOException;
 
 class MachoteComentarioModel
 {
@@ -99,7 +98,23 @@ class MachoteComentarioModel
     }
 
     // ===============================================================
-    // 🔹 4. Eliminar comentario
+    // 🔹 4. Reabrir comentario
+    // ===============================================================
+    /**
+     * Restablece el estatus de un comentario a “pendiente”.
+     */
+    public function reabrirComentario(int $comentarioId): bool
+    {
+        $sql = "UPDATE rp_machote_comentario
+                SET estatus = 'pendiente'
+                WHERE id = :id";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':id' => $comentarioId]);
+    }
+
+    // ===============================================================
+    // 🔹 5. Eliminar comentario
     // ===============================================================
     /**
      * Elimina un comentario por su ID.
@@ -115,7 +130,7 @@ class MachoteComentarioModel
     }
 
     // ===============================================================
-    // 🔹 5. Contar pendientes por machote (opcional para dashboard)
+    // 🔹 6. Contar pendientes por machote (opcional para dashboard)
     // ===============================================================
     /**
      * Devuelve cuántos comentarios pendientes tiene un machote.
