@@ -128,8 +128,8 @@ class MachoteViewModel
         }
 
         $sql = <<<'SQL'
-            INSERT INTO rp_machote_comentario (machote_id, usuario_id, clausula, comentario, estatus, creado_en)
-            VALUES (:machote_id, :usuario_id, :clausula, :comentario, 'pendiente', NOW())
+            INSERT INTO rp_machote_comentario (machote_id, usuario_id, autor_rol, clausula, comentario, estatus, creado_en)
+            VALUES (:machote_id, :usuario_id, :autor_rol, :clausula, :comentario, 'pendiente', NOW())
         SQL;
 
         $statement = $this->connection->prepare($sql);
@@ -137,6 +137,7 @@ class MachoteViewModel
         return $statement->execute([
             ':machote_id' => $machoteId,
             ':usuario_id' => $usuarioId,
+            ':autor_rol'  => 'empresa',
             ':clausula'   => $clausula,
             ':comentario' => $comentario,
         ]);

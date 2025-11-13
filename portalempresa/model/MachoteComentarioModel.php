@@ -1,62 +1,197 @@
 <?php
-namespace Residencia\Model\Machote;
+declare(strict_types=1);
 
+namespace PortalEmpresa\Model\Machote;
+
+use Common\Model\Database;
 use PDO;
-use Exception;
+use RuntimeException;
 
-class MachoteComentarioModel {
+require_once __DIR__ . '/../../common/model/db.php';
+
+final class MachoteComentarioModel
+{
     private PDO $db;
 
-    public function __construct(PDO $db) {
-        $this->db = $db;
+    public function __construct(?PDO $connection = null)
+    {
+        $this->db = $connection ?? Database::getConnection();
     }
 
-    // Obtener comentarios principales y respuestas
-    public function getComentariosConRespuestas(int $machoteId): array {
-        $sql = "SELECT * FROM rp_machote_comentario WHERE machote_id = :id ORDER BY creado_en ASC";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':id' => $machoteId]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    /**
+     * Obtiene todos los comentarios de un machote y construye sus hilos de respuestas.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getComentariosConRespuestas(int $machoteId): array
+    {
+        $sql = <<<'SQL'
+            SELECT c.*, u.nombre AS usuario_nombre
+            FROM rp_machote_comentario AS c
+            LEFT JOIN usuario AS u ON u.id = c.usuario_id
+            WHERE c.machote_id = :machote_id
+            ORDER BY c.creado_en ASC, c.id ASC
+        SQL;
 
-        $comentarios = [];
-        foreach ($rows as $row) {
-            if ($row['respuesta_a'] === null) {
-                $comentarios[$row['id']] = $row;
-                $comentarios[$row['id']]['respuestas'] = [];
-            }
-        }
+        $statement = $this->db->prepare($sql);
+        $statement->execute([':machote_id' => $machoteId]);
 
-        foreach ($rows as $row) {
-            if ($row['respuesta_a'] !== null && isset($comentarios[$row['respuesta_a']])) {
-                $comentarios[$row['respuesta_a']]['respuestas'][] = $row;
-            }
-        }
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
-        return $comentarios;
+        return $this->buildThreads($rows);
     }
 
-    // Insertar una nueva respuesta
-    public function insertRespuesta(array $data): bool {
-        $archivoPath = null;
-        if (!empty($data['archivo']) && $data['archivo']['error'] === UPLOAD_ERR_OK) {
-            $nombreArchivo = time() . '_' . basename($data['archivo']['name']);
-            $destino = __DIR__ . '/../../../uploads/' . $nombreArchivo;
-            move_uploaded_file($data['archivo']['tmp_name'], $destino);
-            $archivoPath = $nombreArchivo;
+    /**
+     * Registra una respuesta dentro de un hilo existente.
+     *
+     * @param array<string, mixed> $data
+     */
+    public function insertRespuesta(array $data): bool
+    {
+        $machoteId  = (int) ($data['machote_id'] ?? 0);
+        $respuestaA = (int) ($data['respuesta_a'] ?? 0);
+        $autorRol   = (string) ($data['autor_rol'] ?? 'empresa');
+        $comentario = trim((string) ($data['comentario'] ?? ''));
+        $usuarioId  = isset($data['usuario_id']) && (int) $data['usuario_id'] > 0
+            ? (int) $data['usuario_id']
+            : null;
+        $archivo    = $data['archivo'] ?? null;
+
+        if ($machoteId <= 0 || $respuestaA <= 0 || $comentario === '') {
+            throw new RuntimeException('Datos insuficientes para registrar la respuesta.');
         }
 
-        $sql = "INSERT INTO rp_machote_comentario 
-                (machote_id, respuesta_a, usuario_id, autor_rol, clausula, comentario, archivo_path)
-                VALUES (:machote_id, :respuesta_a, :usuario_id, :autor_rol, '', :comentario, :archivo_path)";
-        $stmt = $this->db->prepare($sql);
+        if (!in_array($autorRol, ['admin', 'empresa'], true)) {
+            $autorRol = 'empresa';
+        }
 
-        return $stmt->execute([
-            ':machote_id' => $data['machote_id'],
-            ':respuesta_a' => $data['respuesta_a'],
-            ':usuario_id' => $data['usuario_id'] ?? null,
-            ':autor_rol' => $data['autor_rol'],
-            ':comentario' => $data['comentario'],
-            ':archivo_path' => $archivoPath,
+        if (!$this->comentarioPerteneceAlMachote($respuestaA, $machoteId)) {
+            throw new RuntimeException('El comentario seleccionado no pertenece al machote indicado.');
+        }
+
+        $archivoPath = $this->saveUploadedFile($archivo);
+
+        $sql = <<<'SQL'
+            INSERT INTO rp_machote_comentario
+                (machote_id, respuesta_a, usuario_id, autor_rol, clausula, comentario, archivo_path, estatus, creado_en)
+            VALUES
+                (:machote_id, :respuesta_a, :usuario_id, :autor_rol, '', :comentario, :archivo_path, 'pendiente', NOW())
+        SQL;
+
+        $statement = $this->db->prepare($sql);
+
+        return $statement->execute([
+            ':machote_id'  => $machoteId,
+            ':respuesta_a' => $respuestaA,
+            ':usuario_id'  => $usuarioId,
+            ':autor_rol'   => $autorRol,
+            ':comentario'  => $comentario,
+            ':archivo_path'=> $archivoPath,
         ]);
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $rows
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildThreads(array $rows): array
+    {
+        $map = [];
+        foreach ($rows as $row) {
+            $comment = $this->mapRow($row);
+            $map[$comment['id']] = $comment;
+        }
+
+        $roots = [];
+        foreach ($map as $id => &$comment) {
+            $parentId = $comment['respuesta_a'];
+            if ($parentId !== null && isset($map[$parentId])) {
+                $map[$parentId]['respuestas'][] =& $comment;
+            } else {
+                $roots[] =& $comment;
+            }
+        }
+        unset($comment);
+
+        return array_map(static fn ($item) => $item, $roots);
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @return array<string, mixed>
+     */
+    private function mapRow(array $row): array
+    {
+        $respuestaA = $row['respuesta_a'] !== null ? (int) $row['respuesta_a'] : null;
+        $autorRol = (string) ($row['autor_rol'] ?? 'empresa');
+        $autorNombre = $autorRol === 'admin'
+            ? ((string) ($row['usuario_nombre'] ?? 'Vinculación'))
+            : 'Empresa';
+
+        return [
+            'id'           => (int) ($row['id'] ?? 0),
+            'machote_id'   => (int) ($row['machote_id'] ?? 0),
+            'respuesta_a'  => $respuestaA,
+            'usuario_id'   => $row['usuario_id'] !== null ? (int) $row['usuario_id'] : null,
+            'autor_rol'    => $autorRol,
+            'autor_nombre' => $autorNombre,
+            'clausula'     => (string) ($row['clausula'] ?? ''),
+            'comentario'   => (string) ($row['comentario'] ?? ''),
+            'estatus'      => (string) ($row['estatus'] ?? 'pendiente'),
+            'archivo_path' => $row['archivo_path'] ?? null,
+            'creado_en'    => (string) ($row['creado_en'] ?? ''),
+            'respuestas'   => [],
+        ];
+    }
+
+    /**
+     * @param array<string, mixed>|null $archivo
+     */
+    private function saveUploadedFile(?array $archivo): ?string
+    {
+        if ($archivo === null || ($archivo['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        $uploadsDir = dirname(__DIR__, 2) . '/uploads/machote_respuestas';
+        if (!is_dir($uploadsDir)) {
+            mkdir($uploadsDir, 0775, true);
+        }
+
+        $originalName = (string) ($archivo['name'] ?? 'archivo');
+        $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+        $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+        $safeBase = preg_replace('/[^A-Za-z0-9_-]/', '_', $baseName) ?: 'adjunto';
+
+        try {
+            $token = bin2hex(random_bytes(5));
+        } catch (\Throwable) {
+            $token = (string) mt_rand();
+        }
+
+        $fileName = sprintf('%s_%s', $safeBase, $token);
+        if ($extension !== '') {
+            $fileName .= '.' . strtolower($extension);
+        }
+
+        $destino = rtrim($uploadsDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $fileName;
+
+        if (!move_uploaded_file($archivo['tmp_name'], $destino)) {
+            return null;
+        }
+
+        return 'machote_respuestas/' . $fileName;
+    }
+
+    private function comentarioPerteneceAlMachote(int $comentarioId, int $machoteId): bool
+    {
+        $sql = 'SELECT 1 FROM rp_machote_comentario WHERE id = :id AND machote_id = :machote_id LIMIT 1';
+        $statement = $this->db->prepare($sql);
+        $statement->execute([
+            ':id' => $comentarioId,
+            ':machote_id' => $machoteId,
+        ]);
+
+        return $statement->fetchColumn() !== false;
     }
 }

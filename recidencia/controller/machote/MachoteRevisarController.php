@@ -5,13 +5,13 @@ namespace Residencia\Controller\Machote;
 
 require_once __DIR__ . '/../../../common/model/db.php';
 require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
-require_once __DIR__ . '/../../model/machote/MachoteComentarioModel.php';
+require_once __DIR__ . '/../../../portalempresa/model/MachoteComentarioModel.php';
 require_once __DIR__ . '/../../common/helpers/machote/machote_revisar_helper.php';
 
 use Common\Model\Database;
 use PDO;
 use Residencia\Model\Convenio\ConvenioMachoteModel;
-use Residencia\Model\Machote\MachoteComentarioModel;
+use PortalEmpresa\Model\Machote\MachoteComentarioModel as MachoteConversacionModel;
 use RuntimeException;
 use function Residencia\Common\Helpers\Machote\resumenComentarios;
 
@@ -36,7 +36,7 @@ final class MachoteRevisarController
         }
 
         $modelMachote = new ConvenioMachoteModel($this->db);
-        $modelComentarios = new MachoteComentarioModel($this->db);
+        $modelComentarios = new MachoteConversacionModel($this->db);
 
         // 1️⃣ Cargar el machote hijo
         $machote = $modelMachote->getById($machoteId);
@@ -49,7 +49,7 @@ final class MachoteRevisarController
         $convenio = $modelMachote->getConvenioByMachote($machoteId);
 
         // 3️⃣ Cargar comentarios
-        $comentarios = $modelComentarios->getByMachote($machoteId);
+        $comentarios = $modelComentarios->getComentariosConRespuestas($machoteId);
         $resumen = resumenComentarios($comentarios);
 
         return [

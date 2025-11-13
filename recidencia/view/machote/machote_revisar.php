@@ -20,6 +20,7 @@ $totales         = is_array($totales ?? null) ? $totales : ['pendientes' => 0, '
 $currentUser     = is_array($currentUser ?? null) ? $currentUser : [];
 $currentUserId   = isset($currentUser['id']) ? (int) $currentUser['id'] : 0;
 $currentUserName = isset($currentUser['name']) ? (string) $currentUser['name'] : '';
+$uploadsBasePath = '../../uploads/';
 
 // KPIs rápidos
 $comentAbiertos  = (int) ($totales['pendientes'] ?? 0);
@@ -33,6 +34,43 @@ function badgeEstado(string $estado): string {
     'En revisión'       => '<span class="badge en_revision">En revisión</span>',
   ];
   return $map[$estado] ?? '<span class="badge en_revision">En revisión</span>';
+}
+
+if (!function_exists('renderMachoteThreadMessage')) {
+    function renderMachoteThreadMessage(array $mensaje, string $uploadsBasePath): void {
+        $autorRol = (string) ($mensaje['autor_rol'] ?? 'empresa');
+        $autorNombre = (string) ($mensaje['autor_nombre'] ?? ucfirst($autorRol));
+        $fecha = (string) ($mensaje['creado_en'] ?? '');
+        $comentario = (string) ($mensaje['comentario'] ?? '');
+        $archivoPath = $mensaje['archivo_path'] ?? null;
+        $archivoHref = $archivoPath !== null && $archivoPath !== ''
+            ? rtrim($uploadsBasePath, '/') . '/' . ltrim((string) $archivoPath, '/\\')
+            : null;
+        ?>
+        <div class="message">
+          <div class="head">
+            <span class="pill <?= htmlspecialchars($autorRol) ?>"><?= htmlspecialchars(ucfirst($autorRol)) ?></span>
+            <strong><?= htmlspecialchars($autorNombre) ?></strong>
+            <?php if ($fecha !== ''): ?>
+              <time><?= htmlspecialchars($fecha) ?></time>
+            <?php endif; ?>
+          </div>
+          <p><?= nl2br(htmlspecialchars($comentario)) ?></p>
+          <?php if ($archivoHref !== null): ?>
+            <div class="files">
+              <a href="<?= htmlspecialchars($archivoHref) ?>" target="_blank" rel="noopener">📎 Ver archivo</a>
+            </div>
+          <?php endif; ?>
+        </div>
+        <?php if (!empty($mensaje['respuestas']) && is_array($mensaje['respuestas'])): ?>
+          <div class="messages nested">
+            <?php foreach ($mensaje['respuestas'] as $respuesta): ?>
+              <?php renderMachoteThreadMessage($respuesta, $uploadsBasePath); ?>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+        <?php
+    }
 }
 
 $flashMessages = [];
@@ -104,13 +142,18 @@ if (!empty($_GET['comentario_error'])) {
     .threads .badge.abierto{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;border-radius:999px;padding:2px 8px;font-weight:700}
     .threads .badge.resuelto{background:#dcfce7;color:#166534;border-radius:999px;padding:2px 8px;font-weight:700}
     .threads h4{margin:0 0 4px 0}
-    .thread-detail .message{border:1px solid #e5e7eb;border-radius:12px;padding:10px;margin-bottom:10px;background:#fff}
-    .thread-detail .head{display:flex;justify-content:space-between;margin-bottom:6px}
+    .messages{display:flex;flex-direction:column;gap:12px;margin:12px 0}
+    .messages.nested{margin-left:24px;padding-left:12px;border-left:2px solid #e5e7eb}
+    .messages .message{border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#fff}
+    .messages .message + .message{margin-top:0}
+    .thread-detail .head{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:6px}
     .pill{border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}
     .pill.admin{background:#e2e8f0;color:#0f172a}
     .pill.empresa{background:#dbeafe;color:#1e40af}
     .files a{font-size:13px}
-    .reply .row{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
+    .reply{border-top:1px solid #e5e7eb;margin-top:10px;padding-top:10px;display:flex;flex-direction:column;gap:8px}
+    .reply textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:8px;font-family:inherit}
+    .reply .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 
     .viewer-error{padding:14px;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;border-radius:10px;font-weight:700}
   </style>
@@ -243,9 +286,11 @@ if (!empty($_GET['comentario_error'])) {
                 <?php foreach ($comentarios as $c): ?>
                   <?php
                     $isAbierto = (($c['estatus'] ?? 'pendiente') === 'pendiente');
-                    $autor = trim((string) ($c['usuario_nombre'] ?? '')); 
+                    $autor = trim((string) ($c['autor_nombre'] ?? ''));
+                    $clausula = trim((string) ($c['clausula'] ?? ''));
+                    $creadoEn = (string) ($c['creado_en'] ?? '');
                   ?>
-                  <article class="thread">
+                  <article class="thread thread-detail">
                     <div class="meta">
                       <span class="badge <?= $isAbierto ? 'abierto' : 'resuelto' ?>">
                         <?= $isAbierto ? 'Abierto' : 'Resuelto' ?>
@@ -253,14 +298,17 @@ if (!empty($_GET['comentario_error'])) {
                       <?php if ($autor !== ''): ?>
                         <span>· <?= htmlspecialchars($autor) ?></span>
                       <?php endif; ?>
-                      <?php if (!empty($c['clausula'])): ?>
-                        <span>· <?= htmlspecialchars((string) $c['clausula']) ?></span>
+                      <?php if ($clausula !== ''): ?>
+                        <span>· <?= htmlspecialchars($clausula) ?></span>
                       <?php endif; ?>
-                      <?php if (!empty($c['creado_en'])): ?>
-                        <span>· <?= htmlspecialchars((string) $c['creado_en']) ?></span>
+                      <?php if ($creadoEn !== ''): ?>
+                        <span>· <?= htmlspecialchars($creadoEn) ?></span>
                       <?php endif; ?>
                     </div>
-                    <h4 style="margin:0 0 6px 0"><?= htmlspecialchars(mb_strimwidth((string) ($c['comentario'] ?? ''), 0, 160, '…')) ?></h4>
+
+                    <div class="messages conversation">
+                      <?php renderMachoteThreadMessage($c, $uploadsBasePath); ?>
+                    </div>
 
                     <div class="row-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
                       <?php if ($isAbierto): ?>
@@ -277,6 +325,16 @@ if (!empty($_GET['comentario_error'])) {
                         </form>
                       <?php endif; ?>
                     </div>
+
+                    <form class="reply" action="../../handler/machote/machote_reply_handler.php" method="post" enctype="multipart/form-data">
+                      <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
+                      <input type="hidden" name="respuesta_a" value="<?= (int) ($c['id'] ?? 0) ?>">
+                      <textarea name="comentario" rows="3" placeholder="Responder…" required></textarea>
+                      <div class="row">
+                        <input type="file" name="archivo">
+                        <button class="btn primary" type="submit">Enviar</button>
+                      </div>
+                    </form>
                   </article>
                 <?php endforeach; ?>
               <?php endif; ?>

@@ -1,28 +1,39 @@
 <?php
-namespace Residencia\Controller\Machote;
+declare(strict_types=1);
 
-require_once __DIR__ . '/../../model/machote/MachoteComentarioModel.php';
-use Residencia\Model\Machote\MachoteComentarioModel;
-use PDO;
-use Exception;
+namespace PortalEmpresa\Controller\Machote;
 
-class MachoteComentarioController {
+require_once __DIR__ . '/../model/MachoteComentarioModel.php';
+
+use PortalEmpresa\Model\Machote\MachoteComentarioModel;
+use Throwable;
+
+final class MachoteComentarioController
+{
     private MachoteComentarioModel $model;
 
-    public function __construct() {
-        require __DIR__ . '/../../common/db_connection.php'; // tu conexión PDO
-        $this->model = new MachoteComentarioModel($pdo);
+    public function __construct(?MachoteComentarioModel $model = null)
+    {
+        $this->model = $model ?? new MachoteComentarioModel();
     }
 
-    public function obtenerComentarios(int $machoteId): array {
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function obtenerComentarios(int $machoteId): array
+    {
         return $this->model->getComentariosConRespuestas($machoteId);
     }
 
-    public function responderComentario(array $data): bool {
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function responderComentario(array $data): bool
+    {
         try {
             return $this->model->insertRespuesta($data);
-        } catch (Exception $e) {
-            error_log("Error insertando respuesta: " . $e->getMessage());
+        } catch (Throwable $exception) {
+            error_log('Error insertando respuesta: ' . $exception->getMessage());
             return false;
         }
     }

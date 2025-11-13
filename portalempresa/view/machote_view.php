@@ -51,6 +51,7 @@ $avancePct = max(0, min(100, (int) ($stats['progreso'] ?? 0)));
 $confirmado = (bool) ($machote['confirmado'] ?? false);
 $versionMachote = (string) ($machote['version_local'] ?? 'v1.0');
 $machoteId = (int) ($machoteActualId ?? ($machote['id'] ?? 0));
+$uploadsBasePath = '../../uploads/';
 
 $flashMessages = [];
 
@@ -99,6 +100,43 @@ if (!empty($_GET['confirm_error'])) {
         $flashMessages[] = ['type' => 'error', 'text' => $map[$errorCode]];
     }
 }
+
+if (!function_exists('renderMachoteThreadMessage')) {
+    function renderMachoteThreadMessage(array $mensaje, string $uploadsBasePath): void {
+        $autorRol = (string) ($mensaje['autor_rol'] ?? 'empresa');
+        $autorNombre = (string) ($mensaje['autor_nombre'] ?? ucfirst($autorRol));
+        $fecha = (string) ($mensaje['creado_en'] ?? '');
+        $comentario = (string) ($mensaje['comentario'] ?? '');
+        $archivoPath = $mensaje['archivo_path'] ?? null;
+        $archivoHref = $archivoPath !== null && $archivoPath !== ''
+            ? rtrim($uploadsBasePath, '/') . '/' . ltrim((string) $archivoPath, '/\\')
+            : null;
+        ?>
+        <div class="message">
+          <div class="head">
+            <span class="pill <?= htmlspecialchars($autorRol) ?>"><?= htmlspecialchars(ucfirst($autorRol)) ?></span>
+            <strong><?= htmlspecialchars($autorNombre) ?></strong>
+            <?php if ($fecha !== ''): ?>
+              <time><?= htmlspecialchars($fecha) ?></time>
+            <?php endif; ?>
+          </div>
+          <p><?= nl2br(htmlspecialchars($comentario)) ?></p>
+          <?php if ($archivoHref !== null): ?>
+            <div class="files">
+              <a href="<?= htmlspecialchars($archivoHref) ?>" target="_blank" rel="noopener">📎 Ver archivo</a>
+            </div>
+          <?php endif; ?>
+        </div>
+        <?php if (!empty($mensaje['respuestas']) && is_array($mensaje['respuestas'])): ?>
+          <div class="messages nested">
+            <?php foreach ($mensaje['respuestas'] as $respuesta): ?>
+              <?php renderMachoteThreadMessage($respuesta, $uploadsBasePath); ?>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+        <?php
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -107,6 +145,19 @@ if (!empty($_GET['confirm_error'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Empresa · Revisión del Acuerdo</title>
   <link rel="stylesheet" href="../assets/css/portal/machoteview.css">
+  <style>
+    .threads .messages{display:flex;flex-direction:column;gap:12px;margin:12px 0}
+    .threads .messages.nested{margin-left:24px;padding-left:12px;border-left:2px solid #e5e7eb}
+    .threads .message{border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#fff}
+    .threads .message .head{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .threads .pill{border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}
+    .threads .pill.admin{background:#e2e8f0;color:#0f172a}
+    .threads .pill.empresa{background:#dbeafe;color:#1e40af}
+    .threads .files a{font-size:13px}
+    .threads form.reply{border-top:1px solid #e5e7eb;margin-top:10px;padding-top:10px;display:flex;flex-direction:column;gap:8px}
+    .threads form.reply textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:8px;font-family:inherit}
+    .threads form.reply .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  </style>
 </head>
 <body>
 
@@ -259,22 +310,44 @@ if (!empty($_GET['confirm_error'])) {
           <p class="empty">Aún no hay comentarios registrados.</p>
         <?php else: ?>
           <?php foreach ($comentarios as $comentario): ?>
-            <article class="thread">
+            <?php
+              $isAbierto = (($comentario['estatus'] ?? 'pendiente') === 'pendiente');
+              $clausula = trim((string) ($comentario['clausula'] ?? ''));
+              $creadoEn = (string) ($comentario['creado_en'] ?? '');
+            ?>
+            <article class="thread thread-detail">
               <div class="meta">
-                <span class="badge <?= ($comentario['estatus'] ?? '') === 'resuelto' ? 'resuelto' : 'abierto' ?>">
-                  <?= htmlspecialchars(ucfirst((string) ($comentario['estatus'] ?? 'pendiente'))) ?>
+                <span class="badge <?= $isAbierto ? 'abierto' : 'resuelto' ?>">
+                  <?= $isAbierto ? 'Abierto' : 'Resuelto' ?>
                 </span>
                 <span class="author <?= $comentario['autor_rol'] === 'admin' ? 'admin' : 'empresa' ?>">
                   <?= htmlspecialchars($comentario['autor_nombre'] ?? '') ?>
                 </span>
-                <?php if (!empty($comentario['fecha_label'])): ?>
-                  <span class="time"><?= htmlspecialchars((string) $comentario['fecha_label']) ?></span>
+                <?php if ($clausula !== ''): ?>
+                  <span>· <?= htmlspecialchars($clausula) ?></span>
+                <?php endif; ?>
+                <?php if ($creadoEn !== ''): ?>
+                  <span>· <?= htmlspecialchars($creadoEn) ?></span>
                 <?php endif; ?>
               </div>
-              <?php if (!empty($comentario['clausula'])): ?>
-                <h4><?= htmlspecialchars((string) $comentario['clausula']) ?></h4>
+
+              <div class="messages conversation">
+                <?php renderMachoteThreadMessage($comentario, $uploadsBasePath); ?>
+              </div>
+
+              <?php if ($permisos['puede_comentar']): ?>
+                <form class="reply" action="../handler/machote_reply_handler.php" method="post" enctype="multipart/form-data">
+                  <input type="hidden" name="machote_id" value="<?= $machoteId ?>">
+                  <input type="hidden" name="respuesta_a" value="<?= (int) ($comentario['id'] ?? 0) ?>">
+                  <textarea name="comentario" rows="3" placeholder="Responder…" required></textarea>
+                  <div class="row">
+                    <input type="file" name="archivo">
+                    <button class="btn primary" type="submit">Enviar</button>
+                  </div>
+                </form>
+              <?php else: ?>
+                <p class="note">Las respuestas se encuentran cerradas.</p>
               <?php endif; ?>
-              <p><?= nl2br(htmlspecialchars((string) ($comentario['comentario'] ?? ''))) ?></p>
             </article>
           <?php endforeach; ?>
         <?php endif; ?>

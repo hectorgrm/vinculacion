@@ -5,11 +5,13 @@ namespace PortalEmpresa\Controller\Machote;
 
 require_once __DIR__ . '/../helpers/empresaconveniofunction.php';
 require_once __DIR__ . '/../model/MachoteViewModel.php';
+require_once __DIR__ . '/../model/MachoteComentarioModel.php';
 require_once __DIR__ . '/../../recidencia/common/helpers/machote/machote_revisar_helper.php';
 
 use DateTimeImmutable;
 use PortalEmpresa\Helpers\EmpresaConvenioHelper;
 use PortalEmpresa\Model\Machote\MachoteViewModel;
+use PortalEmpresa\Model\Machote\MachoteComentarioModel as MachoteComentarioThreadModel;
 use RuntimeException;
 use function Residencia\Common\Helpers\Machote\resumenComentarios;
 
@@ -41,9 +43,9 @@ class MachoteViewController
             throw new RuntimeException('No se encontró el machote solicitado.');
         }
 
-        $comentarios = $this->model->getComentariosByMachote($machoteId);
+        $comentarioModel = new MachoteComentarioThreadModel();
+        $comentarios = $comentarioModel->getComentariosConRespuestas($machoteId);
         $resumen = resumenComentarios($comentarios);
-        $comentariosDecorados = array_map(fn (array $comentario): array => $this->mapComentario($comentario), $comentarios);
 
         $documento = $this->buildDocumentoMeta($record);
 
@@ -78,7 +80,7 @@ class MachoteViewController
             'machote' => $machote,
             'convenio' => $convenio,
             'documento' => $documento,
-            'comentarios' => $comentariosDecorados,
+            'comentarios' => $comentarios,
             'stats' => [
                 'total' => (int) ($resumen['total'] ?? 0),
                 'pendientes' => (int) ($resumen['pendientes'] ?? 0),
@@ -90,31 +92,6 @@ class MachoteViewController
                 'puede_comentar' => $puedeComentar,
                 'puede_confirmar' => $puedeConfirmar,
             ],
-        ];
-    }
-
-    /**
-     * @param array<string, mixed> $comentario
-     * @return array<string, mixed>
-     */
-    private function mapComentario(array $comentario): array
-    {
-        $autorRol = ($comentario['usuario_id'] ?? null) !== null ? 'admin' : 'empresa';
-        $autorNombre = $autorRol === 'admin'
-            ? (string) ($comentario['usuario_nombre'] ?? 'Residencias')
-            : 'Empresa';
-
-        $fechaIso = $comentario['creado_en'] ?? null;
-
-        return [
-            'id' => (int) ($comentario['id'] ?? 0),
-            'clausula' => (string) ($comentario['clausula'] ?? ''),
-            'comentario' => (string) ($comentario['comentario'] ?? ''),
-            'estatus' => (string) ($comentario['estatus'] ?? 'pendiente'),
-            'autor_rol' => $autorRol,
-            'autor_nombre' => $autorNombre,
-            'fecha_iso' => $fechaIso,
-            'fecha_label' => $this->formatFecha($fechaIso),
         ];
     }
 

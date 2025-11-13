@@ -15,6 +15,11 @@ function resumenComentarios(array $comentarios): array
     $resueltos = 0;
 
     foreach ($comentarios as $comentario) {
+        if (($comentario['respuesta_a'] ?? null) !== null) {
+            // Solo los comentarios raíz cuentan para el avance general.
+            continue;
+        }
+
         $total++;
         if (($comentario['estatus'] ?? '') === 'resuelto') {
             $resueltos++;
