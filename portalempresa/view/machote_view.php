@@ -222,31 +222,42 @@ if (!function_exists('renderMachoteThreadMessage')) {
     <div class="card">
       <header>Documento a revisar · <?= htmlspecialchars($versionMachote) ?></header>
       <div class="content">
-        <?php if ($documento['has_pdf'] && $documento['pdf_embed_url'] !== null): ?>
+        <?php if ($documento['has_pdf'] && !empty($documento['pdf_embed_url'])): ?>
+          <!-- 🧾 Mostrar PDF si existe -->
           <div class="pdf-frame">
-            <iframe src="<?= htmlspecialchars((string) $documento['pdf_embed_url']) ?>" title="Machote PDF"></iframe>
+            <iframe 
+              src="<?= htmlspecialchars((string) $documento['pdf_embed_url']) ?>"
+              title="Machote PDF"
+              style="width:100%; height:550px; border:none;"
+            ></iframe>
           </div>
-        <?php elseif ($documento['has_html']): ?>
-          <div class="html-viewer">
+
+          <div class="file-actions">
+            <a class="btn" href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>" target="_blank">📄 Ver en pestaña</a>
+            <a class="btn" download href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>">⬇️ Descargar PDF</a>
+          </div>
+
+        <?php elseif ($documento['has_html'] && !empty($documento['html'])): ?>
+          <!-- 🧱 Mostrar HTML (contenido del machote hijo) -->
+          <div class="html-viewer" 
+               style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;
+                      padding:20px;max-height:550px;overflow-y:auto;">
             <?= $documento['html'] ?>
           </div>
-        <?php else: ?>
-          <p class="empty">No hay un documento disponible para mostrar.</p>
-        <?php endif; ?>
+          <small class="note">
+            Mostrando versión editable actual registrada por Vinculación.
+          </small>
 
-        <div class="file-actions">
-          <?php if ($documento['has_pdf'] && $documento['pdf_url'] !== null): ?>
-            <a class="btn" href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>" target="_blank">📄 Ver PDF</a>
-            <a class="btn" download href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>">⬇️ Descargar</a>
-          <?php elseif ($documento['has_html']): ?>
-            <span class="note">Se muestra el contenido HTML registrado por Vinculación.</span>
-          <?php else: ?>
-            <span class="note">Pendiente de cargar archivo o contenido.</span>
-          <?php endif; ?>
-        </div>
+        <?php else: ?>
+          <!-- 🚫 No hay documento -->
+          <p class="empty" style="color:#64748b;">
+            No hay documento disponible para mostrar. 
+            Es posible que Vinculación aún no haya generado el machote hijo.
+          </p>
+        <?php endif; ?>
       </div>
     </div>
-
+-------------------
     <!-- Confirmación -->
     <div class="card">
       <header>Confirmación de Empresa</header>

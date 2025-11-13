@@ -102,30 +102,20 @@ class MachoteViewController
     private function buildDocumentoMeta(array $record): array
     {
         $contenidoHtml = (string) ($record['contenido_html'] ?? '');
-        $borrador = EmpresaConvenioHelper::normalizePath($record['convenio_borrador_path'] ?? null);
-        $firmado = EmpresaConvenioHelper::normalizePath($record['convenio_firmado_path'] ?? null);
-
-        $principal = $firmado ?? $borrador;
-        $embed = $principal;
+        $pdfPath = EmpresaConvenioHelper::normalizePath($record['machote_pdf_path'] ?? null);
+        $embed = $pdfPath;
 
         if ($embed !== null && strpos($embed, '#') === false) {
             $embed .= '#view=FitH';
         }
 
-        $fuente = null;
-        if ($firmado !== null) {
-            $fuente = 'firmado';
-        } elseif ($borrador !== null) {
-            $fuente = 'borrador';
-        }
-
         return [
             'has_html' => $contenidoHtml !== '',
             'html' => $contenidoHtml,
-            'has_pdf' => $principal !== null,
-            'pdf_url' => $principal,
+            'has_pdf' => $pdfPath !== null,
+            'pdf_url' => $pdfPath,
             'pdf_embed_url' => $embed,
-            'fuente' => $fuente,
+            'fuente' => $pdfPath !== null ? 'machote_hijo' : null,
         ];
     }
 

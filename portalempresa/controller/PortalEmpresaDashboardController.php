@@ -91,18 +91,8 @@ class PortalEmpresaDashboardController
                         $estadoRevision = 'Pendiente de confirmación';
                     }
 
-                    $pdfPrincipal = EmpresaConvenioHelper::normalizePath($machote['convenio_firmado_path'] ?? null);
-                    $fuenteDocumento = null;
-
-                    if ($pdfPrincipal !== null) {
-                        $fuenteDocumento = 'firmado';
-                    } else {
-                        $pdfPrincipal = EmpresaConvenioHelper::normalizePath($machote['convenio_borrador_path'] ?? null);
-                        if ($pdfPrincipal !== null) {
-                            $fuenteDocumento = 'borrador';
-                        }
-                    }
-
+                    $pdfPrincipal = EmpresaConvenioHelper::normalizePath($machote['machote_pdf_path'] ?? null);
+                    $fuenteDocumento = $pdfPrincipal !== null ? 'machote_hijo' : null;
                     $pdfEmbed = $pdfPrincipal;
 
                     if ($pdfEmbed !== null && strpos($pdfEmbed, '#') === false) {
