@@ -24,6 +24,16 @@ if ($id === false || $id === null) {
 $connection = Database::getConnection();
 $model = new ConvenioMachoteModel($connection);
 
+$machoteActual = $model->getById($id);
+
+if ($machoteActual === null) {
+    redirectWithStatus(null, 'invalid_id', $redirect);
+}
+
+if ((int) ($machoteActual['confirmacion_empresa'] ?? 0) === 1) {
+    redirectWithStatus($id, 'locked', $redirect);
+}
+
 try {
     $guardado = $model->updateContent($id, $contenido);
 } catch (\PDOException) {

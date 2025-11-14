@@ -262,7 +262,7 @@ if (!function_exists('renderMachoteThreadMessage')) {
     <div class="card">
       <header>Confirmación de Empresa</header>
       <div class="content approval">
-        <form action="../handler/mcahote_confirm_handler.php" method="post">
+        <form action="../handler/machote_confirm_handler.php" method="post">
           <input type="hidden" name="machote_id" value="<?= $machoteId ?>">
           <label class="switch">
             <input type="checkbox" name="confirmacion_empresa" value="1" <?= $confirmado ? 'checked disabled' : '' ?>>
@@ -270,7 +270,7 @@ if (!function_exists('renderMachoteThreadMessage')) {
             <span class="label">Estoy de acuerdo con el contenido del documento</span>
           </label>
           <?php if ($confirmado): ?>
-            <p class="ok-note">✅ Confirmación registrada.</p>
+            <p class="ok-note">✅ Confirmación registrada. Si necesitas más ajustes, contacta a Vinculación para reabrir la revisión.</p>
           <?php else: ?>
             <div class="actions">
               <button type="submit" class="btn primary" <?= $permisos['puede_confirmar'] ? '' : 'disabled' ?>>💾 Guardar confirmación</button>

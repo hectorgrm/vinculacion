@@ -22,6 +22,11 @@ if ($comentarioId === null || $comentarioId <= 0 || $machoteId === null || $mach
 try {
     $connection = Database::getConnection();
     $model = new MachoteComentarioModel($connection);
+
+    if ($model->machoteEstaBloqueado((int) $machoteId)) {
+        redirectToReview($machoteId, ['comentario_error' => 'locked']);
+    }
+
     $ok = $model->reabrirComentario($comentarioId);
 } catch (\Throwable $exception) {
     error_log('Error al reabrir comentario: ' . $exception->getMessage());

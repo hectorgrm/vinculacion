@@ -21,6 +21,9 @@ $currentUser     = is_array($currentUser ?? null) ? $currentUser : [];
 $currentUserId   = isset($currentUser['id']) ? (int) $currentUser['id'] : 0;
 $currentUserName = isset($currentUser['name']) ? (string) $currentUser['name'] : '';
 $uploadsBasePath = '../../uploads/';
+$machoteConfirmado = (int) ($machote['confirmacion_empresa'] ?? 0) === 1;
+$machoteBloqueado = $machoteConfirmado;
+$comentariosBloqueados = $machoteBloqueado;
 
 // KPIs rápidos
 $comentAbiertos  = (int) ($totales['pendientes'] ?? 0);
@@ -78,7 +81,12 @@ if (isset($_GET['machote_status']) && $_GET['machote_status'] === 'saved') {
     $flashMessages[] = ['type' => 'success', 'text' => 'Cambios guardados correctamente.'];
 }
 if (!empty($_GET['machote_error'])) {
-    $flashMessages[] = ['type' => 'error', 'text' => 'No se pudieron guardar los cambios.'];
+    $errorKey = (string) $_GET['machote_error'];
+    $messages = [
+        'locked' => 'El documento ya fue aprobado por la empresa. Reabre la revisión para continuar editando.',
+        'invalid_id' => 'No se pudo identificar el machote solicitado.',
+    ];
+    $flashMessages[] = ['type' => 'error', 'text' => $messages[$errorKey] ?? 'No se pudieron guardar los cambios.'];
 }
 if (!empty($_GET['comentario_status'])) {
     $status = (string) $_GET['comentario_status'];
@@ -97,8 +105,27 @@ if (!empty($_GET['comentario_error'])) {
         'invalid'   => 'Datos incompletos para procesar el comentario.',
         'not_found' => 'El comentario solicitado no existe.',
         'internal'  => 'Ocurrió un error al actualizar los comentarios.',
+        'locked'    => 'El documento aprobado mantiene los comentarios bloqueados. Reabre la revisión para continuar gestionándolos.',
     ];
     $flashMessages[] = ['type' => 'error', 'text' => $messages[$errorKey] ?? 'Ocurrió un error al gestionar el comentario.'];
+}
+if (!empty($_GET['reabrir_status'])) {
+    $status = (string) $_GET['reabrir_status'];
+    $messages = [
+        'reopened' => 'La revisión se reabrió correctamente. El documento volvió al estado "En revisión".',
+        'already_open' => 'El machote ya se encontraba en modo revisión.',
+    ];
+    if (isset($messages[$status])) {
+        $flashMessages[] = ['type' => 'success', 'text' => $messages[$status]];
+    }
+}
+if (!empty($_GET['reabrir_error'])) {
+    $errorKey = (string) $_GET['reabrir_error'];
+    $messages = [
+        'invalid' => 'No se pudo identificar el machote a reabrir.',
+        'internal' => 'Ocurrió un problema al reabrir la revisión. Intenta nuevamente.',
+    ];
+    $flashMessages[] = ['type' => 'error', 'text' => $messages[$errorKey] ?? 'No se pudo reabrir la revisión.'];
 }
 ?>
 <!DOCTYPE html>
@@ -135,7 +162,9 @@ if (!empty($_GET['comentario_error'])) {
     @media (max-width: 1100px){.split{grid-template-columns:1fr}}
 
     .editor-card .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px}
+    .readonly-note{background:#fef3c7;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:10px;margin-bottom:12px;font-weight:600}
     .editor-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:10px}
+    .inline-form{display:inline-flex;gap:8px;align-items:center;margin:0}
 
     .threads .thread{border-bottom:1px solid #e5e7eb;padding:12px 8px}
     .threads .meta{display:flex;gap:8px;align-items:center;margin-bottom:6px;color:#64748b;font-size:12px;flex-wrap:wrap}
@@ -158,7 +187,7 @@ if (!empty($_GET['comentario_error'])) {
     .viewer-error{padding:14px;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;border-radius:10px;font-weight:700}
   </style>
 </head>
-<body>
+<body data-machote-bloqueado="<?= $machoteBloqueado ? '1' : '0' ?>">
   <div class="app">
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
@@ -183,6 +212,18 @@ if (!empty($_GET['comentario_error'])) {
 
           <?php if ($empresaId > 0): ?>
             <a href="../empresa/empresa_view.php?id=<?= (int) $empresaId ?>" class="btn secondary">⬅ Volver a la empresa</a>
+          <?php endif; ?>
+
+          <?php if ($machoteBloqueado): ?>
+            <form
+              class="inline-form"
+              action="../../handler/machote/machote_reabrir_handler.php"
+              method="post"
+              onsubmit="return confirm('¿Reabrir la revisión para que la empresa vuelva a comentar y confirmar?');"
+            >
+              <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
+              <button class="btn danger" type="submit">↺ Reabrir revisión</button>
+            </form>
           <?php endif; ?>
         </div>
       </header>
@@ -225,6 +266,9 @@ if (!empty($_GET['comentario_error'])) {
         <div class="card editor-card">
           <header>Documento a revisar (HTML editable)</header>
           <div class="content">
+            <?php if ($machoteBloqueado): ?>
+              <p class="readonly-note">Este documento fue confirmado por la empresa. Reabre la revisión para habilitar nuevamente la edición.</p>
+            <?php endif; ?>
             <form method="POST" action="../../handler/machote/machote_update_handler.php">
               <input type="hidden" name="id" value="<?= (int) $machoteId ?>">
               <input type="hidden" name="redirect" value="machote_revisar">
@@ -232,7 +276,7 @@ if (!empty($_GET['comentario_error'])) {
 
               <div class="editor-actions">
                 <button class="btn" type="button" onclick="togglePreview()">👁️ Vista limpia</button>
-                <button class="btn primary" type="submit">💾 Guardar cambios</button>
+                <button class="btn primary" type="submit" <?= $machoteBloqueado ? 'disabled' : '' ?>>💾 Guardar cambios</button>
                 <a class="btn" target="_blank" rel="noopener"
                    href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>">📄 Previsualizar PDF</a>
               </div>
@@ -252,6 +296,9 @@ if (!empty($_GET['comentario_error'])) {
           </header>
 
           <div class="content" style="display:grid;grid-template-columns:1fr;gap:10px">
+            <?php if ($comentariosBloqueados): ?>
+              <p class="readonly-note" style="margin:0">Los comentarios están bloqueados porque la empresa confirmó el documento. Reabre la revisión para habilitarlos nuevamente.</p>
+            <?php endif; ?>
             <!-- Crear nuevo comentario -->
             <details class="card" open>
               <summary style="cursor:pointer;font-weight:700;">➕ Nuevo comentario</summary>
@@ -261,7 +308,7 @@ if (!empty($_GET['comentario_error'])) {
                   <?php if ($currentUserId > 0): ?>
                     <input type="hidden" name="usuario_id" value="<?= (int) $currentUserId ?>">
                   <?php endif; ?>
-                  <div style="display:grid;gap:10px">
+                  <fieldset style="border:none;padding:0;margin:0;display:grid;gap:10px" <?= $comentariosBloqueados ? 'disabled' : '' ?>>
                     <div>
                       <label for="clausula">Sección / cláusula (opcional)</label>
                       <input type="text" id="clausula" name="clausula" placeholder="Ej. CLÁUSULA PRIMERA · Vigencia" />
@@ -271,9 +318,9 @@ if (!empty($_GET['comentario_error'])) {
                       <textarea id="comentario" name="comentario" rows="3" required placeholder="Describe el ajuste, duda o cambio que solicitas…"></textarea>
                     </div>
                     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                      <button class="btn primary">Publicar</button>
+                      <button class="btn primary" <?= $comentariosBloqueados ? 'disabled' : '' ?>>Publicar</button>
                     </div>
-                  </div>
+                  </fieldset>
                 </form>
               </div>
             </details>
@@ -315,13 +362,13 @@ if (!empty($_GET['comentario_error'])) {
                         <form action="../../handler/machote/machote_comentario_resolver_handler.php" method="post" onsubmit="return confirm('¿Marcar como resuelto?')">
                           <input type="hidden" name="id" value="<?= (int) ($c['id'] ?? 0) ?>">
                           <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
-                          <button class="btn small danger">✓ Marcar como resuelto</button>
+                          <button class="btn small danger" <?= $comentariosBloqueados ? 'disabled' : '' ?>>✓ Marcar como resuelto</button>
                         </form>
                       <?php else: ?>
                         <form action="../../handler/machote/machote_comentario_reabrir_handler.php" method="post">
                           <input type="hidden" name="id" value="<?= (int) ($c['id'] ?? 0) ?>">
                           <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
-                          <button class="btn small">↺ Reabrir</button>
+                          <button class="btn small" <?= $comentariosBloqueados ? 'disabled' : '' ?>>↺ Reabrir</button>
                         </form>
                       <?php endif; ?>
                     </div>
@@ -329,11 +376,13 @@ if (!empty($_GET['comentario_error'])) {
                     <form class="reply" action="../../handler/machote/machote_reply_handler.php" method="post" enctype="multipart/form-data">
                       <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
                       <input type="hidden" name="respuesta_a" value="<?= (int) ($c['id'] ?? 0) ?>">
-                      <textarea name="comentario" rows="3" placeholder="Responder…" required></textarea>
-                      <div class="row">
-                        <input type="file" name="archivo">
-                        <button class="btn primary" type="submit">Enviar</button>
-                      </div>
+                      <fieldset style="border:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px" <?= $comentariosBloqueados ? 'disabled' : '' ?>>
+                        <textarea name="comentario" rows="3" placeholder="Responder…" required></textarea>
+                        <div class="row">
+                          <input type="file" name="archivo">
+                          <button class="btn primary" type="submit" <?= $comentariosBloqueados ? 'disabled' : '' ?>>Enviar</button>
+                        </div>
+                      </fieldset>
                     </form>
                   </article>
                 <?php endforeach; ?>
@@ -353,6 +402,7 @@ if (!empty($_GET['comentario_error'])) {
 <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
 <script>
   let editor;
+  const isReadOnly = document.body.dataset.machoteBloqueado === '1';
 
   ClassicEditor
     .create(document.querySelector('#editor'), {
@@ -378,14 +428,26 @@ if (!empty($_GET['comentario_error'])) {
     })
     .then(newEditor => {
       editor = newEditor;
+      if (isReadOnly) {
+        editor.enableReadOnlyMode('machote-readonly');
+      }
     })
     .catch(console.error);
 
   // Actualiza el contenido antes de guardar
-  const form = document.querySelector('form');
-  if (form) {
-    form.addEventListener('submit', () => {
-      if (editor) form.querySelector('#editor').value = editor.getData();
+  const editorForm = document.querySelector('.editor-card form');
+  if (editorForm) {
+    editorForm.addEventListener('submit', (event) => {
+      if (isReadOnly) {
+        event.preventDefault();
+        return false;
+      }
+
+      if (editor) {
+        editorForm.querySelector('#editor').value = editor.getData();
+      }
+
+      return true;
     });
   }
 </script>

@@ -48,6 +48,7 @@ class MachoteViewController
         $resumen = resumenComentarios($comentarios);
 
         $documento = $this->buildDocumentoMeta($record);
+        $estadoMachote = (string) ($record['machote_estatus'] ?? ($resumen['estado'] ?? 'En revisión'));
 
         $machote = [
             'id' => $machoteId,
@@ -55,6 +56,7 @@ class MachoteViewController
             'confirmado' => (int) ($record['confirmacion_empresa'] ?? 0) === 1,
             'contenido_html' => (string) ($record['contenido_html'] ?? ''),
             'actualizado_en' => $record['machote_actualizado_en'] ?? null,
+            'estatus' => $estadoMachote,
         ];
 
         $empresa = [
@@ -86,7 +88,7 @@ class MachoteViewController
                 'pendientes' => (int) ($resumen['pendientes'] ?? 0),
                 'resueltos' => (int) ($resumen['resueltos'] ?? 0),
                 'progreso' => (int) ($resumen['progreso'] ?? 0),
-                'estado' => (string) ($resumen['estado'] ?? 'En revisión'),
+                'estado' => $estadoMachote,
             ],
             'permisos' => [
                 'puede_comentar' => $puedeComentar,

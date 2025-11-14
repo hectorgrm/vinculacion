@@ -130,6 +130,17 @@ class MachoteComentarioModel
         return $stmt->execute([':id' => $comentarioId]);
     }
 
+    public function machoteEstaBloqueado(int $machoteId): bool
+    {
+        $sql = 'SELECT confirmacion_empresa FROM rp_convenio_machote WHERE id = :machote_id LIMIT 1';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':machote_id' => $machoteId]);
+
+        $confirmacion = $stmt->fetchColumn();
+
+        return $confirmacion !== false && (int) $confirmacion === 1;
+    }
+
     // ===============================================================
     // 🔹 6. Contar pendientes por machote (opcional para dashboard)
     // ===============================================================

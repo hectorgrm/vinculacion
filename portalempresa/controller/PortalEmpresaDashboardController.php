@@ -83,12 +83,16 @@ class PortalEmpresaDashboardController
 
                     $avance = max(0, min(100, $avance));
 
-                    if ($confirmado) {
-                        $estadoRevision = 'Aprobado';
-                    } elseif ($pendientes > 0) {
-                        $estadoRevision = 'En revisión';
-                    } else {
-                        $estadoRevision = 'Pendiente de confirmación';
+                    $estadoRevision = (string) ($machote['machote_estatus'] ?? '');
+
+                    if ($estadoRevision === '') {
+                        if ($confirmado) {
+                            $estadoRevision = 'Aprobado';
+                        } elseif ($pendientes > 0) {
+                            $estadoRevision = 'En revisión';
+                        } else {
+                            $estadoRevision = 'Pendiente de confirmación';
+                        }
                     }
 
                     $pdfPrincipal = EmpresaConvenioHelper::normalizePath($machote['machote_pdf_path'] ?? null);

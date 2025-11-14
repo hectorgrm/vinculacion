@@ -35,6 +35,7 @@ class MachoteViewModel
                 m.version_local            AS version_local,
                 m.contenido_html           AS contenido_html,
                 m.archivo_pdf              AS machote_pdf_path,
+                m.estatus                  AS machote_estatus,
                 COALESCE(m.confirmacion_empresa, 0) AS confirmacion_empresa,
                 m.creado_en                AS machote_creado_en,
                 m.actualizado_en           AS machote_actualizado_en,
@@ -148,7 +149,13 @@ class MachoteViewModel
             throw new RuntimeException('No puedes confirmar este machote.');
         }
 
-        $sql = 'UPDATE rp_convenio_machote SET confirmacion_empresa = 1, actualizado_en = NOW() WHERE id = :machote_id';
+        $sql = <<<'SQL'
+            UPDATE rp_convenio_machote
+            SET confirmacion_empresa = 1,
+                estatus = 'Aprobado',
+                actualizado_en = NOW()
+            WHERE id = :machote_id
+        SQL;
 
         $statement = $this->connection->prepare($sql);
 

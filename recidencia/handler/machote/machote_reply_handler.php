@@ -1,10 +1,14 @@
 <?php
 declare(strict_types=1);
 
+use Common\Model\Database;
 use PortalEmpresa\Controller\Machote\MachoteComentarioController;
+use Residencia\Model\Machote\MachoteComentarioModel;
 
 require_once __DIR__ . '/../../common/auth.php';
+require_once __DIR__ . '/../../../common/model/db.php';
 require_once __DIR__ . '/../../../portalempresa/controller/MachoteComentarioController.php';
+require_once __DIR__ . '/../../model/machote/MachoteComentarioModel.php';
 
 $machoteId = filter_input(INPUT_POST, 'machote_id', FILTER_VALIDATE_INT);
 $respuestaA = filter_input(INPUT_POST, 'respuesta_a', FILTER_VALIDATE_INT);
@@ -15,6 +19,20 @@ $redirectBase = '../../view/machote/machote_revisar.php?id=' . ($machoteId !== f
 
 if ($machoteId === false || $machoteId === null || $respuestaA === false || $respuestaA === null || $comentario === '') {
     header('Location: ' . $redirectBase . '&comentario_error=invalid');
+    exit;
+}
+
+try {
+    $connection = Database::getConnection();
+    $model = new MachoteComentarioModel($connection);
+
+    if ($model->machoteEstaBloqueado((int) $machoteId)) {
+        header('Location: ' . $redirectBase . '&comentario_error=locked');
+        exit;
+    }
+} catch (\Throwable $exception) {
+    error_log('Error validando estado del machote para responder comentario: ' . $exception->getMessage());
+    header('Location: ' . $redirectBase . '&comentario_error=internal');
     exit;
 }
 

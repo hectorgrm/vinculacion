@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-use PortalEmpresa\Model\Machote\MachoteViewModel;
-use function Residencia\Common\Helpers\Machote\resumenComentarios;
+use Residencia\Controller\Machote\MachoteConfirmController;
 
 require_once __DIR__ . '/../../config/session.php';
 require_once __DIR__ . '/../common/functions/portal_session_guard.php';
-require_once __DIR__ . '/../model/MachoteViewModel.php';
-require_once __DIR__ . '/../../recidencia/common/helpers/machote/machote_revisar_helper.php';
+require_once __DIR__ . '/../../recidencia/controller/machote/MachoteConfirmController.php';
 
 $portalSession = portalEmpresaRequireSession('../view/login.php');
 $empresaId = (int) ($portalSession['empresa_id'] ?? 0);
@@ -22,27 +20,18 @@ if ($machoteId === null || $machoteId === false || $machoteId <= 0) {
 } elseif ($empresaId <= 0) {
     $error = 'session';
 } else {
-    $model = new MachoteViewModel();
-
     try {
-        $machote = $model->getMachoteForEmpresa($machoteId, $empresaId);
+        $controller = new MachoteConfirmController();
+        $resultado = $controller->confirmarDesdeEmpresa($machoteId, $empresaId);
 
-        if ($machote === null) {
-            throw new \RuntimeException('Machote no disponible.');
-        }
-
-        if ((int) ($machote['confirmacion_empresa'] ?? 0) === 1) {
+        if ($resultado['status'] === 'confirmed') {
+            $status = 'confirmed';
+        } elseif ($resultado['status'] === 'already') {
             $status = 'already';
+        } elseif ($resultado['status'] === 'pending') {
+            $error = 'pending';
         } else {
-            $comentarios = $model->getComentariosByMachote($machoteId);
-            $resumen = resumenComentarios($comentarios);
-
-            if ((int) ($resumen['pendientes'] ?? 0) > 0) {
-                $error = 'pending';
-            } else {
-                $model->confirmarMachote($machoteId, $empresaId);
-                $status = 'confirmed';
-            }
+            $error = 'internal';
         }
     } catch (\Throwable $exception) {
         $error = $error ?? 'internal';

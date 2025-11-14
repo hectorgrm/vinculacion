@@ -24,6 +24,11 @@ if ($machoteId === null || $machoteId <= 0 || $comentario === '') {
 try {
     $connection = Database::getConnection();
     $model = new MachoteComentarioModel($connection);
+
+    if ($model->machoteEstaBloqueado((int) $machoteId)) {
+        redirectToReview($machoteId, ['comentario_error' => 'locked']);
+    }
+
     $ok = $model->addComentario($machoteId, $usuarioId ?: null, $clausula, $comentario);
 } catch (\Throwable $exception) {
     error_log('Error al agregar comentario: ' . $exception->getMessage());

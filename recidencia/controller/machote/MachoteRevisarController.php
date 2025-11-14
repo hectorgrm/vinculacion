@@ -51,6 +51,7 @@ final class MachoteRevisarController
         // 3️⃣ Cargar comentarios
         $comentarios = $modelComentarios->getComentariosConRespuestas($machoteId);
         $resumen = resumenComentarios($comentarios);
+        $estadoActual = (string) ($machote['estatus'] ?? ($resumen['estado'] ?? 'En revisión'));
 
         return [
             'machote'     => $machote,
@@ -58,7 +59,7 @@ final class MachoteRevisarController
             'convenio'    => $convenio,
             'comentarios' => $comentarios,
             'progreso'    => $resumen['progreso'],
-            'estado'      => $resumen['estado'],
+            'estado'      => $estadoActual,
             'totales'     => $resumen,
             'error'       => null,
         ];
