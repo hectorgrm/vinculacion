@@ -219,42 +219,50 @@ if (!function_exists('renderMachoteThreadMessage')) {
     </div>
 
     <!-- Documento -->
-    <div class="card">
+    <div class="card doc-card">
       <header>Documento a revisar · <?= htmlspecialchars($versionMachote) ?></header>
       <div class="content">
-        <?php if ($documento['has_pdf'] && !empty($documento['pdf_embed_url'])): ?>
-          <!-- 🧾 Mostrar PDF si existe -->
-          <div class="pdf-frame">
-            <iframe 
-              src="<?= htmlspecialchars((string) $documento['pdf_embed_url']) ?>"
-              title="Machote PDF"
-              style="width:100%; height:550px; border:none;"
-            ></iframe>
-          </div>
+        <div class="doc-shell">
+          <?php if ($documento['has_pdf'] && !empty($documento['pdf_embed_url'])): ?>
+            <!-- 🧾 Mostrar PDF si existe -->
+            <div class="doc-surface doc-surface-pdf">
+              <iframe
+                src="<?= htmlspecialchars((string) $documento['pdf_embed_url']) ?>"
+                title="Machote PDF"
+                class="doc-iframe"
+              ></iframe>
+            </div>
 
-          <div class="file-actions">
-            <a class="btn" href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>" target="_blank">📄 Ver en pestaña</a>
-            <a class="btn" download href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>">⬇️ Descargar PDF</a>
-          </div>
+            <div class="doc-toolbar">
+              <a class="btn" href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>" target="_blank">📄 Ver en pestaña</a>
+              <a class="btn" download href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>">⬇️ Descargar PDF</a>
+            </div>
 
-        <?php elseif ($documento['has_html'] && !empty($documento['html'])): ?>
-          <!-- 🧱 Mostrar HTML (contenido del machote hijo) -->
-          <div class="html-viewer" 
-               style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;
-                      padding:20px;max-height:550px;overflow-y:auto;">
-            <?= $documento['html'] ?>
-          </div>
-          <small class="note">
-            Mostrando versión editable actual registrada por Vinculación.
-          </small>
+            <?php if (!empty($documento['fuente'])): ?>
+              <p class="doc-note">Fuente: <?= htmlspecialchars((string) $documento['fuente']) ?></p>
+            <?php endif; ?>
 
-        <?php else: ?>
-          <!-- 🚫 No hay documento -->
-          <p class="empty" style="color:#64748b;">
-            No hay documento disponible para mostrar. 
-            Es posible que Vinculación aún no haya generado el machote hijo.
-          </p>
-        <?php endif; ?>
+          <?php elseif ($documento['has_html'] && !empty($documento['html'])): ?>
+            <!-- 🧱 Mostrar HTML (contenido del machote hijo) -->
+            <div class="doc-surface doc-surface-html">
+              <div class="doc-html">
+                <?= $documento['html'] ?>
+              </div>
+            </div>
+            <p class="doc-note">
+              Mostrando versión editable actual registrada por Vinculación.
+            </p>
+
+          <?php else: ?>
+            <!-- 🚫 No hay documento -->
+            <div class="doc-empty">
+              <p>
+                No hay documento disponible para mostrar.
+                Es posible que Vinculación aún no haya generado el machote hijo.
+              </p>
+            </div>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
 -------------------
