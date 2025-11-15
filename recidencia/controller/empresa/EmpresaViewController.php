@@ -74,7 +74,8 @@ class EmpresaViewController
      *     conveniosActivos: array<int, array<string, mixed>>,
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
-     *     inputError: ?string
+     *     inputError: ?string,
+     *     machoteData: ?array<string, mixed>
      * }
      */
     public function handle(array $input): array
@@ -119,6 +120,57 @@ class EmpresaViewController
         $convenios = $this->getConveniosActivos($empresaId);
         $viewData['conveniosActivos'] = empresaViewDecorateConvenios($convenios);
 
+        $viewData['machoteData'] = $this->getMachoteResumen($empresaId);
+
         return $viewData;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getMachoteResumen(int $empresaId): ?array
+    {
+        try {
+            $machote = $this->model->findLatestMachoteResumen($empresaId);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo obtener la información del machote asociado.', 0, $exception);
+        }
+
+        if ($machote === null) {
+            return null;
+        }
+
+        $total = max(0, (int) ($machote['comentarios_total'] ?? 0));
+        $resueltos = max(0, (int) ($machote['comentarios_resueltos'] ?? 0));
+        $pendientes = max(0, $total - $resueltos);
+        $progreso = $total > 0 ? (int) round(($resueltos / $total) * 100) : 0;
+        $estadoLabel = $this->normalizeMachoteEstado((string) ($machote['estatus'] ?? ''), $total, $resueltos);
+
+        return [
+            'id' => (int) $machote['id'],
+            'version' => $machote['version_local'] ?? null,
+            'estado' => $estadoLabel,
+            'pendientes' => $pendientes,
+            'resueltos' => $resueltos,
+            'total' => $total,
+            'progreso' => $progreso,
+            'convenio_id' => isset($machote['convenio_id']) ? (int) $machote['convenio_id'] : null,
+        ];
+    }
+
+    private function normalizeMachoteEstado(string $estadoRaw, int $total, int $resueltos): string
+    {
+        $normalized = strtolower(trim($estadoRaw));
+        $normalized = str_replace(['-', ' '], '_', $normalized);
+
+        return match (true) {
+            $normalized === 'aprobado' || $normalized === 'aprobada' => 'Aprobado',
+            $normalized === 'con_observaciones' || $normalized === 'observaciones' => 'Con observaciones',
+            $normalized === 'en_revision' || $normalized === 'revision' => 'En revisión',
+            $normalized === 'pendiente' => 'Pendiente',
+            $total === 0 => 'En revisión',
+            $resueltos >= $total => 'Aprobado',
+            default => 'Con observaciones',
+        };
     }
 }

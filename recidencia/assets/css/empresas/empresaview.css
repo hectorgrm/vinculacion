@@ -18,6 +18,53 @@
 .badge.en_revision { background: #1f6feb; }
 .badge.ok { background: #10b981; }
 .badge.aprobado { background: #4ade80; }
+.badge.con_observaciones { background: #f97316; }
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.kpi {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kpi h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.kpi-num {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.kpi.wide {
+  grid-column: span 2;
+}
+
+.progress {
+  width: 100%;
+  height: 10px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress .bar {
+  height: 100%;
+  background: #16a34a;
+}
 
 .actions {
   display: flex;

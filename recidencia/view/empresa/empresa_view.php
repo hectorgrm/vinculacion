@@ -8,6 +8,7 @@ declare(strict_types=1);
  *     controllerError: ?string,
  *     notFoundMessage: ?string,
  *     inputError: ?string
+ *     machoteData: ?array<string, mixed>
  * } $handlerResult
  */
 $handlerResult = require __DIR__ . '/../../handler/empresa/empresa_view_handler.php';
@@ -21,6 +22,7 @@ $conveniosActivos = $handlerResult['conveniosActivos'] ?? [];
 $documentos = $handlerResult['documentos'] ?? [];
 $documentosStats = $handlerResult['documentosStats'] ?? [];
 $documentosGestionUrl = $handlerResult['documentosGestionUrl'] ?? null;
+$machoteData = $handlerResult['machoteData'] ?? null;
 $auditoriaHandlerResult = require __DIR__ . '/../../handler/empresa/empresa_auditoria_handler.php';
 $auditoriaItems = $auditoriaHandlerResult['items'] ?? [];
 $auditoriaControllerError = $auditoriaHandlerResult['controllerError'] ?? null;
@@ -48,6 +50,10 @@ if (!is_array($documentosStats)) {
         'aprobados' => isset($documentosStats['aprobados']) ? (int) $documentosStats['aprobados'] : 0,
         'porcentaje' => isset($documentosStats['porcentaje']) ? (int) $documentosStats['porcentaje'] : 0,
     ];
+}
+
+if (!is_array($machoteData) || !isset($machoteData['id'])) {
+    $machoteData = null;
 }
 
 if (!is_array($auditoriaItems)) {
@@ -293,57 +299,61 @@ $progreso = $documentosStats['porcentaje'];
         </div>
       </section>
 
-      <!-- 💬 Observaciones de Machote -->
       <!-- 💬 Revisión de Machote -->
-
-      <!-- 🟢 Caso 1: Machote aprobado -->
-
-<section class="kpis card">
-  <div class="kpi">
-    <h4>Comentarios abiertos</h4>
-    <div class="kpi-num"><?= (int)($machoteData['pendientes'] ?? 0) ?></div>
-  </div>
-
-  <div class="kpi">
-    <h4>Comentarios resueltos</h4>
-    <div class="kpi-num"><?= (int)($machoteData['resueltos'] ?? 0) ?></div>
-  </div>
-
-  <div class="kpi wide">
-    <h4>Avance de la revisión</h4>
-    <div class="progress">
-      <div class="bar" style="width: <?= (int)($machoteData['progreso'] ?? 0) ?>%"></div>
-    </div>
-    <small><?= (int)($machoteData['progreso'] ?? 0) ?>% completado</small>
-  </div>
-
-  <div class="kpi">
-    <h4>Estado</h4>
-    <div>
-      <span class="badge <?= strtolower(str_replace(' ', '_', $machoteData['estado'] ?? 'pendiente')) ?>">
-        <?= htmlspecialchars($machoteData['estado'] ?? 'Pendiente') ?>
-      </span>
-    </div>
-  </div>
-</section>
-
-<div style="margin-top:16px;">
-  <a href="../machote/machote_revisar_view.php?id=<?= $machoteData['id'] ?>"
-     class="btn primary">Ir al Machote / Comentarios</a>
-</div>
-
-
-      <!-- 🔔 Alertas -->
-      <section class="card warn">
-        <header>⚠ Alertas recientes</header>
+      <section class="card">
+        <header>💬 Revisión de Machote</header>
         <div class="content">
-          <ul class="alerts">
-            <li>⚠ Convenio #15 está próximo a vencer (30 días restantes).</li>
-            <li>⚠ Documento “Acta Constitutiva” sigue pendiente de aprobación.</li>
-          </ul>
+          <?php if ($machoteData === null) : ?>
+            <p style="margin:0; color:#475569;">
+              Esta empresa aún no tiene un machote registrado o se encuentra en preparación.
+            </p>
+          <?php else : ?>
+            <?php
+            $machotePendientes = (int) ($machoteData['pendientes'] ?? 0);
+            $machoteResueltos = (int) ($machoteData['resueltos'] ?? 0);
+            $machoteProgreso = (int) ($machoteData['progreso'] ?? 0);
+            $machoteEstado = (string) ($machoteData['estado'] ?? 'Pendiente');
+            $machoteEstadoClass = strtolower(str_replace([' ', '-'], '_', $machoteEstado));
+            $machoteEstadoClass = preg_replace('/[^a-z0-9_]/', '', $machoteEstadoClass) ?: 'pendiente';
+            $machoteId = (int) $machoteData['id'];
+            ?>
+            <section class="kpis">
+              <div class="kpi">
+                <h4>Comentarios abiertos</h4>
+                <div class="kpi-num"><?php echo $machotePendientes; ?></div>
+              </div>
+
+              <div class="kpi">
+                <h4>Comentarios resueltos</h4>
+                <div class="kpi-num"><?php echo $machoteResueltos; ?></div>
+              </div>
+
+              <div class="kpi wide">
+                <h4>Avance de la revisión</h4>
+                <div class="progress">
+                  <div class="bar" style="width: <?php echo $machoteProgreso; ?>%"></div>
+                </div>
+                <small><?php echo $machoteProgreso; ?>% completado</small>
+              </div>
+
+              <div class="kpi">
+                <h4>Estado</h4>
+                <div>
+                  <span class="badge <?php echo htmlspecialchars($machoteEstadoClass, ENT_QUOTES, 'UTF-8'); ?>">
+                    <?php echo htmlspecialchars($machoteEstado, ENT_QUOTES, 'UTF-8'); ?>
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            <div class="actions" style="margin-top:16px; justify-content:flex-start;">
+              <a href="../machote/machote_revisar.php?id=<?php echo $machoteId; ?>" class="btn primary">
+                Ir al Machote / Comentarios
+              </a>
+            </div>
+          <?php endif; ?>
         </div>
       </section>
-
       
 
       <!-- 📂 Documentación Legal -->

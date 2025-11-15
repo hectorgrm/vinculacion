@@ -15,7 +15,8 @@ if (!function_exists('empresaViewHandler')) {
      *     conveniosActivos: array<int, array<string, mixed>>,
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
-     *     inputError: ?string
+     *     inputError: ?string,
+     *     machoteData: ?array<string, mixed>
      * }
      */
     function empresaViewHandler(): array

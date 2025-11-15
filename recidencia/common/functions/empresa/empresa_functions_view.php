@@ -12,7 +12,8 @@ if (!function_exists('empresaViewDefaults')) {
      *     conveniosActivos: array<int, array<string, mixed>>,
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
-     *     inputError: ?string
+     *     inputError: ?string,
+     *     machoteData: ?array<string, mixed>
      * }
      */
     function empresaViewDefaults(): array
@@ -32,6 +33,7 @@ if (!function_exists('empresaViewDefaults')) {
             'controllerError' => null,
             'notFoundMessage' => null,
             'inputError' => null,
+            'machoteData' => null,
         ];
     }
 }

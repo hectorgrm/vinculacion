@@ -221,4 +221,65 @@ class EmpresaViewModel
             'custom' => $this->findCustomDocumentos($empresaId),
         ];
     }
+
+    /**
+     * Obtiene el machote más reciente asociado a la empresa junto a sus métricas básicas.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function findLatestMachoteResumen(int $empresaId): ?array
+    {
+        $sql = <<<'SQL'
+            SELECT cm.id,
+                   cm.version_local,
+                   cm.estatus,
+                   cm.confirmacion_empresa,
+                   cm.actualizado_en,
+                   c.id AS convenio_id,
+                   c.tipo_convenio
+              FROM rp_convenio_machote AS cm
+              INNER JOIN rp_convenio AS c ON c.id = cm.convenio_id
+             WHERE c.empresa_id = :empresa_id
+             ORDER BY cm.actualizado_en DESC, cm.id DESC
+             LIMIT 1
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        $machote = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($machote === false || !isset($machote['id'])) {
+            return null;
+        }
+
+        $machoteId = (int) $machote['id'];
+        $stats = $this->getMachoteComentariosStats($machoteId);
+
+        return array_merge($machote, $stats);
+    }
+
+    /**
+     * @return array{comentarios_total:int, comentarios_resueltos:int}
+     */
+    private function getMachoteComentariosStats(int $machoteId): array
+    {
+        $sql = <<<'SQL'
+            SELECT COUNT(*) AS total,
+                   SUM(CASE WHEN estatus = 'resuelto' THEN 1 ELSE 0 END) AS resueltos
+              FROM rp_machote_comentario
+             WHERE machote_id = :machote_id
+               AND (respuesta_a IS NULL OR respuesta_a = 0)
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':machote_id' => $machoteId]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC) ?: [];
+
+        return [
+            'comentarios_total' => isset($row['total']) ? (int) $row['total'] : 0,
+            'comentarios_resueltos' => isset($row['resueltos']) ? (int) $row['resueltos'] : 0,
+        ];
+    }
 }
