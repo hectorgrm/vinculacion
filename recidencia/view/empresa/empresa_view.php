@@ -298,38 +298,40 @@ $progreso = $documentosStats['porcentaje'];
 
       <!-- 🟢 Caso 1: Machote aprobado -->
 
-      <section class="card">
-        <header>📝 Revisión de Machote</header>
-        <div class="content">
-          <div class="review-summary">
-            <strong>Versión aprobada:</strong> Institucional v1.2<br>
-            <strong>Estado:</strong> <span class="badge ok">Aprobado</span><br>
-            <ul class="file-list" style="margin-top:8px;">
-              <li><a href="../../uploads/machote_v12_final.pdf" target="_blank">📄 Machote final (PDF)</a></li>
-              <li><a href="../convenio/convenio_view.php?id=12">📑 Ver convenio generado</a></li>
-            </ul>
-          </div>
-          <div class="actions">
-            <a href="../machote/machote_revisado.php?id_empresa=45" class="btn secondary">👁️ Vista final</a>
-          </div>
-        </div>
-      </section>
-      <!-- 🟡 Caso 2: En revisión -->
+<section class="kpis card">
+  <div class="kpi">
+    <h4>Comentarios abiertos</h4>
+    <div class="kpi-num"><?= (int)($machoteData['pendientes'] ?? 0) ?></div>
+  </div>
 
+  <div class="kpi">
+    <h4>Comentarios resueltos</h4>
+    <div class="kpi-num"><?= (int)($machoteData['resueltos'] ?? 0) ?></div>
+  </div>
 
-      <section class="card">
-        <header>📝 Revisión de Machote</header>
-        <div class="content">
-          <div class="review-summary">
-            <strong>Versión activa:</strong> Institucional v1.2<br>
-            <strong>Estado:</strong> <span class="badge en_revision">En revisión</span><br>
-            <strong>Hilos abiertos:</strong> 1 · <strong>Resueltos:</strong> 3 · <strong>Progreso:</strong> 75%
-          </div>
-          <div class="actions">
-            <a href="../machote/revisar.php?id_empresa=45" class="btn primary">💬 Abrir Revisión</a>
-          </div>
-        </div>
-      </section>
+  <div class="kpi wide">
+    <h4>Avance de la revisión</h4>
+    <div class="progress">
+      <div class="bar" style="width: <?= (int)($machoteData['progreso'] ?? 0) ?>%"></div>
+    </div>
+    <small><?= (int)($machoteData['progreso'] ?? 0) ?>% completado</small>
+  </div>
+
+  <div class="kpi">
+    <h4>Estado</h4>
+    <div>
+      <span class="badge <?= strtolower(str_replace(' ', '_', $machoteData['estado'] ?? 'pendiente')) ?>">
+        <?= htmlspecialchars($machoteData['estado'] ?? 'Pendiente') ?>
+      </span>
+    </div>
+  </div>
+</section>
+
+<div style="margin-top:16px;">
+  <a href="../machote/machote_revisar_view.php?id=<?= $machoteData['id'] ?>"
+     class="btn primary">Ir al Machote / Comentarios</a>
+</div>
+
 
       <!-- 🔔 Alertas -->
       <section class="card warn">
