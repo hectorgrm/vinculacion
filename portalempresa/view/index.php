@@ -174,22 +174,7 @@ $avancePct = max(0, min(100, (int) ($machoteStats['avance'] ?? 0)));
       </div>
     </article>
 
-    <article class="card<?= $isMachoteConfirmado ? '' : ' disabled' ?>">
-      <h3>Documento Machote/Convenio final (acuerdo)</h3>
-      <p>Consulta y descarga el documento aprobado por ambas partes.</p>
-      <div class="actions">
-        <?php if ($isMachoteConfirmado && $machoteRevisionLink !== null): ?>
-          <a class="btn primary" href="<?= htmlspecialchars($machoteRevisionLink) ?>">📄 Ver documento</a>
-          <?php if ($documentoPdfUrl !== null): ?>
-            <a class="btn" href="<?= htmlspecialchars($documentoPdfUrl) ?>" target="_blank" rel="noopener">⬇️ Descargar</a>
-          <?php else: ?>
-            <a class="btn" href="<?= htmlspecialchars($machoteAprobadoLink ?? $machoteRevisionLink) ?>">⬇️ Descargar</a>
-          <?php endif; ?>
-        <?php else: ?>
-          <span class="btn" style="pointer-events:none;opacity:0.6;">Pendiente de aprobación</span>
-        <?php endif; ?>
-      </div>
-    </article>
+
 
     <article class="card">
       <h3>Convenio</h3>
