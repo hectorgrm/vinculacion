@@ -515,16 +515,22 @@ $progreso = $documentosStats['porcentaje'];
             <p style="margin:0;">No se han registrado movimientos de auditoría para esta empresa.</p>
 
           <?php else : ?>
-            <table class="audit-table">
-              <thead>
-                <tr>
-                  <th style="width:160px;">Fecha</th>
-                  <th style="width:140px;">Actor</th>
-                  <th>Evento</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($auditoriaItems as $item) : ?>
+            <?php
+            $visibleAuditoriaItems = 5;
+            $totalAuditoriaItems = count($auditoriaItems);
+            $hasAuditoriaOverflow = $totalAuditoriaItems > $visibleAuditoriaItems;
+            ?>
+            <div class="audit-table-wrapper" aria-label="Historial de auditoría">
+              <table class="audit-table">
+                <thead>
+                  <tr>
+                    <th style="width:160px;">Fecha</th>
+                    <th style="width:140px;">Actor</th>
+                    <th>Evento</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($auditoriaItems as $item) : ?>
                   <?php
                   if (!is_array($item)) {
                       continue;
@@ -582,33 +588,40 @@ $progreso = $documentosStats['porcentaje'];
 
                   $actorNombre = htmlspecialchars($actorLabel, ENT_QUOTES, 'UTF-8');
                   ?>
-                  <tr>
-                    <td><?php echo $fecha; ?></td>
-                    <td><?php echo $actorNombre; ?></td>
-                    <td>
-                      <div class="audit-event">
-                        <div class="audit-event__message"><?php echo $mensaje; ?></div>
-                        <?php if ($detalleItems !== []) : ?>
-                          <ul class="audit-details">
-                            <?php foreach ($detalleItems as $detalle) : ?>
-                              <li>
-                                <span class="audit-details__field"><?php echo htmlspecialchars($detalle['label'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                <div class="audit-details__values">
-                                  <span><strong>Antes:</strong> <?php echo htmlspecialchars($detalle['antes'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                  <span><strong>Ahora:</strong> <?php echo htmlspecialchars($detalle['despues'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                </div>
-                              </li>
-                            <?php endforeach; ?>
-                          </ul>
-                        <?php else : ?>
-                          <p class="audit-details__empty">Este evento no registró cambios detallados.</p>
-                        <?php endif; ?>
-                      </div>
-                    </td>
-                  </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
+                    <tr>
+                      <td><?php echo $fecha; ?></td>
+                      <td><?php echo $actorNombre; ?></td>
+                      <td>
+                        <div class="audit-event">
+                          <div class="audit-event__message"><?php echo $mensaje; ?></div>
+                          <?php if ($detalleItems !== []) : ?>
+                            <ul class="audit-details">
+                              <?php foreach ($detalleItems as $detalle) : ?>
+                                <li>
+                                  <span class="audit-details__field"><?php echo htmlspecialchars($detalle['label'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                  <div class="audit-details__values">
+                                    <span><strong>Antes:</strong> <?php echo htmlspecialchars($detalle['antes'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <span><strong>Ahora:</strong> <?php echo htmlspecialchars($detalle['despues'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                  </div>
+                                </li>
+                              <?php endforeach; ?>
+                            </ul>
+                          <?php else : ?>
+                            <p class="audit-details__empty">Este evento no registró cambios detallados.</p>
+                          <?php endif; ?>
+                        </div>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+            <?php if ($hasAuditoriaOverflow) : ?>
+              <p style="margin-top:8px; color:#555;">
+                Se muestran aproximadamente <?php echo $visibleAuditoriaItems; ?> registros a la vez.
+                Desplázate dentro de la tabla para ver los <?php echo $totalAuditoriaItems; ?> movimientos registrados.
+              </p>
+            <?php endif; ?>
           <?php endif; ?>
 
         </div>

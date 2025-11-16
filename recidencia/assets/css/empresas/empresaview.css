@@ -94,7 +94,14 @@ tbody tr:hover { background: #f1f5f9; }
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
+  margin-top: 0;
+}
+
+.audit-table-wrapper {
   margin-top: 12px;
+  max-height: 480px;
+  overflow-y: auto;
+  border-radius: 12px;
 }
 
 .audit-table th {
