@@ -1,3 +1,27 @@
+<?php
+declare(strict_types=1);
+
+if (!isset($activos) || !isset($historico)) {
+    require __DIR__ . '/../handler/estudiante_list_handler.php';
+    return;
+}
+
+if (!function_exists('estudianteNombreCompleto')) {
+    require_once __DIR__ . '/../helpers/estudiante_helper.php';
+}
+
+$empresaNombre = isset($empresaNombre) && $empresaNombre !== ''
+    ? (string) $empresaNombre
+    : 'Empresa';
+$listErrorMessage = isset($listErrorMessage) && $listErrorMessage !== ''
+    ? (string) $listErrorMessage
+    : null;
+$activos = is_array($activos) ? $activos : [];
+$historico = is_array($historico) ? $historico : [];
+$kpiActivos = isset($kpiActivos) ? (int) $kpiActivos : count($activos);
+$kpiFinalizados = isset($kpiFinalizados) ? (int) $kpiFinalizados : 0;
+$kpiTotal = isset($kpiTotal) ? (int) $kpiTotal : ($kpiActivos + count($historico));
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,58 +33,6 @@
 
 </head>
 <body>
-
-<?php
-// Datos de ejemplo SOLO para ver el frontend.
-// Más adelante los reemplazas con la consulta a rp_estudiante.
-$empresaNombre = 'Casa del Barrio';
-
-$activos = [
-  [
-    'nombre'           => 'Ana',
-    'apellido_paterno' => 'Rodríguez',
-    'apellido_materno' => 'López',
-    'carrera'          => 'Ingeniería Informática',
-    'matricula'        => '20204567',
-    'estado'           => 'Activo',
-    'detalle'          => 'estudiante_view.php?id=101',
-  ],
-  [
-    'nombre'           => 'Mario',
-    'apellido_paterno' => 'Díaz',
-    'apellido_materno' => 'Hernández',
-    'carrera'          => 'Ingeniería Industrial',
-    'matricula'        => '20197890',
-    'estado'           => 'Activo',
-    'detalle'          => 'estudiante_view.php?id=102',
-  ],
-];
-
-$historico = [
-  [
-    'nombre'           => 'Juan',
-    'apellido_paterno' => 'Pérez',
-    'apellido_materno' => 'García',
-    'carrera'          => 'Ingeniería Industrial',
-    'matricula'        => '20181234',
-    'estado'           => 'Finalizado',
-    'detalle'          => 'estudiante_view.php?id=77',
-  ],
-  [
-    'nombre'           => 'Laura',
-    'apellido_paterno' => 'Méndez',
-    'apellido_materno' => 'Ruiz',
-    'carrera'          => 'Ingeniería Informática',
-    'matricula'        => '20175678',
-    'estado'           => 'Finalizado',
-    'detalle'          => 'estudiante_view.php?id=66',
-  ],
-];
-
-$kpiActivos     = count($activos);
-$kpiFinalizados = count($historico);
-$kpiTotal       = $kpiActivos + $kpiFinalizados;
-?>
 
 <header class="portal-header">
   <div class="brand">
@@ -93,6 +65,9 @@ $kpiTotal       = $kpiActivos + $kpiFinalizados;
   <section class="card">
     <header>Resumen</header>
     <div class="content">
+      <?php if ($listErrorMessage !== null): ?>
+        <div class="alert error"><?= htmlspecialchars($listErrorMessage) ?></div>
+      <?php endif; ?>
       <div class="kpis">
         <div class="kpi">
           <div class="num"><?= $kpiActivos ?></div>
@@ -145,13 +120,13 @@ $kpiTotal       = $kpiActivos + $kpiFinalizados;
             <?php foreach ($activos as $e): ?>
               <tr>
                 <td>
-                  <?= htmlspecialchars(trim($e['nombre'].' '.$e['apellido_paterno'].' '.$e['apellido_materno'])) ?>
+                  <?= htmlspecialchars(estudianteNombreCompleto($e)) ?>
                 </td>
-                <td><?= htmlspecialchars($e['carrera']) ?></td>
-                <td><?= htmlspecialchars($e['matricula']) ?></td>
-                <td><span class="badge info"><?= htmlspecialchars($e['estado']) ?></span></td>
+                <td><?= htmlspecialchars($e['carrera'] ?? '') ?></td>
+                <td><?= htmlspecialchars($e['matricula'] ?? '') ?></td>
+                <td><span class="badge <?= htmlspecialchars(estudianteBadgeClass($e['estatus'] ?? null)) ?>"><?= htmlspecialchars(estudianteBadgeLabel($e['estatus'] ?? null)) ?></span></td>
                 <td class="actions">
-                  <a class="btn small" href="<?= htmlspecialchars($e['detalle']) ?>">👁️ Ver detalle</a>
+                  <a class="btn small" href="estudiante_view.php?id=<?= (int) ($e['id'] ?? 0) ?>">👁️ Ver detalle</a>
                 </td>
               </tr>
             <?php endforeach; ?>
@@ -183,13 +158,13 @@ $kpiTotal       = $kpiActivos + $kpiFinalizados;
             <?php foreach ($historico as $e): ?>
               <tr>
                 <td>
-                  <?= htmlspecialchars(trim($e['nombre'].' '.$e['apellido_paterno'].' '.$e['apellido_materno'])) ?>
+                  <?= htmlspecialchars(estudianteNombreCompleto($e)) ?>
                 </td>
-                <td><?= htmlspecialchars($e['carrera']) ?></td>
-                <td><?= htmlspecialchars($e['matricula']) ?></td>
-                <td><span class="badge ok"><?= htmlspecialchars($e['estado']) ?></span></td>
+                <td><?= htmlspecialchars($e['carrera'] ?? '') ?></td>
+                <td><?= htmlspecialchars($e['matricula'] ?? '') ?></td>
+                <td><span class="badge <?= htmlspecialchars(estudianteBadgeClass($e['estatus'] ?? null)) ?>"><?= htmlspecialchars(estudianteBadgeLabel($e['estatus'] ?? null)) ?></span></td>
                 <td class="actions">
-                  <a class="btn small" href="<?= htmlspecialchars($e['detalle']) ?>">👁️ Ver detalle</a>
+                  <a class="btn small" href="estudiante_view.php?id=<?= (int) ($e['id'] ?? 0) ?>">👁️ Ver detalle</a>
                 </td>
               </tr>
             <?php endforeach; ?>
