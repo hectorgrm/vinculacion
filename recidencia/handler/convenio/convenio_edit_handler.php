@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../common/auth.php';
 require_once __DIR__ . '/../../common/functions/conveniofunction.php';
 require_once __DIR__ . '/../../common/functions/convenio/conveniofunctions_edit.php';
 require_once __DIR__ . '/../../controller/convenio/ConvenioEditController.php';

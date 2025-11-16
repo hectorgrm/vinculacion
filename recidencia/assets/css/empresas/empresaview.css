@@ -86,6 +86,76 @@ th, td {
 thead { background: #f8fafc; }
 tbody tr:hover { background: #f1f5f9; }
 
+.audit-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.audit-table th {
+  background: #f1f5f9;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #475569;
+}
+
+.audit-table td {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.audit-table tbody tr:nth-child(odd) {
+  background: #f8fafc;
+}
+
+.audit-table tbody tr:hover {
+  background: #e2e8f0;
+}
+
+.audit-event__message {
+  margin: 0;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.audit-details {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  list-style: disc;
+  color: #475569;
+  font-size: 13px;
+}
+
+.audit-details li {
+  margin-bottom: 6px;
+}
+
+.audit-details__field {
+  display: block;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.audit-details__values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.audit-details__empty {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
 .card p {
   color: #475569;
   font-size: 14px;

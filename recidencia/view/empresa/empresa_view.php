@@ -500,33 +500,117 @@ $progreso = $documentosStats['porcentaje'];
       <section class="card">
         <header>🕒 Bitácora / Historial</header>
         <div class="content">
+
           <?php if ($auditoriaControllerError !== null || $auditoriaInputError !== null) : ?>
             <div class="alert error" role="alert">
               <?php
-              $message = $auditoriaControllerError ?? $auditoriaInputError ?? 'No se pudo cargar el historial de la empresa.';
+              $message = $auditoriaControllerError
+                ?? $auditoriaInputError
+                ?? 'No se pudo cargar el historial de la empresa.';
               echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
               ?>
             </div>
+
           <?php elseif ($auditoriaItems === []) : ?>
             <p style="margin:0;">No se han registrado movimientos de auditoría para esta empresa.</p>
-          <?php else : ?>
-            <ul style="margin:0; padding-left:18px; color:#334155;">
-              <?php foreach ($auditoriaItems as $item) : ?>
-                <?php
-                if (!is_array($item)) {
-                    continue;
-                }
 
-                $itemFecha = (string) ($item['fecha'] ?? 'Sin fecha');
-                $itemMensaje = (string) ($item['mensaje'] ?? 'Acción registrada');
-                ?>
-                <li>
-                  <strong><?php echo htmlspecialchars($itemFecha, ENT_QUOTES, 'UTF-8'); ?></strong>
-                  — <?php echo htmlspecialchars($itemMensaje, ENT_QUOTES, 'UTF-8'); ?>
-                </li>
-              <?php endforeach; ?>
-            </ul>
+          <?php else : ?>
+            <table class="audit-table">
+              <thead>
+                <tr>
+                  <th style="width:160px;">Fecha</th>
+                  <th style="width:140px;">Actor</th>
+                  <th>Evento</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($auditoriaItems as $item) : ?>
+                  <?php
+                  if (!is_array($item)) {
+                      continue;
+                  }
+
+                  $fecha = htmlspecialchars((string) ($item['fecha'] ?? '—'), ENT_QUOTES, 'UTF-8');
+                  $mensaje = htmlspecialchars((string) ($item['mensaje'] ?? 'Acción registrada'), ENT_QUOTES, 'UTF-8');
+                  $actorLabel = isset($item['actor_label']) && is_string($item['actor_label'])
+                      ? trim($item['actor_label'])
+                      : '';
+                  $tipo = isset($item['actor_tipo']) ? (string) $item['actor_tipo'] : null;
+                  $detalleItems = [];
+
+                  if (isset($item['detalles']) && is_array($item['detalles'])) {
+                      foreach ($item['detalles'] as $detalle) {
+                          if (!is_array($detalle)) {
+                              continue;
+                          }
+
+                          $etiqueta = isset($detalle['campo_label']) && is_string($detalle['campo_label'])
+                              ? trim($detalle['campo_label'])
+                              : '';
+                          if ($etiqueta === '' && isset($detalle['campo'])) {
+                              $etiqueta = trim((string) $detalle['campo']);
+                          }
+
+                          $antes = isset($detalle['valor_anterior']) && $detalle['valor_anterior'] !== null
+                              ? trim((string) $detalle['valor_anterior'])
+                              : '';
+                          $despues = isset($detalle['valor_nuevo']) && $detalle['valor_nuevo'] !== null
+                              ? trim((string) $detalle['valor_nuevo'])
+                              : '';
+
+                          $detalleItems[] = [
+                              'label' => $etiqueta !== '' ? $etiqueta : 'Campo',
+                              'antes' => $antes !== '' ? $antes : '—',
+                              'despues' => $despues !== '' ? $despues : '—',
+                          ];
+                      }
+                  }
+
+                  if ($actorLabel === '') {
+                      if ($tipo === 'usuario') {
+                          $actorLabel = 'Administrador / Usuario';
+                      } elseif ($tipo === 'empresa') {
+                          $actorLabel = 'Empresa';
+                      } elseif ($tipo === 'sistema') {
+                          $actorLabel = 'Sistema automático';
+                      }
+                  }
+
+                  if ($actorLabel === '') {
+                      $actorLabel = '—';
+                  }
+
+                  $actorNombre = htmlspecialchars($actorLabel, ENT_QUOTES, 'UTF-8');
+                  ?>
+                  <tr>
+                    <td><?php echo $fecha; ?></td>
+                    <td><?php echo $actorNombre; ?></td>
+                    <td>
+                      <div class="audit-event">
+                        <div class="audit-event__message"><?php echo $mensaje; ?></div>
+                        <?php if ($detalleItems !== []) : ?>
+                          <ul class="audit-details">
+                            <?php foreach ($detalleItems as $detalle) : ?>
+                              <li>
+                                <span class="audit-details__field"><?php echo htmlspecialchars($detalle['label'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                <div class="audit-details__values">
+                                  <span><strong>Antes:</strong> <?php echo htmlspecialchars($detalle['antes'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                  <span><strong>Ahora:</strong> <?php echo htmlspecialchars($detalle['despues'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </div>
+                              </li>
+                            <?php endforeach; ?>
+                          </ul>
+                        <?php else : ?>
+                          <p class="audit-details__empty">Este evento no registró cambios detallados.</p>
+                        <?php endif; ?>
+                      </div>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
           <?php endif; ?>
+
         </div>
       </section>
 

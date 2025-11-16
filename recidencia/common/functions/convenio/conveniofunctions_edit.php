@@ -97,11 +97,21 @@ if (!function_exists('convenioHandleEditRequest')) {
                             $cambios['estatusAnterior'],
                             $cambios['estatusNuevo']
                         );
-                        convenioRegisterAuditEvent($accionEstatus, $convenioId, $contextoAuditoria);
+                        convenioRegisterAuditEvent(
+                            $accionEstatus,
+                            $convenioId,
+                            $contextoAuditoria,
+                            $cambios['detallesEstatus']
+                        );
                     }
 
                     if ($cambios['otrosCambios']) {
-                        convenioRegisterAuditEvent('actualizar', $convenioId, $contextoAuditoria);
+                        convenioRegisterAuditEvent(
+                            'actualizar',
+                            $convenioId,
+                            $contextoAuditoria,
+                            $cambios['detallesCampos']
+                        );
                     }
 
                     if ($uploadRelativePath !== null && $previousRelativePath !== '' && $previousRelativePath !== $uploadRelativePath) {

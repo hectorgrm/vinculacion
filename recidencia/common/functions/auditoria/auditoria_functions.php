@@ -83,6 +83,23 @@ if (!function_exists('empresaAuditoriaDecorateRegistros')) {
             return $items;
         }
 
+        $auditoriaIds = [];
+
+        foreach ($records as $record) {
+            if (!is_array($record) || !array_key_exists('id', $record)) {
+                continue;
+            }
+
+            $id = auditoriaNormalizePositiveInt($record['id']);
+            if ($id !== null) {
+                $auditoriaIds[] = $id;
+            }
+        }
+
+        $detallesMap = $auditoriaIds !== []
+            ? auditoriaFetchDetallesByAuditoriaIds($auditoriaIds)
+            : [];
+
         foreach ($records as $record) {
             if (!is_array($record)) {
                 continue;
@@ -90,11 +107,36 @@ if (!function_exists('empresaAuditoriaDecorateRegistros')) {
 
             $evento = convenioAuditoriaBuildEvento($record);
             $ip = isset($record['ip']) ? trim((string) $record['ip']) : '';
+            $actorTipo = isset($record['actor_tipo']) ? (string) $record['actor_tipo'] : null;
+            $actorId = $record['actor_id'] ?? null;
+            $actorNombre = isset($record['actor_nombre']) ? trim((string) $record['actor_nombre']) : '';
+            $auditoriaId = auditoriaNormalizePositiveInt($record['id'] ?? null);
+            $detalles = $auditoriaId !== null && isset($detallesMap[$auditoriaId])
+                ? $detallesMap[$auditoriaId]
+                : [];
+
+            if (function_exists('convenioAuditoriaNormalizePositiveInt')) {
+                $actorId = convenioAuditoriaNormalizePositiveInt($actorId);
+            } elseif (!is_int($actorId)) {
+                $actorId = is_numeric($actorId) ? (int) $actorId : null;
+            }
+
+            $actorLabel = null;
+            if (function_exists('convenioAuditoriaFormatActor')) {
+                $actorLabel = convenioAuditoriaFormatActor($actorTipo, $actorId, $actorNombre);
+            } elseif ($actorNombre !== '') {
+                $actorLabel = $actorNombre;
+            }
 
             $items[] = [
                 'fecha' => $evento['fecha'],
                 'mensaje' => $evento['descripcion'],
                 'ip' => $ip,
+                'actor_tipo' => $actorTipo,
+                'actor_id' => $actorId,
+                'actor_nombre' => $actorNombre !== '' ? $actorNombre : null,
+                'actor_label' => $actorLabel,
+                'detalles' => $detalles,
             ];
         }
 

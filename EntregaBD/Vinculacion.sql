@@ -36,7 +36,30 @@ CREATE TABLE IF NOT EXISTS `vinculacion`.`auditoria` (
   INDEX `idx_auditoria_entidad` (`entidad` ASC, `entidad_id` ASC) VISIBLE,
   INDEX `idx_auditoria_actor` (`actor_tipo` ASC, `actor_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 5
+AUTO_INCREMENT = 84
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `vinculacion`.`auditoria_detalle`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `vinculacion`.`auditoria_detalle` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `auditoria_id` BIGINT NOT NULL,
+  `campo` VARCHAR(100) NOT NULL,
+  `campo_label` VARCHAR(150) NOT NULL,
+  `valor_anterior` TEXT NULL DEFAULT NULL,
+  `valor_nuevo` TEXT NULL DEFAULT NULL,
+  `creado_en` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_auditoria_detalle_auditoria` (`auditoria_id` ASC) VISIBLE,
+  CONSTRAINT `fk_auditoria_detalle_auditoria`
+    FOREIGN KEY (`auditoria_id`)
+    REFERENCES `vinculacion`.`auditoria` (`id`)
+    ON DELETE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 

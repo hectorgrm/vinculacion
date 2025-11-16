@@ -65,8 +65,9 @@ if (!function_exists('convenioCurrentAuditContext')) {
 if (!function_exists('convenioRegisterAuditEvent')) {
     /**
      * @param array<string, mixed> $context
+     * @param array<int, array<string, mixed>> $detalles
      */
-    function convenioRegisterAuditEvent(string $accion, int $convenioId, array $context = []): bool
+    function convenioRegisterAuditEvent(string $accion, int $convenioId, array $context = [], array $detalles = []): bool
     {
         $accion = trim($accion);
 
@@ -90,6 +91,10 @@ if (!function_exists('convenioRegisterAuditEvent')) {
 
         if (isset($context['ip'])) {
             $payload['ip'] = $context['ip'];
+        }
+
+        if ($detalles !== []) {
+            $payload['detalles'] = $detalles;
         }
 
         if (!isset($payload['actor_tipo']) && isset($payload['actor_id'])) {
@@ -416,6 +421,56 @@ if (!function_exists('convenioAuditoriaNormalizePositiveInt')) {
     }
 }
 
+if (!function_exists('convenioAuditoriaFieldLabels')) {
+    /**
+     * @return array<string, string>
+     */
+    function convenioAuditoriaFieldLabels(): array
+    {
+        return [
+            'empresa_id' => 'Empresa',
+            'folio' => 'Folio',
+            'tipo_convenio' => 'Tipo de convenio',
+            'responsable_academico' => 'Responsable académico',
+            'fecha_inicio' => 'Fecha de inicio',
+            'fecha_fin' => 'Fecha de término',
+            'observaciones' => 'Observaciones',
+            'borrador_path' => 'Archivo de borrador',
+            'firmado_path' => 'Archivo firmado',
+            'estatus' => 'Estatus',
+        ];
+    }
+}
+
+if (!function_exists('convenioAuditoriaFormatDetalleValor')) {
+    function convenioAuditoriaFormatDetalleValor(string $field, mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (is_string($value)) {
+            $value = trim($value);
+        } elseif (is_scalar($value)) {
+            $value = trim((string) $value);
+        } else {
+            return null;
+        }
+
+        if ($value === '') {
+            return null;
+        }
+
+        return match ($field) {
+            'fecha_inicio', 'fecha_fin' => convenioFormatDate($value, ''),
+            'estatus' => convenioNormalizeStatus($value),
+            'empresa_id' => (string) ((int) $value),
+            'borrador_path', 'firmado_path' => basename($value),
+            default => $value,
+        };
+    }
+}
+
 if (!function_exists('convenioAuditoriaDetectCambios')) {
     /**
      * @param array<string, mixed> $previous
@@ -424,7 +479,9 @@ if (!function_exists('convenioAuditoriaDetectCambios')) {
      *     estatusAnterior: string,
      *     estatusNuevo: string,
      *     estatusCambio: bool,
-     *     otrosCambios: bool
+     *     otrosCambios: bool,
+     *     detallesEstatus: array<int, array<string, mixed>>,
+     *     detallesCampos: array<int, array<string, mixed>>
      * }
      */
     function convenioAuditoriaDetectCambios(array $previous, array $current): array
@@ -453,6 +510,16 @@ if (!function_exists('convenioAuditoriaDetectCambios')) {
             : 'En revisión';
 
         $statusChanged = $estatusAnterior !== $estatusNuevo;
+        $estatusDetalles = [];
+
+        if ($statusChanged) {
+            $estatusDetalles[] = [
+                'campo' => 'estatus',
+                'campo_label' => convenioAuditoriaFieldLabels()['estatus'],
+                'valor_anterior' => auditoriaNormalizeDetalleValue($estatusAnterior),
+                'valor_nuevo' => auditoriaNormalizeDetalleValue($estatusNuevo),
+            ];
+        }
 
         $fieldsToCompare = [
             'empresa_id',
@@ -466,7 +533,9 @@ if (!function_exists('convenioAuditoriaDetectCambios')) {
             'firmado_path',
         ];
 
+        $labels = convenioAuditoriaFieldLabels();
         $otherChanges = false;
+        $detallesCampos = [];
 
         foreach ($fieldsToCompare as $field) {
             $previousValue = $previous[$field] ?? null;
@@ -476,10 +545,17 @@ if (!function_exists('convenioAuditoriaDetectCambios')) {
                 $previousValue = convenioAuditoriaNormalizePositiveInt($previousValue);
                 $currentValue = convenioAuditoriaNormalizePositiveInt($currentValue);
 
-                if ($previousValue !== $currentValue) {
-                    $otherChanges = true;
-                    break;
+                if ($previousValue === $currentValue) {
+                    continue;
                 }
+
+                $otherChanges = true;
+                $detallesCampos[] = [
+                    'campo' => $field,
+                    'campo_label' => $labels[$field] ?? auditoriaNormalizeDetalleLabel(null, $field),
+                    'valor_anterior' => auditoriaNormalizeDetalleValue($previousValue),
+                    'valor_nuevo' => auditoriaNormalizeDetalleValue($currentValue),
+                ];
 
                 continue;
             }
@@ -487,10 +563,21 @@ if (!function_exists('convenioAuditoriaDetectCambios')) {
             $normalizedPrevious = $normalizeString($previousValue);
             $normalizedCurrent = $normalizeString($currentValue);
 
-            if ($normalizedPrevious !== $normalizedCurrent) {
-                $otherChanges = true;
-                break;
+            if ($normalizedPrevious === $normalizedCurrent) {
+                continue;
             }
+
+            $otherChanges = true;
+            $detallesCampos[] = [
+                'campo' => $field,
+                'campo_label' => $labels[$field] ?? auditoriaNormalizeDetalleLabel(null, $field),
+                'valor_anterior' => auditoriaNormalizeDetalleValue(
+                    convenioAuditoriaFormatDetalleValor($field, $previousValue)
+                ),
+                'valor_nuevo' => auditoriaNormalizeDetalleValue(
+                    convenioAuditoriaFormatDetalleValor($field, $currentValue)
+                ),
+            ];
         }
 
         return [
@@ -498,6 +585,8 @@ if (!function_exists('convenioAuditoriaDetectCambios')) {
             'estatusNuevo' => $estatusNuevo,
             'estatusCambio' => $statusChanged,
             'otrosCambios' => $otherChanges,
+            'detallesEstatus' => $estatusDetalles,
+            'detallesCampos' => $detallesCampos,
         ];
     }
 }

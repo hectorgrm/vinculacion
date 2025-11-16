@@ -36,7 +36,28 @@ CREATE TABLE `auditoria` (
   PRIMARY KEY (`id`),
   KEY `idx_auditoria_entidad` (`entidad`,`entidad_id`),
   KEY `idx_auditoria_actor` (`actor_tipo`,`actor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `auditoria_detalle`
+--
+
+DROP TABLE IF EXISTS `auditoria_detalle`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `auditoria_detalle` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `auditoria_id` bigint(20) NOT NULL,
+  `campo` varchar(100) NOT NULL,
+  `campo_label` varchar(150) NOT NULL,
+  `valor_anterior` text DEFAULT NULL,
+  `valor_nuevo` text DEFAULT NULL,
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_auditoria_detalle_auditoria` (`auditoria_id`),
+  CONSTRAINT `fk_auditoria_detalle_auditoria` FOREIGN KEY (`auditoria_id`) REFERENCES `auditoria` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
