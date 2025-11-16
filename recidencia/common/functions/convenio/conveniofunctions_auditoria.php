@@ -188,11 +188,6 @@ if (!function_exists('convenioAuditoriaBuildEvento')) {
             $descripcion .= ' · ' . $estatusSegment;
         }
 
-        $ip = convenioAuditoriaFormatIp($record['ip'] ?? null);
-        if ($ip !== null) {
-            $descripcion .= ' desde la IP ' . $ip;
-        }
-
         $descripcion = trim($descripcion);
         if ($descripcion !== '' && substr($descripcion, -1) !== '.') {
             $descripcion .= '.';
