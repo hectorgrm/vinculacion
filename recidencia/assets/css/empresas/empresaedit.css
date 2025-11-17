@@ -1,20 +1,24 @@
 :root {
-    --primary: #1f6feb;
-    --primary-600: #1656b8;
-    --success: #2db980;
-    --warning: #ffb400;
-    --danger: #e44848;
-    --ink: #0f172a;
-    --muted: #64748b;
-    --panel: #fff;
-    --border: #e5e7eb;
-    --radius-xl: 18px;
-    --shadow-sm: 0 2px 10px rgba(2, 6, 23, .05);
+    --empresa-primary: #1f6feb;
+    --empresa-primary-600: #1656b8;
+    --empresa-success: #2db980;
+    --empresa-warning: #ffb400;
+    --empresa-danger: #e44848;
+
+    --empresa-ink: #0f172a;
+    --empresa-muted: #64748b;
+
+    --empresa-panel: #fff;
+    --empresa-border: #e5e7eb;
+
+    --empresa-radius-xl: 18px;
+
+    --empresa-shadow-sm: 0 2px 10px rgba(2, 6, 23, .05);
 }
 
 /* Layout complementario */
 .subtitle {
-    color: var(--muted);
+    color: var(--empresa-muted);
     margin-top: 4px
 }
 
@@ -27,7 +31,7 @@
 /* Avisos */
 .alert {
     padding: 12px 14px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--empresa-border);
     border-radius: 12px;
     background: #f8fafc;
 }
@@ -44,15 +48,15 @@
 }
 
 .card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm);
+    background: var(--empresa-panel);
+    border: 1px solid var(--empresa-border);
+    border-radius: var(--empresa-radius-xl);
+    box-shadow: var(--empresa-shadow-sm);
 }
 
 .card header {
     padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--empresa-border);
     font-weight: 700;
 }
 
@@ -87,7 +91,7 @@ select,
 textarea {
     width: 100%;
     padding: 12px 14px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--empresa-border);
     border-radius: 10px;
     font-size: 15px;
     background: #fff;
@@ -97,8 +101,8 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-    outline: 2px solid var(--primary);
-    border-color: var(--primary);
+    outline: 2px solid var(--empresa-primary);
+    border-color: var(--empresa-primary);
     box-shadow: 0 0 0 2px rgba(31, 111, 235, .12);
 }
 
@@ -109,7 +113,7 @@ textarea {
 
 /* Acciones */
 .actions {
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--empresa-border);
     padding: 16px 20px;
     display: flex;
     justify-content: flex-end;
@@ -120,7 +124,7 @@ textarea {
     display: inline-block;
     padding: 12px 18px;
     border-radius: 10px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--empresa-border);
     font-weight: 700;
     text-decoration: none;
     cursor: pointer;
@@ -132,18 +136,18 @@ textarea {
 }
 
 .btn.primary {
-    background: var(--primary);
+    background: var(--empresa-primary);
     color: #fff;
-    border-color: var(--primary)
+    border-color: var(--empresa-primary)
 }
 
 .btn.primary:hover {
-    background: var(--primary-600)
+    background: var(--empresa-primary-600)
 }
 
 .btn.secondary {
     background: #e2e8f0;
-    color: var(--ink);
+    color: var(--empresa-ink);
     border-color: #cbd5e1
 }
 
@@ -181,14 +185,14 @@ textarea {
 
 .field label {
   font-weight: 600;
-  color: var(--muted);
+  color: var(--empresa-muted);
   margin-bottom: 5px;
 }
 
 .field input,
 .field select,
 .field textarea {
-  border: 1px solid var(--border);
+  border: 1px solid var(--empresa-border);
   border-radius: 10px;
   padding: 10px 12px;
   font-size: 15px;
@@ -198,7 +202,7 @@ textarea {
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  border-color: var(--primary);
+  border-color: var(--empresa-primary);
   box-shadow: 0 0 0 2px rgba(31, 111, 235, 0.2);
   outline: none;
 }
@@ -206,13 +210,13 @@ textarea {
 .alert.info {
   background: #eff6ff;
   color: #1e40af;
-  border-left: 4px solid var(--primary);
+  border-left: 4px solid var(--empresa-primary);
   padding: 12px 16px;
   border-radius: 10px;
 }
 
 .subtitle {
-  color: var(--muted);
+  color: var(--empresa-muted);
   font-size: 15px;
   margin-top: 4px;
 }
