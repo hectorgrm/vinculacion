@@ -20,18 +20,6 @@
 
 
 
-    <!-- Reportes con submenú -->
-    <!-- <div class="submenu">
-      <a href="../reportes/reportes_dashboard.php" class="submenu-title">📊 Reportes</a>
-      <div class="submenu-links">
-        <a href="../reportes/reportes_dashboard.php">📈 General</a>
-        <a href="../reportes/reportes_dashboard.php#convenios">📜 Convenios</a>
-        <a href="../reportes/reportes_dashboard.php#documentos">📄 Documentos</a>
-        <a href="../reportes/reportes_dashboard.php#empresas">🏢 Por Empresa</a>
-      </div>
-    </div> -->
-
-    <!-- Logout (fuera de residencias_admin) -->
     <a href="../../../common/logout.php">🚪 Cerrar sesión</a>
   </nav>
 </aside>

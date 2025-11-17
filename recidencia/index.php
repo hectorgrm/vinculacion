@@ -18,6 +18,7 @@ if (!is_array($user) || !in_array(strtolower((string) ($user['role'] ?? '')), $a
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Residencia</title>
   <link rel="stylesheet" href="assets/stylesrecidencia.css">
+  <link rel="stylesheet" href="assets/css/layout/sidebar.css">
 </head>
 
 <body>
@@ -48,7 +49,6 @@ if (!is_array($user) || !in_array(strtolower((string) ($user['role'] ?? '')), $a
     <main class="main">
       <header class="topbar">
         <!-- ================= DASHBOARD RESIDENCIA SIMPLIFICADO ================= -->
-        <link rel="stylesheet" href="assets/stylesrecidencia.css">
 
         <div class="dashboard">
 
