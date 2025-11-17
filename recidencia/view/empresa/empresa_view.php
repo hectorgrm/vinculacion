@@ -131,8 +131,6 @@ $progreso = $documentosStats['porcentaje'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Detalle de Empresa · Residencias Profesionales</title>
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css">
   <!-- Si ya tienes estilos específicos para esta vista, mantenlos: -->
   <link rel="stylesheet" href="../../assets/css/empresas/empresaview.css">
   <link rel="stylesheet" href="../../assets/css/empresas/empresalogo.css">
