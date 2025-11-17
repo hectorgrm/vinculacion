@@ -12,8 +12,7 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Empresas · Residencia Profesional</title>
 
-  <!-- Estilos globales del módulo de Residencias -->
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
+  <!-- Estilos específicos para este listado -->
   <link rel="stylesheet" href="../../assets/css/empresas/empresalist.css">
 
 
@@ -56,20 +55,19 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
         <header>📂 Lista de Empresas Registradas</header>
         <div class="content">
           <?php if ($errorMessage !== null): ?>
-            <div class="alert error" role="alert"
-              style="margin-bottom:16px; padding:12px 16px; border-radius:8px; background:#fce8e6; color:#a50e0e;">
+            <div class="alert error" role="alert">
               <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
           <!-- BUSCADOR -->
-          <form class="form" style="margin: 0 0 16px 0;">
-            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-              <div class="field" style="min-width:260px; max-width:360px; flex:1;">
+          <form class="form search-form">
+            <div class="search-row">
+              <div class="field search-field">
                 <label for="search">Buscar empresa:</label>
                 <input type="text" id="search" name="search" placeholder="Nombre, contacto o RFC..."
                   value="<?php echo htmlspecialchars((string) $search, ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
-              <div class="actions" style="margin:0;">
+              <div class="actions search-actions">
                 <button type="submit" class="btn primary">🔍 Buscar</button>
                 <a href="empresa_list.php" class="btn">Limpiar</a>
               </div>
@@ -77,8 +75,8 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
           </form>
 
           <!-- TABLA DE EMPRESAS -->
-          <div class="table-wrapper" style="overflow:auto;">
-            <table id="empresasTable" class="display nowrap" style="width:100%;">
+          <div class="table-wrapper">
+            <table id="empresasTable" class="display nowrap">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -89,7 +87,7 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
                   <th>Email</th>
                   <th>Teléfono</th>
                   <th>Estatus</th>
-                  <th style="width:280px;">Acciones</th>
+                  <th class="actions-column">Acciones</th>
                 </tr>
 
                 <tr class="filter-row">
@@ -107,7 +105,7 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
               <tbody>
                 <?php if ($empresas === []): ?>
                   <tr>
-                    <td colspan="9" style="text-align:center;">No se encontraron empresas registradas.</td>
+                    <td colspan="9" class="empty-state">No se encontraron empresas registradas.</td>
                   </tr>
                 <?php else: ?>
                   <?php foreach ($empresas as $empresa): ?>
@@ -133,14 +131,14 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
                         <span
                           class="<?php echo renderBadgeClass($empresaEstatus); ?>"><?php echo htmlspecialchars(renderBadgeLabel($empresaEstatus), ENT_QUOTES, 'UTF-8'); ?></span>
                       </td>
-                      <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
+                      <td class="actions">
                         <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">👁️ Ver</a>
                         <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️
                           Editar</a>
 
                         <?php if ($empresaPuedeDesactivar): ?>
                           <form id="disableForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>"
-                            action="../../handler/empresa/empresa_disable.php" method="post" style="display:inline;">
+                            action="../../handler/empresa/empresa_disable.php" method="post">
                             <input type="hidden" name="id"
                               value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
                             <button type="button" class="btn warn"
@@ -150,7 +148,7 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
                           </form>
                         <?php elseif ($empresaPuedeReactivar): ?>
                           <form id="reactivateForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>"
-                            action="../../handler/empresa/empresa_reactivate.php" method="post" style="display:inline;">
+                            action="../../handler/empresa/empresa_reactivate.php" method="post">
                             <input type="hidden" name="id"
                               value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
                             <button type="button" class="btn success"
