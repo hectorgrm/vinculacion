@@ -1,3 +1,8 @@
+/* ============================================================
+   DOCUMENTO VIEW · Residencias Profesionales
+   Vista de documento, historial, vista previa PDF
+   ============================================================ */
+
 :root {
   --primary: #1f6feb;
   --primary-600: #1656b8;
@@ -19,25 +24,30 @@
   --shadow-md: 0 6px 20px rgba(2, 6, 23, .08);
 }
 
+/* Reset */
 * {
   box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
   height: 100%;
 }
 
 body {
   margin: 0;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, Helvetica,
-    Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   background: var(--bg);
   color: var(--ink);
+
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+    Ubuntu, Cantarell, Helvetica, Arial, sans-serif;
 }
 
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+
 .app {
-  min-height: 100dvh;
+  min-height: 100vh;
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 20px;
@@ -49,24 +59,29 @@ body {
   gap: 20px;
 }
 
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+
 .topbar {
   display: flex;
-  align-items: flex-end;
   justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
 .topbar h2 {
-  margin: 0;
+  margin: 0 0 4px 0;
   font-size: 24px;
 }
 
 .breadcrumb {
   display: flex;
+  gap: 6px;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.9rem;
   color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .breadcrumb a {
@@ -75,16 +90,9 @@ body {
   font-weight: 600;
 }
 
-.breadcrumb span {
-  color: var(--muted);
-}
-
-.top-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
+/* ============================================================
+   CARDS
+   ============================================================ */
 
 .card {
   background: var(--panel);
@@ -104,9 +112,13 @@ body {
   padding: 20px;
 }
 
+/* ============================================================
+   GRID PRINCIPAL DE INFORMACIÓN
+   ============================================================ */
+
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 14px 16px;
 }
 
@@ -117,30 +129,47 @@ body {
   margin-bottom: 4px;
 }
 
-.field div {
-  color: #0f172a;
-}
-
 .col-span-2 {
-  grid-column: span 2;
+  grid-column: 1 / 3;
 }
 
-.preview {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  overflow: hidden;
+.text-muted {
+  color: var(--muted);
+  font-size: 0.95rem;
 }
 
-.preview iframe {
-  width: 100%;
-  height: 420px;
-  border: 0;
-  display: block;
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
 }
+
+.badge.ok {
+  background: var(--success);
+}
+
+.badge.warn {
+  background: var(--warning);
+}
+
+.badge.secondary {
+  background: #64748b;
+}
+
+/* ============================================================
+   ALERTAS
+   ============================================================ */
 
 .alert {
   border-radius: 12px;
-  padding: 0.9rem 1rem;
+  padding: 12px 14px;
   margin: 0;
   font-weight: 600;
 }
@@ -163,37 +192,25 @@ body {
   color: #0369a1;
 }
 
-.text-muted {
-  color: var(--muted);
-  margin: 0;
-  font-size: 0.95rem;
+/* ============================================================
+   PREVIEW PDF
+   ============================================================ */
+
+.preview {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #fff;
-  line-height: 1;
+.preview iframe {
+  width: 100%;
+  height: 420px;
+  border: 0;
 }
 
-.badge.ok {
-  background: var(--success);
-}
-
-.badge.warn {
-  background: var(--warning);
-}
-
-.badge.secondary {
-  background: #64748b;
-}
-
-.badge-offset {
-  margin-left: 6px;
-}
+/* ============================================================
+   ACCIONES / BOTONES
+   ============================================================ */
 
 .actions {
   display: flex;
@@ -203,22 +220,17 @@ body {
   margin-top: 12px;
 }
 
-.actions--start {
-  justify-content: flex-start;
-}
-
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  text-decoration: none;
-  font-weight: 700;
-  color: var(--ink);
   background: #f8fafc;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--ink);
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease;
 }
@@ -259,20 +271,18 @@ body {
   font-size: 0.75rem;
 }
 
-.history-columns {
+.top-actions {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.history-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
+/* ============================================================
+   HISTORIAL
+   ============================================================ */
 
 .history-section__title {
-  margin: 0;
+  margin: 0 0 8px 0;
   font-size: 1rem;
   font-weight: 600;
   color: #0f172a;
@@ -289,25 +299,9 @@ body {
   line-height: 1.4;
 }
 
-.history-entry__attachment {
-  margin-left: 6px;
-  font-size: 0.95rem;
-  color: #334155;
-}
-
-.history-view-link {
-  margin-left: 8px;
-}
-
-.history-placeholder {
-  margin: 0;
-  color: var(--muted);
-}
-
 .history-entry__icon {
   margin-right: 6px;
   font-size: 1.1rem;
-  line-height: 1;
 }
 
 .history-entry__meta {
@@ -322,11 +316,16 @@ body {
   color: var(--muted);
 }
 
-@media (max-width: 1024px) {
-  .app {
-    grid-template-columns: 240px 1fr;
-    gap: 16px;
-    padding: 16px;
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+
+@media (max-width: 920px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  .col-span-2 {
+    grid-column: 1 / 2;
   }
 }
 
@@ -335,15 +334,5 @@ body {
     grid-template-columns: 1fr;
     gap: 12px;
     padding: 12px;
-  }
-}
-
-@media (max-width: 920px) {
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .col-span-2 {
-    grid-column: span 1;
   }
 }
