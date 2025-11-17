@@ -17,7 +17,6 @@ $errorMessage = $handlerResult['errorMessage'];
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Convenios · Residencias Profesionales</title>
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
   <link rel="stylesheet" href="../../assets/css/convenios/convenio_list.css" />
 </head>
 
@@ -61,8 +60,7 @@ $errorMessage = $handlerResult['errorMessage'];
         <header>📋 Convenios registrados</header>
         <div class="content">
           <?php if ($errorMessage !== null): ?>
-            <div class="alert error" role="alert"
-              style="margin-bottom:16px; padding:12px 16px; border-radius:8px; background:#fce8e6; color:#a50e0e;">
+            <div class="alert error" role="alert">
               <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
@@ -87,7 +85,7 @@ $errorMessage = $handlerResult['errorMessage'];
               <tbody>
                 <?php if ($convenios === []): ?>
                   <tr>
-                    <td colspan="11" style="text-align:center;">No se encontraron convenios con los filtros aplicados.</td>
+                    <td colspan="11" class="empty-state">No se encontraron convenios con los filtros aplicados.</td>
                   </tr>
                 <?php else: ?>
                   <?php foreach ($convenios as $convenio): ?>
