@@ -16,6 +16,21 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
   <link rel="stylesheet" href="../../assets/css/empresas/empresalist.css">
 
+
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
+
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+
 </head>
 
 <body>
@@ -63,7 +78,7 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
 
           <!-- TABLA DE EMPRESAS -->
           <div class="table-wrapper" style="overflow:auto;">
-            <table>
+            <table id="empresasTable" class="display nowrap" style="width:100%;">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -75,6 +90,18 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
                   <th>Teléfono</th>
                   <th>Estatus</th>
                   <th style="width:280px;">Acciones</th>
+                </tr>
+
+                <tr class="filter-row">
+                  <th><input type="text" placeholder="ID"></th>
+                  <th><input type="text" placeholder="Control"></th>
+                  <th><input type="text" placeholder="Nombre"></th>
+                  <th><input type="text" placeholder="RFC"></th>
+                  <th><input type="text" placeholder="Contacto"></th>
+                  <th><input type="text" placeholder="Email"></th>
+                  <th><input type="text" placeholder="Teléfono"></th>
+                  <th><input type="text" placeholder="Estatus"></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -93,30 +120,39 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
                     ?>
                     <tr>
                       <td><?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?php echo htmlspecialchars((string) ($empresa['numero_control'] ?? '-'), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['numero_control'] ?? '-'), ENT_QUOTES, 'UTF-8'); ?>
+                      </td>
                       <td><?php echo htmlspecialchars((string) $empresaNombre, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['rfc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                      </td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                      </td>
                       <td><?php echo htmlspecialchars((string) ($empresa['telefono'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td>
-                        <span class="<?php echo renderBadgeClass($empresaEstatus); ?>"><?php echo htmlspecialchars(renderBadgeLabel($empresaEstatus), ENT_QUOTES, 'UTF-8'); ?></span>
+                        <span
+                          class="<?php echo renderBadgeClass($empresaEstatus); ?>"><?php echo htmlspecialchars(renderBadgeLabel($empresaEstatus), ENT_QUOTES, 'UTF-8'); ?></span>
                       </td>
                       <td class="actions" style="display:flex; gap:8px; flex-wrap:wrap;">
                         <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">👁️ Ver</a>
-                        <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️ Editar</a>
+                        <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️
+                          Editar</a>
 
                         <?php if ($empresaPuedeDesactivar): ?>
-                          <form id="disableForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>" action="../../handler/empresa/empresa_disable.php" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
+                          <form id="disableForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>"
+                            action="../../handler/empresa/empresa_disable.php" method="post" style="display:inline;">
+                            <input type="hidden" name="id"
+                              value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
                             <button type="button" class="btn warn"
                               onclick="confirmDisable(<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>, '<?php echo addslashes((string) $empresaNombre); ?>')">
                               🚫 Desactivar
                             </button>
                           </form>
                         <?php elseif ($empresaPuedeReactivar): ?>
-                          <form id="reactivateForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>" action="../../handler/empresa/empresa_reactivate.php" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
+                          <form id="reactivateForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>"
+                            action="../../handler/empresa/empresa_reactivate.php" method="post" style="display:inline;">
+                            <input type="hidden" name="id"
+                              value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
                             <button type="button" class="btn success"
                               onclick="confirmReactivate(<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>, '<?php echo addslashes((string) $empresaNombre); ?>')">
                               ✅ Reactivar
@@ -135,6 +171,53 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
       </section>
     </main>
   </div>
-<script src="../../assets/js/empresa-actions.js"></script>
+  <script>
+    $(document).ready(function () {
+
+      // =======================
+      //  DataTable con filtros
+      // =======================
+      const table = $('#empresasTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50, 100],
+        orderCellsTop: true,
+        fixedHeader: true,
+        language: {
+          search: "Buscar en tabla:",
+          lengthMenu: "Mostrar _MENU_ registros",
+          zeroRecords: "No se encontraron resultados",
+          info: "Mostrando _START_ a _END_ de _TOTAL_ empresas",
+          infoEmpty: "No hay datos disponibles",
+          infoFiltered: "(filtrado de _MAX_ registros totales)",
+          paginate: {
+            first: "Primero",
+            last: "Último",
+            next: "Siguiente",
+            previous: "Anterior"
+          }
+        },
+        initComplete: function () {
+          const api = this.api();
+          api.columns().every(function (index) {
+            const input = $('#empresasTable thead tr.filter-row th').eq(index).find('input');
+            if (input.length === 0) {
+              return;
+            }
+
+            input.on('keyup change', function () {
+              const value = this.value;
+              if (api.column(index).search() !== value) {
+                api.column(index).search(value).draw();
+              }
+            });
+          });
+        }
+      });
+
+    });
+  </script>
+  <script src="../../assets/js/empresa-actions.js"></script>
 </body>
+
 </html>
