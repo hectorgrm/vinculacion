@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="../../assets/css/layout/sidebar.css">
 <aside class="sidebar">
   <div class="brand">
     <div class="logo"></div>
