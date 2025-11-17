@@ -22,88 +22,9 @@ $errorMessage = $handlerResult['errorMessage'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestion de Documentos - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
   <link rel="stylesheet" href="../../assets/css/documentos/documento_list.css" />
 
-  <style>
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: flex-end;
-    }
-
-    .filters .field {
-      min-width: 180px;
-      flex: 1;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #e0e0e0;
-      text-align: left;
-    }
-
-    th {
-      background: #f8f8f8;
-      font-weight: 600;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .badge.ok {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .badge.warn {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .badge.err {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .badge.secondary {
-      background: #e2e3e5;
-      color: #383d41;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .btn.small {
-      font-size: 14px;
-      padding: 6px 10px;
-    }
-
-    .legend {
-      margin-top: 15px;
-      font-size: 14px;
-      color: #555;
-    }
-
-    .legend strong {
-      margin-right: 6px;
-    }
-  </style>
+ 
 </head>
 
 <body>
