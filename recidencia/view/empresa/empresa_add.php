@@ -25,9 +25,8 @@ $controllerError = $handlerResult['controllerError'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registrar Empresa · Residencias Profesionales</title>
 
-  <!-- Estilos globales del módulo de Residencias -->
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/empresas/empresalist.css">
+  <!-- Estilos específicos para el formulario de empresa -->
+  <link rel="stylesheet" href="../../assets/css/empresas/empresaAdd.css">
 
 </head>
 
