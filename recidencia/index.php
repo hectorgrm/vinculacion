@@ -17,7 +17,6 @@ if (!is_array($user) || !in_array(strtolower((string) ($user['role'] ?? '')), $a
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Residencia</title>
-  <link rel="stylesheet" href="assets/stylesrecidencia.css">
   <link rel="stylesheet" href="assets/css/dashboard.css">
   <link rel="stylesheet" href="assets/css/layout/sidebar.css">
   
