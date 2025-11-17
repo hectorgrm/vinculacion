@@ -29,7 +29,7 @@ $cancelLink = $handlerResult['cancelLink'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editar Convenio · Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
+  <!-- Estilos completos para esta vista -->
   <link rel="stylesheet" href="../../assets/css/convenios/convenio_edit.css" />
 </head>
 

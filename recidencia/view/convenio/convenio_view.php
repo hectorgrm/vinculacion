@@ -96,9 +96,7 @@ $machotePdfUrl = $machoteChildId !== null
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detalle de Convenio · Residencias Profesionales</title>
 
-    <!-- Estilos globales del módulo -->
-    <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-    <!-- (Opcional) Estilos específicos para esta vista -->
+    <!-- Estilos para esta vista -->
     <link rel="stylesheet" href="../../assets/css/convenios/convenio_view.css" />
 
 </head>
