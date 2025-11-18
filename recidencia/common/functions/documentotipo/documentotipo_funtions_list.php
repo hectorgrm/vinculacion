@@ -62,8 +62,8 @@ if (!function_exists('documentoTipoEmpresaOptions')) {
     function documentoTipoEmpresaOptions(): array
     {
         return [
-            'fisica' => 'Persona Fisica',
-            'moral' => 'Persona Moral',
+            'fisica' => 'Empresa Fiscal',
+            'moral' => 'Empresa Moral',
             'ambas' => 'Ambas',
         ];
     }
