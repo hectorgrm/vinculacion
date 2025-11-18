@@ -7,36 +7,8 @@
   <title>Eliminar Acceso · Residencias</title>
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
   <link rel="stylesheet" href="../../assets/css/portal/portal_view.css" />
+  <link rel="stylesheet" href="../../assets/css/portalacceso/portaldelete.css" />
 
-  <style>
-    .danger-zone {
-      background: #fff;
-      border: 1px solid #fee2e2;
-      border-radius: 18px;
-      box-shadow: var(--shadow-sm)
-    }
-
-    .danger-zone>header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #fee2e2;
-      font-weight: 700;
-      color: #b91c1c
-    }
-
-    .danger-zone .content {
-      padding: 20px
-    }
-
-    .btn.danger {
-      background: #e44848;
-      color: #fff;
-      border-color: #e44848
-    }
-
-    .btn.danger:hover {
-      filter: brightness(.95)
-    }
-  </style>
 </head>
 
 <body>

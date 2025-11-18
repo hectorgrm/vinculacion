@@ -52,8 +52,9 @@ body {
 
 /* ========================== Main ============================= */
 .main {
-  display: grid;
-  gap: 20px;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 20px
 }
 
 .topbar {
@@ -218,8 +219,9 @@ body {
 }
 
 .main {
-  flex: 1;
-  padding: 2rem;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 20px
 }
 
 /* ====== HEADER ====== */

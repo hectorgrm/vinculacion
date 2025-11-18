@@ -27,48 +27,9 @@ $errorMessage = $handlerResult['errorMessage'];
   <title>Portal de Acceso · Residencias Profesionales</title>
 
   <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
+  <link rel="stylesheet" href="../../assets/css/portalacceso/portalaccesolist.css" />
 
-  <style>
-    :root{
-      --ok:#16a34a;
-      --warn:#f59e0b;
-      --err:#e11d48;
-      --secondary:#64748b;
-      --border:#e5e7eb;
-      --bg:#fff;
-      --shadow:0 4px 14px rgba(0,0,0,.04);
-    }
-    body{font-family:Inter,system-ui,sans-serif;margin:0;background:#f6f8fb;color:#0f172a}
-    .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;color:#fff}
-    .badge.ok{background:var(--ok)}
-    .badge.warn{background:var(--warn)}
-    .badge.err{background:var(--err)}
-    .badge.secondary{background:var(--secondary)}
-    .btn{display:inline-block;padding:8px 12px;border-radius:8px;text-decoration:none;border:1px solid var(--border);color:#0f172a;background:#fff}
-    .btn.primary{background:#1f6feb;color:#fff;border:none}
-    .btn.danger{background:#e11d48;color:#fff;border:none}
-    .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:20px}
-    .card header{padding:12px 16px;border-bottom:1px solid var(--border);font-weight:700;font-size:16px}
-    .card .content{padding:16px}
-    table{width:100%;border-collapse:collapse;font-size:14px}
-    th,td{padding:10px 8px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
-    th{background:#f1f5f9;text-transform:uppercase;font-size:13px;color:#475569}
-    .actions .btn{font-size:13px;padding:6px 10px}
-    .topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border);background:#fff}
-    .breadcrumb{font-size:13px;color:#64748b}
-    .breadcrumb a{text-decoration:none;color:#1f6feb}
-    .main{padding:18px}
-    .legend{margin-top:10px;color:#64748b;font-size:13px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .filters{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
-    .filters .field{display:flex;flex-direction:column;gap:6px;min-width:220px}
-    .filters label{font-weight:600;color:#334155;font-size:13px}
-    .filters input,.filters select{padding:8px 10px;border-radius:8px;border:1px solid var(--border);font-size:14px}
-    .filters .actions{display:flex;gap:8px}
-    .alert{padding:12px 16px;border-radius:8px;margin-bottom:16px;border:1px solid transparent}
-    .alert.error{background:#fef2f2;color:#b91c1c;border-color:#fecaca}
-    .table-wrapper{overflow:auto}
-  </style>
+
 </head>
 <body>
   <div class="app">

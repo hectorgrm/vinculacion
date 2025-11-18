@@ -6,39 +6,10 @@
   <title>Detalle del Acceso · Residencias Profesionales</title>
 
   <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
+  <link rel="stylesheet" href="../../assets/css/portalacceso/portalview.css" />
 
   <!-- Estilos locales -->
-  <style>
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px 16px;
-    }
-    .info-item label {
-      font-weight: 700;
-      color: #334155;
-      display: block;
-      margin-bottom: 4px;
-    }
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1;
-    }
-    .badge.ok { background: #2db980; }
-    .badge.warn { background: #ffb400; }
-    .badge.err { background: #e44848; }
-    .badge.secondary { background: #64748b; }
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-    @media (max-width: 860px) {
-      .info-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+
 </head>
 
 <body>

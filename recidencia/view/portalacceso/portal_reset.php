@@ -5,49 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reset de Contraseña · Residencias</title>
-    <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-    <link rel="stylesheet" href="../../assets/css/portal/portal_view.css" />
+    <link rel="stylesheet" href="../../assets/css/portalacceso/portalresetpsw.css" />
 
-    <style>
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px
-        }
 
-        .col-span-2 {
-            grid-column: 1/3
-        }
-
-        .field label {
-            display: block;
-            font-weight: 700;
-            color: #334155;
-            margin-bottom: 6px
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 12px
-        }
-
-        .hint {
-            color: #64748b;
-            font-size: 13px
-        }
-
-        @media (max-width:860px) {
-            .grid {
-                grid-template-columns: 1fr
-            }
-
-            .col-span-2 {
-                grid-column: 1/2
-            }
-        }
-    </style>
 </head>
 
 <body>

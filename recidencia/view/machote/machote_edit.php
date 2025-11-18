@@ -45,7 +45,6 @@ $pdfUrl = '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((stri
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Machote · Convenio <?= htmlspecialchars((string)$convenioId) ?></title>
-    <link rel="stylesheet" href="../../assets/stylesrecidencia.css">
     <link rel="stylesheet" href="../../assets/css/machote/machote_edit.css">
    
 </head>

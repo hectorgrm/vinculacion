@@ -66,9 +66,9 @@ body {
 
 .main {
     display: grid;
-    gap: 20px;
+    grid-template-rows: auto auto 1fr;
+    gap: 20px
 }
-
 .topbar {
     display: flex;
     align-items: flex-end;

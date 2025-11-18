@@ -11,41 +11,9 @@ if (!isset($machotes)) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>📚 Machote Global · Versiones Institucionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
-  <!-- Si gustas, crea un CSS específico: ../../assets/css/machote/machote_global_list.css -->
+  <link rel="stylesheet" href="../../assets/css/machoteglobal/machoteglobaledit.css" />
 
-  <style>
-    :root{
-      --bg:#f6f7fb; --card:#fff; --border:#e5e7eb; --text:#334155;
-      --primary:#0d6efd; --success:#16a34a; --warn:#f59e0b; --muted:#64748b; --danger:#ef4444;
-      --radius:12px;
-    }
-    body{background:var(--bg); color:var(--text)}
-    .topbar{display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:#fff; border-bottom:1px solid var(--border)}
-    .subtitle{margin:4px 0 0 0; color:#64748b}
-    .actions{display:flex; gap:8px; flex-wrap:wrap}
-    .btn{border:1px solid var(--border); background:#fff; padding:.5rem .85rem; border-radius:10px; cursor:pointer; text-decoration:none; color:inherit}
-    .btn:hover{background:#f5f5f5}
-    .btn.primary{background:var(--primary); color:#fff; border-color:var(--primary)}
-    .btn.small{padding:.35rem .6rem; border-radius:8px; font-size:.9rem}
-    .btn.danger{background:var(--danger); color:#fff; border-color:var(--danger)}
 
-    main.main{padding:16px}
-    .card{background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:14px}
-    .filters{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px}
-    .filters input, .filters select{border:1px solid #cbd5e1; border-radius:10px; padding:8px; font-family:inherit}
-
-    .table-wrapper{overflow:auto}
-    table{width:100%; border-collapse:separate; border-spacing:0}
-    thead th{background:#f1f5f9; text-align:left; padding:10px; font-size:.9rem; color:#475569; position:sticky; top:0}
-    tbody td{padding:10px; border-top:1px solid var(--border); vertical-align:top}
-    tbody tr:hover{background:#f8fafc}
-    .badge{border-radius:999px; padding:2px 8px; font-weight:700; font-size:.75rem; color:#fff}
-    .badge.vigente{background:#16a34a}
-    .badge.borrador{background:#f59e0b}
-    .badge.archivado{background:#64748b}
-    .muted{color:#64748b; font-size:.9rem}
-  </style>
 </head>
 <body>
   <div class="app">

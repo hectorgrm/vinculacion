@@ -5,50 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editar Acceso · Residencias</title>
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/portal/portal_view.css" />
-
-  <style>
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px
-    }
-
-    .col-span-2 {
-      grid-column: 1/3
-    }
-
-    .field label {
-      display: block;
-      font-weight: 700;
-      color: #334155;
-      margin-bottom: 6px
-    }
-
-    .field label.required::after {
-      content: " *";
-      color: #e44848;
-      font-weight: 800
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 12px
-    }
-
-    @media (max-width:860px) {
-      .grid {
-        grid-template-columns: 1fr
-      }
-
-      .col-span-2 {
-        grid-column: 1/2
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="../../assets/css/portalacceso/portaledit.css" />
 </head>
 
 <body>

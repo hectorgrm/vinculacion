@@ -6,7 +6,7 @@
   <title>➕ Nuevo Machote · Residencias</title>
 
   <!-- Estilos principales -->
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/machote/machote_add.css" />
   <style>
     /* ==== machote_add.css ==== */
     .card {
