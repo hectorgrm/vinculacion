@@ -82,6 +82,7 @@ $controllerError = $handlerResult['controllerError'];
             </div>
           <?php endif; ?>
 
+          <?php $regimenFiscalOptions = empresaRegimenFiscalOptions(); ?>
           <form class="form" action="" method="post">
             <div class="grid">
 
@@ -190,8 +191,14 @@ $controllerError = $handlerResult['controllerError'];
 
               <div class="field">
                 <label for="regimen_fiscal" class="required">Régimen fiscal *</label>
-                <input type="text" id="regimen_fiscal" name="regimen_fiscal" placeholder="Ej: Persona Moral o Física"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'regimen_fiscal'), ENT_QUOTES, 'UTF-8'); ?>" required />
+                <select id="regimen_fiscal" name="regimen_fiscal" required>
+                  <option value="">Selecciona tipo de empresa</option>
+                  <?php foreach ($regimenFiscalOptions as $value => $label): ?>
+                    <option value="<?php echo htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); ?>" <?php echo empresaFormValue($formData, 'regimen_fiscal') === $value ? 'selected' : ''; ?>>
+                      <?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?>
+                    </option>
+                  <?php endforeach; ?>
+                </select>
               </div>
 
               <div class="field col-span-2">

@@ -48,6 +48,39 @@ if (!function_exists('empresaStatusOptions')) {
     }
 }
 
+
+if (!function_exists('empresaRegimenFiscalOptions')) {
+    /**
+     * @return array<string, string>
+     */
+    function empresaRegimenFiscalOptions(): array
+    {
+        return [
+            'fiscal' => 'Empresa Fiscal',
+            'moral' => 'Empresa Moral',
+        ];
+    }
+}
+
+if (!function_exists('empresaNormalizeRegimenFiscal')) {
+    function empresaNormalizeRegimenFiscal(?string $value): string
+    {
+        $normalizedValue = trim((string) $value);
+
+        if ($normalizedValue === '') {
+            return '';
+        }
+
+        $normalizedValue = function_exists('mb_strtolower')
+            ? mb_strtolower($normalizedValue, 'UTF-8')
+            : strtolower($normalizedValue);
+
+        return array_key_exists($normalizedValue, empresaRegimenFiscalOptions())
+            ? $normalizedValue
+            : '';
+    }
+}
+
 if (!function_exists('empresaNormalizeStatus')) {
     function empresaNormalizeStatus(?string $estatus): string
     {
@@ -148,6 +181,11 @@ if (!function_exists('empresaSanitizeInput')) {
 
             if ($field === 'notas') {
                 $data[$field] = trim($value) === '' ? '' : $value;
+                continue;
+            }
+
+            if ($field === 'regimen_fiscal') {
+                $data[$field] = empresaNormalizeRegimenFiscal($value);
                 continue;
             }
 
@@ -272,10 +310,9 @@ if (!function_exists('empresaValidateData')) {
 
         if ($data['regimen_fiscal'] === '') {
             $errors[] = 'El regimen fiscal es obligatorio.';
-        } elseif (empresaStringLength($data['regimen_fiscal']) > 191) {
-            $errors[] = 'El régimen fiscal no puede exceder 191 caracteres.';
+        } elseif (!in_array($data['regimen_fiscal'], array_keys(empresaRegimenFiscalOptions()), true)) {
+            $errors[] = 'Selecciona un regimen fiscal valido.';
         }
-
         if ($data['notas'] !== '' && empresaStringLength($data['notas']) > 65535) {
             $errors[] = 'Las notas no pueden exceder 65535 caracteres.';
         }
