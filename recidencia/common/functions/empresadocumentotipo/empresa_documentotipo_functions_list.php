@@ -427,8 +427,12 @@ if (!function_exists('empresaDocumentoTipoListInferTipoEmpresa')) {
             return 'moral';
         }
 
-        if (strpos($normalized, 'fisica') !== false || strpos($normalized, 'fisico') !== false) {
-            return 'fisica';
+        if (
+            strpos($normalized, 'fisica') !== false ||
+            strpos($normalized, 'fisico') !== false ||
+            strpos($normalized, 'fiscal') !== false
+        ) {
+            return 'fiscal';
         }
 
         return null;

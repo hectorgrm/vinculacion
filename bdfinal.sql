@@ -208,7 +208,7 @@ CREATE TABLE `rp_documento_tipo` (
   `nombre` varchar(100) NOT NULL,
   `descripcion` text DEFAULT NULL,
   `obligatorio` tinyint(1) NOT NULL DEFAULT 1,
-  `tipo_empresa` enum('fisica','moral','ambas') DEFAULT 'ambas',
+  `tipo_empresa` enum('fiscal','moral','ambas') DEFAULT 'ambas',
   `activo` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_documento_tipo_nombre` (`nombre`)
@@ -221,7 +221,7 @@ CREATE TABLE `rp_documento_tipo` (
 
 LOCK TABLES `rp_documento_tipo` WRITE;
 /*!40000 ALTER TABLE `rp_documento_tipo` DISABLE KEYS */;
-INSERT INTO `rp_documento_tipo` VALUES (15,'Constancia de situación fiscal (SAT)','Copia de constancia del SAT emitida por la autoridad fiscal.',1,'fisica',1),(16,'Comprobante de domicilio','Documento vigente no mayor a tres meses.',1,'fisica',1),(17,'INE del titular','Identificación oficial del titular del negocio.',1,'fisica',1),(18,'Logotipo del negocio','Archivo JPG o PNG con el logotipo del negocio (opcional).',0,'fisica',1),(19,'Acta constitutiva','Carátula o documento donde se observe su constitución y objeto social.',1,'ambas',0),(20,'Poder notarial (si aplica)','Copia del poder notariado y la INE del apoderado legal (solo si aplica).',0,'moral',1),(21,'INE del representante legal','Identificación oficial vigente del representante legal.',1,'moral',1),(22,'Logotipo de la empresa','Archivo JPG o PNG con el logotipo institucional (opcional).',0,'moral',1);
+INSERT INTO `rp_documento_tipo` VALUES (15,'Constancia de situación fiscal (SAT)','Copia de constancia del SAT emitida por la autoridad fiscal.',1,'fiscal',1),(16,'Comprobante de domicilio','Documento vigente no mayor a tres meses.',1,'fiscal',1),(17,'INE del titular','Identificación oficial del titular del negocio.',1,'fiscal',1),(18,'Logotipo del negocio','Archivo JPG o PNG con el logotipo del negocio (opcional).',0,'fiscal',1),(19,'Acta constitutiva','Carátula o documento donde se observe su constitución y objeto social.',1,'ambas',0),(20,'Poder notarial (si aplica)','Copia del poder notariado y la INE del apoderado legal (solo si aplica).',0,'moral',1),(21,'INE del representante legal','Identificación oficial vigente del representante legal.',1,'moral',1),(22,'Logotipo de la empresa','Archivo JPG o PNG con el logotipo institucional (opcional).',0,'moral',1);
 /*!40000 ALTER TABLE `rp_documento_tipo` ENABLE KEYS */;
 UNLOCK TABLES;
 

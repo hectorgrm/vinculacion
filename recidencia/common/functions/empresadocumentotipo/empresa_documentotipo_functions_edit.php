@@ -178,7 +178,7 @@ if (!function_exists('empresaDocumentoTipoEditNormalizeTipoEmpresa')) {
     {
         $normalized = strtolower(trim($value));
 
-        $allowed = ['ambas', 'fisica', 'moral'];
+        $allowed = ['ambas', 'fiscal', 'moral'];
 
         return in_array($normalized, $allowed, true) ? $normalized : 'ambas';
     }
@@ -231,7 +231,7 @@ if (!function_exists('empresaDocumentoTipoEditValidateData')) {
             $errors[] = 'Selecciona si el documento sera obligatorio.';
         }
 
-        if ($supportsTipoEmpresa && !in_array($tipoEmpresa, ['ambas', 'fisica', 'moral'], true)) {
+        if ($supportsTipoEmpresa && !in_array($tipoEmpresa, ['ambas', 'fiscal', 'moral'], true)) {
             $errors[] = 'Selecciona un tipo de empresa valido.';
         }
 
@@ -411,7 +411,7 @@ if (!function_exists('empresaDocumentoTipoEditTipoEmpresaOptions')) {
     {
         return [
             'ambas' => 'Ambas',
-            'fisica' => 'Fisica',
+            'fiscal' => 'Empresa Fiscal',
             'moral' => 'Moral',
         ];
     }

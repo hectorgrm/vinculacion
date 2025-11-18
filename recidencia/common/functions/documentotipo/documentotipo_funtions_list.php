@@ -62,7 +62,7 @@ if (!function_exists('documentoTipoEmpresaOptions')) {
     function documentoTipoEmpresaOptions(): array
     {
         return [
-            'fisica' => 'Empresa Fiscal',
+            'fiscal' => 'Empresa Fiscal',
             'moral' => 'Empresa Moral',
             'ambas' => 'Ambas',
         ];
