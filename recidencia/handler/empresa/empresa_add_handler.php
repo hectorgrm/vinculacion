@@ -44,6 +44,14 @@ if (!function_exists('empresaAddHandler')) {
             return $viewData;
         }
 
+        $duplicateErrors = $controller->duplicateFieldErrors($viewData['formData']);
+
+        if ($duplicateErrors !== []) {
+            $viewData['errors'] = $duplicateErrors;
+
+            return $viewData;
+        }
+
         try {
             $empresaId = $controller->createEmpresa($viewData['formData']);
             $viewData['successMessage'] = empresaAddSuccessMessage($empresaId);

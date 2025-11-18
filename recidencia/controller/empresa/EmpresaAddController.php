@@ -38,4 +38,13 @@ class EmpresaAddController
     {
         return $this->createEmpresa($data);
     }
+
+    /**
+     * @param array<string, string> $data
+     * @return array<int, string>
+     */
+    public function duplicateFieldErrors(array $data): array
+    {
+        return $this->model->duplicateFieldErrors($data);
+    }
 }

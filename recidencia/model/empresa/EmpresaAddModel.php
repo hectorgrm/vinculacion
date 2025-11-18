@@ -91,4 +91,69 @@ class EmpresaAddModel
 
         return (int) $this->pdo->lastInsertId();
     }
+
+    /**
+     * @param array<string, string> $data
+     * @return array<int, string>
+     */
+    public function duplicateFieldErrors(array $data): array
+    {
+        $errors = [];
+
+        if ($this->existsByNumeroControl($data['numero_control'])) {
+            $errors[] = 'Ya existe una empresa registrada con el número de control proporcionado.';
+        }
+
+        if ($this->existsByRfc($data['rfc'])) {
+            $errors[] = 'Ya existe una empresa registrada con el RFC proporcionado.';
+        }
+
+        if ($this->existsByNombre($data['nombre'])) {
+            $errors[] = 'Ya existe una empresa registrada con ese nombre.';
+        }
+
+        return $errors;
+    }
+
+    private function existsByNumeroControl(string $value): bool
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return false;
+        }
+
+        $statement = $this->pdo->prepare('SELECT 1 FROM rp_empresa WHERE numero_control = :value LIMIT 1');
+        $statement->execute([':value' => $value]);
+
+        return (bool) $statement->fetchColumn();
+    }
+
+    private function existsByRfc(string $value): bool
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return false;
+        }
+
+        $statement = $this->pdo->prepare('SELECT 1 FROM rp_empresa WHERE rfc = :value LIMIT 1');
+        $statement->execute([':value' => $value]);
+
+        return (bool) $statement->fetchColumn();
+    }
+
+    private function existsByNombre(string $value): bool
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return false;
+        }
+
+        $statement = $this->pdo->prepare('SELECT 1 FROM rp_empresa WHERE LOWER(nombre) = LOWER(:value) LIMIT 1');
+        $statement->execute([':value' => $value]);
+
+        return (bool) $statement->fetchColumn();
+    }
 }
