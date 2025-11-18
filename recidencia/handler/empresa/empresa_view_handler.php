@@ -16,7 +16,8 @@ if (!function_exists('empresaViewHandler')) {
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
      *     inputError: ?string,
-     *     machoteData: ?array<string, mixed>
+     *     machoteData: ?array<string, mixed>,
+     *     successMessage: ?string
      * }
      */
     function empresaViewHandler(): array
@@ -39,11 +40,27 @@ if (!function_exists('empresaViewHandler')) {
             return $defaults;
         }
 
+        $successMessage = null;
+
+        if (
+            isset($_GET['success_message']) &&
+            is_string($_GET['success_message']) &&
+            $_GET['success_message'] !== ''
+        ) {
+            $successMessage = $_GET['success_message'];
+        }
+
         if (!is_array($result)) {
             return $defaults;
         }
 
-        return array_merge($defaults, $result);
+        $merged = array_merge($defaults, $result);
+
+        if ($successMessage !== null) {
+            $merged['successMessage'] = $successMessage;
+        }
+
+        return $merged;
     }
 }
 

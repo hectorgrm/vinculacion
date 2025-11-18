@@ -7,8 +7,9 @@ declare(strict_types=1);
  *     conveniosActivos: array<int, array<string, mixed>>,
  *     controllerError: ?string,
  *     notFoundMessage: ?string,
- *     inputError: ?string
- *     machoteData: ?array<string, mixed>
+ *     inputError: ?string,
+ *     machoteData: ?array<string, mixed>,
+ *     successMessage: ?string
  * } $handlerResult
  */
 $handlerResult = require __DIR__ . '/../../handler/empresa/empresa_view_handler.php';
@@ -18,6 +19,7 @@ $empresa = $handlerResult['empresa'];
 $controllerError = $handlerResult['controllerError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
 $inputError = $handlerResult['inputError'];
+$successMessage = $handlerResult['successMessage'] ?? null;
 $conveniosActivos = $handlerResult['conveniosActivos'] ?? [];
 $documentos = $handlerResult['documentos'] ?? [];
 $documentosStats = $handlerResult['documentosStats'] ?? [];
@@ -145,6 +147,14 @@ $progreso = $documentosStats['porcentaje'];
 
     <!-- Main -->
     <main class="main">
+      <?php if ($successMessage !== null && $successMessage !== ''): ?>
+        <div class="alert alert-success" style="margin: 0 0 16px;">
+          <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
+        </div>
+        <div id="empresa-success-toast"
+             data-toast-message="<?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>"
+             hidden></div>
+      <?php endif; ?>
   <!-- 🏢 Banner con logotipo y lápiz -->
   <section class="empresa-banner">
     <div class="empresa-brand">
@@ -802,6 +812,9 @@ $progreso = $documentosStats['porcentaje'];
 
     </main>
   </div>
+  <?php if ($successMessage !== null && $successMessage !== ''): ?>
+    <script src="../../assets/js/empresa-success-toast.js" defer></script>
+  <?php endif; ?>
 </body>
 
 </html>

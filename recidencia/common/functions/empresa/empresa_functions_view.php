@@ -13,7 +13,8 @@ if (!function_exists('empresaViewDefaults')) {
      *     controllerError: ?string,
      *     notFoundMessage: ?string,
      *     inputError: ?string,
-     *     machoteData: ?array<string, mixed>
+     *     machoteData: ?array<string, mixed>,
+     *     successMessage: ?string
      * }
      */
     function empresaViewDefaults(): array
@@ -34,6 +35,7 @@ if (!function_exists('empresaViewDefaults')) {
             'notFoundMessage' => null,
             'inputError' => null,
             'machoteData' => null,
+            'successMessage' => null,
         ];
     }
 }

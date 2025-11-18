@@ -54,8 +54,12 @@ if (!function_exists('empresaAddHandler')) {
 
         try {
             $empresaId = $controller->createEmpresa($viewData['formData']);
-            $viewData['successMessage'] = empresaAddSuccessMessage($empresaId);
-            $viewData['formData'] = empresaFormDefaults();
+            $successMessage = empresaAddSuccessMessage($empresaId);
+            $redirectUrl = 'empresa_view.php?id=' . rawurlencode((string) $empresaId)
+                . '&success_message=' . rawurlencode($successMessage);
+
+            header('Location: ' . $redirectUrl);
+            exit;
         } catch (\Throwable $exception) {
             $pdoException = null;
 
