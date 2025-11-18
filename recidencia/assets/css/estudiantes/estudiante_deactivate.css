@@ -1,6 +1,6 @@
 /* =========================================================
-   Estudiante - Nuevo Registro (estudiante_add.css)
-   Diseño unificado con todo el sistema
+   Estudiante - Desactivar (estudiante_deactivate.css)
+   Diseño unificado con el sistema completo
    ========================================================= */
 
 /* ---------- Variables ---------- */
@@ -37,7 +37,7 @@ body {
 }
 
 /* =========================================================
-   LAYOUT GENERAL
+   LAYOUT
    ========================================================= */
 
 .app {
@@ -47,7 +47,6 @@ body {
   gap: 20px;
   padding: 20px;
 }
-
 
 .main {
   display: grid;
@@ -59,60 +58,7 @@ body {
 }
 
 @media (max-width: 768px) {
-  .app { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
-}
-/* =========================================================
-   TOPBAR
-   ========================================================= */
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
-}
-
-.topbar h2 {
-  margin: 0;
-  font-size: 24px;
-}
-
-.subtitle {
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-/* =========================================================
-   MESSAGES / ALERTS
-   ========================================================= */
-
-.strip {
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  margin-bottom: 16px;
-  font-size: .95rem;
-  border: 1px solid transparent;
-}
-
-.successbox {
-  background: #e6f7ec;
-  color: #117a38;
-  border-color: #b8eccc;
-}
-
-.dangerbox {
-  background: #fdeaea;
-  color: #a11c1c;
-  border-color: #f5bcbc;
-}
-
-.strip ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
+  .app { grid-template-columns: 1fr; gap: 12px; padding: 12px; }
 }
 
 /* =========================================================
@@ -122,14 +68,14 @@ body {
 .card {
   background: var(--panel);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .card > header {
   padding: 16px 20px;
-  font-weight: 700;
   border-bottom: 1px solid var(--border);
+  font-weight: 700;
 }
 
 .card .content {
@@ -137,40 +83,100 @@ body {
 }
 
 /* =========================================================
-   FORMULARIO
+   WARNING STYLES
    ========================================================= */
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+.warning-icon {
+  font-size: 46px;
+  color: #d97706;
+  margin-bottom: 12px;
+  text-align: center;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
+.alert-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-align: center;
+  margin: 4px 0 8px;
 }
 
-.form-group label {
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #334155;
+.alert-text {
+  text-align: center;
+  color: #475569;
+  margin-bottom: 14px;
 }
 
-.form-group input,
-.form-group select {
-  padding: 10px 14px;
-  border-radius: 10px;
+/* =========================================================
+   MESSAGE BOXES
+   ========================================================= */
+
+.message {
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  font-size: 0.95rem;
+}
+
+.message.error {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.message.success {
+  background: #e7fbe7;
+  border: 1px solid #c2f5c2;
+  color: #1f7a2e;
+}
+
+.message ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+/* =========================================================
+   DATA BOX
+   ========================================================= */
+
+.data-box {
+  background: #f8fafc;
+  border-radius: 12px;
   border: 1px solid var(--border);
-  background: #fff;
-  font-size: 15px;
+  padding: 16px;
+  margin: 18px 0;
+  font-size: 0.95rem;
 }
 
-.form-group input:focus,
-.form-group select:focus {
-  border-color: var(--primary);
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(31,111,235,.15);
+.data-box p {
+  margin: 6px 0;
+}
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.badge.activo { background: var(--success); }
+.badge.finalizado { background: var(--primary); }
+.badge.inactivo { background: var(--danger); }
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
 }
 
 /* =========================================================
@@ -196,16 +202,6 @@ body {
   transform: translateY(-1px);
 }
 
-.btn.primary {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
-}
-
-.btn.primary:hover {
-  background: var(--primary-600);
-}
-
 .btn.secondary {
   background: #e2e8f0;
   border-color: #cbd5e1;
@@ -215,20 +211,14 @@ body {
   background: #cbd5e1;
 }
 
-.btn:disabled {
-  opacity: .6;
-  cursor: not-allowed;
+.btn.danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
 }
 
-/* =========================================================
-   FORM ACTIONS
-   ========================================================= */
-
-.form-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 14px;
+.btn.danger:hover {
+  background: #be123c;
 }
 
 /* =========================================================
