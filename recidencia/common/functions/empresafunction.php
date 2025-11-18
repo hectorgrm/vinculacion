@@ -192,15 +192,21 @@ if (!function_exists('empresaValidateData')) {
             $errors[] = 'El nombre de la empresa no puede exceder 191 caracteres.';
         }
 
-        if ($data['numero_control'] !== '' && empresaStringLength($data['numero_control']) > 20) {
+        if ($data['numero_control'] === '') {
+            $errors[] = 'El numero de control es obligatorio.';
+        } elseif (empresaStringLength($data['numero_control']) > 20) {
             $errors[] = 'El número de control no puede exceder 20 caracteres.';
         }
 
-        if ($data['rfc'] !== '' && empresaStringLength($data['rfc']) > 20) {
+        if ($data['rfc'] === '') {
+            $errors[] = 'El RFC es obligatorio.';
+        } elseif (empresaStringLength($data['rfc']) > 20) {
             $errors[] = 'El RFC no puede exceder 20 caracteres.';
         }
 
-        if ($data['contacto_nombre'] !== '' && empresaStringLength($data['contacto_nombre']) > 191) {
+        if ($data['contacto_nombre'] === '') {
+            $errors[] = 'El nombre del contacto es obligatorio.';
+        } elseif (empresaStringLength($data['contacto_nombre']) > 191) {
             $errors[] = 'El nombre del contacto no puede exceder 191 caracteres.';
         }
 
@@ -224,7 +230,9 @@ if (!function_exists('empresaValidateData')) {
             }
         }
 
-        if ($data['contacto_email'] !== '') {
+        if ($data['contacto_email'] === '') {
+            $errors[] = 'El correo electronico del contacto es obligatorio.';
+        } else {
             if (!filter_var($data['contacto_email'], FILTER_VALIDATE_EMAIL)) {
                 $errors[] = 'Ingresa un correo electrónico de contacto válido.';
             } elseif (empresaStringLength($data['contacto_email']) > 191) {
@@ -232,27 +240,39 @@ if (!function_exists('empresaValidateData')) {
             }
         }
 
-        if ($data['telefono'] !== '' && empresaStringLength($data['telefono']) > 30) {
+        if ($data['telefono'] === '') {
+            $errors[] = 'El telefono es obligatorio.';
+        } elseif (empresaStringLength($data['telefono']) > 30) {
             $errors[] = 'El teléfono no puede exceder 30 caracteres.';
         }
 
-        if ($data['estado'] !== '' && empresaStringLength($data['estado']) > 100) {
+        if ($data['estado'] === '') {
+            $errors[] = 'El estado es obligatorio.';
+        } elseif (empresaStringLength($data['estado']) > 100) {
             $errors[] = 'El estado no puede exceder 100 caracteres.';
         }
 
-        if ($data['municipio'] !== '' && empresaStringLength($data['municipio']) > 100) {
+        if ($data['municipio'] === '') {
+            $errors[] = 'El municipio es obligatorio.';
+        } elseif (empresaStringLength($data['municipio']) > 100) {
             $errors[] = 'El municipio no puede exceder 100 caracteres.';
         }
 
-        if ($data['cp'] !== '' && empresaStringLength($data['cp']) > 10) {
+        if ($data['cp'] === '') {
+            $errors[] = 'El codigo postal es obligatorio.';
+        } elseif (empresaStringLength($data['cp']) > 10) {
             $errors[] = 'El código postal no puede exceder 10 caracteres.';
         }
 
-        if ($data['direccion'] !== '' && empresaStringLength($data['direccion']) > 255) {
+        if ($data['direccion'] === '') {
+            $errors[] = 'La direccion es obligatoria.';
+        } elseif (empresaStringLength($data['direccion']) > 255) {
             $errors[] = 'La dirección no puede exceder 255 caracteres.';
         }
 
-        if ($data['regimen_fiscal'] !== '' && empresaStringLength($data['regimen_fiscal']) > 191) {
+        if ($data['regimen_fiscal'] === '') {
+            $errors[] = 'El regimen fiscal es obligatorio.';
+        } elseif (empresaStringLength($data['regimen_fiscal']) > 191) {
             $errors[] = 'El régimen fiscal no puede exceder 191 caracteres.';
         }
 
@@ -260,7 +280,9 @@ if (!function_exists('empresaValidateData')) {
             $errors[] = 'Las notas no pueden exceder 65535 caracteres.';
         }
 
-        if (!in_array($data['estatus'], empresaStatusOptions(), true)) {
+        if ($data['estatus'] === '') {
+            $errors[] = 'El estatus es obligatorio.';
+        } elseif (!in_array($data['estatus'], empresaStatusOptions(), true)) {
             $errors[] = 'Selecciona un estatus válido para la empresa.';
         }
 

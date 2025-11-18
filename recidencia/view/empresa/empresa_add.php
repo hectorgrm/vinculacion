@@ -88,9 +88,9 @@ $controllerError = $handlerResult['controllerError'];
               <!-- 🏢 Datos generales -->
               <h3 class="section-title">🏢 Información general</h3>
               <div class="field">
-                <label for="numero_control">No. de control</label>
+                <label for="numero_control" class="required">No. de control *</label>
                 <input type="text" id="numero_control" name="numero_control" placeholder="Ej: EMP-0001" maxlength="20"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'numero_control'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'numero_control'), ENT_QUOTES, 'UTF-8'); ?>" required />
               </div>
               <div class="field col-span-2">
                 <label for="nombre" class="required">Nombre de la empresa *</label>
@@ -100,9 +100,9 @@ $controllerError = $handlerResult['controllerError'];
               </div>
 
               <div class="field">
-                <label for="rfc">RFC</label>
+                <label for="rfc" class="required">RFC *</label>
                 <input type="text" id="rfc" name="rfc" placeholder="Ej: YAK930303CC3" maxlength="20"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'rfc'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'rfc'), ENT_QUOTES, 'UTF-8'); ?>" required />
               </div>
 
               <div class="field">
@@ -133,54 +133,54 @@ $controllerError = $handlerResult['controllerError'];
               <!-- 📞 Datos de contacto -->
               <h3 class="section-title">📞 Datos de contacto</h3>
               <div class="field">
-                <label for="telefono">Teléfono</label>
+                <label for="telefono" class="required">Teléfono *</label>
                 <input type="text" id="telefono" name="telefono" placeholder="Ej: (33) 1234 5678"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'telefono'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'telefono'), ENT_QUOTES, 'UTF-8'); ?>" required />
               </div>
 
               <div class="field">
-                <label for="contacto_nombre">Nombre del contacto</label>
+                <label for="contacto_nombre" class="required">Nombre del contacto *</label>
                 <input type="text" id="contacto_nombre" name="contacto_nombre" placeholder="Ej: Luis Pérez"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'contacto_nombre'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'contacto_nombre'), ENT_QUOTES, 'UTF-8'); ?>" required />
               </div>
 
               <div class="field">
-                <label for="contacto_email">Correo electrónico del contacto</label>
+                <label for="contacto_email" class="required">Correo electrónico del contacto *</label>
                 <input type="email" id="contacto_email" name="contacto_email" placeholder="Ej: contacto@empresa.com"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'contacto_email'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'contacto_email'), ENT_QUOTES, 'UTF-8'); ?>" required />
               </div>
 
               <!-- 📍 Ubicación -->
               <h3 class="section-title">📍 Ubicación</h3>
               <div class="field">
-                <label for="estado">Estado / Entidad</label>
+                <label for="estado" class="required">Estado / Entidad *</label>
                 <input type="text" id="estado" name="estado" placeholder="Ej: Jalisco"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'estado'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'estado'), ENT_QUOTES, 'UTF-8'); ?>" required />
               </div>
 
               <div class="field">
-                <label for="municipio">Municipio / Alcaldía</label>
+                <label for="municipio" class="required">Municipio / Alcaldía *</label>
                 <input type="text" id="municipio" name="municipio" placeholder="Ej: Guadalajara"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'municipio'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'municipio'), ENT_QUOTES, 'UTF-8'); ?>" required />
               </div>
 
               <div class="field">
-                <label for="cp">Código Postal</label>
+                <label for="cp" class="required">Código Postal *</label>
                 <input type="text" id="cp" name="cp" placeholder="Ej: 44100"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'cp'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'cp'), ENT_QUOTES, 'UTF-8'); ?>" required />
               </div>
 
               <div class="field col-span-2">
-                <label for="direccion">Dirección (calle y número)</label>
+                <label for="direccion" class="required">Dirección (calle y número) *</label>
                 <input type="text" id="direccion" name="direccion" placeholder="Ej: Calle Independencia 321"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'direccion'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'direccion'), ENT_QUOTES, 'UTF-8'); ?>" required />
               </div>
 
               <!-- ⚙️ Configuración -->
               <h3 class="section-title">⚙️ Configuración</h3>
               <div class="field">
-                <label for="estatus">Estatus</label>
-                <select id="estatus" name="estatus">
+                <label for="estatus" class="required">Estatus *</label>
+                <select id="estatus" name="estatus" required>
                   <?php foreach ($estatusOptions as $option): ?>
                     <option value="<?php echo htmlspecialchars($option, ENT_QUOTES, 'UTF-8'); ?>" <?php echo empresaFormValue($formData, 'estatus') === $option ? 'selected' : ''; ?>>
                       <?php echo htmlspecialchars($option, ENT_QUOTES, 'UTF-8'); ?></option>
@@ -189,9 +189,9 @@ $controllerError = $handlerResult['controllerError'];
               </div>
 
               <div class="field">
-                <label for="regimen_fiscal">Régimen fiscal</label>
+                <label for="regimen_fiscal" class="required">Régimen fiscal *</label>
                 <input type="text" id="regimen_fiscal" name="regimen_fiscal" placeholder="Ej: Persona Moral o Física"
-                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'regimen_fiscal'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(empresaFormValue($formData, 'regimen_fiscal'), ENT_QUOTES, 'UTF-8'); ?>" required />
               </div>
 
               <div class="field col-span-2">
