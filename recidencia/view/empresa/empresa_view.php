@@ -380,7 +380,10 @@ $empresaIsEnRevision = $preparedData['empresaIsEnRevision'] ?? false;
                     <td><span class="<?php echo htmlspecialchars($documentoEstadoClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($documentoEstadoLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
                     <td><?php echo htmlspecialchars($documentoActualizado !== '' ? $documentoActualizado : '—', ENT_QUOTES, 'UTF-8'); ?></td>
                     <td>
-                      <?php if ($accionUrl !== '') : ?>
+                      <?php if (
+                          $accionUrl !== '' &&
+                          !($empresaIsEnRevision && $accionVariant === 'upload')
+                      ) : ?>
                         <a href="<?php echo htmlspecialchars($accionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($accionClass, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $accionAttrs; ?>><?php echo htmlspecialchars($accionPrefix . $accionLabel, ENT_QUOTES, 'UTF-8'); ?></a>
                       <?php endif; ?>
                       <?php if (!$empresaIsEnRevision && $accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
@@ -401,9 +404,11 @@ $empresaIsEnRevision = $preparedData['empresaIsEnRevision'] ?? false;
 
           
           <!-- 🔗 Acción principal -->
-          <div class="actions" style="margin-top:16px; justify-content:flex-end;">
-            <a href="<?php echo htmlspecialchars($documentosGestionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📁 Gestionar Documentos</a>
-          </div>
+          <?php if (!$empresaIsEnRevision && $documentosGestionUrl !== null && $documentosGestionUrl !== '') : ?>
+            <div class="actions" style="margin-top:16px; justify-content:flex-end;">
+              <a href="<?php echo htmlspecialchars($documentosGestionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📁 Gestionar Documentos</a>
+            </div>
+          <?php endif; ?>
         </div>
 
         
