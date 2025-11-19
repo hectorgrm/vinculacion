@@ -34,6 +34,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
         $actualizadoEn = 'Sin actualizar';
         $numeroControl = '';
         $logoUrl = null;
+        $empresaIsEnRevision = false;
 
         if (is_array($empresa)) {
             $nombre = (string) ($empresa['nombre_label'] ?? ($empresa['nombre'] ?? $nombre));
@@ -49,6 +50,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             $logoUrl = isset($empresa['logo_url']) && $empresa['logo_url'] !== null
                 ? (string) $empresa['logo_url']
                 : null;
+            $empresaIsEnRevision = empresaViewIsStatusRevision($empresa['estatus'] ?? null);
         }
 
         $empresaSubtitulo = $numeroControl !== ''
@@ -105,7 +107,38 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             'empresaProgresoUrl' => $empresaProgresoUrl,
             'empresaEditUrl' => $empresaEditUrl,
             'empresaDeleteUrl' => $empresaDeleteUrl,
+            'empresaIsEnRevision' => $empresaIsEnRevision,
         ];
+    }
+}
+
+if (!function_exists('empresaViewSanitizeStatusForComparison')) {
+    function empresaViewSanitizeStatusForComparison(string $value): string
+    {
+        $normalized = $value;
+
+        if (function_exists('iconv')) {
+            $transliterated = @iconv('UTF-8', 'ASCII//TRANSLIT', $value);
+
+            if ($transliterated !== false) {
+                $normalized = $transliterated;
+            }
+        }
+
+        $lower = function_exists('mb_strtolower') ? mb_strtolower($normalized, 'UTF-8') : strtolower($normalized);
+        $clean = preg_replace('/[^a-z]/', '', $lower);
+
+        return $clean ?? '';
+    }
+}
+
+if (!function_exists('empresaViewIsStatusRevision')) {
+    function empresaViewIsStatusRevision(?string $estatus): bool
+    {
+        $normalizedStatus = empresaNormalizeStatus($estatus);
+        $clean = empresaViewSanitizeStatusForComparison($normalizedStatus);
+
+        return $clean !== '' && strpos($clean, 'revision') !== false;
     }
 }
 

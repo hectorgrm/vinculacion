@@ -59,6 +59,7 @@ $docsAprobados = $preparedData['docsAprobados'] ?? 0;
 $progreso = $preparedData['progreso'] ?? 0;
 $auditoriaHasOverflow = $preparedData['auditoriaHasOverflow'] ?? false;
 $auditoriaVisibleLimit = $preparedData['auditoriaVisibleLimit'] ?? 5;
+$empresaIsEnRevision = $preparedData['empresaIsEnRevision'] ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -179,7 +180,12 @@ $auditoriaVisibleLimit = $preparedData['auditoriaVisibleLimit'] ?? 5;
       <!-- 📜 Convenios asociados -->
       <section class="card">
         <header>📜 Convenios activos y en revisión</header>
-        <div class="content">
+        <div class="content<?php echo $empresaIsEnRevision ? ' content--dimmed' : ''; ?>">
+          <?php if ($empresaIsEnRevision): ?>
+            <p class="section-note">
+              Para agregar un convenio la empresa tiene que estar activa.
+            </p>
+          <?php endif; ?>
           <table>
             <thead>
               <tr>
@@ -236,9 +242,11 @@ $auditoriaVisibleLimit = $preparedData['auditoriaVisibleLimit'] ?? 5;
             </tbody>
           </table>
 
-          <div class="actions">
-            <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Nuevo Convenio</a>
-          </div>
+          <?php if (!$empresaIsEnRevision): ?>
+            <div class="actions" style="margin-top:16px; justify-content:flex-end;">
+              <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Nuevo Convenio</a>
+            </div>
+          <?php endif; ?>
         </div>
       </section>
 
@@ -298,6 +306,11 @@ $auditoriaVisibleLimit = $preparedData['auditoriaVisibleLimit'] ?? 5;
         </header>
 
         <div class="content">
+          <?php if ($empresaIsEnRevision): ?>
+            <p class="section-note">
+              Esta empresa aún está en revisión; no es posible subir documentos hasta que esté activa.
+            </p>
+          <?php endif; ?>
           <div class="docs-summary" style="margin-bottom:15px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
             <div style="flex:1;">
               <strong>📄 Documentos requeridos:</strong> <?php echo htmlspecialchars((string) $docsTotal, ENT_QUOTES, 'UTF-8'); ?><br>
@@ -370,7 +383,7 @@ $auditoriaVisibleLimit = $preparedData['auditoriaVisibleLimit'] ?? 5;
                       <?php if ($accionUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($accionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($accionClass, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $accionAttrs; ?>><?php echo htmlspecialchars($accionPrefix . $accionLabel, ENT_QUOTES, 'UTF-8'); ?></a>
                       <?php endif; ?>
-                      <?php if ($accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
+                      <?php if (!$empresaIsEnRevision && $accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
                         <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">📁 Subir</a>
                       <?php endif; ?>
                       <?php if ($documentoEstatus === 'aprobado' && $detailUrl !== '') : ?>
