@@ -129,6 +129,33 @@ class EmpresaViewModel
     }
 
     /**
+     * @return array<string, mixed>|null
+     */
+    public function findPortalAccessByEmpresaId(int $empresaId): ?array
+    {
+        $sql = <<<'SQL'
+            SELECT id,
+                   empresa_id,
+                   token,
+                   nip,
+                   activo,
+                   expiracion,
+                   creado_en
+              FROM rp_portal_acceso
+             WHERE empresa_id = :empresa_id
+             ORDER BY id DESC
+             LIMIT 1
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result !== false ? $result : null;
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
     public function findGlobalDocumentos(int $empresaId, ?string $tipoEmpresa = null): array

@@ -36,6 +36,21 @@ if (!function_exists('portalAccessAddHandler')) {
         }
 
         if (!portalAccessIsPostRequest()) {
+            $empresaIdFromQuery = isset($_GET['empresa_id']) ? trim((string) $_GET['empresa_id']) : '';
+
+            if ($empresaIdFromQuery !== '' && preg_match('/^\d+$/', $empresaIdFromQuery) === 1) {
+                foreach ($viewData['empresaOptions'] as $empresaOption) {
+                    if (!isset($empresaOption['id'])) {
+                        continue;
+                    }
+
+                    if ((string) $empresaOption['id'] === $empresaIdFromQuery) {
+                        $viewData['formData']['empresa_id'] = $empresaIdFromQuery;
+                        break;
+                    }
+                }
+            }
+
             return $viewData;
         }
 

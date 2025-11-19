@@ -40,6 +40,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
         $numeroControl = '';
         $logoUrl = null;
         $empresaIsEnRevision = false;
+        $empresaIsActiva = false;
 
         if (is_array($empresa)) {
             $nombre = (string) ($empresa['nombre_label'] ?? ($empresa['nombre'] ?? $nombre));
@@ -56,6 +57,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
                 ? (string) $empresa['logo_url']
                 : null;
             $empresaIsEnRevision = empresaViewIsStatusRevision($empresa['estatus'] ?? null);
+            $empresaIsActiva = empresaViewIsStatusActiva($empresa['estatus'] ?? null);
         }
 
         $empresaSubtitulo = $numeroControl !== ''
@@ -124,6 +126,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             'empresaEditUrl' => $empresaEditUrl,
             'empresaDeleteUrl' => $empresaDeleteUrl,
             'empresaIsEnRevision' => $empresaIsEnRevision,
+            'empresaIsActiva' => $empresaIsActiva,
             'estudiantes' => $estudiantes,
         ];
     }
@@ -156,6 +159,13 @@ if (!function_exists('empresaViewIsStatusRevision')) {
         $clean = empresaViewSanitizeStatusForComparison($normalizedStatus);
 
         return $clean !== '' && strpos($clean, 'revision') !== false;
+    }
+}
+
+if (!function_exists('empresaViewIsStatusActiva')) {
+    function empresaViewIsStatusActiva(?string $estatus): bool
+    {
+        return empresaNormalizeStatus($estatus) === 'Activa';
     }
 }
 
@@ -310,6 +320,122 @@ if (!function_exists('empresaViewDecorateAuditoriaItems')) {
             'items' => $decorated,
             'hasOverflow' => count($decorated) > $visibleLimit,
             'visibleLimit' => $visibleLimit,
+        ];
+    }
+}
+
+if (!function_exists('empresaViewPortalStatusData')) {
+    /**
+     * @param array<string, mixed> $portalAccess
+     * @return array{label: string, class: string}
+     */
+    function empresaViewPortalStatusData(array $portalAccess): array
+    {
+        $isActive = isset($portalAccess['activo']) && (int) $portalAccess['activo'] === 1;
+        $expirationRaw = isset($portalAccess['expiracion']) ? trim((string) $portalAccess['expiracion']) : '';
+        $isExpired = false;
+
+        if ($expirationRaw !== '') {
+            try {
+                $expirationDate = new DateTimeImmutable($expirationRaw);
+                $isExpired = $expirationDate <= new DateTimeImmutable('now');
+            } catch (\Throwable) {
+                $isExpired = false;
+            }
+        }
+
+        if (!$isActive) {
+            return ['label' => 'Inactivo', 'class' => 'badge badge-inactive'];
+        }
+
+        if ($isExpired) {
+            return ['label' => 'Expirado', 'class' => 'badge badge-inactive'];
+        }
+
+        return ['label' => 'Activo', 'class' => 'badge badge-active'];
+    }
+}
+
+if (!function_exists('empresaViewPortalAccessHelper')) {
+    /**
+     * @param array<string, mixed> $handlerResult
+     * @return array<string, mixed>
+     */
+    function empresaViewPortalAccessHelper(array $handlerResult): array
+    {
+        $empresaId = $handlerResult['empresaId'] ?? null;
+        $empresa = $handlerResult['empresa'] ?? null;
+        $portalAccessRaw = $handlerResult['portalAccess'] ?? null;
+
+        if (!is_int($empresaId)) {
+            $empresaId = null;
+        }
+
+        $empresaIsActiva = false;
+
+        if (is_array($empresa)) {
+            $empresaIsActiva = empresaViewIsStatusActiva($empresa['estatus'] ?? null);
+        }
+
+        $empresaIdQuery = $empresaId !== null ? (string) $empresaId : '';
+        $createUrl = '../portalacceso/portal_add.php';
+
+        if ($empresaIdQuery !== '') {
+            $createUrl .= '?empresa_id=' . urlencode($empresaIdQuery);
+        }
+
+        $record = null;
+        $viewUrl = null;
+        $editUrl = null;
+        $deleteUrl = null;
+
+        if ($empresaId !== null && is_array($portalAccessRaw)) {
+            $recordEmpresaId = isset($portalAccessRaw['empresa_id']) ? (int) $portalAccessRaw['empresa_id'] : null;
+
+            if ($recordEmpresaId === $empresaId && isset($portalAccessRaw['id'])) {
+                $portalId = (int) $portalAccessRaw['id'];
+                $statusData = empresaViewPortalStatusData($portalAccessRaw);
+
+                $record = [
+                    'id' => $portalId,
+                    'token' => (string) ($portalAccessRaw['token'] ?? ''),
+                    'nip' => isset($portalAccessRaw['nip']) && trim((string) $portalAccessRaw['nip']) !== ''
+                        ? (string) $portalAccessRaw['nip']
+                        : '—',
+                    'estatus_label' => $statusData['label'],
+                    'estatus_badge_class' => $statusData['class'],
+                    'creado_en' => empresaViewFormatDateTime($portalAccessRaw['creado_en'] ?? null, 'Sin registrar'),
+                ];
+
+                $portalIdQuery = '?id=' . urlencode((string) $portalId);
+
+                if ($empresaIdQuery !== '') {
+                    $portalIdQuery .= '&empresa_id=' . urlencode($empresaIdQuery);
+                }
+
+                $viewUrl = '../portalacceso/portal_view.php' . $portalIdQuery;
+                $editUrl = '../portalacceso/portal_edit.php' . $portalIdQuery;
+                $deleteUrl = '../portalacceso/portal_delete.php' . $portalIdQuery;
+            }
+        }
+
+        $actionsEnabled = $empresaIsActiva && $empresaId !== null;
+        $disabledReason = null;
+
+        if (!$actionsEnabled) {
+            $disabledReason = !$empresaIsActiva
+                ? 'Activa la empresa para gestionar su acceso al portal.'
+                : 'No se puede gestionar el portal sin un identificador de empresa válido.';
+        }
+
+        return [
+            'portalAccess' => $record,
+            'portalAccessCreateUrl' => $createUrl,
+            'portalAccessViewUrl' => $viewUrl,
+            'portalAccessEditUrl' => $editUrl,
+            'portalAccessDeleteUrl' => $deleteUrl,
+            'portalAccessActionsEnabled' => $actionsEnabled,
+            'portalAccessDisabledReason' => $disabledReason,
         ];
     }
 }

@@ -62,6 +62,14 @@ $auditoriaHasOverflow = $preparedData['auditoriaHasOverflow'] ?? false;
 $auditoriaVisibleLimit = $preparedData['auditoriaVisibleLimit'] ?? 5;
 $empresaIsEnRevision = $preparedData['empresaIsEnRevision'] ?? false;
 $estudiantes = $preparedData['estudiantes'] ?? [];
+$portalAccess = $preparedData['portalAccess'] ?? null;
+$portalAccessCreateUrl = $preparedData['portalAccessCreateUrl'] ?? '../portalacceso/portal_add.php';
+$portalAccessViewUrl = $preparedData['portalAccessViewUrl'] ?? null;
+$portalAccessEditUrl = $preparedData['portalAccessEditUrl'] ?? null;
+$portalAccessDeleteUrl = $preparedData['portalAccessDeleteUrl'] ?? null;
+$portalAccessActionsEnabled = $preparedData['portalAccessActionsEnabled'] ?? false;
+$portalAccessDisabledReason = $preparedData['portalAccessDisabledReason'] ?? null;
+$empresaIsActiva = $preparedData['empresaIsActiva'] ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -475,55 +483,83 @@ $estudiantes = $preparedData['estudiantes'] ?? [];
         </div>
       </section>
 
-      <div class="portal-card">
-    <div class="portal-header">
-        <div class="portal-title">
+      <section class="portal-card">
+        <div class="portal-header">
+          <div class="portal-title">
             🔐 Portal de Acceso
             <span class="portal-subtitle">Control del token y NIP asignado a la empresa</span>
+          </div>
+
+          <?php if ($portalAccessActionsEnabled && is_string($portalAccessCreateUrl) && $portalAccessCreateUrl !== '') : ?>
+            <a class="portal-btn-create" href="<?php echo htmlspecialchars($portalAccessCreateUrl, ENT_QUOTES, 'UTF-8'); ?>">➕ Crear acceso</a>
+          <?php else : ?>
+            <button class="portal-btn-create" type="button" disabled title="<?php echo htmlspecialchars($portalAccessDisabledReason ?? 'La empresa debe estar activa para generar accesos.', ENT_QUOTES, 'UTF-8'); ?>">➕ Crear acceso</button>
+          <?php endif; ?>
         </div>
 
-        <button class="portal-btn-create">➕ Crear acceso</button>
-    </div>
+        <?php if (!$empresaIsActiva) : ?>
+          <p class="portal-note">Para generar o modificar accesos, la empresa debe contar con estatus <strong>Activo</strong>.</p>
+        <?php endif; ?>
 
-    <!-- Si NO existe acceso -->
-    <div class="portal-empty">
-        Esta empresa aún no tiene un acceso generado para su portal.
-    </div>
+        <?php if (!is_array($portalAccess) || !isset($portalAccess['id'])) : ?>
+          <div class="portal-empty">
+            Esta empresa aún no tiene un acceso generado para su portal.
+          </div>
+        <?php else : ?>
+          <?php
+          $portalDisabledTitle = $portalAccessDisabledReason ?? 'Acción no disponible.';
+          $portalToken = isset($portalAccess['token']) && $portalAccess['token'] !== ''
+              ? (string) $portalAccess['token']
+              : '—';
+          ?>
+          <div class="portal-info">
+            <div class="portal-item">
+              <span class="label">ID acceso:</span>
+              <span class="value"><?php echo htmlspecialchars((string) $portalAccess['id'], ENT_QUOTES, 'UTF-8'); ?></span>
+            </div>
 
-    <!-- Si SÍ existe acceso (solo reemplaza esto cuando tengas datos reales) -->
-    <div class="portal-info">
-        <div class="portal-item">
-            <span class="label">ID acceso:</span>
-            <span class="value">6</span>
-        </div>
+            <div class="portal-item">
+              <span class="label">Token:</span>
+              <span class="value token"><?php echo htmlspecialchars($portalToken, ENT_QUOTES, 'UTF-8'); ?></span>
+            </div>
 
-        <div class="portal-item">
-            <span class="label">Token:</span>
-            <span class="value token">55cf5aaf-c9ac-4709-b4fd-0548a2dd9ac1</span>
-        </div>
+            <div class="portal-item">
+              <span class="label">NIP:</span>
+              <span class="value"><?php echo htmlspecialchars((string) ($portalAccess['nip'] ?? '—'), ENT_QUOTES, 'UTF-8'); ?></span>
+            </div>
 
-        <div class="portal-item">
-            <span class="label">NIP:</span>
-            <span class="value">121212</span>
-        </div>
+            <div class="portal-item">
+              <span class="label">Estatus:</span>
+              <span class="<?php echo htmlspecialchars((string) ($portalAccess['estatus_badge_class'] ?? 'badge badge-inactive'), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) ($portalAccess['estatus_label'] ?? '—'), ENT_QUOTES, 'UTF-8'); ?></span>
+            </div>
 
-        <div class="portal-item">
-            <span class="label">Estatus:</span>
-            <span class="badge badge-active">Activo</span>
-        </div>
+            <div class="portal-item">
+              <span class="label">Creado en:</span>
+              <span class="value"><?php echo htmlspecialchars((string) ($portalAccess['creado_en'] ?? '—'), ENT_QUOTES, 'UTF-8'); ?></span>
+            </div>
 
-        <div class="portal-item">
-            <span class="label">Creado en:</span>
-            <span class="value">2025-11-05 08:13</span>
-        </div>
+            <div class="portal-actions">
+              <?php if ($portalAccessViewUrl !== null && $portalAccessActionsEnabled) : ?>
+                <a class="portal-btn small" href="<?php echo htmlspecialchars($portalAccessViewUrl, ENT_QUOTES, 'UTF-8'); ?>">👁 Ver</a>
+              <?php else : ?>
+                <button class="portal-btn small" type="button" disabled title="<?php echo htmlspecialchars($portalDisabledTitle, ENT_QUOTES, 'UTF-8'); ?>">👁 Ver</button>
+              <?php endif; ?>
 
-        <div class="portal-actions">
-            <button class="portal-btn small">👁 Ver</button>
-            <button class="portal-btn small">✏ Editar</button>
-            <button class="portal-btn small danger">🗑 Eliminar</button>
-        </div>
-    </div>
-</div>
+              <?php if ($portalAccessEditUrl !== null && $portalAccessActionsEnabled) : ?>
+                <a class="portal-btn small" href="<?php echo htmlspecialchars($portalAccessEditUrl, ENT_QUOTES, 'UTF-8'); ?>">✏ Editar</a>
+              <?php else : ?>
+                <button class="portal-btn small" type="button" disabled title="<?php echo htmlspecialchars($portalDisabledTitle, ENT_QUOTES, 'UTF-8'); ?>">✏ Editar</button>
+              <?php endif; ?>
+
+              <?php if ($portalAccessDeleteUrl !== null && $portalAccessActionsEnabled) : ?>
+                <a class="portal-btn small danger" href="<?php echo htmlspecialchars($portalAccessDeleteUrl, ENT_QUOTES, 'UTF-8'); ?>">🗑 Eliminar</a>
+              <?php else : ?>
+                <button class="portal-btn small danger" type="button" disabled title="<?php echo htmlspecialchars($portalDisabledTitle, ENT_QUOTES, 'UTF-8'); ?>">🗑 Eliminar</button>
+              <?php endif; ?>
+            </div>
+          </div>
+        <?php endif; ?>
+      </section>
 
 
       <section class="card">

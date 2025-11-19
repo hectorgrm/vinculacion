@@ -27,8 +27,9 @@ class PortalAddModel
     {
         $sql = <<<'SQL'
             SELECT id, nombre, numero_control
-            FROM rp_empresa
-            ORDER BY nombre ASC
+              FROM rp_empresa
+             WHERE estatus = 'Activa'
+             ORDER BY nombre ASC
         SQL;
 
         $statement = $this->pdo->query($sql);

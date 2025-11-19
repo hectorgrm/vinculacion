@@ -68,6 +68,18 @@ class EmpresaViewController
     }
 
     /**
+     * @return array<string, mixed>|null
+     */
+    public function getPortalAccess(int $empresaId): ?array
+    {
+        try {
+            return $this->model->findPortalAccessByEmpresaId($empresaId);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo obtener la información del portal de acceso.', 0, $exception);
+        }
+    }
+
+    /**
      * @return array{global: array<int, array<string, mixed>>, custom: array<int, array<string, mixed>>}
      */
     public function getDocumentos(int $empresaId, ?string $tipoEmpresa): array
@@ -137,6 +149,7 @@ class EmpresaViewController
         $viewData['estudiantes'] = empresaViewDecorateEstudiantes($estudiantes);
 
         $viewData['machoteData'] = $this->getMachoteResumen($empresaId);
+        $viewData['portalAccess'] = $this->getPortalAccess($empresaId);
 
         return $viewData;
     }

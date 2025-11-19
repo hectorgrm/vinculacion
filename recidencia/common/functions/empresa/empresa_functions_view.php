@@ -25,6 +25,7 @@ if (!function_exists('empresaViewDefaults')) {
             'empresa' => null,
             'conveniosActivos' => [],
             'estudiantes' => [],
+            'portalAccess' => null,
             'documentos' => [],
             'documentosStats' => [
                 'total' => 0,

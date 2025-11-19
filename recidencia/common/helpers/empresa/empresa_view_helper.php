@@ -19,10 +19,12 @@ if (!function_exists('empresaViewTemplateHelper')) {
         $documentosData = empresaViewDocumentosHelper($handlerResult);
         $machoteData = empresaViewMachoteHelper($handlerResult['machoteData'] ?? null);
         $auditoriaData = empresaViewAuditoriaHelper($auditoriaHandlerResult);
+        $portalData = empresaViewPortalAccessHelper($handlerResult);
 
         return array_merge(
             $headerData,
             $documentosData,
+            $portalData,
             [
                 'machoteData' => $machoteData,
                 'auditoriaItems' => $auditoriaData['items'],
