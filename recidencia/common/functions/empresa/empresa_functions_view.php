@@ -9,12 +9,13 @@ if (!function_exists('empresaViewDefaults')) {
      * @return array{
      *     empresaId: ?int,
      *     empresa: ?array<string, mixed>,
-     *     conveniosActivos: array<int, array<string, mixed>>,
-     *     controllerError: ?string,
-     *     notFoundMessage: ?string,
-     *     inputError: ?string,
-     *     machoteData: ?array<string, mixed>,
-     *     successMessage: ?string
+ *     conveniosActivos: array<int, array<string, mixed>>,
+ *     estudiantes: array<int, array<string, mixed>>,
+ *     controllerError: ?string,
+ *     notFoundMessage: ?string,
+ *     inputError: ?string,
+ *     machoteData: ?array<string, mixed>,
+ *     successMessage: ?string
      * }
      */
     function empresaViewDefaults(): array
@@ -23,6 +24,7 @@ if (!function_exists('empresaViewDefaults')) {
             'empresaId' => null,
             'empresa' => null,
             'conveniosActivos' => [],
+            'estudiantes' => [],
             'documentos' => [],
             'documentosStats' => [
                 'total' => 0,
@@ -616,5 +618,92 @@ if (!function_exists('empresaViewDecorateConvenios')) {
         }
 
         return $decorated;
+    }
+}
+
+if (!function_exists('empresaViewDecorateEstudiante')) {
+    /**
+     * @param array<string, mixed> $estudiante
+     * @return array<string, mixed>
+     */
+    function empresaViewDecorateEstudiante(array $estudiante): array
+    {
+        $nombre = trim((string) ($estudiante['nombre'] ?? ''));
+        $apellidoP = trim((string) ($estudiante['apellido_paterno'] ?? ''));
+        $apellidoM = trim((string) ($estudiante['apellido_materno'] ?? ''));
+
+        $estudiante['nombre_completo'] = trim(sprintf('%s %s %s', $nombre, $apellidoP, $apellidoM));
+
+        $estatus = (string) ($estudiante['estatus'] ?? '');
+        $estatusNormalizado = strtolower($estatus);
+        $badgeClass = 'badge secondary';
+        $badgeLabel = $estatus !== '' ? $estatus : 'Sin estatus';
+
+        if ($estatusNormalizado === 'activo') {
+            $badgeClass = 'badge warn';
+            $badgeLabel = 'En proceso';
+        } elseif ($estatusNormalizado === 'finalizado') {
+            $badgeClass = 'badge ok';
+            $badgeLabel = 'Concluido';
+        }
+
+        $estudiante['estatus_badge_class'] = $badgeClass;
+        $estudiante['estatus_badge_label'] = $badgeLabel;
+
+        $convenioFolio = trim((string) ($estudiante['convenio_folio'] ?? ''));
+        $estudiante['convenio_label'] = $convenioFolio !== '' ? $convenioFolio : 'Sin convenio';
+
+        $estudiante['convenio_id'] = isset($estudiante['convenio_id']) ? (int) $estudiante['convenio_id'] : null;
+
+        return $estudiante;
+    }
+}
+
+if (!function_exists('empresaViewDecorateEstudiantes')) {
+    /**
+     * @param array<int, array<string, mixed>> $estudiantes
+     * @return array<int, array<string, mixed>>
+     */
+    function empresaViewDecorateEstudiantes(array $estudiantes): array
+    {
+        $decorated = [];
+
+        foreach ($estudiantes as $estudiante) {
+            if (!is_array($estudiante)) {
+                continue;
+            }
+
+            $decorated[] = empresaViewDecorateEstudiante($estudiante);
+        }
+
+        return $decorated;
+    }
+}
+
+if (!function_exists('empresaViewDefaultConvenioId')) {
+    /**
+     * @param array<int, array<string, mixed>> $conveniosActivos
+     */
+    function empresaViewDefaultConvenioId(array $conveniosActivos): ?int
+    {
+        foreach ($conveniosActivos as $convenio) {
+            if (!is_array($convenio) || !isset($convenio['id'])) {
+                continue;
+            }
+
+            $estatus = strtolower((string) ($convenio['estatus'] ?? ''));
+
+            if ($estatus === 'activa') {
+                return (int) $convenio['id'];
+            }
+        }
+
+        foreach ($conveniosActivos as $convenio) {
+            if (is_array($convenio) && isset($convenio['id'])) {
+                return (int) $convenio['id'];
+            }
+        }
+
+        return null;
     }
 }

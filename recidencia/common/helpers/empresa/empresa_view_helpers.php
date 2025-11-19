@@ -18,6 +18,11 @@ if (!function_exists('empresaViewBuildHeaderData')) {
         $inputError = $handlerResult['inputError'] ?? null;
         $successMessage = $handlerResult['successMessage'] ?? null;
         $conveniosActivos = $handlerResult['conveniosActivos'] ?? [];
+        $estudiantes = $handlerResult['estudiantes'] ?? [];
+
+        if (!is_array($estudiantes)) {
+            $estudiantes = [];
+        }
 
         if (!is_array($conveniosActivos)) {
             $conveniosActivos = [];
@@ -67,6 +72,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
 
         $empresaIdQuery = $empresaId !== null ? (string) $empresaId : '';
         $nuevoConvenioUrl = '../convenio/convenio_add.php';
+        $nuevoEstudianteUrl = '../estudiante/estudiante_add.php';
         $empresaProgresoUrl = 'empresa_progreso.php';
         $empresaEditUrl = 'empresa_edit.php';
         $empresaDeleteUrl = 'empresa_delete.php';
@@ -76,6 +82,15 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             $empresaProgresoUrl .= '?id_empresa=' . urlencode($empresaIdQuery);
             $empresaEditUrl .= '?id=' . urlencode($empresaIdQuery);
             $empresaDeleteUrl .= '?id=' . urlencode($empresaIdQuery);
+
+            $query = ['empresa' => $empresaIdQuery];
+            $defaultConvenioId = empresaViewDefaultConvenioId($conveniosActivos);
+
+            if ($defaultConvenioId !== null) {
+                $query['convenio'] = (string) $defaultConvenioId;
+            }
+
+            $nuevoEstudianteUrl .= '?' . http_build_query($query);
         }
 
         return [
@@ -104,10 +119,12 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             'canUploadLogo' => $canUploadLogo,
             'empresaIdQuery' => $empresaIdQuery,
             'nuevoConvenioUrl' => $nuevoConvenioUrl,
+            'nuevoEstudianteUrl' => $nuevoEstudianteUrl,
             'empresaProgresoUrl' => $empresaProgresoUrl,
             'empresaEditUrl' => $empresaEditUrl,
             'empresaDeleteUrl' => $empresaDeleteUrl,
             'empresaIsEnRevision' => $empresaIsEnRevision,
+            'estudiantes' => $estudiantes,
         ];
     }
 }

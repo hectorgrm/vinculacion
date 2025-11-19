@@ -52,6 +52,12 @@ if (!function_exists('estudianteAddHandler')) {
         }
 
         if (!estudianteAddIsPostRequest()) {
+            $viewData['formData'] = estudianteAddApplyPrefill(
+                $viewData['formData'],
+                $_GET,
+                $viewData['convenios']
+            );
+
             return $viewData;
         }
 

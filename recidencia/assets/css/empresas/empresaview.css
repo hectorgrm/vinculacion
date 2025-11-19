@@ -420,6 +420,23 @@ tbody tr:hover {
   margin-bottom: 8px;
 }
 
+.table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.table-actions .subtitle {
+  margin: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
 h2 {
   display: flex;
   align-items: center;

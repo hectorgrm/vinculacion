@@ -62,6 +62,47 @@ if (!function_exists('estudianteAddDefaults')) {
     }
 }
 
+if (!function_exists('estudianteAddApplyPrefill')) {
+    /**
+     * @param array<string, string> $defaults
+     * @param array<string, mixed> $query
+     * @param array<int, array<string, string>> $convenios
+     * @return array<string, string>
+     */
+    function estudianteAddApplyPrefill(array $defaults, array $query, array $convenios): array
+    {
+        $empresa = $query['empresa'] ?? $query['empresa_id'] ?? '';
+
+        if (is_string($empresa) && ctype_digit($empresa)) {
+            $defaults['empresa_id'] = $empresa;
+        }
+
+        $convenio = $query['convenio'] ?? $query['convenio_id'] ?? '';
+
+        if (is_string($convenio) && ctype_digit($convenio)) {
+            foreach ($convenios as $convenioOption) {
+                if (!isset($convenioOption['id']) || (string) $convenioOption['id'] !== $convenio) {
+                    continue;
+                }
+
+                $defaults['convenio_id'] = $convenio;
+
+                if (
+                    $defaults['empresa_id'] === ''
+                    && isset($convenioOption['empresa_id'])
+                    && $convenioOption['empresa_id'] !== ''
+                ) {
+                    $defaults['empresa_id'] = (string) $convenioOption['empresa_id'];
+                }
+
+                break;
+            }
+        }
+
+        return $defaults;
+    }
+}
+
 if (!function_exists('estudianteAddIsPostRequest')) {
     function estudianteAddIsPostRequest(): bool
     {

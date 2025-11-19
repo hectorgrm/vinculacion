@@ -50,6 +50,7 @@ $logoBaseUrl = $preparedData['logoBaseUrl'] ?? '../../';
 $canUploadLogo = $preparedData['canUploadLogo'] ?? false;
 $empresaIdQuery = $preparedData['empresaIdQuery'] ?? '';
 $nuevoConvenioUrl = $preparedData['nuevoConvenioUrl'] ?? '../convenio/convenio_add.php';
+$nuevoEstudianteUrl = $preparedData['nuevoEstudianteUrl'] ?? '../estudiante/estudiante_add.php';
 $empresaProgresoUrl = $preparedData['empresaProgresoUrl'] ?? 'empresa_progreso.php';
 $empresaEditUrl = $preparedData['empresaEditUrl'] ?? 'empresa_edit.php';
 $empresaDeleteUrl = $preparedData['empresaDeleteUrl'] ?? 'empresa_delete.php';
@@ -60,6 +61,7 @@ $progreso = $preparedData['progreso'] ?? 0;
 $auditoriaHasOverflow = $preparedData['auditoriaHasOverflow'] ?? false;
 $auditoriaVisibleLimit = $preparedData['auditoriaVisibleLimit'] ?? 5;
 $empresaIsEnRevision = $preparedData['empresaIsEnRevision'] ?? false;
+$estudiantes = $preparedData['estudiantes'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -419,33 +421,56 @@ $empresaIsEnRevision = $preparedData['empresaIsEnRevision'] ?? false;
       <section class="card">
         <header>🎓 Estudiantes que realizaron Residencia</header>
         <div class="content">
-          <table>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Carrera</th>
-                <th>Periodo</th>
-                <th>Proyecto</th>
-                <th>Resultado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Ana Rodríguez</td>
-                <td>Informática</td>
-                <td>Feb–Jul 2025</td>
-                <td>Desarrollo de sistema documental</td>
-                <td><span class="badge ok">Concluido</span></td>
-              </tr>
-              <tr>
-                <td>Juan Pérez</td>
-                <td>Industrial</td>
-                <td>Ago–Dic 2024</td>
-                <td>Optimización de procesos</td>
-                <td><span class="badge ok">Concluido</span></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-actions">
+            <div>
+              <strong><?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></strong>
+              <span class="subtitle">Listado de estudiantes con estatus activo o finalizado.</span>
+            </div>
+            <a href="<?php echo htmlspecialchars($nuevoEstudianteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Agregar estudiante</a>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Matrícula</th>
+                  <th>Carrera</th>
+                  <th>Convenio</th>
+                  <th>Resultado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (!is_array($estudiantes) || $estudiantes === []) : ?>
+                  <tr>
+                    <td colspan="5" style="text-align:center;">Aún no hay estudiantes vinculados a esta empresa.</td>
+                  </tr>
+                <?php else : ?>
+                  <?php foreach ($estudiantes as $estudiante) : ?>
+                    <?php
+                    if (!is_array($estudiante)) {
+                        continue;
+                    }
+
+                    $nombreEstudiante = (string) ($estudiante['nombre_completo'] ?? 'Sin nombre');
+                    $matricula = (string) ($estudiante['matricula'] ?? '—');
+                    $carrera = (string) ($estudiante['carrera'] ?? '—');
+                    $convenioLabel = (string) ($estudiante['convenio_label'] ?? 'Sin convenio');
+                    $resultadoClass = (string) ($estudiante['estatus_badge_class'] ?? 'badge secondary');
+                    $resultadoLabel = (string) ($estudiante['estatus_badge_label'] ?? 'Sin estatus');
+                    ?>
+                    <tr>
+                      <td><?php echo htmlspecialchars($nombreEstudiante, ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars($matricula, ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars($carrera, ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars($convenioLabel, ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><span class="<?php echo htmlspecialchars($resultadoClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($resultadoLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 

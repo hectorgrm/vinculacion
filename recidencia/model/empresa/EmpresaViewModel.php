@@ -99,6 +99,38 @@ class EmpresaViewModel
     /**
      * @return array<int, array<string, mixed>>
      */
+    public function findEstudiantesByEmpresa(int $empresaId): array
+    {
+        $sql = <<<'SQL'
+            SELECT
+                e.id,
+                e.nombre,
+                e.apellido_paterno,
+                e.apellido_materno,
+                e.matricula,
+                e.carrera,
+                e.estatus,
+                e.convenio_id,
+                c.folio AS convenio_folio
+            FROM rp_estudiante AS e
+            LEFT JOIN rp_convenio AS c ON c.id = e.convenio_id
+            WHERE e.empresa_id = :empresa_id
+              AND e.estatus IN ('Activo', 'Finalizado')
+            ORDER BY e.creado_en DESC, e.id DESC
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        /** @var array<int, array<string, mixed>> $records */
+        $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $records;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findGlobalDocumentos(int $empresaId, ?string $tipoEmpresa = null): array
     {
         $sql = <<<'SQL'
