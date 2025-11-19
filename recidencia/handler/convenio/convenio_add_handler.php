@@ -22,6 +22,22 @@ try {
 
 if ($controller !== null) {
     $viewData = $controller->handle($_POST, $_FILES, $_SERVER, $_GET);
+    $createdEmpresaId = isset($viewData['createdEmpresaId']) ? $viewData['createdEmpresaId'] : null;
+    $successMessage = isset($viewData['successMessage']) ? $viewData['successMessage'] : null;
+
+    if (
+        $createdEmpresaId !== null &&
+        $successMessage !== null &&
+        $successMessage !== ''
+    ) {
+        $redirectUrl = '../empresa/empresa_view.php?id='
+            . rawurlencode((string) $createdEmpresaId)
+            . '&success_message='
+            . rawurlencode($successMessage);
+
+        header('Location: ' . $redirectUrl);
+        exit;
+    }
 } else {
     $viewData = [
         'estatusOptions' => convenioStatusOptions(),

@@ -58,7 +58,9 @@ class ConvenioAddController
      *     successMessage: ?string,
      *     controllerError: ?string,
      *     controllerAvailable: bool,
-     *     empresaLockedId: ?string
+     *     empresaLockedId: ?string,
+     *     createdConvenioId: ?int,
+     *     createdEmpresaId: ?int
      * }
      */
     public function handle(array $post, array $files, array $server, array $query = []): array
@@ -93,6 +95,9 @@ class ConvenioAddController
             ? strtoupper((string) $server['REQUEST_METHOD'])
             : 'GET';
 
+        $createdConvenioId = null;
+        $createdEmpresaId = null;
+
         if ($method === 'POST') {
             if (!$controllerAvailable) {
                 $errors[] = $controllerError
@@ -113,6 +118,8 @@ class ConvenioAddController
                 $formData = $handleResult['formData'];
                 $errors = array_merge($errors, $handleResult['errors']);
                 $successMessage = $handleResult['successMessage'];
+                $createdConvenioId = $handleResult['createdConvenioId'];
+                $createdEmpresaId = $handleResult['createdEmpresaId'];
 
                 if ($empresaLockedId !== null) {
                     $formData['empresa_id'] = $empresaLockedId;
@@ -133,6 +140,8 @@ class ConvenioAddController
             'controllerError' => $controllerError,
             'controllerAvailable' => $controllerAvailable,
             'empresaLockedId' => $empresaLockedId,
+            'createdConvenioId' => $createdConvenioId,
+            'createdEmpresaId' => $createdEmpresaId,
         ];
     }
 

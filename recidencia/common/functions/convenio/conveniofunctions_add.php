@@ -13,7 +13,9 @@ if (!function_exists('convenioHandleAddRequest')) {
      * @return array{
      *     formData: array<string, string>,
      *     errors: array<int, string>,
-     *     successMessage: ?string
+     *     successMessage: ?string,
+     *     createdConvenioId: ?int,
+     *     createdEmpresaId: ?int
      * }
      */
     function convenioHandleAddRequest(
@@ -26,6 +28,8 @@ if (!function_exists('convenioHandleAddRequest')) {
         $formData = convenioSanitizeInput($request);
         $errors = convenioValidateData($formData);
         $successMessage = null;
+        $createdConvenioId = null;
+        $createdEmpresaId = null;
 
         $uploadRelativePath = null;
         $uploadAbsolutePath = null;
@@ -57,6 +61,10 @@ if (!function_exists('convenioHandleAddRequest')) {
 
             try {
                 $convenioId = $controller->createConvenio($payload);
+                $createdConvenioId = $convenioId;
+                $createdEmpresaId = isset($payload['empresa_id'])
+                    ? (int) $payload['empresa_id']
+                    : null;
                 $successMessage = 'El convenio se registró correctamente con el número #' . $convenioId . '.';
                 $formData = convenioFormDefaults();
 
@@ -104,6 +112,8 @@ if (!function_exists('convenioHandleAddRequest')) {
             'formData' => $formData,
             'errors' => $errors,
             'successMessage' => $successMessage,
+            'createdConvenioId' => $createdConvenioId,
+            'createdEmpresaId' => $createdEmpresaId,
         ];
     }
 }
