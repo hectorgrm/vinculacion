@@ -137,6 +137,7 @@ if (!empty($_GET['reabrir_error'])) {
 
   <link rel="stylesheet" href="../../assets/css/dashboard.css">
   <link rel="stylesheet" href="../../assets/css/machote/revisar.css">
+  <link rel="stylesheet" href="../../assets/css/machote/machote_revisar.css">
 
   <style>
     /* —— Estilos de apoyo (puedes moverlos a tu CSS del módulo) —— */
@@ -191,7 +192,7 @@ if (!empty($_GET['reabrir_error'])) {
   <div class="app">
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-    <main class="main">
+    <main class="main machote-revisar">
       <header class="topbar">
         <div>
           <h2>📝 Revisión de Machote</h2>
@@ -300,24 +301,24 @@ if (!empty($_GET['reabrir_error'])) {
               <p class="readonly-note" style="margin:0">Los comentarios están bloqueados porque la empresa confirmó el documento. Reabre la revisión para habilitarlos nuevamente.</p>
             <?php endif; ?>
             <!-- Crear nuevo comentario -->
-            <details class="card" open>
-              <summary style="cursor:pointer;font-weight:700;">➕ Nuevo comentario</summary>
-              <div class="content" style="margin-top:8px">
-                <form action="../../handler/machote/machote_comentario_add_handler.php" method="post">
+            <details class="card comment-card" open>
+              <summary class="comment-summary">➕ Nuevo comentario</summary>
+              <div class="content comment-content">
+                <form class="comment-form" action="../../handler/machote/machote_comentario_add_handler.php" method="post">
                   <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
                   <?php if ($currentUserId > 0): ?>
                     <input type="hidden" name="usuario_id" value="<?= (int) $currentUserId ?>">
                   <?php endif; ?>
-                  <fieldset style="border:none;padding:0;margin:0;display:grid;gap:10px" <?= $comentariosBloqueados ? 'disabled' : '' ?>>
-                    <div>
+                  <fieldset class="comment-fields" <?= $comentariosBloqueados ? 'disabled' : '' ?>>
+                    <div class="comment-field">
                       <label for="clausula">Sección / cláusula (opcional)</label>
-                      <input type="text" id="clausula" name="clausula" placeholder="Ej. CLÁUSULA PRIMERA · Vigencia" />
+                      <input class="comment-input" type="text" id="clausula" name="clausula" placeholder="Ej. CLÁUSULA PRIMERA · Vigencia" />
                     </div>
-                    <div>
+                    <div class="comment-field">
                       <label for="comentario">Comentario</label>
-                      <textarea id="comentario" name="comentario" rows="3" required placeholder="Describe el ajuste, duda o cambio que solicitas…"></textarea>
+                      <textarea class="comment-textarea" id="comentario" name="comentario" rows="3" required placeholder="Describe el ajuste, duda o cambio que solicitas…"></textarea>
                     </div>
-                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <div class="comment-actions">
                       <button class="btn primary" <?= $comentariosBloqueados ? 'disabled' : '' ?>>Publicar</button>
                     </div>
                   </fieldset>
