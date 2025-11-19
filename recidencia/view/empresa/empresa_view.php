@@ -74,6 +74,7 @@ $estudiantes = $preparedData['estudiantes'] ?? [];
   <!-- Si ya tienes estilos específicos para esta vista, mantenlos: -->
   <link rel="stylesheet" href="../../assets/css/empresas/empresaview.css">
   <link rel="stylesheet" href="../../assets/css/empresas/empresalogo.css">
+  <link rel="stylesheet" href="../../assets/css/empresas/portalacceso.css">
 
 
 </head>
@@ -473,6 +474,57 @@ $estudiantes = $preparedData['estudiantes'] ?? [];
           </div>
         </div>
       </section>
+
+      <div class="portal-card">
+    <div class="portal-header">
+        <div class="portal-title">
+            🔐 Portal de Acceso
+            <span class="portal-subtitle">Control del token y NIP asignado a la empresa</span>
+        </div>
+
+        <button class="portal-btn-create">➕ Crear acceso</button>
+    </div>
+
+    <!-- Si NO existe acceso -->
+    <div class="portal-empty">
+        Esta empresa aún no tiene un acceso generado para su portal.
+    </div>
+
+    <!-- Si SÍ existe acceso (solo reemplaza esto cuando tengas datos reales) -->
+    <div class="portal-info">
+        <div class="portal-item">
+            <span class="label">ID acceso:</span>
+            <span class="value">6</span>
+        </div>
+
+        <div class="portal-item">
+            <span class="label">Token:</span>
+            <span class="value token">55cf5aaf-c9ac-4709-b4fd-0548a2dd9ac1</span>
+        </div>
+
+        <div class="portal-item">
+            <span class="label">NIP:</span>
+            <span class="value">121212</span>
+        </div>
+
+        <div class="portal-item">
+            <span class="label">Estatus:</span>
+            <span class="badge badge-active">Activo</span>
+        </div>
+
+        <div class="portal-item">
+            <span class="label">Creado en:</span>
+            <span class="value">2025-11-05 08:13</span>
+        </div>
+
+        <div class="portal-actions">
+            <button class="portal-btn small">👁 Ver</button>
+            <button class="portal-btn small">✏ Editar</button>
+            <button class="portal-btn small danger">🗑 Eliminar</button>
+        </div>
+    </div>
+</div>
+
 
       <section class="card">
         <header>🕒 Bitácora / Historial</header>
