@@ -13,117 +13,52 @@ declare(strict_types=1);
  * } $handlerResult
  */
 $handlerResult = require __DIR__ . '/../../handler/empresa/empresa_view_handler.php';
-
-$empresaId = $handlerResult['empresaId'];
-$empresa = $handlerResult['empresa'];
-$controllerError = $handlerResult['controllerError'];
-$notFoundMessage = $handlerResult['notFoundMessage'];
-$inputError = $handlerResult['inputError'];
-$successMessage = $handlerResult['successMessage'] ?? null;
-$conveniosActivos = $handlerResult['conveniosActivos'] ?? [];
-$documentos = $handlerResult['documentos'] ?? [];
-$documentosStats = $handlerResult['documentosStats'] ?? [];
-$documentosGestionUrl = $handlerResult['documentosGestionUrl'] ?? null;
-$machoteData = $handlerResult['machoteData'] ?? null;
 $auditoriaHandlerResult = require __DIR__ . '/../../handler/empresa/empresa_auditoria_handler.php';
-$auditoriaItems = $auditoriaHandlerResult['items'] ?? [];
-$auditoriaControllerError = $auditoriaHandlerResult['controllerError'] ?? null;
-$auditoriaInputError = $auditoriaHandlerResult['inputError'] ?? null;
+require_once __DIR__ . '/../../common/helpers/empresa/empresa_view_helper.php';
 
-if (!is_array($conveniosActivos)) {
-    $conveniosActivos = [];
-}
+$preparedData = empresaViewTemplateHelper($handlerResult, $auditoriaHandlerResult);
 
-if (!is_array($documentos)) {
-    $documentos = [];
-}
-
-if (!is_array($documentosStats)) {
-    $documentosStats = [
-        'total' => 0,
-        'subidos' => 0,
-        'aprobados' => 0,
-        'porcentaje' => 0,
-    ];
-} else {
-    $documentosStats = [
-        'total' => isset($documentosStats['total']) ? (int) $documentosStats['total'] : 0,
-        'subidos' => isset($documentosStats['subidos']) ? (int) $documentosStats['subidos'] : 0,
-        'aprobados' => isset($documentosStats['aprobados']) ? (int) $documentosStats['aprobados'] : 0,
-        'porcentaje' => isset($documentosStats['porcentaje']) ? (int) $documentosStats['porcentaje'] : 0,
-    ];
-}
-
-if (!is_array($machoteData) || !isset($machoteData['id'])) {
-    $machoteData = null;
-}
-
-if (!is_array($auditoriaItems)) {
-    $auditoriaItems = [];
-}
-
-if (!is_string($documentosGestionUrl) || $documentosGestionUrl === '') {
-    $documentosGestionUrl = '../empresadocumentotipo/empresa_documentotipo_list.php';
-}
-
-$nombre = 'Sin datos';
-$rfc = 'N/A';
-$representante = 'No especificado';
-$telefono = 'No registrado';
-$correo = 'No registrado';
-$estatusClass = 'badge secondary';
-$estatusLabel = 'Sin estatus';
-$creadoEn = 'N/A';
-$actualizadoEn = 'Sin actualizar';
-$numeroControl = '';
-$logoUrl = null;
-
-if (is_array($empresa)) {
-    $nombre = (string) ($empresa['nombre_label'] ?? ($empresa['nombre'] ?? $nombre));
-    $rfc = (string) ($empresa['rfc_label'] ?? $rfc);
-    $representante = (string) ($empresa['representante_label'] ?? $representante);
-    $telefono = (string) ($empresa['telefono_label'] ?? $telefono);
-    $correo = (string) ($empresa['correo_label'] ?? $correo);
-    $estatusClass = (string) ($empresa['estatus_badge_class'] ?? $estatusClass);
-    $estatusLabel = (string) ($empresa['estatus_badge_label'] ?? $estatusLabel);
-    $creadoEn = (string) ($empresa['creado_en_label'] ?? $creadoEn);
-    $actualizadoEn = (string) ($empresa['actualizado_en_label'] ?? $actualizadoEn);
-    $numeroControl = isset($empresa['numero_control']) ? (string) $empresa['numero_control'] : '';
-    $logoUrl = isset($empresa['logo_url']) && $empresa['logo_url'] !== null
-        ? (string) $empresa['logo_url']
-        : null;
-}
-
-$empresaSubtitulo = $numeroControl !== ''
-    ? 'Número de control: ' . $numeroControl
-    : 'RFC: ' . $rfc;
-$logoAltText = 'Logotipo de ' . $nombre;
-$logoUploadAction = '../../handler/empresa/empresa_logo_upload_handler.php';
-$logoBaseUrl = '../../';
-$canUploadLogo = $empresaId !== null
-    && $controllerError === null
-    && $inputError === null
-    && $notFoundMessage === null
-    && is_array($empresa);
-
-$empresaIdQuery = $empresaId !== null ? (string) $empresaId : '';
-$nuevoConvenioUrl = '../convenio/convenio_add.php';
-$empresaProgresoUrl = 'empresa_progreso.php';
-$empresaEditUrl = 'empresa_edit.php';
-$empresaDeleteUrl = 'empresa_delete.php';
-
-if ($empresaIdQuery !== '') {
-    $nuevoConvenioUrl .= '?empresa=' . urlencode($empresaIdQuery);
-    $empresaProgresoUrl .= '?id_empresa=' . urlencode($empresaIdQuery);
-    $empresaEditUrl .= '?id=' . urlencode($empresaIdQuery);
-    $empresaDeleteUrl .= '?id=' . urlencode($empresaIdQuery);
-    $documentosGestionUrl = '../empresadocumentotipo/empresa_documentotipo_list.php?id_empresa=' . urlencode($empresaIdQuery);
-}
-
-$docsTotal = $documentosStats['total'];
-$docsSubidos = $documentosStats['subidos'];
-$docsAprobados = $documentosStats['aprobados'];
-$progreso = $documentosStats['porcentaje'];
+$empresaId = $preparedData['empresaId'];
+$empresa = $preparedData['empresa'];
+$controllerError = $preparedData['controllerError'];
+$notFoundMessage = $preparedData['notFoundMessage'];
+$inputError = $preparedData['inputError'];
+$successMessage = $preparedData['successMessage'] ?? null;
+$conveniosActivos = $preparedData['conveniosActivos'] ?? [];
+$documentos = $preparedData['documentos'] ?? [];
+$documentosStats = $preparedData['documentosStats'] ?? [];
+$documentosGestionUrl = $preparedData['documentosGestionUrl'] ?? null;
+$machoteData = $preparedData['machoteData'] ?? null;
+$auditoriaItems = $preparedData['auditoriaItems'] ?? [];
+$auditoriaControllerError = $preparedData['auditoriaControllerError'] ?? null;
+$auditoriaInputError = $preparedData['auditoriaInputError'] ?? null;
+$nombre = $preparedData['nombre'] ?? 'Sin datos';
+$rfc = $preparedData['rfc'] ?? 'N/A';
+$representante = $preparedData['representante'] ?? 'No especificado';
+$telefono = $preparedData['telefono'] ?? 'No registrado';
+$correo = $preparedData['correo'] ?? 'No registrado';
+$estatusClass = $preparedData['estatusClass'] ?? 'badge secondary';
+$estatusLabel = $preparedData['estatusLabel'] ?? 'Sin estatus';
+$creadoEn = $preparedData['creadoEn'] ?? 'N/A';
+$actualizadoEn = $preparedData['actualizadoEn'] ?? 'Sin actualizar';
+$numeroControl = $preparedData['numeroControl'] ?? '';
+$logoUrl = $preparedData['logoUrl'] ?? null;
+$empresaSubtitulo = $preparedData['empresaSubtitulo'] ?? 'RFC: ' . $rfc;
+$logoAltText = $preparedData['logoAltText'] ?? ('Logotipo de ' . $nombre);
+$logoUploadAction = $preparedData['logoUploadAction'] ?? '../../handler/empresa/empresa_logo_upload_handler.php';
+$logoBaseUrl = $preparedData['logoBaseUrl'] ?? '../../';
+$canUploadLogo = $preparedData['canUploadLogo'] ?? false;
+$empresaIdQuery = $preparedData['empresaIdQuery'] ?? '';
+$nuevoConvenioUrl = $preparedData['nuevoConvenioUrl'] ?? '../convenio/convenio_add.php';
+$empresaProgresoUrl = $preparedData['empresaProgresoUrl'] ?? 'empresa_progreso.php';
+$empresaEditUrl = $preparedData['empresaEditUrl'] ?? 'empresa_edit.php';
+$empresaDeleteUrl = $preparedData['empresaDeleteUrl'] ?? 'empresa_delete.php';
+$docsTotal = $preparedData['docsTotal'] ?? 0;
+$docsSubidos = $preparedData['docsSubidos'] ?? 0;
+$docsAprobados = $preparedData['docsAprobados'] ?? 0;
+$progreso = $preparedData['progreso'] ?? 0;
+$auditoriaHasOverflow = $preparedData['auditoriaHasOverflow'] ?? false;
+$auditoriaVisibleLimit = $preparedData['auditoriaVisibleLimit'] ?? 5;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -316,46 +251,37 @@ $progreso = $documentosStats['porcentaje'];
               Esta empresa aún no tiene un machote registrado o se encuentra en preparación.
             </p>
           <?php else : ?>
-            <?php
-            $machotePendientes = (int) ($machoteData['pendientes'] ?? 0);
-            $machoteResueltos = (int) ($machoteData['resueltos'] ?? 0);
-            $machoteProgreso = (int) ($machoteData['progreso'] ?? 0);
-            $machoteEstado = (string) ($machoteData['estado'] ?? 'Pendiente');
-            $machoteEstadoClass = strtolower(str_replace([' ', '-'], '_', $machoteEstado));
-            $machoteEstadoClass = preg_replace('/[^a-z0-9_]/', '', $machoteEstadoClass) ?: 'pendiente';
-            $machoteId = (int) $machoteData['id'];
-            ?>
             <section class="kpis">
               <div class="kpi">
                 <h4>Comentarios abiertos</h4>
-                <div class="kpi-num"><?php echo $machotePendientes; ?></div>
+                <div class="kpi-num"><?php echo (int) ($machoteData['pendientes'] ?? 0); ?></div>
               </div>
 
               <div class="kpi">
                 <h4>Comentarios resueltos</h4>
-                <div class="kpi-num"><?php echo $machoteResueltos; ?></div>
+                <div class="kpi-num"><?php echo (int) ($machoteData['resueltos'] ?? 0); ?></div>
               </div>
 
               <div class="kpi wide">
                 <h4>Avance de la revisión</h4>
                 <div class="progress">
-                  <div class="bar" style="width: <?php echo $machoteProgreso; ?>%"></div>
+                  <div class="bar" style="width: <?php echo (int) ($machoteData['progreso'] ?? 0); ?>%"></div>
                 </div>
-                <small><?php echo $machoteProgreso; ?>% completado</small>
+                <small><?php echo (int) ($machoteData['progreso'] ?? 0); ?>% completado</small>
               </div>
 
               <div class="kpi">
                 <h4>Estado</h4>
                 <div>
-                  <span class="badge <?php echo htmlspecialchars($machoteEstadoClass, ENT_QUOTES, 'UTF-8'); ?>">
-                    <?php echo htmlspecialchars($machoteEstado, ENT_QUOTES, 'UTF-8'); ?>
+                  <span class="badge <?php echo htmlspecialchars((string) ($machoteData['estado_class'] ?? 'pendiente'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <?php echo htmlspecialchars((string) ($machoteData['estado'] ?? 'Pendiente'), ENT_QUOTES, 'UTF-8'); ?>
                   </span>
                 </div>
               </div>
             </section>
 
             <div class="actions" style="margin-top:16px; justify-content:flex-start;">
-              <a href="../machote/machote_revisar.php?id=<?php echo $machoteId; ?>" class="btn primary">
+              <a href="../machote/machote_revisar.php?id=<?php echo (int) ($machoteData['id'] ?? 0); ?>" class="btn primary">
                 Ir al Machote / Comentarios
               </a>
             </div>
@@ -523,11 +449,6 @@ $progreso = $documentosStats['porcentaje'];
             <p style="margin:0;">No se han registrado movimientos de auditoría para esta empresa.</p>
 
           <?php else : ?>
-            <?php
-            $visibleAuditoriaItems = 5;
-            $totalAuditoriaItems = count($auditoriaItems);
-            $hasAuditoriaOverflow = $totalAuditoriaItems > $visibleAuditoriaItems;
-            ?>
             <div class="audit-table-wrapper" aria-label="Historial de auditoría">
               <table class="audit-table">
                 <thead>
@@ -546,55 +467,8 @@ $progreso = $documentosStats['porcentaje'];
 
                   $fecha = htmlspecialchars((string) ($item['fecha'] ?? '—'), ENT_QUOTES, 'UTF-8');
                   $mensaje = htmlspecialchars((string) ($item['mensaje'] ?? 'Acción registrada'), ENT_QUOTES, 'UTF-8');
-                  $actorLabel = isset($item['actor_label']) && is_string($item['actor_label'])
-                      ? trim($item['actor_label'])
-                      : '';
-                  $tipo = isset($item['actor_tipo']) ? (string) $item['actor_tipo'] : null;
-                  $detalleItems = [];
-
-                  if (isset($item['detalles']) && is_array($item['detalles'])) {
-                      foreach ($item['detalles'] as $detalle) {
-                          if (!is_array($detalle)) {
-                              continue;
-                          }
-
-                          $etiqueta = isset($detalle['campo_label']) && is_string($detalle['campo_label'])
-                              ? trim($detalle['campo_label'])
-                              : '';
-                          if ($etiqueta === '' && isset($detalle['campo'])) {
-                              $etiqueta = trim((string) $detalle['campo']);
-                          }
-
-                          $antes = isset($detalle['valor_anterior']) && $detalle['valor_anterior'] !== null
-                              ? trim((string) $detalle['valor_anterior'])
-                              : '';
-                          $despues = isset($detalle['valor_nuevo']) && $detalle['valor_nuevo'] !== null
-                              ? trim((string) $detalle['valor_nuevo'])
-                              : '';
-
-                          $detalleItems[] = [
-                              'label' => $etiqueta !== '' ? $etiqueta : 'Campo',
-                              'antes' => $antes !== '' ? $antes : '—',
-                              'despues' => $despues !== '' ? $despues : '—',
-                          ];
-                      }
-                  }
-
-                  if ($actorLabel === '') {
-                      if ($tipo === 'usuario') {
-                          $actorLabel = 'Administrador / Usuario';
-                      } elseif ($tipo === 'empresa') {
-                          $actorLabel = 'Empresa';
-                      } elseif ($tipo === 'sistema') {
-                          $actorLabel = 'Sistema automático';
-                      }
-                  }
-
-                  if ($actorLabel === '') {
-                      $actorLabel = '—';
-                  }
-
-                  $actorNombre = htmlspecialchars($actorLabel, ENT_QUOTES, 'UTF-8');
+                  $actorNombre = htmlspecialchars((string) ($item['actor_label'] ?? '—'), ENT_QUOTES, 'UTF-8');
+                  $detalleItems = isset($item['detalles']) && is_array($item['detalles']) ? $item['detalles'] : [];
                   ?>
                     <tr>
                       <td><?php echo $fecha; ?></td>
@@ -624,10 +498,10 @@ $progreso = $documentosStats['porcentaje'];
                 </tbody>
               </table>
             </div>
-            <?php if ($hasAuditoriaOverflow) : ?>
+            <?php if ($auditoriaHasOverflow) : ?>
               <p style="margin-top:8px; color:#555;">
-                Se muestran aproximadamente <?php echo $visibleAuditoriaItems; ?> registros a la vez.
-                Desplázate dentro de la tabla para ver los <?php echo $totalAuditoriaItems; ?> movimientos registrados.
+                Se muestran aproximadamente <?php echo $auditoriaVisibleLimit; ?> registros a la vez.
+                Desplázate dentro de la tabla para ver los <?php echo count($auditoriaItems); ?> movimientos registrados.
               </p>
             <?php endif; ?>
           <?php endif; ?>
