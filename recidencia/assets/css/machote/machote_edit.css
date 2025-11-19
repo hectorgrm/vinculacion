@@ -104,6 +104,37 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+.card.card-editable {
+  max-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card.card-editable .content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.card.card-editable .editor-shell {
+  max-height: clamp(360px, 60vh, 624px);
+  overflow-y: auto;
+  position: relative;
+}
+
+.card.card-editable .editor-shell .ck-editor__editable_inline {
+  min-height: 0;
+  max-height: none;
+  height: auto;
+  overflow: visible;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
 .card > header {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border);
@@ -120,7 +151,7 @@ body {
    ========================================================= */
 textarea#editor {
   width: 100%;
-  min-height: 500px;
+  min-height: 280px;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 12px;

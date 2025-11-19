@@ -59,12 +59,14 @@ $pdfUrl = '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((stri
             <a href="<?= htmlspecialchars($volverUrl) ?>" class="btn">← Volver al Convenio</a>
         </header>
 
-        <section class="card">
+        <section class="card card-editable">
             <header>Documento Editable</header>
             <div class="content">
                 <form method="POST" action="<?= htmlspecialchars($editorAction) ?>">
                     <input type="hidden" name="id" value="<?= htmlspecialchars((string)$machoteId) ?>">
-                    <textarea name="contenido" id="editor" rows="30"><?= $contenidoEscapado ?></textarea>
+                    <div class="editor-shell">
+                        <textarea name="contenido" id="editor" rows="30"><?= $contenidoEscapado ?></textarea>
+                    </div>
 
                     <div class="actions" style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
                         <button type="submit" class="btn primary">💾 Guardar Machote</button>
