@@ -286,7 +286,7 @@ if (!empty($_GET['reabrir_error'])) {
         </div>
 
         <!-- 💬 Comentarios -->
-        <div class="card">
+        <div class="card comments-card">
           <header style="display:flex;justify-content:space-between;align-items:center;">
             <span>💬 Comentarios</span>
             <div class="filters">
@@ -296,7 +296,7 @@ if (!empty($_GET['reabrir_error'])) {
             </div>
           </header>
 
-          <div class="content" style="display:grid;grid-template-columns:1fr;gap:10px">
+          <div class="content comments-content">
             <?php if ($comentariosBloqueados): ?>
               <p class="readonly-note" style="margin:0">Los comentarios están bloqueados porque la empresa confirmó el documento. Reabre la revisión para habilitarlos nuevamente.</p>
             <?php endif; ?>
