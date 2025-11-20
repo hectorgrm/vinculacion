@@ -41,135 +41,199 @@ if ($statusKey === 'loggedout') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Acceso al Portal de Empresa · Residencias Profesionales</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      background: #f8fafc;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+<style>
+  /* ============================================
+   GLOBAL RESET + VARIABLES
+   ============================================ */
 
-    .login-card {
-      background: white;
-      border-radius: 16px;
-      padding: 36px 32px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
-      animation: fadeIn 0.5s ease-in-out;
-    }
+:root {
+  --primary: #204bff;
+  --primary-dark: #1534b8;
+  --bg-light: #f1f5f9;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --radius: 14px;
+  --shadow-card: 0 18px 45px rgba(15, 23, 42, 0.14);
+  --shadow-soft: 0 8px 25px rgba(15, 23, 42, 0.08);
+  --transition: 0.25s ease;
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .login-card h2 {
-      text-align: center;
-      color: #0f172a;
-      margin-bottom: 6px;
-      font-size: 1.6rem;
-    }
+/* ============================================
+   PAGE BACKGROUND
+   ============================================ */
 
-    .login-card p {
-      text-align: center;
-      color: #64748b;
-      margin-bottom: 28px;
-      font-size: 15px;
-    }
+body {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI";
+  background: radial-gradient(circle at top left, rgba(32, 75, 255, 0.15), transparent 60%),
+              radial-gradient(circle at bottom right, rgba(0, 201, 157, 0.15), transparent 60%),
+              #eef2f7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-    .field {
-      margin-bottom: 18px;
-    }
+/* ============================================
+   LOGIN CARD
+   ============================================ */
 
-    .field label {
-      display: block;
-      font-weight: 600;
-      color: #334155;
-      margin-bottom: 6px;
-    }
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(18px);
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: var(--shadow-card);
+  animation: slideIn 0.6s ease;
+}
 
-    .field input {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 15px;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      outline: none;
-    }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(25px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-    .field input:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
-    }
+/* ============================================
+   LOGO
+   ============================================ */
 
-    .btn {
-      display: block;
-      background: #2563eb;
-      color: white;
-      font-weight: 600;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 100%;
-      font-size: 16px;
-      transition: background 0.2s ease;
-    }
+.logo {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-    .btn:hover {
-      background: #1d4ed8;
-    }
+.logo img {
+  width: 160px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+}
 
-    .footer {
-      text-align: center;
-      margin-top: 18px;
-      font-size: 13px;
-      color: #94a3b8;
-    }
+/* ============================================
+   TEXT HEADERS
+   ============================================ */
 
-    .logo {
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    .logo img {
-      width: 80px;
-      height: auto;
-      border-radius: 50%;
-      border: 2px solid #e2e8f0;
-      box-shadow: 0 0 6px rgba(0,0,0,0.05);
-    }
+.login-card h2 {
+  text-align: center;
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
 
-    /* Alertas simuladas */
-    .alert {
-      padding: 10px 12px;
-      border-radius: 8px;
-      margin-bottom: 14px;
-      font-size: 14px;
-      text-align: center;
-    }
-    .alert.error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-    .alert.success {
-      background: #dcfce7;
-      color: #166534;
-    }
-  </style>
+.login-card p {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 26px;
+  font-size: 14px;
+}
+
+/* ============================================
+   FORM FIELDS
+   ============================================ */
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 6px;
+  font-size: 0.92rem;
+}
+
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  font-size: 0.95rem;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+
+.field input:focus {
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(32, 75, 255, 0.25);
+  outline: none;
+}
+
+/* ============================================
+   BUTTON
+   ============================================ */
+
+.btn {
+  width: 100%;
+  padding: 12px 14px;
+  margin-top: 4px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  box-shadow: 0 6px 18px rgba(32, 75, 255, 0.45);
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   FOOTER / COPYRIGHT
+   ============================================ */
+
+.footer {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+/* ============================================
+   ALERTS (ERROR/SUCCESS)
+   ============================================ */
+
+.alert {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  margin-bottom: 14px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.alert.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.alert.success {
+  background: #dcfce7;
+  color: #14532d;
+  border: 1px solid #bbf7d0;
+}
+
+</style>
 </head>
 <body>
 
   <form class="login-card" action="../handler/login_handler.php" method="post">
     <div class="logo">
-      <img src="../assets/img/logo_vinculacion.png" alt="Logo Vinculación">
+      <img src="../assets/img/logo_vinculacion.jpg" alt="Logo Vinculación">
     </div>
 
     <h2>🔐 Acceso al Portal de Empresa</h2>

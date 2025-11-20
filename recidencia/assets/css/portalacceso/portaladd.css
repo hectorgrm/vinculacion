@@ -1,0 +1,374 @@
+/* ===========================
+   Layout base
+   =========================== */
+
+:root {
+  --bg-body: #f4f6fa;
+  --bg-main: #f9fafc;
+  --bg-card: #ffffff;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+
+  --primary: #204bff;
+  --primary-dark: #1a3cd1;
+  --primary-soft: rgba(32, 75, 255, 0.08);
+
+  --accent: #00bb8f;
+  --danger: #e11d48;
+  --danger-soft: #fee2e2;
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+
+  --radius-card: 16px;
+  --radius-soft: 10px;
+  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.16);
+  --shadow-card: 0 10px 25px rgba(15, 23, 42, 0.08);
+  --transition-fast: 0.18s ease;
+  --transition-med: 0.25s ease;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top left, rgba(32, 75, 255, 0.08), transparent 55%),
+              radial-gradient(circle at bottom right, rgba(0, 187, 143, 0.08), transparent 55%),
+              var(--bg-body);
+  color: var(--color-text);
+}
+
+/* Contenedor general con sidebar a la izquierda (ya tienes el include del sidebar) */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===========================
+   Main / contenido principal
+   =========================== */
+
+.main {
+  flex: 1;
+  padding: 24px 28px 32px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ===========================
+   Topbar / Header de la vista
+   =========================== */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(32, 75, 255, 0.06), rgba(15, 23, 42, 0.02));
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.1);
+}
+
+.topbar h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Migas de pan */
+.breadcrumb {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.breadcrumb a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* ===========================
+   Tarjetas
+   =========================== */
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 18px 18px 20px;
+}
+
+.card > header {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #0f172a;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card .content {
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+/* ===========================
+   Botones
+   =========================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.8);
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast),
+              box-shadow var(--transition-fast), transform var(--transition-fast),
+              border-color var(--transition-fast);
+}
+
+.btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  box-shadow: 0 6px 12px rgba(148, 163, 184, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn:disabled,
+.btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.btn.primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  box-shadow: 0 8px 18px rgba(32, 75, 255, 0.65);
+}
+
+.btn.secondary {
+  background: var(--primary-soft);
+  border-color: rgba(148, 163, 184, 0.8);
+  color: #1e293b;
+}
+
+/* ===========================
+   Formulario
+   =========================== */
+
+.form {
+  margin-top: 6px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1.1fr;
+  gap: 18px 18px;
+}
+
+.col-span-2 {
+  grid-column: 1 / 3;
+}
+
+/* Campos */
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.field label.required::after {
+  content: " *";
+  color: var(--danger);
+  font-weight: 800;
+}
+
+/* Inputs, selects */
+.field input[type="text"],
+.field input[type="datetime-local"],
+.field input[type="number"],
+.field select {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: #f8fafc;
+  font-size: 0.92rem;
+  color: #0f172a;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast),
+              background var(--transition-fast), transform var(--transition-fast);
+}
+
+.field input[type="text"]:focus,
+.field input[type="datetime-local"]:focus,
+.field input[type="number"]:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgba(32, 75, 255, 0.18);
+  background: #ffffff;
+}
+
+.field input[readonly] {
+  background: #e2e8f0;
+  cursor: default;
+}
+
+/* Hint / ayuda */
+.hint {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+/* Row de acciones del formulario */
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* Para grupos en línea (si los usas en otros lados) */
+.inline {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ===========================
+   Alertas (errores / éxito)
+   =========================== */
+
+.alert {
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid transparent;
+}
+
+.alert p {
+  margin: 0;
+}
+
+.alert ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.alert-success {
+  background: var(--success-soft);
+  border-color: #22c55e;
+  color: #14532d;
+}
+
+.alert-danger {
+  background: var(--danger-soft);
+  border-color: #f97373;
+  color: #7f1d1d;
+}
+
+/* ===========================
+   Accesos rápidos
+   =========================== */
+
+.card .content > .btn {
+  margin-top: 4px;
+}
+
+/* ===========================
+   Responsivo
+   =========================== */
+
+@media (max-width: 960px) {
+  .main {
+    padding: 18px 16px 24px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topbar > a.btn {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .col-span-2 {
+    grid-column: 1 / 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    padding: 12px 14px;
+  }
+
+  .topbar h2 {
+    font-size: 1.1rem;
+  }
+
+  .card {
+    padding: 14px 14px 16px;
+  }
+}
+/* ===========================
+   Fin del archivo
+   =========================== */

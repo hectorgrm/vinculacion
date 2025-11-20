@@ -25,7 +25,7 @@ $controllerError = $handlerResult['controllerError'];
   <title>Crear Acceso · Residencias Profesionales</title>
 
   <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css"/>
+  <link rel="stylesheet" href="../../assets/css/portalacceso/portaladd.css"/>
 
   <!-- (Opcional) Mini estilos locales -->
   <style>
