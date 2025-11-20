@@ -31,6 +31,7 @@ class PortalEmpresaEmpresaModel
             SELECT id,
                    numero_control,
                    nombre,
+                   logo_path,
                    rfc,
                    representante,
                    cargo_representante,

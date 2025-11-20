@@ -14,7 +14,7 @@ $empresaNombre  = $portalViewModel['empresaNombre'] ?? 'Empresa';
 
     <div class="brand-info">
       <strong><?= htmlspecialchars($empresaNombre) ?></strong>
-      <small>Portal de Empresa · Residencias Profesionales</small>
+      <small>Residencias Profesionales</small>
     </div>
   </div>
 

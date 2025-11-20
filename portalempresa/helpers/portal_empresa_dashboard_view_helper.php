@@ -30,6 +30,7 @@ final class PortalEmpresaDashboardViewHelper
 
         return [
             'empresaNombre' => self::resolveEmpresaNombre($empresa, $portalSession),
+            'empresaLogoUrl' => self::resolveEmpresaLogoUrl($empresa),
             'ultimoAccesoLabel' => self::formatLastAccess($portalSession['autenticado_en'] ?? ''),
             'dashboardError' => self::normalizeError($dashboardError),
             'convenio' => self::buildConvenioSection($convenio),
@@ -193,6 +194,54 @@ final class PortalEmpresaDashboardViewHelper
         $normalized = function_exists('mb_strtolower') ? mb_strtolower($documentoFuente, 'UTF-8') : strtolower($documentoFuente);
         $normalized = trim($normalized);
         return $normalized === 'firmado' ? 'firmado' : 'borrador';
+    }
+
+    private static function resolveEmpresaLogoUrl(array $empresa): string
+    {
+        $logoUrl = null;
+
+        if (isset($empresa['logo_path'])) {
+            $logoUrl = self::buildEmpresaLogoUrl($empresa['logo_path']);
+        }
+
+        return $logoUrl ?? 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';
+    }
+
+    private static function buildEmpresaLogoUrl(?string $logoPath): ?string
+    {
+        $normalized = self::normalizeLogoPath($logoPath);
+
+        if ($normalized === null) {
+            return null;
+        }
+
+        if (preg_match('/^https?:\\/\\//i', $normalized) === 1) {
+            return $normalized;
+        }
+
+        return '../../recidencia/' . $normalized;
+    }
+
+    private static function normalizeLogoPath(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        if ($trimmed === '') {
+            return null;
+        }
+
+        $normalized = str_replace('\\', '/', $trimmed);
+        $normalized = ltrim($normalized, '/');
+
+        if ($normalized === '' || str_contains($normalized, '..')) {
+            return null;
+        }
+
+        return $normalized;
     }
 
     private static function mapRevisionVariant(string $estado): string

@@ -50,7 +50,7 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
 
   <section class="welcome">
     <div>
-      <h1>Hola, Bienvenido a Portal de Empresa ITSJ</h1>
+      <h1>Hola, Bienvenido al Portal de Residencias ITSJ</h1>
       <p>Desde aquí puedes consultar tu convenio, documentos, estudiantes y reportes.</p>
       <?php if ($ultimoAccesoLabel !== ''): ?>
         <p class="small-meta">Último acceso registrado: <?= htmlspecialchars($ultimoAccesoLabel) ?></p>
