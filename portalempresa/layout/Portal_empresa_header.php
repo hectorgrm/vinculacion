@@ -20,7 +20,7 @@ $empresaNombre  = $portalViewModel['empresaNombre'] ?? 'Empresa';
 
   <div class="userbox">
     <span class="company"><?= htmlspecialchars($empresaNombre) ?></span>
-    <a href="portal_index.php" class="btn">Inicio</a>
+    <a href="index.php" class="btn">Inicio</a>
     <a href="../../common/logout.php" class="btn">Salir</a>
   </div>
 </header>
