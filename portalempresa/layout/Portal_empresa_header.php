@@ -1,176 +1,25 @@
-<!-- 🌐 Portal Empresa Header -->
-<!-- 🌐 Portal Empresa Header -->
-<style>
-  :root {
-    --portal-primary: #0f5ef7;
-    --portal-primary-dark: #0b3fb5;
-    --portal-border: #d0d7e2;
-    --portal-text-main: #0f172a;
-    --portal-text-muted: #64748b;
-    --portal-bg: rgba(255, 255, 255, 0.92);
-  }
-
-  .portal-header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 18px;
-    padding: 14px 32px;
-    background: var(--portal-bg);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--portal-border);
-    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
-  }
-
-  /* Bloque de marca (logo + texto) */
-  .portal-header .brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    min-width: 0;
-  }
-
-  .portal-header .brand img {
-    width: 60px;
-    height: 60px;
-    border-radius: 14px;
-    object-fit: contain;
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
-    padding: 6px;
-    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
-  }
-
-  .portal-header .brand-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  .portal-header .brand-info strong {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--portal-text-main);
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-
-  .portal-header .brand-info small {
-    color: var(--portal-text-muted);
-    font-size: 0.82rem;
-  }
-
-  /* Lado derecho: nombre empresa + acciones */
-  .portal-header .userbox {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-
-  .portal-header .company {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--portal-primary-dark);
-    padding: 5px 10px;
-    border-radius: 999px;
-    background: rgba(15, 94, 247, 0.06);
-    border: 1px solid rgba(15, 94, 247, 0.18);
-  }
-
-  .portal-header .btn {
-    text-decoration: none;
-    color: var(--portal-primary-dark);
-    font-weight: 600;
-    border-radius: 999px;
-    padding: 7px 14px;
-    font-size: 0.9rem;
-    border: 1px solid rgba(148, 163, 184, 0.9);
-    background: #ffffff;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: background 0.18s ease, color 0.18s ease,
-                box-shadow 0.18s ease, border-color 0.18s ease,
-                transform 0.18s ease;
-  }
-
-  .portal-header .btn:hover {
-    background: linear-gradient(135deg, var(--portal-primary), var(--portal-primary-dark));
-    color: #ffffff;
-    border-color: transparent;
-    box-shadow: 0 6px 14px rgba(15, 94, 247, 0.45);
-    transform: translateY(-1px);
-  }
-
-  .portal-header .btn.logout {
-    border-color: transparent;
-    background: #fee2e2;
-    color: #b91c1c;
-  }
-
-  .portal-header .btn.logout:hover {
-    background: #b91c1c;
-    color: #ffffff;
-    box-shadow: 0 6px 14px rgba(185, 28, 28, 0.45);
-  }
-
-  /* Responsivo */
-  @media (max-width: 860px) {
-    .portal-header {
-      flex-direction: column;
-      align-items: stretch;
-      padding: 12px 16px;
-    }
-
-    .portal-header .brand {
-      justify-content: flex-start;
-    }
-
-    .portal-header .userbox {
-      justify-content: space-between;
-    }
-  }
-
-  @media (max-width: 540px) {
-    .portal-header .userbox {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .portal-header .userbox .company {
-      text-align: center;
-      width: 100%;
-      justify-content: center;
-      display: inline-flex;
-    }
-
-    .portal-header .btn {
-      justify-content: center;
-      width: 100%;
-    }
-  }
-</style>
+<?php
+// extraemos del ViewModel
+$empresaLogoUrl = $portalViewModel['empresaLogoUrl'] ?? 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';
+$empresaNombre  = $portalViewModel['empresaNombre'] ?? 'Empresa';
+?>
+  
+  
+  <link rel="stylesheet" href="../assets/css/header.css">
 
 <header class="portal-header">
   <div class="brand">
-    <!-- 🏢 Logotipo de empresa -->
-    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
-         alt="Logo de la empresa" />
+    <!-- 🏢 Logotipo dinámico -->
+    <img src="<?= htmlspecialchars($empresaLogoUrl) ?>" alt="Logo de la empresa" />
+
     <div class="brand-info">
-      <strong>Barbería Gómez</strong>
+      <strong><?= htmlspecialchars($empresaNombre) ?></strong>
       <small>Portal de Empresa · Residencias Profesionales</small>
     </div>
   </div>
 
   <div class="userbox">
-    <span class="company">Barbería Gómez</span>
+    <span class="company"><?= htmlspecialchars($empresaNombre) ?></span>
     <a href="portal_index.php" class="btn">Inicio</a>
     <a href="../../common/logout.php" class="btn">Salir</a>
   </div>
