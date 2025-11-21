@@ -48,6 +48,8 @@ $machotePadreId = $metadata['machotePadreId'];
 $machoteVersionLabel = $metadata['machoteVersionLabel'];
 $machoteCreadoLabel = $metadata['machoteCreadoLabel'];
 $machoteActualizadoLabel = $metadata['machoteActualizadoLabel'];
+$machoteBloqueado = $metadata['machoteBloqueado'];
+$machoteEstatus = $metadata['machoteEstatus'];
 
 $machoteStatusParam = isset($_GET['machote_status']) ? (string) $_GET['machote_status'] : null;
 $machoteErrorParam = isset($_GET['machote_error']) ? (string) $_GET['machote_error'] : null;
@@ -86,6 +88,9 @@ $machoteEditUrl = $machoteChildId !== null
     : null;
 $machotePdfUrl = $machoteChildId !== null
     ? '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((string) $machoteChildId)
+    : null;
+$machoteRevisarUrl = $machoteChildId !== null
+    ? '../machote/machote_revisar.php?id=' . urlencode((string) $machoteChildId)
     : null;
 ?>
 <!DOCTYPE html>
@@ -299,11 +304,21 @@ $machotePdfUrl = $machoteChildId !== null
                                         <?php endif; ?>
                                     </div>
                                     <div class="actions" style="display:flex; gap:12px; flex-wrap:wrap;">
-                                        <a href="<?php echo htmlspecialchars($machoteEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">✏️ Editar machote</a>
+                                        <?php if ($machoteBloqueado): ?>
+                                            <button class="btn" type="button" disabled title="El machote ya fue confirmado por la empresa. Reabre la revisión para volver a editarlo.">✏️ Editar machote</button>
+                                        <?php else: ?>
+                                            <a href="<?php echo htmlspecialchars($machoteEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">✏️ Editar machote</a>
+                                        <?php endif; ?>
                                         <?php if ($machotePdfUrl !== null): ?>
                                             <a href="<?php echo htmlspecialchars($machotePdfUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-outline" target="_blank" rel="noopener noreferrer">📄 Generar PDF</a>
                                         <?php endif; ?>
+                                        <?php if ($machoteBloqueado && $machoteRevisarUrl !== null): ?>
+                                            <a href="<?php echo htmlspecialchars($machoteRevisarUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-outline">🔎 Ver revisión</a>
+                                        <?php endif; ?>
                                     </div>
+                                    <?php if ($machoteBloqueado): ?>
+                                        <p class="text-muted" style="margin:0;">Machote aprobado por la empresa; reabre la revisión desde la vista de comentarios para habilitar la edición.</p>
+                                    <?php endif; ?>
                                 </div>
                             <?php elseif ($machoteGenerateUrl !== null): ?>
                                 <a class="btn btn-outline" href="<?php echo htmlspecialchars($machoteGenerateUrl, ENT_QUOTES, 'UTF-8'); ?>">

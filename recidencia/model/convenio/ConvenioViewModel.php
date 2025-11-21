@@ -51,6 +51,8 @@ class ConvenioViewModel
                    c.renovado_de,
                    c.machote_id,
                    cm.version_local AS machote_version_local,
+                   cm.estatus AS machote_estatus,
+                   cm.confirmacion_empresa AS machote_confirmacion_empresa,
                    cm.machote_padre_id,
                    cm.creado_en AS machote_creado_en,
                    cm.actualizado_en AS machote_actualizado_en,

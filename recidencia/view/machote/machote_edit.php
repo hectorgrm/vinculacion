@@ -32,6 +32,8 @@ if (!$machote) {
 $contenido = $machote['contenido_html'] ?? '';
 $convenioId = $machote['convenio_id'] ?? null;
 $contenidoEscapado = $contenido;
+$machoteConfirmado = (int) ($machote['confirmacion_empresa'] ?? 0) === 1;
+$machoteBloqueado = $machoteConfirmado;
 
 $editorAction = '../../handler/machote/machote_update_handler.php';
 $volverUrl = $convenioId
@@ -49,7 +51,7 @@ $pdfUrl = '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((stri
    
 </head>
 
-<body>
+<body data-machote-bloqueado="<?= $machoteBloqueado ? '1' : '0' ?>">
 <div class="app">
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
@@ -62,6 +64,9 @@ $pdfUrl = '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((stri
         <section class="card card-editable">
             <header>Documento Editable</header>
             <div class="content">
+                <?php if ($machoteBloqueado): ?>
+                    <p class="text-muted" style="margin:0 0 12px;">El machote ya fue confirmado por la empresa. Reabre la revisión para habilitar nuevamente la edición.</p>
+                <?php endif; ?>
                 <form method="POST" action="<?= htmlspecialchars($editorAction) ?>">
                     <input type="hidden" name="id" value="<?= htmlspecialchars((string)$machoteId) ?>">
                     <div class="editor-shell">
@@ -69,7 +74,7 @@ $pdfUrl = '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((stri
                     </div>
 
                     <div class="actions" style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
-                        <button type="submit" class="btn primary">💾 Guardar Machote</button>
+                        <button type="submit" class="btn primary" <?= $machoteBloqueado ? 'disabled' : '' ?>>💾 Guardar Machote</button>
                         <a href="<?= htmlspecialchars($pdfUrl) ?>" class="btn btn-outline" target="_blank">📄 Generar PDF</a>
                         <a href="<?= htmlspecialchars($volverUrl) ?>" class="btn">Cancelar</a>
                     </div>
@@ -82,6 +87,7 @@ $pdfUrl = '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((stri
 <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
 <script>
   let editor;
+  const isReadOnly = document.body.dataset.machoteBloqueado === '1';
 
   ClassicEditor
     .create(document.querySelector('#editor'), {
@@ -107,13 +113,21 @@ $pdfUrl = '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((stri
     })
     .then(newEditor => {
       editor = newEditor;
+      if (isReadOnly) {
+        editor.enableReadOnlyMode('machote-readonly');
+      }
     })
     .catch(console.error);
 
   // Actualiza el contenido antes de guardar
   const form = document.querySelector('form');
   if (form) {
-    form.addEventListener('submit', () => {
+    form.addEventListener('submit', (event) => {
+      if (isReadOnly) {
+        event.preventDefault();
+        return false;
+      }
+
       if (editor) form.querySelector('#editor').value = editor.getData();
     });
   }

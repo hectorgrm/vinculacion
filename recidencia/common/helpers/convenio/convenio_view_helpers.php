@@ -37,7 +37,9 @@ if (!function_exists('convenio_prepare_view_metadata')) {
      *     machotePadreId: ?int,
      *     machoteVersionLabel: string,
      *     machoteCreadoLabel: string,
-     *     machoteActualizadoLabel: string
+     *     machoteActualizadoLabel: string,
+     *     machoteBloqueado: bool,
+     *     machoteEstatus: ?string
      * }
      */
     function convenio_prepare_view_metadata(?array $convenio): array
@@ -74,6 +76,8 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             'machoteVersionLabel' => 'N/D',
             'machoteCreadoLabel' => 'N/D',
             'machoteActualizadoLabel' => 'N/D',
+            'machoteBloqueado' => false,
+            'machoteEstatus' => null,
         ];
 
         if ($convenio === null) {
@@ -326,6 +330,18 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             : '';
         if ($machoteActualizado !== '') {
             $metadata['machoteActualizadoLabel'] = $machoteActualizado;
+        }
+
+        $machoteConfirmacion = isset($convenio['machote_confirmacion_empresa'])
+            ? (int) $convenio['machote_confirmacion_empresa']
+            : 0;
+        $metadata['machoteBloqueado'] = $machoteConfirmacion === 1;
+
+        $machoteEstatus = isset($convenio['machote_estatus'])
+            ? trim((string) $convenio['machote_estatus'])
+            : '';
+        if ($machoteEstatus !== '') {
+            $metadata['machoteEstatus'] = $machoteEstatus;
         }
 
         return $metadata;

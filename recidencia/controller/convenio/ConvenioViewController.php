@@ -149,6 +149,10 @@ class ConvenioViewController
         $machoteActualizadoEn = isset($convenio['machote_actualizado_en'])
             ? (string) $convenio['machote_actualizado_en']
             : null;
+        $machoteEstatus = isset($convenio['machote_estatus']) ? (string) $convenio['machote_estatus'] : null;
+        $machoteConfirmacion = isset($convenio['machote_confirmacion_empresa'])
+            ? (int) $convenio['machote_confirmacion_empresa']
+            : null;
 
         $diasRestantes = null;
 
@@ -214,6 +218,9 @@ class ConvenioViewController
             'machote_version_local' => $machoteVersionLocal !== '' ? $machoteVersionLocal : null,
             'machote_creado_en_label' => convenioFormatDateTime($machoteCreadoEn),
             'machote_actualizado_en_label' => convenioFormatDateTime($machoteActualizadoEn),
+            'machote_estatus' => $machoteEstatus,
+            'machote_confirmacion_empresa' => $machoteConfirmacion,
+            'machote_bloqueado' => $machoteConfirmacion === 1,
         ]);
     }
 
