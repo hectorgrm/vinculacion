@@ -88,12 +88,17 @@ if (!function_exists('empresaDocumentoInferTipoEmpresa')) {
             ? mb_strtolower($regimenFiscal, 'UTF-8')
             : strtolower($regimenFiscal);
 
-        if (empresaDocumentoStrContains($normalized, 'física') || empresaDocumentoStrContains($normalized, 'fisica')) {
-            return 'fisica';
-        }
-
         if (empresaDocumentoStrContains($normalized, 'moral')) {
             return 'moral';
+        }
+
+        if (
+            empresaDocumentoStrContains($normalized, 'fA-sica') ||
+            empresaDocumentoStrContains($normalized, 'fisica') ||
+            empresaDocumentoStrContains($normalized, 'fisico') ||
+            empresaDocumentoStrContains($normalized, 'fiscal')
+        ) {
+            return 'fiscal';
         }
 
         return null;
