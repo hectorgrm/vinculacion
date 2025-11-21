@@ -42,7 +42,9 @@ function badgeEstado(string $estado): string {
 if (!function_exists('renderMachoteThreadMessage')) {
     function renderMachoteThreadMessage(array $mensaje, string $uploadsBasePath): void {
         $autorRol = (string) ($mensaje['autor_rol'] ?? 'empresa');
-        $autorNombre = (string) ($mensaje['autor_nombre'] ?? ucfirst($autorRol));
+        $rolLabel = ucfirst($autorRol);
+        $autorNombre = trim((string) ($mensaje['autor_nombre'] ?? $rolLabel));
+        $mostrarNombre = strcasecmp($autorNombre, $rolLabel) !== 0;
         $fecha = (string) ($mensaje['creado_en'] ?? '');
         $comentario = (string) ($mensaje['comentario'] ?? '');
         $archivoPath = $mensaje['archivo_path'] ?? null;
@@ -52,8 +54,10 @@ if (!function_exists('renderMachoteThreadMessage')) {
         ?>
         <div class="message">
           <div class="head">
-            <span class="pill <?= htmlspecialchars($autorRol) ?>"><?= htmlspecialchars(ucfirst($autorRol)) ?></span>
-            <strong><?= htmlspecialchars($autorNombre) ?></strong>
+            <span class="pill <?= htmlspecialchars($autorRol) ?>"><?= htmlspecialchars($rolLabel) ?></span>
+            <?php if ($mostrarNombre): ?>
+              <strong><?= htmlspecialchars($autorNombre) ?></strong>
+            <?php endif; ?>
             <?php if ($fecha !== ''): ?>
               <time><?= htmlspecialchars($fecha) ?></time>
             <?php endif; ?>
@@ -139,54 +143,7 @@ if (!empty($_GET['reabrir_error'])) {
   <link rel="stylesheet" href="../../assets/css/machote/revisar.css">
   <link rel="stylesheet" href="../../assets/css/machote/machote_revisar.css">
 
-  <style>
-    /* —— Estilos de apoyo (puedes moverlos a tu CSS del módulo) —— */
-    body{background:#f6f7fb;color:#0f172a;}
-    .kpis.card{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:center}
-    .kpi{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px}
-    .kpi h4{margin:0 0 6px 0;font-size:14px;color:#334155}
-    .kpi-num{font-size:22px;font-weight:800}
-    .kpi.wide{grid-column:span 2}
-    .progress{width:100%;height:10px;background:#e5e7eb;border-radius:6px;overflow:hidden}
-    .progress .bar{height:100%;background:#16a34a}
 
-    .badge{border-radius:999px;font-weight:700;padding:4px 10px}
-    .badge.en_revision{background:#fff3cd;color:#7a5c00}
-    .badge.con_observaciones{background:#fee2e2;color:#991b1b}
-    .badge.aprobado{background:#dcfce7;color:#166534}
-
-    .flash{border-radius:12px;padding:12px;margin-bottom:12px;font-weight:600}
-    .flash.success{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
-    .flash.error{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
-
-    .split{display:grid;grid-template-columns:1.15fr 0.85fr;gap:14px}
-    @media (max-width: 1100px){.split{grid-template-columns:1fr}}
-
-    .editor-card .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px}
-    .readonly-note{background:#fef3c7;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:10px;margin-bottom:12px;font-weight:600}
-    .editor-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:10px}
-    .inline-form{display:inline-flex;gap:8px;align-items:center;margin:0}
-
-    .threads .thread{border-bottom:1px solid #e5e7eb;padding:12px 8px}
-    .threads .meta{display:flex;gap:8px;align-items:center;margin-bottom:6px;color:#64748b;font-size:12px;flex-wrap:wrap}
-    .threads .badge.abierto{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;border-radius:999px;padding:2px 8px;font-weight:700}
-    .threads .badge.resuelto{background:#dcfce7;color:#166534;border-radius:999px;padding:2px 8px;font-weight:700}
-    .threads h4{margin:0 0 4px 0}
-    .messages{display:flex;flex-direction:column;gap:12px;margin:12px 0}
-    .messages.nested{margin-left:24px;padding-left:12px;border-left:2px solid #e5e7eb}
-    .messages .message{border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#fff}
-    .messages .message + .message{margin-top:0}
-    .thread-detail .head{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:6px}
-    .pill{border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}
-    .pill.admin{background:#e2e8f0;color:#0f172a}
-    .pill.empresa{background:#dbeafe;color:#1e40af}
-    .files a{font-size:13px}
-    .reply{border-top:1px solid #e5e7eb;margin-top:10px;padding-top:10px;display:flex;flex-direction:column;gap:8px}
-    .reply textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:8px;font-family:inherit}
-    .reply .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-
-    .viewer-error{padding:14px;border:1px solid #fecaca;background:#fef2f2;color:#991b1b;border-radius:10px;font-weight:700}
-  </style>
 </head>
 <body data-machote-bloqueado="<?= $machoteBloqueado ? '1' : '0' ?>">
   <div class="app">
@@ -375,18 +332,19 @@ if (!empty($_GET['reabrir_error'])) {
                       <?php endif; ?>
                     </div>
 
-                    <form class="reply" action="../../handler/machote/machote_reply_handler.php" method="post" enctype="multipart/form-data">
-                      <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
-                      <input type="hidden" name="respuesta_a" value="<?= (int) ($c['id'] ?? 0) ?>">
-                      <fieldset style="border:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px" <?= $respuestasBloqueadas ? 'disabled' : '' ?>>
-                        <textarea name="comentario" rows="3" placeholder="Responder…" required></textarea>
-                        <div class="row">
-                          <input type="file" name="archivo">
-                          <button class="btn primary" type="submit" <?= $respuestasBloqueadas ? 'disabled' : '' ?>>Enviar</button>
-                        </div>
-                      </fieldset>
-                    </form>
-                    <?php if (!$isAbierto): ?>
+                                        <?php if ($isAbierto): ?>
+                      <form class="reply" action="../../handler/machote/machote_reply_handler.php" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
+                        <input type="hidden" name="respuesta_a" value="<?= (int) ($c['id'] ?? 0) ?>">
+                        <fieldset style="border:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px" <?= $respuestasBloqueadas ? 'disabled' : '' ?>>
+                          <textarea name="comentario" rows="3" placeholder="Responder" required></textarea>
+                          <div class="row">
+                            <input type="file" name="archivo">
+                            <button class="btn primary" type="submit" <?= $respuestasBloqueadas ? 'disabled' : '' ?>>Enviar</button>
+                          </div>
+                        </fieldset>
+                      </form>
+                    <?php else: ?>
                       <p style="color:#64748b;font-size:13px;margin:6px 0 0;">Este comentario esta resuelto; las respuestas estan deshabilitadas.</p>
                     <?php endif; ?>
                   </article>

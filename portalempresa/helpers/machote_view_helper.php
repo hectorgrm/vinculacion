@@ -99,7 +99,9 @@ function machoteViewBuildFlashMessages(array $queryParams): array
 function machoteViewRenderThreadMessage(array $mensaje, string $uploadsBasePath): void
 {
     $autorRol = (string) ($mensaje['autor_rol'] ?? 'empresa');
-    $autorNombre = (string) ($mensaje['autor_nombre'] ?? ucfirst($autorRol));
+    $rolLabel = ucfirst($autorRol);
+    $autorNombre = trim((string) ($mensaje['autor_nombre'] ?? $rolLabel));
+    $mostrarNombre = strcasecmp($autorNombre, $rolLabel) !== 0;
     $fecha = (string) ($mensaje['creado_en'] ?? '');
     $comentario = (string) ($mensaje['comentario'] ?? '');
     $archivoPath = $mensaje['archivo_path'] ?? null;
@@ -109,8 +111,10 @@ function machoteViewRenderThreadMessage(array $mensaje, string $uploadsBasePath)
     ?>
     <div class="message">
       <div class="head">
-        <span class="pill <?= htmlspecialchars($autorRol) ?>"><?= htmlspecialchars(ucfirst($autorRol)) ?></span>
-        <strong><?= htmlspecialchars($autorNombre) ?></strong>
+        <span class="pill <?= htmlspecialchars($autorRol) ?>"><?= htmlspecialchars($rolLabel) ?></span>
+        <?php if ($mostrarNombre): ?>
+          <strong><?= htmlspecialchars($autorNombre) ?></strong>
+        <?php endif; ?>
         <?php if ($fecha !== ''): ?>
           <time><?= htmlspecialchars($fecha) ?></time>
         <?php endif; ?>
