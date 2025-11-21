@@ -1,46 +1,12 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../helpers/machote_view_helper.php';
 require_once __DIR__ . '/../handler/machote_view_handler.php';
 
-$stats = is_array($stats ?? null)
-    ? array_merge([
-        'total' => 0,
-        'pendientes' => 0,
-        'resueltos' => 0,
-        'progreso' => 0,
-        'estado' => 'En revisión',
-    ], $stats)
-    : [
-        'total' => 0,
-        'pendientes' => 0,
-        'resueltos' => 0,
-        'progreso' => 0,
-        'estado' => 'En revisión',
-    ];
-
-$permisos = is_array($permisos ?? null)
-    ? array_merge(['puede_comentar' => false, 'puede_confirmar' => false], $permisos)
-    : ['puede_comentar' => false, 'puede_confirmar' => false];
-
-$documento = is_array($documento ?? null)
-    ? array_merge([
-        'has_html' => false,
-        'html' => '',
-        'has_pdf' => false,
-        'pdf_url' => null,
-        'pdf_embed_url' => null,
-        'fuente' => null,
-    ], $documento)
-    : [
-        'has_html' => false,
-        'html' => '',
-        'has_pdf' => false,
-        'pdf_url' => null,
-        'pdf_embed_url' => null,
-        'fuente' => null,
-    ];
-
+$stats = machoteViewNormalizeStats($stats ?? null);
+$permisos = machoteViewNormalizePermisos($permisos ?? null);
+$documento = machoteViewNormalizeDocumento($documento ?? null);
 $machote = is_array($machote ?? null) ? $machote : [];
 $comentarios = is_array($comentarios ?? null) ? $comentarios : [];
 $empresaNombre = isset($empresaNombre) ? (string) $empresaNombre : 'Empresa';
@@ -53,125 +19,20 @@ $versionMachote = (string) ($machote['version_local'] ?? 'v1.0');
 $machoteId = (int) ($machoteActualId ?? ($machote['id'] ?? 0));
 $uploadsBasePath = '../../uploads/';
 
-$flashMessages = [];
-
-if (!empty($_GET['comentario_status'])) {
-    $statusCode = (string) $_GET['comentario_status'];
-    $map = [
-        'added' => 'Comentario registrado correctamente.',
-    ];
-    if (isset($map[$statusCode])) {
-        $flashMessages[] = ['type' => 'success', 'text' => $map[$statusCode]];
-    }
-}
-
-if (!empty($_GET['comentario_error'])) {
-    $errorCode = (string) $_GET['comentario_error'];
-    $map = [
-        'invalid' => 'Completa todos los campos del comentario.',
-        'internal' => 'No se pudo guardar tu comentario. Intenta más tarde.',
-        'session' => 'Inicia sesión nuevamente para continuar.',
-    ];
-    if (isset($map[$errorCode])) {
-        $flashMessages[] = ['type' => 'error', 'text' => $map[$errorCode]];
-    }
-}
-
-if (!empty($_GET['confirm_status'])) {
-    $statusCode = (string) $_GET['confirm_status'];
-    $map = [
-        'confirmed' => '¡Gracias! Tu confirmación fue registrada.',
-        'already' => 'Este documento ya había sido confirmado previamente.',
-    ];
-    if (isset($map[$statusCode])) {
-        $flashMessages[] = ['type' => 'success', 'text' => $map[$statusCode]];
-    }
-}
-
-if (!empty($_GET['confirm_error'])) {
-    $errorCode = (string) $_GET['confirm_error'];
-    $map = [
-        'invalid' => 'No fue posible identificar el documento a confirmar.',
-        'session' => 'Tu sesión expiró. Inicia sesión nuevamente.',
-        'pending' => 'Aún quedan comentarios pendientes por resolver.',
-        'internal' => 'Ocurrió un problema al registrar la confirmación.',
-    ];
-    if (isset($map[$errorCode])) {
-        $flashMessages[] = ['type' => 'error', 'text' => $map[$errorCode]];
-    }
-}
-
-if (!function_exists('renderMachoteThreadMessage')) {
-    function renderMachoteThreadMessage(array $mensaje, string $uploadsBasePath): void {
-        $autorRol = (string) ($mensaje['autor_rol'] ?? 'empresa');
-        $autorNombre = (string) ($mensaje['autor_nombre'] ?? ucfirst($autorRol));
-        $fecha = (string) ($mensaje['creado_en'] ?? '');
-        $comentario = (string) ($mensaje['comentario'] ?? '');
-        $archivoPath = $mensaje['archivo_path'] ?? null;
-        $archivoHref = $archivoPath !== null && $archivoPath !== ''
-            ? rtrim($uploadsBasePath, '/') . '/' . ltrim((string) $archivoPath, '/\\')
-            : null;
-        ?>
-        <div class="message">
-          <div class="head">
-            <span class="pill <?= htmlspecialchars($autorRol) ?>"><?= htmlspecialchars(ucfirst($autorRol)) ?></span>
-            <strong><?= htmlspecialchars($autorNombre) ?></strong>
-            <?php if ($fecha !== ''): ?>
-              <time><?= htmlspecialchars($fecha) ?></time>
-            <?php endif; ?>
-          </div>
-          <p><?= nl2br(htmlspecialchars($comentario)) ?></p>
-          <?php if ($archivoHref !== null): ?>
-            <div class="files">
-              <a href="<?= htmlspecialchars($archivoHref) ?>" target="_blank" rel="noopener">📎 Ver archivo</a>
-            </div>
-          <?php endif; ?>
-        </div>
-        <?php if (!empty($mensaje['respuestas']) && is_array($mensaje['respuestas'])): ?>
-          <div class="messages nested">
-            <?php foreach ($mensaje['respuestas'] as $respuesta): ?>
-              <?php renderMachoteThreadMessage($respuesta, $uploadsBasePath); ?>
-            <?php endforeach; ?>
-          </div>
-        <?php endif; ?>
-        <?php
-    }
-}
+$flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Portal Empresa · Revisión del Acuerdo</title>
+  <title>Portal Empresa - Revisión del Acuerdo</title>
   <link rel="stylesheet" href="../assets/css/portal/machoteview.css">
-  <style>
-    .threads .messages{display:flex;flex-direction:column;gap:12px;margin:12px 0}
-    .threads .messages.nested{margin-left:24px;padding-left:12px;border-left:2px solid #e5e7eb}
-    .threads .message{border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#fff}
-    .threads .message .head{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:6px}
-    .threads .pill{border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}
-    .threads .pill.admin{background:#e2e8f0;color:#0f172a}
-    .threads .pill.empresa{background:#dbeafe;color:#1e40af}
-    .threads .files a{font-size:13px}
-    .threads form.reply{border-top:1px solid #e5e7eb;margin-top:10px;padding-top:10px;display:flex;flex-direction:column;gap:8px}
-    .threads form.reply textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:8px;font-family:inherit}
-    .threads form.reply .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  </style>
+
 </head>
 <body>
+  <?php include __DIR__ . '/../layout/portal_empresa_header.php'; ?>
 
-<header class="portal-header">
-  <div class="brand">
-    <h1>Portal de Empresa</h1>
-    <small>Revisión del acuerdo (machote)</small>
-  </div>
-  <div class="userbox">
-    <span class="company"><?= htmlspecialchars($empresaNombre) ?></span>
-    <a href="../portalacceso/portal_list.php" class="btn small">🏠 Inicio</a>
-    <a href="../../common/logout.php" class="btn small danger">Salir</a>
-  </div>
-</header>
 
 <main class="layout">
 
@@ -182,7 +43,7 @@ if (!function_exists('renderMachoteThreadMessage')) {
       <div class="card">
         <header>Error</header>
         <div class="content">
-          <p class="warn">⚠️ <?= htmlspecialchars($viewError) ?></p>
+          <p class="warn">Ups, <?= htmlspecialchars($viewError) ?></p>
         </div>
       </div>
     <?php endif; ?>
@@ -220,11 +81,10 @@ if (!function_exists('renderMachoteThreadMessage')) {
 
     <!-- Documento -->
     <div class="card doc-card">
-      <header>Documento a revisar · <?= htmlspecialchars($versionMachote) ?></header>
+      <header>Documento a revisar - <?= htmlspecialchars($versionMachote) ?></header>
       <div class="content">
         <div class="doc-shell">
           <?php if ($documento['has_pdf'] && !empty($documento['pdf_embed_url'])): ?>
-            <!-- 🧾 Mostrar PDF si existe -->
             <div class="doc-surface doc-surface-pdf">
               <iframe
                 src="<?= htmlspecialchars((string) $documento['pdf_embed_url']) ?>"
@@ -234,8 +94,8 @@ if (!function_exists('renderMachoteThreadMessage')) {
             </div>
 
             <div class="doc-toolbar">
-              <a class="btn" href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>" target="_blank">📄 Ver en pestaña</a>
-              <a class="btn" download href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>">⬇️ Descargar PDF</a>
+              <a class="btn" href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>" target="_blank">Ver en pestaña</a>
+              <a class="btn" download href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>">Descargar PDF</a>
             </div>
 
             <?php if (!empty($documento['fuente'])): ?>
@@ -243,7 +103,6 @@ if (!function_exists('renderMachoteThreadMessage')) {
             <?php endif; ?>
 
           <?php elseif ($documento['has_html'] && !empty($documento['html'])): ?>
-            <!-- 🧱 Mostrar HTML (contenido del machote hijo) -->
             <div class="doc-surface doc-surface-html">
               <div class="doc-html">
                 <?= $documento['html'] ?>
@@ -254,7 +113,6 @@ if (!function_exists('renderMachoteThreadMessage')) {
             </p>
 
           <?php else: ?>
-            <!-- 🚫 No hay documento -->
             <div class="doc-empty">
               <p>
                 No hay documento disponible para mostrar.
@@ -265,7 +123,7 @@ if (!function_exists('renderMachoteThreadMessage')) {
         </div>
       </div>
     </div>
--------------------
+
     <!-- Confirmación -->
     <div class="card">
       <header>Confirmación de Empresa</header>
@@ -278,10 +136,10 @@ if (!function_exists('renderMachoteThreadMessage')) {
             <span class="label">Estoy de acuerdo con el contenido del documento</span>
           </label>
           <?php if ($confirmado): ?>
-            <p class="ok-note">✅ Confirmación registrada. Si necesitas más ajustes, contacta a Vinculación para reabrir la revisión.</p>
+            <p class="ok-note">Listo. Confirmación registrada. Si necesitas más ajustes, contacta a Vinculación para reabrir la revisión.</p>
           <?php else: ?>
             <div class="actions">
-              <button type="submit" class="btn primary" <?= $permisos['puede_confirmar'] ? '' : 'disabled' ?>>💾 Guardar confirmación</button>
+              <button type="submit" class="btn primary" <?= $permisos['puede_confirmar'] ? '' : 'disabled' ?>>Guardar confirmación</button>
             </div>
             <?php if (!$permisos['puede_confirmar']): ?>
               <p class="note">Resuelve primero los comentarios pendientes para habilitar la confirmación.</p>
@@ -312,7 +170,7 @@ if (!function_exists('renderMachoteThreadMessage')) {
             <textarea id="comentario" name="comentario" rows="3" required></textarea>
           </div>
           <div class="actions">
-            <button class="btn primary">💬 Publicar comentario</button>
+            <button class="btn primary">Publicar comentario</button>
           </div>
         </form>
         <?php else: ?>
@@ -343,22 +201,22 @@ if (!function_exists('renderMachoteThreadMessage')) {
                   <?= htmlspecialchars($comentario['autor_nombre'] ?? '') ?>
                 </span>
                 <?php if ($clausula !== ''): ?>
-                  <span>· <?= htmlspecialchars($clausula) ?></span>
+                  <span>- <?= htmlspecialchars($clausula) ?></span>
                 <?php endif; ?>
                 <?php if ($creadoEn !== ''): ?>
-                  <span>· <?= htmlspecialchars($creadoEn) ?></span>
+                  <span>- <?= htmlspecialchars($creadoEn) ?></span>
                 <?php endif; ?>
               </div>
 
               <div class="messages conversation">
-                <?php renderMachoteThreadMessage($comentario, $uploadsBasePath); ?>
+                <?php machoteViewRenderThreadMessage($comentario, $uploadsBasePath); ?>
               </div>
 
               <?php if ($permisos['puede_comentar']): ?>
                 <form class="reply" action="../handler/machote_reply_handler.php" method="post" enctype="multipart/form-data">
                   <input type="hidden" name="machote_id" value="<?= $machoteId ?>">
                   <input type="hidden" name="respuesta_a" value="<?= (int) ($comentario['id'] ?? 0) ?>">
-                  <textarea name="comentario" rows="3" placeholder="Responder…" required></textarea>
+                  <textarea name="comentario" rows="3" placeholder="Responder..." required></textarea>
                   <div class="row">
                     <input type="file" name="archivo">
                     <button class="btn primary" type="submit">Enviar</button>
@@ -377,7 +235,7 @@ if (!function_exists('renderMachoteThreadMessage')) {
 </main>
 
 <footer class="portal-foot">
-  <small>Portal de Empresa · Área de Vinculación</small>
+  <small>Portal de Empresa - Área de Vinculación</small>
 </footer>
 </body>
 </html>

@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 use PortalEmpresa\Controller\Machote\MachoteViewController;
@@ -33,7 +32,7 @@ $viewError = null;
 
 try {
     if ($machoteId === null || $machoteId === false) {
-        throw new \RuntimeException('Identificador de machote inválido.');
+        throw new \RuntimeException('Identificador de machote invÃ¡lido.');
     }
 
     $controller = new MachoteViewController();
