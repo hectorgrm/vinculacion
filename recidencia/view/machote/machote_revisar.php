@@ -337,6 +337,7 @@ if (!empty($_GET['reabrir_error'])) {
                     $autor = trim((string) ($c['autor_nombre'] ?? ''));
                     $clausula = trim((string) ($c['clausula'] ?? ''));
                     $creadoEn = (string) ($c['creado_en'] ?? '');
+                    $respuestasBloqueadas = $comentariosBloqueados || !$isAbierto;
                   ?>
                   <article class="thread thread-detail">
                     <div class="meta">
@@ -377,14 +378,17 @@ if (!empty($_GET['reabrir_error'])) {
                     <form class="reply" action="../../handler/machote/machote_reply_handler.php" method="post" enctype="multipart/form-data">
                       <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
                       <input type="hidden" name="respuesta_a" value="<?= (int) ($c['id'] ?? 0) ?>">
-                      <fieldset style="border:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px" <?= $comentariosBloqueados ? 'disabled' : '' ?>>
+                      <fieldset style="border:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px" <?= $respuestasBloqueadas ? 'disabled' : '' ?>>
                         <textarea name="comentario" rows="3" placeholder="Responder…" required></textarea>
                         <div class="row">
                           <input type="file" name="archivo">
-                          <button class="btn primary" type="submit" <?= $comentariosBloqueados ? 'disabled' : '' ?>>Enviar</button>
+                          <button class="btn primary" type="submit" <?= $respuestasBloqueadas ? 'disabled' : '' ?>>Enviar</button>
                         </div>
                       </fieldset>
                     </form>
+                    <?php if (!$isAbierto): ?>
+                      <p style="color:#64748b;font-size:13px;margin:6px 0 0;">Este comentario esta resuelto; las respuestas estan deshabilitadas.</p>
+                    <?php endif; ?>
                   </article>
                 <?php endforeach; ?>
               <?php endif; ?>

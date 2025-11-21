@@ -28,10 +28,11 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Empresa - Revisión del Acuerdo</title>
   <link rel="stylesheet" href="../assets/css/portal/machoteview.css">
+  
 
 </head>
 <body>
-  <?php include __DIR__ . '/../layout/portal_empresa_header.php'; ?>
+<?php include __DIR__ . '/../layout/portal_empresa_header.php'; ?>
 
 
 <main class="layout">
@@ -212,7 +213,7 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
                 <?php machoteViewRenderThreadMessage($comentario, $uploadsBasePath); ?>
               </div>
 
-              <?php if ($permisos['puede_comentar']): ?>
+              <?php if ($permisos['puede_comentar'] && $isAbierto): ?>
                 <form class="reply" action="../handler/machote_reply_handler.php" method="post" enctype="multipart/form-data">
                   <input type="hidden" name="machote_id" value="<?= $machoteId ?>">
                   <input type="hidden" name="respuesta_a" value="<?= (int) ($comentario['id'] ?? 0) ?>">
@@ -222,6 +223,8 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
                     <button class="btn primary" type="submit">Enviar</button>
                   </div>
                 </form>
+              <?php elseif (!$isAbierto): ?>
+                <p class="note">Este comentario esta resuelto; las respuestas estan cerradas.</p>
               <?php else: ?>
                 <p class="note">Las respuestas se encuentran cerradas.</p>
               <?php endif; ?>

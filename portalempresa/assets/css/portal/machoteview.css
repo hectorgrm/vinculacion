@@ -76,39 +76,6 @@ body::-webkit-scrollbar-thumb {
   z-index: 40;
 }
 
-.portal-header .brand {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.portal-header .brand h1 {
-  margin: 0;
-  font-size: 1.3rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #0f172a;
-}
-
-.portal-header .brand small {
-  font-size: 0.8rem;
-  color: var(--text-soft);
-}
-
-.portal-header .userbox {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.portal-header .company {
-  font-size: 0.95rem;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: var(--bg-elevated);
-  border: 1px solid rgba(148, 163, 184, 0.65);
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
-}
 
 /* ---------- Botones ---------- */
 .btn {
