@@ -161,6 +161,12 @@ if (!empty($_GET['reabrir_error'])) {
           </p>
         </div>
         <div class="actions">
+          <button
+            type="submit"
+            form="machote-editor-form"
+            class="btn primary"
+            <?= $machoteBloqueado ? 'disabled' : '' ?>
+          >Guardar machote</button>
           <a
             class="btn primary"
             href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>"
@@ -227,14 +233,14 @@ if (!empty($_GET['reabrir_error'])) {
             <?php if ($machoteBloqueado): ?>
               <p class="readonly-note">Este documento fue confirmado por la empresa. Reabre la revisión para habilitar nuevamente la edición.</p>
             <?php endif; ?>
-            <form method="POST" action="../../handler/machote/machote_update_handler.php">
+            <form id="machote-editor-form" method="POST" action="../../handler/machote/machote_update_handler.php">
               <input type="hidden" name="id" value="<?= (int) $machoteId ?>">
               <input type="hidden" name="redirect" value="machote_revisar">
               <textarea id="editor" name="contenido" rows="24"><?= $contenidoHtml ?></textarea>
 
               <div class="editor-actions">
                 <button class="btn" type="button" onclick="togglePreview()">👁️ Vista limpia</button>
-                <button class="btn primary" type="submit" <?= $machoteBloqueado ? 'disabled' : '' ?>>💾 Guardar cambios</button>
+                <button class="btn primary" type="submit" <?= $machoteBloqueado ? 'disabled' : '' ?>>Guardar cambios</button>
                 <a class="btn" target="_blank" rel="noopener"
                    href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>">📄 Previsualizar PDF</a>
               </div>
