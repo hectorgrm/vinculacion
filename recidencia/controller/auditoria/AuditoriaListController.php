@@ -63,6 +63,21 @@ class AuditoriaListController
                 $fechaHasta
             );
 
+            $auditoriaIds = array_map(
+                static fn(array $evento): int => isset($evento['id']) ? (int) $evento['id'] : 0,
+                $auditorias
+            );
+
+            $detallesPorAuditoria = auditoriaFetchDetallesByAuditoriaIds($auditoriaIds);
+
+            foreach ($auditorias as $index => $evento) {
+                $id = $auditoriaIds[$index] ?? 0;
+
+                if ($id > 0 && isset($detallesPorAuditoria[$id])) {
+                    $auditorias[$index]['detalles'] = $detallesPorAuditoria[$id];
+                }
+            }
+
             $data['auditorias'] = $auditorias;
         } catch (\Throwable $throwable) {
             $message = trim($throwable->getMessage());

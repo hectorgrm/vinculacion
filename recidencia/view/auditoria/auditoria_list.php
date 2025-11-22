@@ -77,6 +77,56 @@ $errorMessage = $handlerResult['errorMessage'];
       color: #555;
       font-size: 13px;
     }
+
+    details {
+      background: #fafafa;
+      border: 1px solid #ececec;
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #333;
+      outline: none;
+    }
+
+    .audit-details {
+      margin: 8px 0 0 0;
+      padding-left: 16px;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+
+    .audit-details li {
+      display: grid;
+      gap: 2px;
+    }
+
+    .audit-field {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .audit-values {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 600;
+    }
   </style>
 </head>
 
@@ -176,6 +226,7 @@ $errorMessage = $handlerResult['errorMessage'];
                   <th>Entidad ID</th>
                   <th>IP</th>
                   <th>Fecha</th>
+                  <th>Detalles</th>
                 </tr>
               </thead>
               <tbody>
@@ -208,6 +259,29 @@ $errorMessage = $handlerResult['errorMessage'];
                       <td><?php echo htmlspecialchars($entidadId, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars($ip, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars($fecha, ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td>
+                        <?php $detalles = $evento['detalles'] ?? []; ?>
+                        <?php if (is_array($detalles) && $detalles !== []): ?>
+                          <details>
+                            <summary>
+                              <span class="badge">Ver cambios (<?php echo count($detalles); ?>)</span>
+                            </summary>
+                            <ul class="audit-details">
+                              <?php foreach ($detalles as $detalle): ?>
+                                <li>
+                                  <span class="audit-field"><?php echo htmlspecialchars((string) ($detalle['campo_label'] ?? $detalle['campo'] ?? 'Campo'), ENT_QUOTES, 'UTF-8'); ?></span>
+                                  <div class="audit-values">
+                                    <span><strong>Antes:</strong> <?php echo htmlspecialchars(auditoriaValueOrDefault($detalle['valor_anterior'] ?? null, '—'), ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <span><strong>Ahora:</strong> <?php echo htmlspecialchars(auditoriaValueOrDefault($detalle['valor_nuevo'] ?? null, '—'), ENT_QUOTES, 'UTF-8'); ?></span>
+                                  </div>
+                                </li>
+                              <?php endforeach; ?>
+                            </ul>
+                          </details>
+                        <?php else: ?>
+                          <span class="badge" style="background:#f1f5f9; color:#475569;">Sin cambios</span>
+                        <?php endif; ?>
+                      </td>
                     </tr>
                   <?php endforeach; ?>
                 <?php endif; ?>

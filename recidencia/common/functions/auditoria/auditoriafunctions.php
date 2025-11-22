@@ -3,8 +3,11 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../../../common/model/db.php';
+require_once __DIR__ . '/../../../controller/auditoria/AuditoriaRegistrarController.php';
+require_once __DIR__ . '/../../../model/auditoria/AuditoriaModel.php';
 
 use Common\Model\Database;
+use Residencia\Controller\Auditoria\AuditoriaRegistrarController;
 
 if (!function_exists('auditoriaActorTipoOptions')) {
     /**
@@ -259,45 +262,17 @@ if (!function_exists('auditoriaRegistrarEvento')) {
                 $ip = auditoriaObtenerIP();
             }
 
-            $pdo = Database::getConnection();
-            $statement = $pdo->prepare(
-                'INSERT INTO auditoria (actor_tipo, actor_id, accion, entidad, entidad_id, ip) '
-                . 'VALUES (:actor_tipo, :actor_id, :accion, :entidad, :entidad_id, :ip)'
-            );
+            $controller = new AuditoriaRegistrarController();
 
-            $statement->bindValue(':actor_tipo', $actorTipo, PDO::PARAM_STR);
-
-            if ($actorId === null) {
-                $statement->bindValue(':actor_id', null, PDO::PARAM_NULL);
-            } else {
-                $statement->bindValue(':actor_id', $actorId, PDO::PARAM_INT);
-            }
-
-            $statement->bindValue(':accion', $accion, PDO::PARAM_STR);
-            $statement->bindValue(':entidad', $entidad, PDO::PARAM_STR);
-            $statement->bindValue(':entidad_id', $entidadId, PDO::PARAM_INT);
-
-            if ($ip === '') {
-                $statement->bindValue(':ip', null, PDO::PARAM_NULL);
-            } else {
-                $statement->bindValue(':ip', $ip, PDO::PARAM_STR);
-            }
-
-            $executed = $statement->execute();
-
-            if (!$executed) {
-                return false;
-            }
-
-            if ($detalles !== []) {
-                $auditoriaId = (int) $pdo->lastInsertId();
-
-                if ($auditoriaId > 0) {
-                    auditoriaInsertDetalleRegistros($pdo, $auditoriaId, $detalles);
-                }
-            }
-
-            return true;
+            return $controller->registrar([
+                'accion' => $accion,
+                'entidad' => $entidad,
+                'entidad_id' => $entidadId,
+                'actor_tipo' => $actorTipo,
+                'actor_id' => $actorId,
+                'ip' => $ip,
+                'detalles' => $detalles,
+            ]);
         } catch (\Throwable) {
             return false;
         }
@@ -433,6 +408,21 @@ if (!function_exists('auditoriaNormalizeDetallesPayload')) {
         }
 
         return $normalized;
+    }
+}
+
+if (!function_exists('auditoriaBuildCambios')) {
+    /**
+     * @param array<string, mixed> $previous
+     * @param array<string, mixed> $current
+     * @param array<string, string> $labels
+     * @return array<int, array<string, mixed>>
+     */
+    function auditoriaBuildCambios(array $previous, array $current, array $labels = []): array
+    {
+        require_once __DIR__ . '/../../helpers/auditoria/auditoria_helper.php';
+
+        return auditoriaDetectarCambios($previous, $current, $labels);
     }
 }
 
