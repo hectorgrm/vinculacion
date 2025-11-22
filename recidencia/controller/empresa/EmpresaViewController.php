@@ -189,17 +189,44 @@ class EmpresaViewController
 
     private function normalizeMachoteEstado(string $estadoRaw, int $total, int $resueltos): string
     {
-        $normalized = strtolower(trim($estadoRaw));
-        $normalized = str_replace(['-', ' '], '_', $normalized);
+        $estadoTrimmed = trim($estadoRaw);
+        $estadoLower = function_exists('mb_strtolower') ? mb_strtolower($estadoTrimmed, 'UTF-8') : strtolower($estadoTrimmed);
 
-        return match (true) {
-            $normalized === 'aprobado' || $normalized === 'aprobada' => 'Aprobado',
-            $normalized === 'con_observaciones' || $normalized === 'observaciones' => 'Con observaciones',
-            $normalized === 'en_revision' || $normalized === 'revision' => 'En revisión',
-            $normalized === 'pendiente' => 'Pendiente',
-            $total === 0 => 'En revisión',
-            $resueltos >= $total => 'Aprobado',
-            default => 'Con observaciones',
-        };
+        $ascii = $estadoLower;
+
+        if (function_exists('iconv')) {
+            $converted = @iconv('UTF-8', 'ASCII//TRANSLIT', $estadoLower);
+            if ($converted !== false) {
+                $ascii = $converted;
+            }
+        }
+
+        $comparable = preg_replace('/[^a-z]/', '', $ascii) ?? '';
+
+        if (str_contains($comparable, 'revision') || str_contains($comparable, 'reabri')) {
+            return 'En revisión';
+        }
+
+        if (str_contains($comparable, 'observ')) {
+            return 'Con observaciones';
+        }
+
+        if (str_contains($comparable, 'aprob')) {
+            return 'Aprobado';
+        }
+
+        if (str_contains($comparable, 'pendient')) {
+            return 'Pendiente';
+        }
+
+        if ($total === 0) {
+            return 'En revisión';
+        }
+
+        if ($resueltos >= $total) {
+            return 'Aprobado';
+        }
+
+        return 'Con observaciones';
     }
 }

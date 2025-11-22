@@ -74,7 +74,11 @@ class MachoteViewController
             'observaciones' => $record['convenio_observaciones'] ?? null,
         ];
 
-        $puedeComentar = $this->puedeAgregarComentarios($convenio['estatus'] ?? null, $machote['confirmado']);
+        $puedeComentar = $this->puedeAgregarComentarios(
+            $convenio['estatus'] ?? null,
+            $machote['confirmado'],
+            $estadoMachote
+        );
         $puedeConfirmar = !$machote['confirmado'] && (int) ($resumen['pendientes'] ?? 0) === 0;
 
         return [
@@ -135,20 +139,44 @@ class MachoteViewController
         }
     }
 
-    private function puedeAgregarComentarios(?string $estatusConvenio, bool $machoteConfirmado): bool
+    private function puedeAgregarComentarios(?string $estatusConvenio, bool $machoteConfirmado, ?string $estatusMachote = null): bool
     {
         if ($machoteConfirmado) {
             return false;
         }
 
-        if ($estatusConvenio === null) {
+        return $this->isEstatusEnRevision($estatusConvenio) || $this->isEstatusEnRevision($estatusMachote);
+    }
+
+    private function isEstatusEnRevision(?string $estatus): bool
+    {
+        $estatusNormalizado = $this->normalizeEstatus($estatus);
+
+        if ($estatusNormalizado === null) {
             return false;
         }
 
-        $estatusNormalizado = function_exists('mb_strtolower')
-            ? mb_strtolower($estatusConvenio, 'UTF-8')
-            : strtolower($estatusConvenio);
+        if (str_contains($estatusNormalizado, 'revisi')) {
+            return true;
+        }
 
-        return $estatusNormalizado === 'en revisión' || $estatusNormalizado === 'en revision';
+        return str_contains($estatusNormalizado, 'reabiert');
+    }
+
+    private function normalizeEstatus(?string $estatus): ?string
+    {
+        if ($estatus === null) {
+            return null;
+        }
+
+        $estatus = trim((string) $estatus);
+
+        if ($estatus === '') {
+            return null;
+        }
+
+        return function_exists('mb_strtolower')
+            ? mb_strtolower($estatus, 'UTF-8')
+            : strtolower($estatus);
     }
 }

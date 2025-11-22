@@ -116,7 +116,11 @@ class PortalEmpresaDashboardController
                         'estado_revision' => $estadoRevision,
                         'convenio_estatus' => $machote['convenio_estatus'] ?? null,
                         'puede_confirmar' => !$confirmado && $pendientes === 0,
-                        'puede_comentar' => $this->puedeAgregarComentarios($machote['convenio_estatus'] ?? null, $confirmado),
+                        'puede_comentar' => $this->puedeAgregarComentarios(
+                            $machote['convenio_estatus'] ?? null,
+                            $confirmado,
+                            $machote['machote_estatus'] ?? null
+                        ),
                         'documento_pdf_url' => $pdfPrincipal,
                         'documento_pdf_embed_url' => $pdfEmbed,
                         'documento_fuente' => $fuenteDocumento,
@@ -141,20 +145,44 @@ class PortalEmpresaDashboardController
         ];
     }
 
-    private function puedeAgregarComentarios(?string $estatusConvenio, bool $machoteConfirmado): bool
+    private function puedeAgregarComentarios(?string $estatusConvenio, bool $machoteConfirmado, ?string $estatusMachote = null): bool
     {
         if ($machoteConfirmado) {
             return false;
         }
 
-        if ($estatusConvenio === null) {
+        return $this->isEstatusEnRevision($estatusConvenio) || $this->isEstatusEnRevision($estatusMachote);
+    }
+
+    private function isEstatusEnRevision(?string $estatus): bool
+    {
+        $estatusNormalizado = $this->normalizeEstatus($estatus);
+
+        if ($estatusNormalizado === null) {
             return false;
         }
 
-        $estatusNormalizado = function_exists('mb_strtolower')
-            ? mb_strtolower($estatusConvenio, 'UTF-8')
-            : strtolower($estatusConvenio);
+        if (str_contains($estatusNormalizado, 'revisi')) {
+            return true;
+        }
 
-        return $estatusNormalizado === 'en revisión' || $estatusNormalizado === 'en revision';
+        return str_contains($estatusNormalizado, 'reabiert');
+    }
+
+    private function normalizeEstatus(?string $estatus): ?string
+    {
+        if ($estatus === null) {
+            return null;
+        }
+
+        $estatus = trim((string) $estatus);
+
+        if ($estatus === '') {
+            return null;
+        }
+
+        return function_exists('mb_strtolower')
+            ? mb_strtolower($estatus, 'UTF-8')
+            : strtolower($estatus);
     }
 }

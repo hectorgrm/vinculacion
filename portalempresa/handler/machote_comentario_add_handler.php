@@ -35,10 +35,24 @@ if ($machoteId === null || $machoteId === false || $machoteId <= 0) {
         }
 
         $confirmado = (int) ($machote['confirmacion_empresa'] ?? 0) === 1;
-        $estatus = (string) ($machote['convenio_estatus'] ?? '');
-        $estatusNormalizado = function_exists('mb_strtolower') ? mb_strtolower($estatus, 'UTF-8') : strtolower($estatus);
+        $estatusConvenio = (string) ($machote['convenio_estatus'] ?? '');
+        $estatusMachote = (string) ($machote['machote_estatus'] ?? '');
+        $estaEnRevision = static function (?string $estatus): bool {
+            $normalizado = function_exists('mb_strtolower') ? mb_strtolower((string) $estatus, 'UTF-8') : strtolower((string) $estatus);
+            $normalizado = trim($normalizado);
 
-        if ($confirmado || !in_array($estatusNormalizado, ['en revisión', 'en revision'], true)) {
+            if ($normalizado === '') {
+                return false;
+            }
+
+            if (str_contains($normalizado, 'revisi')) {
+                return true;
+            }
+
+            return str_contains($normalizado, 'reabiert');
+        };
+
+        if ($confirmado || !($estaEnRevision($estatusConvenio) || $estaEnRevision($estatusMachote))) {
             throw new RuntimeException('No se pueden agregar comentarios en este momento.');
         }
 
