@@ -235,6 +235,7 @@ if (!function_exists('convenioAuditoriaDescribeAccion')) {
             'reabrir' => 'reabrió ' . $subject,
             'rechazar' => 'rechazó ' . $subject,
             'actualizar_estatus' => 'actualizó el estatus de ' . $subject,
+            'actualizar_machote_html' => 'actualizó el machote ' . $subject,
             'actualizar' => 'actualizó ' . $subject,
             'eliminar' => 'eliminó ' . $subject,
             'crear' => 'creó ' . $subject,
@@ -314,6 +315,24 @@ if (!function_exists('convenioAuditoriaDescribeSubject')) {
 
             if ($entidadId !== null) {
                 $etiqueta .= ' (#' . $entidadId . ')';
+            }
+
+            return $etiqueta;
+        }
+
+        if ($entidad === 'rp_convenio_machote') {
+            $etiqueta = 'el machote del convenio';
+            $versionLocal = isset($record['machote_version_local']) ? trim((string) $record['machote_version_local']) : '';
+            $folio = isset($record['convenio_folio']) ? trim((string) $record['convenio_folio']) : '';
+
+            if ($folio !== '') {
+                $etiqueta .= ' (folio ' . $folio . ')';
+            } elseif ($entidadId !== null) {
+                $etiqueta .= ' #' . $entidadId;
+            }
+
+            if ($versionLocal !== '') {
+                $etiqueta .= ' - version ' . $versionLocal;
             }
 
             return $etiqueta;

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../../common/model/db.php';
 require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
+require_once __DIR__ . '/../../common/auth.php';
+require_once __DIR__ . '/../../common/functions/auditoria/auditoriafunctions.php';
+require_once __DIR__ . '/../../common/functions/convenio/conveniofunctions_auditoria.php';
 
 use Common\Model\Database;
 use Residencia\Model\Convenio\ConvenioMachoteModel;
@@ -40,6 +43,11 @@ try {
     $guardado = false;
 }
 
+$contenidoAnterior = (string) ($machoteActual['contenido_html'] ?? '');
+if ($guardado && $contenidoAnterior !== $contenido) {
+    registrarAuditoriaCambioMachote($id, $contenidoAnterior, $contenido);
+}
+
 $status = $guardado ? 'saved' : 'save_error';
 redirectWithStatus($id, $status, $redirect);
 
@@ -70,4 +78,56 @@ function redirectWithStatus(?int $machoteId, string $status, string $redirect): 
 
     header('Location: ' . $url);
     exit;
+}
+
+function registrarAuditoriaCambioMachote(int $machoteId, string $anterior, string $nuevo): void
+{
+    $contexto = convenioCurrentAuditContext();
+
+    $payload = [
+        'accion' => 'actualizar_machote_html',
+        'entidad' => 'rp_convenio_machote',
+        'entidad_id' => $machoteId,
+        'detalles' => [
+            [
+                'campo' => 'contenido_html',
+                'campo_label' => 'Contenido del machote',
+                'valor_anterior' => machoteAuditoriaSnippet($anterior),
+                'valor_nuevo' => machoteAuditoriaSnippet($nuevo),
+            ],
+        ],
+    ];
+
+    if (isset($contexto['actor_tipo'])) {
+        $payload['actor_tipo'] = $contexto['actor_tipo'];
+    }
+
+    if (isset($contexto['actor_id'])) {
+        $payload['actor_id'] = $contexto['actor_id'];
+    }
+
+    if (isset($contexto['ip'])) {
+        $payload['ip'] = $contexto['ip'];
+    }
+
+    auditoriaRegistrarEvento($payload);
+}
+
+function machoteAuditoriaSnippet(string $html, int $maxLength = 200): string
+{
+    $text = strip_tags($html);
+    $text = preg_replace('/\s+/', ' ', $text) ?? '';
+    $text = trim($text);
+
+    if ($text === '') {
+        return '[Vacío]';
+    }
+
+    if (function_exists('mb_substr')) {
+        $text = mb_substr($text, 0, $maxLength, 'UTF-8');
+    } else {
+        $text = substr($text, 0, $maxLength);
+    }
+
+    return $text;
 }
