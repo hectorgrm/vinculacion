@@ -83,6 +83,7 @@ function redirectWithStatus(?int $machoteId, string $status, string $redirect): 
 function registrarAuditoriaCambioMachote(int $machoteId, string $anterior, string $nuevo): void
 {
     $contexto = convenioCurrentAuditContext();
+    [$valorAnterior, $valorNuevo] = machoteAuditoriaValores($anterior, $nuevo);
 
     $payload = [
         'accion' => 'actualizar_machote_html',
@@ -92,8 +93,8 @@ function registrarAuditoriaCambioMachote(int $machoteId, string $anterior, strin
             [
                 'campo' => 'contenido_html',
                 'campo_label' => 'Contenido del machote',
-                'valor_anterior' => machoteAuditoriaSnippet($anterior),
-                'valor_nuevo' => machoteAuditoriaSnippet($nuevo),
+                'valor_anterior' => $valorAnterior,
+                'valor_nuevo' => $valorNuevo,
             ],
         ],
     ];
@@ -113,21 +114,88 @@ function registrarAuditoriaCambioMachote(int $machoteId, string $anterior, strin
     auditoriaRegistrarEvento($payload);
 }
 
-function machoteAuditoriaSnippet(string $html, int $maxLength = 200): string
+function machoteAuditoriaValores(string $anterior, string $nuevo, int $maxLength = 120): array
 {
-    $text = strip_tags($html);
-    $text = preg_replace('/\s+/', ' ', $text) ?? '';
-    $text = trim($text);
+    $clean = static function (string $html): string {
+        $text = html_entity_decode($html, ENT_QUOTES, 'UTF-8');
+        $text = strip_tags($text);
+        $text = preg_replace('/\s+/', ' ', $text) ?? '';
+        return trim($text);
+    };
 
-    if ($text === '') {
-        return '[Vacío]';
+    $len = static function (string $text): int {
+        return function_exists('mb_strlen') ? mb_strlen($text, 'UTF-8') : strlen($text);
+    };
+
+    $sub = static function (string $text, int $start, ?int $length = null): string {
+        if (function_exists('mb_substr')) {
+            return mb_substr($text, $start, $length ?? null, 'UTF-8');
+        }
+        return substr($text, $start, $length ?? strlen($text));
+    };
+
+    $wrapSnippet = static function (string $text) use ($len, $sub, $maxLength): string {
+        if ($text === '') {
+            return '—';
+        }
+
+        if ($len($text) > $maxLength) {
+            return $sub($text, 0, $maxLength - 1) . '…';
+        }
+
+        return $text;
+    };
+
+    $a = $clean($anterior);
+    $b = $clean($nuevo);
+
+    // Alta: antes vacío y ahora con texto
+    if ($a === '' && $b !== '') {
+        return ['—', 'SE AGREGÓ: "' . $wrapSnippet($b) . '"'];
     }
 
-    if (function_exists('mb_substr')) {
-        $text = mb_substr($text, 0, $maxLength, 'UTF-8');
-    } else {
-        $text = substr($text, 0, $maxLength);
+    // Baja: antes con texto y ahora vacío
+    if ($a !== '' && $b === '') {
+        return [$wrapSnippet($a), '—'];
     }
 
-    return $text;
+    // Si ambos son vacíos, no hay diferencia relevante
+    if ($a === '' && $b === '') {
+        return ['—', '—'];
+    }
+
+    // Encontrar prefijo y sufijo comunes para aislar el fragmento cambiado
+    $lenA = $len($a);
+    $lenB = $len($b);
+    $maxPrefix = min($lenA, $lenB);
+
+    $prefix = 0;
+    while ($prefix < $maxPrefix && $sub($a, $prefix, 1) === $sub($b, $prefix, 1)) {
+        $prefix++;
+    }
+
+    $suffix = 0;
+    while (
+        $suffix < ($lenA - $prefix) &&
+        $suffix < ($lenB - $prefix) &&
+        $sub($a, $lenA - 1 - $suffix, 1) === $sub($b, $lenB - 1 - $suffix, 1)
+    ) {
+        $suffix++;
+    }
+
+    $deltaA = $sub($a, $prefix, $lenA - $prefix - $suffix);
+    $deltaB = $sub($b, $prefix, $lenB - $prefix - $suffix);
+
+    // Alta localizada
+    if ($deltaA === '' && $deltaB !== '') {
+        return ['—', 'SE AGREGÓ: "' . $wrapSnippet($deltaB) . '"'];
+    }
+
+    // Baja localizada
+    if ($deltaA !== '' && $deltaB === '') {
+        return [$wrapSnippet($deltaA), '—'];
+    }
+
+    // Cambio localizado
+    return [$wrapSnippet($deltaA), $wrapSnippet($deltaB)];
 }
