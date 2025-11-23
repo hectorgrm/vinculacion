@@ -73,6 +73,12 @@ class AuditoriaListController
             foreach ($auditorias as $index => $evento) {
                 $id = $auditoriaIds[$index] ?? 0;
 
+                $auditorias[$index]['actor_label'] = auditoriaFormatActorLabel(
+                    $evento['actor_tipo'] ?? null,
+                    $evento['actor_id'] ?? null,
+                    $evento['actor_nombre'] ?? null
+                );
+
                 if ($id > 0 && isset($detallesPorAuditoria[$id])) {
                     $auditorias[$index]['detalles'] = $detallesPorAuditoria[$id];
                 }

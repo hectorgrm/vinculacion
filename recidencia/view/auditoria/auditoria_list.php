@@ -246,13 +246,24 @@ $errorMessage = $handlerResult['errorMessage'];
                     $ip = auditoriaValueOrDefault($evento['ip'] ?? null, 'N/A');
                     $fecha = auditoriaFormatDateTime($evento['ts'] ?? null);
                     $actorTipoLabel = auditoriaActorTipoLabel(is_string($actorTipo) ? $actorTipo : null);
+                    $actorLabel = auditoriaValueOrDefault(
+                      $evento['actor_label'] ?? ($evento['actor_nombre'] ?? null),
+                      $actorTipoLabel
+                    );
                     $actorIdLabel = auditoriaValueOrDefault($actorId, 'Sin referencia');
+                    $actorMeta = array_values(array_filter([
+                      $actorTipoLabel,
+                      $actorIdLabel !== 'Sin referencia' ? 'ID: ' . $actorIdLabel : null,
+                    ]));
+                    $actorMetaLabel = $actorMeta !== [] ? implode(' · ', $actorMeta) : '';
                     ?>
                     <tr>
                       <td><?php echo htmlspecialchars((string) $auditoriaId, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td>
-                        <div class="actor-type"><?php echo htmlspecialchars($actorTipoLabel, ENT_QUOTES, 'UTF-8'); ?></div>
-                        <div class="actor-id">ID: <?php echo htmlspecialchars($actorIdLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+                        <div class="actor-type"><?php echo htmlspecialchars($actorLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+                        <?php if ($actorMetaLabel !== ''): ?>
+                          <div class="actor-id"><?php echo htmlspecialchars($actorMetaLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+                        <?php endif; ?>
                       </td>
                       <td><?php echo htmlspecialchars($accion, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars($entidad, ENT_QUOTES, 'UTF-8'); ?></td>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../../../common/model/db.php';
 require_once __DIR__ . '/../../../controller/auditoria/AuditoriaRegistrarController.php';
 require_once __DIR__ . '/../../../model/auditoria/AuditoriaModel.php';
+require_once __DIR__ . '/../convenio/conveniofunctions_auditoria.php';
 
 use Common\Model\Database;
 use Residencia\Controller\Auditoria\AuditoriaRegistrarController;
@@ -37,6 +38,39 @@ if (!function_exists('auditoriaActorTipoLabel')) {
             : strtolower($actorTipo);
 
         return auditoriaActorTipoOptions()[$actorTipo] ?? ucfirst($actorTipo);
+    }
+}
+
+if (!function_exists('auditoriaFormatActorLabel')) {
+    function auditoriaFormatActorLabel(mixed $actorTipo, mixed $actorId, mixed $actorNombre): string
+    {
+        if (function_exists('convenioAuditoriaFormatActor')) {
+            return convenioAuditoriaFormatActor($actorTipo, $actorId, is_string($actorNombre) ? $actorNombre : null);
+        }
+
+        $actorNombre = is_string($actorNombre) ? trim($actorNombre) : '';
+        if ($actorNombre !== '') {
+            return $actorNombre;
+        }
+
+        $actorTipo = is_string($actorTipo) ? trim($actorTipo) : '';
+        $actorTipoLower = function_exists('mb_strtolower')
+            ? mb_strtolower($actorTipo, 'UTF-8')
+            : strtolower($actorTipo);
+
+        $actorId = auditoriaNormalizePositiveInt($actorId);
+        $tipoLabel = match ($actorTipoLower) {
+            'usuario' => 'Usuario',
+            'empresa' => 'Empresa',
+            'sistema' => 'Sistema',
+            default => ($actorTipo !== '' ? ucfirst($actorTipo) : 'Actor'),
+        };
+
+        if ($tipoLabel === 'Sistema' || $actorId === null) {
+            return $tipoLabel;
+        }
+
+        return $tipoLabel . ' #' . $actorId;
     }
 }
 

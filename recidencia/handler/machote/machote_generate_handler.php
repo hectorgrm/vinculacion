@@ -15,8 +15,10 @@ declare(strict_types=1);
 // 1️⃣ DEPENDENCIAS Y MODELOS
 // ===============================================================
 require_once __DIR__ . '/../../../common/model/db.php';
+require_once __DIR__ . '/../../common/auth.php';
 require_once __DIR__ . '/../../model/machoteglobal/MachoteGlobalModel.php';
 require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
+require_once __DIR__ . '/../../common/functions/convenio/conveniofunctions_auditoria.php';
 
 use Common\Model\Database;
 use Residencia\Model\Convenio\ConvenioMachoteModel;
@@ -116,7 +118,26 @@ try {
 }
 
 // ===============================================================
-// 8️⃣ REDIRECCIONAR AL EDITOR DEL MACHOTE HIJO
+// 8️⃣ REGISTRAR EVENTO EN AUDITORÍA
+// ===============================================================
+$auditContext = convenioCurrentAuditContext();
+$auditDetails = [
+    [
+        'campo' => 'machote_id',
+        'campo_label' => 'Machote generado',
+        'valor_nuevo' => (string) $nuevoMachoteId,
+    ],
+    [
+        'campo' => 'machote_padre_id',
+        'campo_label' => 'Plantilla institucional',
+        'valor_nuevo' => (string) $machotePadreId,
+    ],
+];
+
+convenioRegisterAuditEvent('generar_machote', $convenioId, $auditContext, $auditDetails);
+
+// ===============================================================
+// 9️⃣ REDIRECCIONAR AL EDITOR DEL MACHOTE HIJO
 // ===============================================================
 $redirectUrl = '../../view/machote/machote_edit.php?id=' . urlencode((string) $nuevoMachoteId) . '&machote_status=created';
 header('Location: ' . $redirectUrl);

@@ -262,6 +262,9 @@ if (!function_exists('empresaViewDecorateAuditoriaItems')) {
             $actorLabel = isset($item['actor_label']) && is_string($item['actor_label'])
                 ? trim($item['actor_label'])
                 : '';
+            $actorNombre = isset($item['actor_nombre']) && is_string($item['actor_nombre'])
+                ? trim($item['actor_nombre'])
+                : '';
             $tipo = isset($item['actor_tipo']) ? (string) $item['actor_tipo'] : null;
             $detalleItems = [];
 
@@ -292,6 +295,10 @@ if (!function_exists('empresaViewDecorateAuditoriaItems')) {
                         'despues' => $despues !== '' ? $despues : '—',
                     ];
                 }
+            }
+
+            if ($actorLabel === '' && $actorNombre !== '') {
+                $actorLabel = $actorNombre;
             }
 
             if ($actorLabel === '') {
