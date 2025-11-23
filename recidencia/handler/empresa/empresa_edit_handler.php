@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../common/auth.php';
 require_once __DIR__ . '/../../common/functions/empresa/empresafunctions_Edit.php';
 require_once __DIR__ . '/../../controller/empresa/EmpresaEditController.php';
 
@@ -46,7 +47,8 @@ if (!function_exists('empresaEditHandler')) {
 
         try {
             $empresa = $controller->getEmpresaById($viewData['empresaId']);
-            $viewData['formData'] = empresaHydrateForm(empresaFormDefaults(), $empresa);
+            $formOriginal = empresaHydrateForm(empresaFormDefaults(), $empresa);
+            $viewData['formData'] = $formOriginal;
         } catch (\RuntimeException $exception) {
             $viewData['loadError'] = $exception->getMessage();
 
@@ -60,6 +62,10 @@ if (!function_exists('empresaEditHandler')) {
         $viewData['formData'] = empresaEditSanitizeInput($_POST);
         $viewData['errors'] = empresaEditValidateData($viewData['formData']);
 
+        $detallesAuditoria = isset($formOriginal)
+            ? auditoriaBuildCambios($formOriginal, $viewData['formData'], empresaEditAuditFieldLabels())
+            : [];
+
         if ($viewData['errors'] !== []) {
             return $viewData;
         }
@@ -67,6 +73,10 @@ if (!function_exists('empresaEditHandler')) {
         try {
             $controller->updateEmpresa($viewData['empresaId'], $viewData['formData']);
             $viewData['successMessage'] = empresaEditSuccessMessage();
+
+            if ($detallesAuditoria !== []) {
+                empresaRegistrarEventoActualizacion($viewData['empresaId'], $detallesAuditoria, empresaCurrentAuditContext());
+            }
 
             $empresaActualizada = $controller->getEmpresaById($viewData['empresaId']);
             $viewData['formData'] = empresaHydrateForm(empresaFormDefaults(), $empresaActualizada);

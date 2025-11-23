@@ -104,7 +104,7 @@ class AuditoriaModel
         $sql = <<<'SQL'
             CREATE TABLE IF NOT EXISTS auditoria_detalle (
                 id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                auditoria_id BIGINT UNSIGNED NOT NULL,
+                auditoria_id BIGINT NOT NULL,
                 campo VARCHAR(100) NOT NULL,
                 campo_label VARCHAR(150) NOT NULL,
                 valor_anterior TEXT NULL,

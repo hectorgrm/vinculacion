@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../empresafunction.php';
+require_once __DIR__ . '/../auditoria/auditoriafunctions.php';
 
 if (!function_exists('empresaEditDefaults')) {
     /**
@@ -27,6 +28,118 @@ if (!function_exists('empresaEditDefaults')) {
             'controllerError' => null,
             'loadError' => null,
         ];
+    }
+}
+
+if (!function_exists('empresaCurrentAuditContext')) {
+    /**
+     * @return array<string, mixed>
+     */
+    function empresaCurrentAuditContext(): array
+    {
+        $context = [];
+
+        if (isset($GLOBALS['residenciaAuthUser']) && is_array($GLOBALS['residenciaAuthUser'])) {
+            $context['actor_tipo'] = 'usuario';
+            $actorId = auditoriaNormalizePositiveInt($GLOBALS['residenciaAuthUser']['id'] ?? null);
+
+            if ($actorId !== null) {
+                $context['actor_id'] = $actorId;
+            }
+        } elseif (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
+            $context['actor_tipo'] = 'usuario';
+            $actorId = auditoriaNormalizePositiveInt($_SESSION['user']['id'] ?? null);
+
+            if ($actorId !== null) {
+                $context['actor_id'] = $actorId;
+            }
+        } elseif (isset($_SESSION['empresa']) && is_array($_SESSION['empresa'])) {
+            $context['actor_tipo'] = 'empresa';
+            $actorId = auditoriaNormalizePositiveInt($_SESSION['empresa']['id'] ?? null);
+
+            if ($actorId !== null) {
+                $context['actor_id'] = $actorId;
+            }
+        }
+
+        if (!isset($context['actor_tipo'])) {
+            $context['actor_tipo'] = 'sistema';
+        }
+
+        $ip = auditoriaObtenerIP();
+        if ($ip !== '') {
+            $context['ip'] = $ip;
+        }
+
+        return $context;
+    }
+}
+
+if (!function_exists('empresaEditAuditFieldLabels')) {
+    /**
+     * @return array<string, string>
+     */
+    function empresaEditAuditFieldLabels(): array
+    {
+        return [
+            'numero_control' => 'No. de control',
+            'nombre' => 'Nombre',
+            'rfc' => 'RFC',
+            'representante' => 'Representante legal',
+            'cargo_representante' => 'Cargo del representante',
+            'sector' => 'Sector',
+            'sitio_web' => 'Sitio web',
+            'contacto_nombre' => 'Nombre de contacto',
+            'contacto_email' => 'Correo de contacto',
+            'telefono' => 'Teléfono',
+            'estado' => 'Estado',
+            'municipio' => 'Municipio',
+            'cp' => 'Código postal',
+            'direccion' => 'Dirección',
+            'estatus' => 'Estatus',
+            'regimen_fiscal' => 'Régimen fiscal',
+            'notas' => 'Notas',
+        ];
+    }
+}
+
+if (!function_exists('empresaRegistrarEventoActualizacion')) {
+    /**
+     * @param array<int, array{campo: string, campo_label: string, valor_anterior: ?string, valor_nuevo: ?string}> $detalles
+     * @param array<string, mixed>|null $context
+     */
+    function empresaRegistrarEventoActualizacion(int $empresaId, array $detalles, ?array $context = null): void
+    {
+        if ($empresaId <= 0 || $detalles === []) {
+            return;
+        }
+
+        $payload = [
+            'accion' => 'actualizar',
+            'entidad' => 'rp_empresa',
+            'entidad_id' => $empresaId,
+            'detalles' => $detalles,
+        ];
+
+        $context = $context ?? empresaCurrentAuditContext();
+
+        if (isset($context['actor_tipo'])) {
+            $payload['actor_tipo'] = $context['actor_tipo'];
+        }
+
+        if (isset($context['actor_id'])) {
+            $payload['actor_id'] = $context['actor_id'];
+        }
+
+        if (isset($context['ip'])) {
+            $payload['ip'] = $context['ip'];
+        }
+
+        if (!isset($payload['actor_tipo']) && isset($payload['actor_id'])) {
+            $payload['actor_tipo'] = 'usuario';
+        }
+
+        auditoriaRegistrarEvento($payload);
     }
 }
 
