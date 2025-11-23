@@ -40,6 +40,23 @@ if ($convenioId === false || $convenioId === null) {
 $connection = Database::getConnection();
 $convenioMachoteModel = new ConvenioMachoteModel($connection);
 
+// Nombre de la empresa asociada al convenio (para el mensaje de auditoría)
+$empresaNombre = '';
+try {
+    $empresaQuery = $connection->prepare(
+        'SELECT e.nombre
+         FROM rp_convenio c
+         INNER JOIN rp_empresa e ON c.empresa_id = e.id
+         WHERE c.id = :convenio_id
+         LIMIT 1'
+    );
+
+    $empresaQuery->execute([':convenio_id' => $convenioId]);
+    $empresaNombre = trim((string) ($empresaQuery->fetchColumn() ?: ''));
+} catch (\PDOException $e) {
+    // No interrumpir el flujo: solo dejamos el nombre vacío si falla.
+}
+
 // Si ya existe un machote hijo asociado al convenio → redirigir a editar
 $existingMachote = $convenioMachoteModel->getByConvenio($convenioId);
 if ($existingMachote !== null) {
@@ -58,6 +75,7 @@ if ($global === null) {
 }
 
 $machotePadreId = (int) ($global['id'] ?? 0);
+$machotePadreVersion = trim((string) ($global['version'] ?? ''));
 if ($machotePadreId <= 0) {
     redirectToConvenio($convenioId, 'no_global');
 }
@@ -91,12 +109,15 @@ $contenidoFinal = trim($contenidoLimpio);
 // ===============================================================
 // 6️⃣ CREAR MACHOTE HIJO EN LA BASE DE DATOS
 // ===============================================================
+// La primera versión local siempre comienza en v1.0.
+$versionLocal = 'v1.0';
+
 try {
     $nuevoMachoteId = $convenioMachoteModel->create(
         $convenioId,
         $machotePadreId,
         $contenidoFinal,
-        'v1.0'
+        $versionLocal
     );
 } catch (\PDOException $e) {
     error_log('Error al crear machote hijo: ' . $e->getMessage());
@@ -121,16 +142,24 @@ try {
 // 8️⃣ REGISTRAR EVENTO EN AUDITORÍA
 // ===============================================================
 $auditContext = convenioCurrentAuditContext();
+$machoteNombre = $empresaNombre !== ''
+    ? $empresaNombre . ' — ' . $versionLocal . ' (ID #' . $nuevoMachoteId . ')'
+    : 'Machote — ' . $versionLocal . ' (ID #' . $nuevoMachoteId . ')';
+
 $auditDetails = [
     [
         'campo' => 'machote_id',
         'campo_label' => 'Machote generado',
-        'valor_nuevo' => (string) $nuevoMachoteId,
+        'valor_anterior' => '—',
+        'valor_nuevo' => $machoteNombre,
     ],
     [
         'campo' => 'machote_padre_id',
         'campo_label' => 'Plantilla institucional',
-        'valor_nuevo' => (string) $machotePadreId,
+        'valor_anterior' => '—',
+        'valor_nuevo' => $machotePadreVersion !== ''
+            ? 'Plantilla "' . $machotePadreVersion . '" (ID #' . $machotePadreId . ')'
+            : 'Plantilla institucional (ID #' . $machotePadreId . ')',
     ],
 ];
 
