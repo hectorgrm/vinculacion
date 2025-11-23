@@ -304,6 +304,21 @@ if (!function_exists('convenioAuditoriaDescribeSubject')) {
             return $etiqueta;
         }
 
+        if ($entidad === 'rp_empresa') {
+            $etiqueta = 'la empresa';
+            $nombreEmpresa = isset($record['empresa_nombre']) ? trim((string) $record['empresa_nombre']) : '';
+
+            if ($nombreEmpresa !== '') {
+                $etiqueta .= ' "' . $nombreEmpresa . '"';
+            }
+
+            if ($entidadId !== null) {
+                $etiqueta .= ' (#' . $entidadId . ')';
+            }
+
+            return $etiqueta;
+        }
+
         if ($entidad === '') {
             return 'el registro';
         }
