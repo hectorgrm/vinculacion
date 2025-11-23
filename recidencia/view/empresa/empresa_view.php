@@ -184,7 +184,10 @@ $empresaIsActiva = $preparedData['empresaIsActiva'] ?? false;
               <div><strong>Fecha de Registro:</strong> <?php echo htmlspecialchars($creadoEn, ENT_QUOTES, 'UTF-8'); ?></div>
               <div><strong>Última actualización:</strong> <?php echo htmlspecialchars($actualizadoEn, ENT_QUOTES, 'UTF-8'); ?></div>
             </div>
+            
           <?php endif; ?>
+                                  <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️
+                          Editar</a>
         </div>
       </section>
 
