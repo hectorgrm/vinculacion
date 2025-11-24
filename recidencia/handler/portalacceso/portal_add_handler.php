@@ -62,7 +62,7 @@ if (!function_exists('portalAccessAddHandler')) {
         }
 
         try {
-            $accessId = $controller->createPortalAccess($viewData['formData']);
+            $accessId = $controller->createPortalAccess($viewData['formData'], $viewData['empresaOptions']);
             $viewData['successMessage'] = portalAccessSuccessMessage($accessId);
             $viewData['formData'] = portalAccessFormDefaults();
         } catch (\Throwable $exception) {

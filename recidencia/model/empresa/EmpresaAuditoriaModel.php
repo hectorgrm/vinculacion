@@ -165,6 +165,42 @@ class EmpresaAuditoriaModel
                        ON c.id = m.convenio_id
               WHERE a.entidad = 'rp_convenio_machote'
                 AND c.empresa_id = :empresa_id)
+            UNION ALL
+            (SELECT a.id,
+                    a.actor_tipo,
+                    a.actor_id,
+                    a.accion,
+                    a.entidad,
+                    a.entidad_id,
+                    a.ip,
+                    a.ts,
+                    CASE
+                        WHEN a.actor_tipo = 'usuario' THEN u.nombre
+                        WHEN a.actor_tipo = 'empresa' THEN actor_empresa.nombre
+                        ELSE NULL
+                    END AS actor_nombre,
+                    NULL AS documento_id,
+                    NULL AS documento_estatus,
+                    NULL AS documento_tipo_nombre,
+                    NULL AS convenio_id,
+                    NULL AS convenio_folio,
+                    NULL AS convenio_responsable,
+                    NULL AS convenio_estatus,
+                    NULL AS machote_version_local,
+                    e.nombre AS empresa_nombre
+               FROM auditoria AS a
+               LEFT JOIN usuario AS u
+                      ON u.id = a.actor_id
+                     AND a.actor_tipo = 'usuario'
+               LEFT JOIN rp_empresa AS actor_empresa
+                      ON actor_empresa.id = a.actor_id
+                     AND a.actor_tipo = 'empresa'
+               INNER JOIN rp_portal_acceso AS pa
+                       ON pa.id = a.entidad_id
+               INNER JOIN rp_empresa AS e
+                       ON e.id = pa.empresa_id
+              WHERE a.entidad = 'rp_portal_acceso'
+                AND pa.empresa_id = :empresa_id)
             ORDER BY ts DESC,
                      id DESC
         SQL;
