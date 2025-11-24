@@ -444,26 +444,6 @@ $machoteRevisarUrl = $machoteChildId !== null
 
 
 
-                <!-- Bitácora / Historial -->
-                <section class="card">
-                    <header>🕒 Historial</header>
-                    <div class="content">
-                        <?php if (count($historial) > 0): ?>
-                            <ul style="margin:0; padding-left:18px; color:#334155">
-                                <?php foreach ($historial as $evento): ?>
-                                    <li>
-                                        <strong><?php echo htmlspecialchars((string) ($evento['fecha'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong>
-                                        —
-                                        <?php echo htmlspecialchars((string) ($evento['descripcion'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php else: ?>
-                            <p class="text-muted">Sin movimientos registrados en el historial.</p>
-                        <?php endif; ?>
-                    </div>
-                </section>
-
                 <div class="field">
                     <label>Fecha de registro</label>
                     <div>
