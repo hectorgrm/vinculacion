@@ -7,8 +7,13 @@ namespace PortalEmpresa\Controller;
 require_once __DIR__ . '/../model/EmpresaDocumentoUploadModel.php';
 require_once __DIR__ . '/../helpers/empresadocumentofunction.php';
 require_once __DIR__ . '/../common/functions/empresadocumentofunctions.php';
+require_once __DIR__ . '/../../recidencia/common/functions/documento/documentofunctions_list.php';
 
 use PortalEmpresa\Model\EmpresaDocumentoUploadModel;
+use function auditoriaObtenerIP;
+use function auditoriaRegistrarEvento;
+use function documentoAuditBuildDetalles;
+use function documentoAuditFetchSnapshot;
 
 class EmpresaDocumentoUploadController
 {
@@ -41,6 +46,11 @@ class EmpresaDocumentoUploadController
 
         if ($documentSlot === null) {
             return ['success' => false, 'status_code' => 'upload_not_assigned'];
+        }
+
+        $previousSnapshot = null;
+        if (isset($documentSlot['documento_id']) && (int) $documentSlot['documento_id'] > 0) {
+            $previousSnapshot = documentoAuditFetchSnapshot((int) $documentSlot['documento_id']);
         }
 
         $documentName = (string) ($documentSlot['tipo_nombre'] ?? 'Documento');
@@ -111,6 +121,12 @@ class EmpresaDocumentoUploadController
             empresaDocumentoUploadRemoveFile(is_string($saveResult['replaced_path']) ? $saveResult['replaced_path'] : null);
         }
 
+        $this->registrarAuditoriaUpload(
+            $saveResult['id'] ?? null,
+            $empresaId,
+            $previousSnapshot
+        );
+
         return [
             'success' => true,
             'status_code' => 'upload_success',
@@ -118,6 +134,37 @@ class EmpresaDocumentoUploadController
             'new_path' => $relativePath,
             'replaced_path' => $saveResult['replaced_path'] ?? null,
         ];
+    }
+
+    /**
+     * @param array<string, mixed>|null $previousSnapshot
+     */
+    private function registrarAuditoriaUpload(?int $documentId, int $empresaId, ?array $previousSnapshot): void
+    {
+        if (!function_exists('auditoriaRegistrarEvento') || $documentId === null || $documentId <= 0) {
+            return;
+        }
+
+        $snapshot = documentoAuditFetchSnapshot($documentId);
+        $detalles = $snapshot !== null
+            ? documentoAuditBuildDetalles($snapshot, $previousSnapshot)
+            : [];
+
+        $payload = [
+            'accion' => 'subir_documento_portal',
+            'entidad' => 'rp_empresa_doc',
+            'entidad_id' => $documentId,
+            'actor_tipo' => 'empresa',
+            'actor_id' => $empresaId,
+            'detalles' => $detalles,
+        ];
+
+        $ip = auditoriaObtenerIP();
+        if ($ip !== '') {
+            $payload['ip'] = $ip;
+        }
+
+        auditoriaRegistrarEvento($payload);
     }
 
     /**
