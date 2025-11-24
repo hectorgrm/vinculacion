@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../common/helpers/estudiante/estudiante_add_helper.php';
 require_once __DIR__ . '/../../controller/estudiante/EstudianteAddController.php';
+require_once __DIR__ . '/../../common/functions/auditoria/auditoriafunctions.php';
+require_once __DIR__ . '/../../common/functions/empresa/empresafunctions_auditoria.php';
+require_once __DIR__ . '/../../common/auth.php';
 
 use Residencia\Controller\Estudiante\EstudianteAddController;
 
@@ -73,10 +76,20 @@ if (!function_exists('estudianteAddHandler')) {
         }
 
         try {
+            $empresaIdRedirect = isset($viewData['formData']['empresa_id']) && ctype_digit($viewData['formData']['empresa_id'])
+                ? (int) $viewData['formData']['empresa_id']
+                : null;
             $estudianteId = $controller->createEstudiante($viewData['formData']);
+            registrarAuditoriaEstudianteCreado($estudianteId, $viewData['formData']);
             $viewData['success'] = true;
             $viewData['successMessage'] = estudianteAddSuccessMessage($estudianteId);
             $viewData['formData'] = estudianteAddFormDefaults();
+
+            if ($empresaIdRedirect !== null && $empresaIdRedirect > 0) {
+                $target = '../empresa/empresa_view.php?id=' . urlencode((string) $empresaIdRedirect);
+                header('Location: ' . $target);
+                exit;
+            }
         } catch (\Throwable $exception) {
             $pdoException = null;
 
@@ -105,6 +118,94 @@ if (!function_exists('estudianteAddHandler')) {
 
         return $viewData;
     }
+}
+
+/**
+ * @param array<string, string> $formData
+ */
+function registrarAuditoriaEstudianteCreado(int $estudianteId, array $formData): void
+{
+    if ($estudianteId <= 0 || !function_exists('auditoriaRegistrarEvento')) {
+        return;
+    }
+
+    $empresaId = isset($formData['empresa_id']) && ctype_digit($formData['empresa_id'])
+        ? (int) $formData['empresa_id']
+        : null;
+
+    $detalles = [];
+
+    $nombreCompleto = trim(
+        implode(' ', array_filter([
+            $formData['nombre'] ?? '',
+            $formData['apellido_paterno'] ?? '',
+            $formData['apellido_materno'] ?? '',
+        ]))
+    );
+
+    $nombreValor = auditoriaNormalizeDetalleValue($nombreCompleto !== '' ? $nombreCompleto : ($formData['nombre'] ?? ''));
+    if ($nombreValor !== null) {
+        $detalles[] = [
+            'campo' => 'nombre',
+            'campo_label' => 'Nombre del estudiante',
+            'valor_anterior' => null,
+            'valor_nuevo' => $nombreValor,
+        ];
+    }
+
+    $matriculaValor = auditoriaNormalizeDetalleValue($formData['matricula'] ?? null);
+    if ($matriculaValor !== null) {
+        $detalles[] = [
+            'campo' => 'matricula',
+            'campo_label' => 'Matricula',
+            'valor_anterior' => null,
+            'valor_nuevo' => $matriculaValor,
+        ];
+    }
+
+    if ($empresaId !== null) {
+        $detalles[] = [
+            'campo' => 'empresa_id',
+            'campo_label' => 'Empresa vinculada',
+            'valor_anterior' => null,
+            'valor_nuevo' => (string) $empresaId,
+        ];
+    }
+
+    $convenioId = isset($formData['convenio_id']) && ctype_digit($formData['convenio_id'])
+        ? (int) $formData['convenio_id']
+        : null;
+
+    if ($convenioId !== null) {
+        $detalles[] = [
+            'campo' => 'convenio_id',
+            'campo_label' => 'Convenio',
+            'valor_anterior' => null,
+            'valor_nuevo' => (string) $convenioId,
+        ];
+    }
+
+    $context = empresaCurrentAuditContext();
+    $payload = [
+        'accion' => 'crear_estudiante',
+        'entidad' => 'rp_estudiante',
+        'entidad_id' => $estudianteId,
+        'detalles' => $detalles,
+    ];
+
+    if (isset($context['actor_tipo'])) {
+        $payload['actor_tipo'] = $context['actor_tipo'];
+    }
+
+    if (isset($context['actor_id'])) {
+        $payload['actor_id'] = $context['actor_id'];
+    }
+
+    if (isset($context['ip'])) {
+        $payload['ip'] = $context['ip'];
+    }
+
+    auditoriaRegistrarEvento($payload);
 }
 
 return estudianteAddHandler();

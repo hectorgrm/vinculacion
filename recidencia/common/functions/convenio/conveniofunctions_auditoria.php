@@ -354,6 +354,21 @@ if (!function_exists('convenioAuditoriaDescribeSubject')) {
             return $etiqueta;
         }
 
+        if ($entidad === 'rp_estudiante') {
+            $etiqueta = 'el estudiante';
+            $estudianteNombre = isset($record['estudiante_nombre']) ? trim((string) $record['estudiante_nombre']) : '';
+
+            if ($estudianteNombre !== '') {
+                $etiqueta .= ' "' . $estudianteNombre . '"';
+            }
+
+            if ($entidadId !== null) {
+                $etiqueta .= ' (#' . $entidadId . ')';
+            }
+
+            return $etiqueta;
+        }
+
         if ($entidad === '') {
             return 'el registro';
         }
