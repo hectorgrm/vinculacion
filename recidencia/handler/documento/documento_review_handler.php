@@ -102,6 +102,7 @@ if (!function_exists('documentoReviewHandler')) {
             : null;
 
         $auditContext = documentoCurrentAuditContext();
+        $empresaIdForRedirect = isset($document['empresa_id']) ? (int) $document['empresa_id'] : null;
 
         try {
             $controller->updateStatus($documentId, $estatus, $observacion, $auditContext);
@@ -115,6 +116,12 @@ if (!function_exists('documentoReviewHandler')) {
                     isset($document['ruta']) ? (string) $document['ruta'] : null,
                     dirname(__DIR__, 2)
                 );
+            }
+
+            if ($empresaIdForRedirect !== null && $empresaIdForRedirect > 0) {
+                $redirectUrl = '../empresa/empresa_view.php?id=' . urlencode((string) $empresaIdForRedirect);
+                header('Location: ' . $redirectUrl);
+                exit;
             }
         } catch (\Throwable $exception) {
             $viewData['controllerError'] = documentoReviewControllerErrorMessage($exception);

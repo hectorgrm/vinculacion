@@ -112,6 +112,10 @@ if (!function_exists('documentoUploadHandler')) {
             if ($empresaId !== null) {
                 $viewData['formData']['empresa_id'] = (string) $empresaId;
                 $viewData['tiposPersonalizados'] = $controller->getTiposPersonalizados($empresaId);
+
+                $redirectUrl = '../empresa/empresa_view.php?id=' . urlencode((string) $empresaId);
+                header('Location: ' . $redirectUrl);
+                exit;
             }
         } catch (\Throwable $exception) {
             $viewData['errors'][] = documentoUploadPersistenceErrorMessage($exception);
