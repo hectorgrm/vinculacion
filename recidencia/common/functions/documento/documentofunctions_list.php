@@ -236,7 +236,7 @@ if (!function_exists('documentoAuditBuildDetalles')) {
         $tipoLabel = auditoriaNormalizeDetalleValue(documentoAuditTipoLabel($documento));
         $prevTipoLabel = $previous !== null ? auditoriaNormalizeDetalleValue(documentoAuditTipoLabel($previous)) : null;
 
-        if ($tipoLabel !== null) {
+        if (($previous === null && $tipoLabel !== null) || ($previous !== null && $tipoLabel !== $prevTipoLabel)) {
             $detalles[] = [
                 'campo' => 'tipo_documento',
                 'campo_label' => 'Tipo de documento',
@@ -248,7 +248,7 @@ if (!function_exists('documentoAuditBuildDetalles')) {
         $estatusActual = auditoriaNormalizeDetalleValue($documento['estatus'] ?? null);
         $estatusPrevio = $previous !== null ? auditoriaNormalizeDetalleValue($previous['estatus'] ?? null) : null;
 
-        if ($estatusActual !== null || $estatusPrevio !== null) {
+        if (($previous === null && $estatusActual !== null) || ($previous !== null && $estatusActual !== $estatusPrevio)) {
             $detalles[] = [
                 'campo' => 'estatus',
                 'campo_label' => 'Estatus',
@@ -266,7 +266,7 @@ if (!function_exists('documentoAuditBuildDetalles')) {
             $archivoPrevio = auditoriaNormalizeDetalleValue(basename((string) $previous['ruta']));
         }
 
-        if ($archivoActual !== null || $archivoPrevio !== null) {
+        if (($previous === null && $archivoActual !== null) || ($previous !== null && $archivoActual !== $archivoPrevio)) {
             $detalles[] = [
                 'campo' => 'archivo',
                 'campo_label' => 'Archivo',
@@ -278,7 +278,7 @@ if (!function_exists('documentoAuditBuildDetalles')) {
         $observacionActual = auditoriaNormalizeDetalleValue($documento['observacion'] ?? null);
         $observacionPrev = $previous !== null ? auditoriaNormalizeDetalleValue($previous['observacion'] ?? null) : null;
 
-        if ($observacionActual !== null || $observacionPrev !== null) {
+        if (($previous === null && $observacionActual !== null) || ($previous !== null && $observacionActual !== $observacionPrev)) {
             $detalles[] = [
                 'campo' => 'observacion',
                 'campo_label' => 'Observacion',
