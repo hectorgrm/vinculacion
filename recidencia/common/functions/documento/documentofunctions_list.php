@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../auditoria/auditoriafunctions.php';
+require_once __DIR__ . '/../../../../common/model/db.php';
+
+use Common\Model\Database;
 
 if (!function_exists('documentoListDefaults')) {
     /**
@@ -109,8 +112,9 @@ if (!function_exists('documentoCurrentAuditContext')) {
 if (!function_exists('documentoRegisterAuditEvent')) {
     /**
      * @param array<string, mixed> $context
+     * @param array<int, array<string, mixed>> $detalles
      */
-    function documentoRegisterAuditEvent(string $accion, int $documentId, array $context = []): bool
+    function documentoRegisterAuditEvent(string $accion, int $documentId, array $context = [], array $detalles = []): bool
     {
         $accion = trim($accion);
 
@@ -136,11 +140,154 @@ if (!function_exists('documentoRegisterAuditEvent')) {
             $payload['ip'] = $context['ip'];
         }
 
+        if ($detalles !== []) {
+            $payload['detalles'] = $detalles;
+        }
+
         if (!isset($payload['actor_tipo']) && isset($payload['actor_id'])) {
             $payload['actor_tipo'] = 'usuario';
         }
 
         return auditoriaRegistrarEvento($payload);
+    }
+}
+
+if (!function_exists('documentoAuditFetchSnapshot')) {
+    /**
+     * @return array<string, mixed>|null
+     */
+    function documentoAuditFetchSnapshot(int $documentId): ?array
+    {
+        try {
+            $pdo = Database::getConnection();
+
+            $sql = <<<'SQL'
+                SELECT d.id,
+                       d.empresa_id,
+                       e.nombre AS empresa_nombre,
+                       d.tipo_global_id,
+                       d.tipo_personalizado_id,
+                       tg.nombre AS tipo_global_nombre,
+                       tp.nombre AS tipo_personalizado_nombre,
+                       d.ruta,
+                       d.estatus,
+                       d.observacion
+                  FROM rp_empresa_doc AS d
+                  JOIN rp_empresa AS e ON e.id = d.empresa_id
+                  LEFT JOIN rp_documento_tipo AS tg ON tg.id = d.tipo_global_id
+                  LEFT JOIN rp_documento_tipo_empresa AS tp ON tp.id = d.tipo_personalizado_id
+                 WHERE d.id = :id
+                 LIMIT 1
+            SQL;
+
+            $statement = $pdo->prepare($sql);
+            $statement->bindValue(':id', $documentId, PDO::PARAM_INT);
+            $statement->execute();
+
+            $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+            return $row !== false ? $row : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+}
+
+if (!function_exists('documentoAuditTipoLabel')) {
+    function documentoAuditTipoLabel(array $documento): string
+    {
+        $tipoNombre = '';
+
+        if (isset($documento['tipo_personalizado_nombre']) && trim((string) $documento['tipo_personalizado_nombre']) !== '') {
+            $tipoNombre = (string) $documento['tipo_personalizado_nombre'];
+        } elseif (isset($documento['tipo_global_nombre']) && trim((string) $documento['tipo_global_nombre']) !== '') {
+            $tipoNombre = (string) $documento['tipo_global_nombre'];
+        }
+
+        if ($tipoNombre !== '') {
+            return $tipoNombre;
+        }
+
+        $tipoPersonalizadoId = auditoriaNormalizePositiveInt($documento['tipo_personalizado_id'] ?? null);
+        $tipoGlobalId = auditoriaNormalizePositiveInt($documento['tipo_global_id'] ?? null);
+
+        if ($tipoPersonalizadoId !== null) {
+            return 'Tipo personalizado #' . $tipoPersonalizadoId;
+        }
+
+        if ($tipoGlobalId !== null) {
+            return 'Tipo global #' . $tipoGlobalId;
+        }
+
+        return 'Documento';
+    }
+}
+
+if (!function_exists('documentoAuditBuildDetalles')) {
+    /**
+     * @param array<string, mixed> $documento
+     * @param array<string, mixed>|null $previous
+     * @return array<int, array<string, mixed>>
+     */
+    function documentoAuditBuildDetalles(array $documento, ?array $previous = null): array
+    {
+        $detalles = [];
+
+        $tipoLabel = auditoriaNormalizeDetalleValue(documentoAuditTipoLabel($documento));
+        $prevTipoLabel = $previous !== null ? auditoriaNormalizeDetalleValue(documentoAuditTipoLabel($previous)) : null;
+
+        if ($tipoLabel !== null) {
+            $detalles[] = [
+                'campo' => 'tipo_documento',
+                'campo_label' => 'Tipo de documento',
+                'valor_anterior' => $prevTipoLabel,
+                'valor_nuevo' => $tipoLabel,
+            ];
+        }
+
+        $estatusActual = auditoriaNormalizeDetalleValue($documento['estatus'] ?? null);
+        $estatusPrevio = $previous !== null ? auditoriaNormalizeDetalleValue($previous['estatus'] ?? null) : null;
+
+        if ($estatusActual !== null || $estatusPrevio !== null) {
+            $detalles[] = [
+                'campo' => 'estatus',
+                'campo_label' => 'Estatus',
+                'valor_anterior' => $estatusPrevio,
+                'valor_nuevo' => $estatusActual,
+            ];
+        }
+
+        $archivoActual = auditoriaNormalizeDetalleValue(
+            isset($documento['ruta']) ? basename((string) $documento['ruta']) : null
+        );
+        $archivoPrevio = null;
+
+        if ($previous !== null && isset($previous['ruta'])) {
+            $archivoPrevio = auditoriaNormalizeDetalleValue(basename((string) $previous['ruta']));
+        }
+
+        if ($archivoActual !== null || $archivoPrevio !== null) {
+            $detalles[] = [
+                'campo' => 'archivo',
+                'campo_label' => 'Archivo',
+                'valor_anterior' => $archivoPrevio,
+                'valor_nuevo' => $archivoActual,
+            ];
+        }
+
+        $observacionActual = auditoriaNormalizeDetalleValue($documento['observacion'] ?? null);
+        $observacionPrev = $previous !== null ? auditoriaNormalizeDetalleValue($previous['observacion'] ?? null) : null;
+
+        if ($observacionActual !== null || $observacionPrev !== null) {
+            $detalles[] = [
+                'campo' => 'observacion',
+                'campo_label' => 'Observacion',
+                'valor_anterior' => $observacionPrev,
+                'valor_nuevo' => $observacionActual,
+            ];
+        }
+
+        return $detalles;
     }
 }
 

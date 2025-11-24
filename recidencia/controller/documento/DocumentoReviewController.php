@@ -8,6 +8,8 @@ require_once __DIR__ . '/../../model/documento/DocumentoReviewModel.php';
 require_once __DIR__ . '/../../common/functions/documento/documentofunctions_list.php';
 
 use Residencia\Model\Documento\DocumentoReviewModel;
+use function documentoAuditBuildDetalles;
+use function documentoAuditFetchSnapshot;
 
 class DocumentoReviewController
 {
@@ -28,6 +30,8 @@ class DocumentoReviewController
 
     public function updateStatus(int $documentId, string $estatus, ?string $observacion, array $auditContext = []): void
     {
+        $before = $this->model->findById($documentId);
+
         $this->model->updateStatus($documentId, $estatus, $observacion);
 
         $normalizedStatus = documentoNormalizeStatus($estatus) ?? trim($estatus);
@@ -39,7 +43,10 @@ class DocumentoReviewController
             default => 'actualizar_estatus',
         };
 
-        documentoRegisterAuditEvent($accion, $documentId, $auditContext);
+        $after = documentoAuditFetchSnapshot($documentId);
+        $detalles = $after !== null ? documentoAuditBuildDetalles($after, $before) : [];
+
+        documentoRegisterAuditEvent($accion, $documentId, $auditContext, $detalles);
     }
 
     /**

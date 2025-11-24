@@ -8,6 +8,8 @@ require_once __DIR__ . '/../../model/documento/DocumentoReopenModel.php';
 require_once __DIR__ . '/../../common/functions/documento/documentofunctions_list.php';
 
 use Residencia\Model\Documento\DocumentoReopenModel;
+use function documentoAuditBuildDetalles;
+use function documentoAuditFetchSnapshot;
 
 class DocumentoReopenController
 {
@@ -23,9 +25,11 @@ class DocumentoReopenController
      */
     public function reopenDocument(int $documentId, array $auditContext = []): array
     {
+        $before = documentoAuditFetchSnapshot($documentId);
         $document = $this->model->reopenDocument($documentId);
+        $detalles = documentoAuditBuildDetalles($document, $before);
 
-        documentoRegisterAuditEvent('reabrir', $documentId, $auditContext);
+        documentoRegisterAuditEvent('reabrir', $documentId, $auditContext, $detalles);
 
         return $document;
     }

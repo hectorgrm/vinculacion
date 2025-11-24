@@ -154,6 +154,7 @@ class DocumentoUploadModel
             return [
                 'id' => (int) $existing['id'],
                 'replaced_path' => $existing['ruta'] ?? null,
+                'previous' => $existing,
             ];
         }
 
@@ -192,6 +193,7 @@ class DocumentoUploadModel
         return [
             'id' => $newId,
             'replaced_path' => null,
+            'previous' => null,
         ];
     }
 
@@ -209,7 +211,7 @@ class DocumentoUploadModel
 
         if ($tipoPersonalizadoId !== null) {
             $sql = <<<'SQL'
-                SELECT id, ruta
+                SELECT id, ruta, estatus
                   FROM rp_empresa_doc
                  WHERE empresa_id = :empresa_id
                    AND tipo_personalizado_id = :tipo_personalizado_id
@@ -224,7 +226,7 @@ class DocumentoUploadModel
             ]);
         } elseif ($tipoGlobalId !== null) {
             $sql = <<<'SQL'
-                SELECT id, ruta
+                SELECT id, ruta, estatus
                   FROM rp_empresa_doc
                  WHERE empresa_id = :empresa_id
                    AND tipo_global_id = :tipo_global_id

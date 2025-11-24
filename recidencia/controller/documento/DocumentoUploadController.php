@@ -10,6 +10,8 @@ require_once __DIR__ . '/../../common/functions/documento/documentofunctions_lis
 use Residencia\Model\Documento\DocumentoUploadModel;
 use RuntimeException;
 use PDOException;
+use function documentoAuditBuildDetalles;
+use function documentoAuditFetchSnapshot;
 
 class DocumentoUploadController
 {
@@ -144,10 +146,18 @@ class DocumentoUploadController
 
         $isReplacement = !empty($saveResult['replaced_path']);
 
+        $snapshot = documentoAuditFetchSnapshot($documentoId);
+        $previous = $saveResult['previous'] ?? null;
+
+        $detalles = $snapshot !== null
+            ? documentoAuditBuildDetalles($snapshot, $previous)
+            : [];
+
         documentoRegisterAuditEvent(
             $isReplacement ? 'subir_nueva_version' : 'subir',
             $documentoId,
-            $auditContext
+            $auditContext,
+            $detalles
         );
 
         return [
