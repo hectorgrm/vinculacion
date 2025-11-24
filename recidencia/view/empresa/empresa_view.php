@@ -406,7 +406,7 @@ $empresaIsActiva = $preparedData['empresaIsActiva'] ?? false;
                       <?php if ($documentoEstatus === 'aprobado' && $detailUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">🔍 Detalle</a>
                       <?php endif; ?>
-                      <?php if ($documentoEstatus === 'revision' && $reviewUrl !== '') : ?>
+                      <?php if (in_array($documentoEstatus, ['revision', 'pendiente'], true) && $reviewUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">📝 Revisar</a>
                       <?php endif; ?>
                     </td>
