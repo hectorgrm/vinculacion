@@ -6,6 +6,7 @@ namespace Residencia\Controller\Convenio;
 
 require_once __DIR__ . '/../../model/convenio/ConvenioModle.php';
 require_once __DIR__ . '/../../common/helpers/convenio/convenio_helper_renovar.php';
+require_once __DIR__ . '/../../common/functions/convenio/conveniofunctions_auditoria.php';
 
 use PDOException;
 use Residencia\Model\Convenio\ConvenioModle;
@@ -139,6 +140,42 @@ class ConvenioRenovarController
                         $newConvenioId = $this->createRenewal($payload);
                         $successMessage = 'Se generó correctamente la nueva versión del convenio (#' . $newConvenioId . ').';
                         $newConvenioUrl = 'convenio_view.php?id=' . urlencode((string) $newConvenioId);
+
+                        $auditContext = convenioCurrentAuditContext();
+                        $parentId = $copyId !== null ? (int) $copyId : null;
+
+                        if ($parentId !== null) {
+                            $estatusAnterior = convenioNormalizeStatus((string) ($original['estatus'] ?? 'En revisiA3n'));
+                            $estatusNuevo = 'Inactiva';
+                            $accionInactivacion = convenioAuditoriaActionForStatusChange($estatusAnterior, $estatusNuevo);
+
+                            convenioRegisterAuditEvent(
+                                $accionInactivacion,
+                                $parentId,
+                                $auditContext,
+                                [[
+                                    'campo' => 'estatus',
+                                    'campo_label' => convenioAuditoriaFieldLabels()['estatus'] ?? 'Estatus',
+                                    'valor_anterior' => auditoriaNormalizeDetalleValue($estatusAnterior),
+                                    'valor_nuevo' => auditoriaNormalizeDetalleValue($estatusNuevo),
+                                ]]
+                            );
+                        }
+
+                        if ($newConvenioId !== null && $newConvenioId > 0) {
+                            $detalleRenovacion = [];
+
+                            if ($parentId !== null) {
+                                $detalleRenovacion[] = [
+                                    'campo' => 'renovado_de',
+                                    'campo_label' => 'Renovado de',
+                                    'valor_anterior' => null,
+                                    'valor_nuevo' => auditoriaNormalizeDetalleValue($parentId),
+                                ];
+                            }
+
+                            convenioRegisterAuditEvent('crear', (int) $newConvenioId, $auditContext, $detalleRenovacion);
+                        }
                     } catch (RuntimeException $exception) {
                         $errors[] = $exception->getMessage() !== ''
                             ? $exception->getMessage()

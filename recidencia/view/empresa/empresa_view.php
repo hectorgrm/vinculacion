@@ -70,6 +70,7 @@ $portalAccessDeleteUrl = $preparedData['portalAccessDeleteUrl'] ?? null;
 $portalAccessActionsEnabled = $preparedData['portalAccessActionsEnabled'] ?? false;
 $portalAccessDisabledReason = $preparedData['portalAccessDisabledReason'] ?? null;
 $empresaIsActiva = $preparedData['empresaIsActiva'] ?? false;
+$empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -256,7 +257,7 @@ $empresaIsActiva = $preparedData['empresaIsActiva'] ?? false;
             </tbody>
           </table>
 
-          <?php if (!$empresaIsEnRevision): ?>
+          <?php if (!$empresaIsEnRevision && !$empresaTieneConvenioActivo): ?>
             <div class="actions" style="margin-top:16px; justify-content:flex-end;">
               <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Nuevo Convenio</a>
             </div>
@@ -826,3 +827,5 @@ $empresaIsActiva = $preparedData['empresaIsActiva'] ?? false;
 </body>
 
 </html>
+
+

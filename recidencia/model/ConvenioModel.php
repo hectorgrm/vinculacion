@@ -122,13 +122,35 @@ class ConvenioModel
                    numero_control,
                    estatus
               FROM rp_empresa
-             WHERE estatus IN ('Activa', 'En revisión')
+             WHERE estatus IN ('Activa', 'En revisiA3n')
+               AND NOT EXISTS (
+                   SELECT 1
+                     FROM rp_convenio AS c
+                    WHERE c.empresa_id = rp_empresa.id
+                      AND c.estatus = 'Activa'
+               )
              ORDER BY nombre ASC
         SQL;
 
         $statement = $this->pdo->query($sql);
 
         return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function empresaHasActiveConvenio(int $empresaId): bool
+    {
+        $sql = <<<'SQL'
+            SELECT 1
+              FROM rp_convenio
+             WHERE empresa_id = :empresa_id
+               AND estatus = 'Activa'
+             LIMIT 1
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        return (bool) $statement->fetchColumn();
     }
 
     /**
@@ -258,3 +280,7 @@ class ConvenioModel
         return $statement->execute([':id' => $id]);
     }
 }
+
+
+
+

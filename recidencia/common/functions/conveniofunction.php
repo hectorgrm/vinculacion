@@ -61,7 +61,7 @@ if (!function_exists('convenioResolveControllerData')) {
     /**
      * @return array{
      *     controller: ?\Residencia\Controller\ConvenioController,
-     *     editController: ?\Residencia\Controller\Convenio\ConvenioEdController,
+     *     editController: ?\Residencia\Controller\Convenio\ConvenioEditController,
      *     empresaOptions: array<int, array<string, mixed>>,
      *     error: ?string
      * }
@@ -76,8 +76,8 @@ if (!function_exists('convenioResolveControllerData')) {
             }
         }
 
-        if (!class_exists(\Residencia\Controller\Convenio\ConvenioEdController::class)) {
-            $editControllerPath = __DIR__ . '/../../controller/convenio/ConvenioEdController.php';
+        if (!class_exists(\Residencia\Controller\Convenio\ConvenioEditController::class)) {
+            $editControllerPath = __DIR__ . '/../../controller/convenio/ConvenioEditController.php';
 
             if (is_file($editControllerPath)) {
                 require_once $editControllerPath;
@@ -104,7 +104,7 @@ if (!function_exists('convenioResolveControllerData')) {
         }
 
         try {
-            $editController = new \Residencia\Controller\Convenio\ConvenioEdController();
+            $editController = new \Residencia\Controller\Convenio\ConvenioEditController();
         } catch (\Throwable) {
             if ($error === null) {
                 $error = 'No se pudo establecer conexión con la base de datos. Intenta nuevamente más tarde.';

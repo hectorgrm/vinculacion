@@ -7,6 +7,27 @@ require_once __DIR__ . '/../../controller/convenio/ConvenioRenovarController.php
 
 use Residencia\Controller\Convenio\ConvenioRenovarController;
 
+// La función de renovación está deshabilitada temporalmente.
+return [
+    'controllerAvailable' => false,
+    'controllerError' => 'La renovación de convenios está deshabilitada temporalmente.',
+    'errors' => [],
+    'successMessage' => null,
+    'formData' => convenioRenewalFormDefaults(),
+    'originalConvenio' => null,
+    'originalMetadata' => convenioRenewalPrepareOriginalMetadata(null),
+    'empresaId' => null,
+    'empresaLink' => null,
+    'cancelLink' => 'convenio_list.php',
+    'listLink' => 'convenio_list.php',
+    'copyId' => null,
+    'renewalAllowed' => false,
+    'renewalWarning' => null,
+    'allowedStatuses' => convenioRenewalAllowedStatuses(),
+    'newConvenioId' => null,
+    'newConvenioUrl' => null,
+];
+
 $controller = null;
 $controllerError = null;
 

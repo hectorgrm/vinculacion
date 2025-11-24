@@ -22,6 +22,15 @@ class ConvenioAddController
         $this->model = $model ?? new ConvenioAddModel();
     }
 
+    public function empresaTieneConvenioActivo(int $empresaId): bool
+    {
+        try {
+            return $this->model->empresaHasActiveConvenio($empresaId);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo validar los convenios activos de la empresa.', 0, $exception);
+        }
+    }
+
     /**
      * @return array<int, array<string, mixed>>
      */

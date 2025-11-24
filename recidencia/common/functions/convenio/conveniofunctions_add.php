@@ -34,6 +34,18 @@ if (!function_exists('convenioHandleAddRequest')) {
         $uploadRelativePath = null;
         $uploadAbsolutePath = null;
 
+        if ($errors === []) {
+            $empresaId = (int) $formData['empresa_id'];
+
+            try {
+                if ($controller->empresaTieneConvenioActivo($empresaId)) {
+                    $errors[] = 'La empresa seleccionada ya tiene un convenio activo. Finaliza o desactivalo antes de crear uno nuevo.';
+                }
+            } catch (\Throwable) {
+                $errors[] = 'No se pudo validar si la empresa ya tiene un convenio activo. Intenta nuevamente.';
+            }
+        }
+
         if ($errors === [] && array_key_exists('borrador_path', $files)) {
             $fileData = $files['borrador_path'];
 
