@@ -232,6 +232,7 @@ if (!function_exists('convenioAuditoriaDescribeAccion')) {
             'subir' => 'subió ' . $subject,
             'subir_nueva_version' => 'subió una nueva versi�n de ' . $subject,
             'aprobar' => 'aprobó ' . $subject,
+            'confirmar' => 'confirmo ' . $subject,
             'reabrir' => 'reabrió ' . $subject,
             'rechazar' => 'rechazó ' . $subject,
             'actualizar_estatus' => 'actualizó el estatus de ' . $subject,
@@ -619,4 +620,3 @@ if (!function_exists('convenioAuditoriaDetectCambios')) {
         ];
     }
 }
-
