@@ -1,6 +1,5 @@
-
 /* ------------------------------------------
-   IMPORTAR SISTEMA DE DISEÑO
+   IMPORTAR SISTEMA DE DISENO
 --------------------------------------------*/
 
 /* 1) Theme y Reset */
@@ -30,41 +29,101 @@
 @import url('../../utilities/utilities.css');
 
 /* ============================================================
-   BANNER DE EMPRESA – Estilo Profesional + Futurista (C + D)
+   LAYOUT GENERAL
+============================================================ */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 6px 32px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.card > header {
+  padding: 18px 22px;
+  font-weight: 700;
+  font-size: 1.08rem;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.08), rgba(79, 70, 229, 0.03));
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card > header .subtitle {
+  font-weight: 500;
+  font-size: 14px;
+  color: #475569;
+  margin-left: auto;
+}
+
+.card .content {
+  padding: 22px;
+  position: relative;
+}
+
+.content--dimmed {
+  opacity: 0.65;
+  filter: grayscale(0.2);
+  pointer-events: none;
+}
+
+.section-note {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* ============================================================
+   BANNER DE EMPRESA
 ============================================================ */
 
 .empresa-banner {
   background: linear-gradient(135deg, #ffffff 0%, #f5f8ff 100%);
   padding: 28px 32px;
   border-radius: 20px;
-  border: 1px solid rgba(99, 102, 241, 0.15);
-  box-shadow: 0 6px 20px rgba(109, 120, 178, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.16);
+  box-shadow: 0 12px 32px rgba(109, 120, 178, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 28px;
   gap: 24px;
 }
 
-/* Brand (logo + nombre) */
 .empresa-brand {
   display: flex;
   align-items: center;
   gap: 20px;
+  min-width: 0;
 }
 
-/* Contenedor del logo */
 .empresa-logo {
-  width: 90px;
-  height: 90px;
-  border-radius: 16px;
-  background: #f0f4ff;
+  width: 96px;
+  height: 96px;
+  border-radius: 18px;
+  background: #eef2ff;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
-  border: 1px solid rgba(99, 102, 241, 0.20);
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.25);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  overflow: hidden;
 }
 
 .empresa-logo__image {
@@ -74,19 +133,18 @@
   border-radius: inherit;
 }
 
-/* Placeholder futurista */
 .empresa-placeholder {
-  font-size: 40px;
-  opacity: 0.6;
+  font-size: 42px;
+  opacity: 0.55;
+  color: #312e81;
 }
 
-/* Botón del lápiz flotante estilo futurista */
 .upload-btn {
   position: absolute;
   bottom: -8px;
   right: -8px;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #6366f1;
   color: #fff;
@@ -96,37 +154,37 @@
   align-items: center;
   border: 2px solid #fff;
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 6px 12px rgba(99, 102, 241, 0.45);
   transition: all 0.25s ease;
 }
 
 .upload-btn:hover {
   background: #4f46e5;
-  transform: scale(1.05);
+  transform: translateY(-1px) scale(1.05);
 }
 
 .upload-btn input {
   display: none;
 }
 
-/* Títulos */
 .empresa-titles h1 {
   font-size: 1.9rem;
-  font-weight: 700;
+  font-weight: 800;
   margin: 0;
-  color: #1e293b;
+  color: #0f172a;
 }
 
 .empresa-titles p {
-  margin: 4px 0 0;
-  color: #64748b;
+  margin: 6px 0 0;
+  color: #475569;
   font-size: 15px;
 }
 
-/* Botones */
 .empresa-actions {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .empresa-actions .btn {
@@ -135,25 +193,35 @@
   font-size: 15px;
 }
 
-/* Responsive */
-@media (max-width: 780px) {
-  .empresa-banner {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .empresa-brand {
-    flex-direction: column;
-  }
-
-  .empresa-actions {
-    justify-content: center;
-    width: 100%;
-  }
+.logo-upload-feedback {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  display: inline-block;
 }
+
+.logo-upload-feedback--success {
+  background: #ecfeff;
+  color: #0f766e;
+  border: 1px solid #99f6e4;
+}
+
+.logo-upload-feedback--error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.empresa-logo-hint {
+  margin: 6px 0 22px;
+  color: #475569;
+  font-size: 14px;
+}
+
 /* ============================================================
-   INFORMACIÓN GENERAL – Tarjeta Profesional + Futurista
-=============================================================== */
+   INFORMACION GENERAL
+============================================================ */
 
 .empresa-info {
   display: flex;
@@ -161,52 +229,516 @@
   gap: 22px;
 }
 
-/* Grid elegante para los datos */
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 18px;
-  padding: 6px 4px;
 }
 
-/* Cada dato individual */
 .info-item {
-  background: #f9fafc;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
   padding: 14px 18px;
   border-radius: 14px;
-  border: 1px solid rgba(99, 102, 241, 0.15);
-  box-shadow: 0 2px 6px rgba(109, 120, 178, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.16);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .info-item strong {
-  font-size: 14px;
+  font-size: 13px;
   color: #475569;
-  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .info-item span {
   font-size: 15px;
-  color: #1e293b;
-  font-weight: 500;
+  color: #0f172a;
+  font-weight: 600;
 }
 
-/* Estatus dentro de info */
 .info-item .badge {
   margin-top: 4px;
 }
 
-/* Botón Editar */
 .info-edit-btn {
-  margin-top: 10px;
+  margin-top: 6px;
   display: inline-block;
 }
 
-/* Responsive */
-@media (max-width: 640px) {
+/* ============================================================
+   TABLAS Y ACCIONES
+============================================================ */
+
+.table-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.table-actions .subtitle {
+  color: #475569;
+  font-size: 14px;
+  display: block;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+thead tr {
+  background: #f8fafc;
+}
+
+th,
+td {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 14px;
+  color: #0f172a;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+tbody tr:nth-child(odd) {
+  background: #fbfdff;
+}
+
+tbody tr:hover {
+  background: #eef2ff;
+}
+
+td.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   KPI Y PROGRESO DE MACHOTE
+============================================================ */
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.kpi {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.kpi h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.kpi-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.kpi.wide {
+  grid-column: span 2;
+}
+
+.progress {
+  width: 100%;
+  background: #e5e7eb;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress .bar {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  border-radius: inherit;
+}
+
+.content small {
+  color: #475569;
+}
+
+/* ============================================================
+   DOCUMENTOS
+============================================================ */
+
+.docs-summary {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 18px;
+  align-items: stretch;
+  margin-bottom: 14px;
+}
+
+.docs-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.docs-stat {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #eef2ff;
+  color: #312e81;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.stat-body {
+  display: grid;
+  gap: 4px;
+}
+
+.stat-label {
+  color: #475569;
+  font-size: 13px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.docs-progress {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.12);
+}
+
+.progress-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.progress-track {
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+  border: 1px solid rgba(79, 70, 229, 0.25);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4f46e5, #22c55e);
+  border-radius: inherit;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
+.progress-meta {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #475569;
+}
+
+/* ============================================================
+   PORTAL DE ACCESO
+============================================================ */
+
+.portal-card {
+  background: linear-gradient(125deg, #0ea5e9 0%, #6366f1 55%, #312e81 100%);
+  color: #e2e8f0;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 16px 40px rgba(99, 102, 241, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.portal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.portal-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.portal-subtitle {
+  display: block;
+  font-size: 13px;
+  color: #e2e8f0;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+.portal-btn-create {
+  background: #f8fafc;
+  color: #0f172a;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.portal-btn-create:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.22);
+}
+
+.portal-btn-create:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.portal-note {
+  margin: 10px 0 0;
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.portal-empty {
+  margin-top: 14px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+}
+
+.portal-info {
+  margin-top: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.portal-item {
+  display: grid;
+  gap: 4px;
+}
+
+.portal-item .label {
+  font-size: 13px;
+  color: #e2e8f0;
+  opacity: 0.85;
+}
+
+.portal-item .value {
+  font-weight: 800;
+  color: #fff;
+  font-size: 15px;
+  word-break: break-all;
+}
+
+.portal-item .token {
+  letter-spacing: 0.04em;
+  font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+}
+
+.portal-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.portal-btn {
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f172a;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.2);
+}
+
+.portal-btn.danger {
+  background: rgba(248, 113, 113, 0.2);
+  color: #fee2e2;
+  border: 1px solid rgba(248, 113, 113, 0.55);
+}
+
+.portal-btn.small {
+  font-size: 13px;
+}
+
+/* ============================================================
+   AUDITORIA
+============================================================ */
+
+.audit-table-wrapper {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: auto;
+  max-height: 420px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.audit-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+
+.audit-table th {
+  background: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.audit-event {
+  display: grid;
+  gap: 8px;
+}
+
+.audit-event__message {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.audit-details {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.audit-details__field {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.audit-details__values {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: #475569;
+}
+
+.audit-details__empty {
+  color: #475569;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ============================================================
+   ACCIONES FINALES
+============================================================ */
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.actions a.btn {
+  min-width: 160px;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 980px) {
+  .empresa-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .empresa-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .docs-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .empresa-brand {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  table {
+    min-width: 520px;
+  }
+
+  .card > header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 540px) {
+  .empresa-banner {
+    padding: 22px;
+    text-align: left;
+  }
+
+  .empresa-actions .btn {
+    flex: 1;
+    text-align: center;
+  }
+
   .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .kpi.wide {
+    grid-column: span 1;
   }
 }

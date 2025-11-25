@@ -1,0 +1,90 @@
+/* ------------------------------------------
+   IMPORTAR SISTEMA DE DISENO
+--------------------------------------------*/
+
+/* 1) Theme y Reset */
+@import url('../../theme.css');
+@import url('../../base/reset.css');
+@import url('../../base/base.css');
+
+/* 2) Layout global */
+@import url('../../layout/containers.css');
+@import url('../../layout/grid.css');
+@import url('../../layout/header.css');
+@import url('../../layout/responsive.css');
+@import url('../../layout/sidebar.css');
+
+/* 2) Components (TU SISTEMA DE COMPONENTES) */
+@import url('../../components/buttons.css');
+@import url('../../components/forms.css');
+@import url('../../components/cards.css');
+@import url('../../components/badges.css');
+@import url('../../components/alerts.css');
+@import url('../../components/breadcrumbs.css');
+@import url('../../components/modal.css');
+@import url('../../components/tables.css');
+@import url('../../components/progress.css');
+
+/* 3) Utilities */
+@import url('../../utilities/utilities.css');
+
+/* ============================================================
+   LAYOUT GENERAL
+============================================================ */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 6px 32px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.card > header {
+  padding: 18px 22px;
+  font-weight: 700;
+  font-size: 1.08rem;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.08), rgba(79, 70, 229, 0.03));
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card > header .subtitle {
+  font-weight: 500;
+  font-size: 14px;
+  color: #475569;
+  margin-left: auto;
+}
+
+.card .content {
+  padding: 22px;
+  position: relative;
+}
+
+.content--dimmed {
+  opacity: 0.65;
+  filter: grayscale(0.2);
+  pointer-events: none;
+}
+
+.section-note {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
