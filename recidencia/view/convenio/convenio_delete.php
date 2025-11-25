@@ -23,7 +23,6 @@ $formDisabled = $handlerResult['formDisabled'];
 
   <!-- Estilos globales -->
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css"/>
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/convenio.css" />
 </head>
 <body>

@@ -6,7 +6,6 @@
   <title>Empresas · Residencia Profesional</title>
 
   <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
 </head>
 <body>

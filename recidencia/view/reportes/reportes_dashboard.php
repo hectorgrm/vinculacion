@@ -6,7 +6,6 @@
   <title>📊 Reportes · Residencias Profesionales</title>
 
   <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/reportes.css" />
 
   <!-- Chart.js -->

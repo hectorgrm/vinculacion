@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión Integral del Estudiante · Servicio Social</title>
   <link rel="stylesheet" href="../../assets/css/estudiante/estudianteview.css" />
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
 </head>
 
 <body>

@@ -43,7 +43,6 @@ $submitDisabled = ($empresas === [] && !$isLocked);
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editar Estudiante · Residencia Profesional</title>
 
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/estudiante.css" />
 
 

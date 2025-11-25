@@ -7,7 +7,6 @@
 
   <!-- Estilos globales -->
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/machote.css" />
 </head>
 <body>

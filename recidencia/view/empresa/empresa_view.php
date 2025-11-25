@@ -81,7 +81,6 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
   <title>Detalle de Empresa · Residencias Profesionales</title>
 
   <!-- Si ya tienes estilos específicos para esta vista, mantenlos: -->
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
 
 

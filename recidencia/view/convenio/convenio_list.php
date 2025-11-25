@@ -17,7 +17,6 @@ $errorMessage = $handlerResult['errorMessage'];
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Convenios · Residencias Profesionales</title>
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/convenio.css" />
 </head>
 

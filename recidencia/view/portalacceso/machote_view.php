@@ -7,7 +7,6 @@
   <title>Portal Empresa · Revisión de Acuerdo</title>
 
   <!-- Reutiliza tu CSS existente si ya lo tienes -->
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/portal.css" />
   <link rel="stylesheet" href="../../assets/css/modules/portalacceso.css" />
   <style>

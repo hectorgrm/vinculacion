@@ -27,7 +27,6 @@ $errorMessage = $handlerResult['errorMessage'];
   <title>Portal de Acceso · Residencias Profesionales</title>
 
   <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/portalacceso.css" />
 
 

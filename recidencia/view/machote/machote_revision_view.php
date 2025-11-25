@@ -6,7 +6,6 @@
   <title>✏️ Revisión de Machote · Vinculación</title>
 
   <!-- Tus estilos globales -->
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/machote.css" />
 
   <style>

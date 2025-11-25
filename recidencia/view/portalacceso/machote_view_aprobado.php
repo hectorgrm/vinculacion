@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Empresa · Acuerdo Aprobado</title>
 
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/portal.css" />
   <link rel="stylesheet" href="../../assets/css/modules/portalacceso.css" />
   <style>

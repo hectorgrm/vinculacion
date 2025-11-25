@@ -24,7 +24,6 @@ $errorMessage = $handlerResult['errorMessage'];
   <title>Historial de Auditoría - Residencias Profesionales</title>
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
 
   <style>

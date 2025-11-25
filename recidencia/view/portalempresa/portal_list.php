@@ -20,7 +20,6 @@ $kpiDocsPend     = 1;
   <title>Portal de Empresa · Inicio</title>
 
   <!-- Si ya tienes un CSS general del portal, úsalo aquí -->
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/portal.css" />
 
   <!-- Fallback mínimo por si aún no creas el CSS -->

@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión Integral del Estudiante · Servicio Social</title>
   <link rel="stylesheet" href="../../assets/css/estudiante/estudianteview.css" />
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <style>
     .status { font-weight: bold; padding: 4px 8px; border-radius: 6px; }
     .status.pendiente { color: #b00; background: #ffd9d9; }

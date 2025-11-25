@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>📊 Progreso del Estudiante · Servicio Social</title>
   <link rel="stylesheet" href="../../assets/css/estudiante/estudianteprogreso.css" />
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
 </head>
 <body>
   <div class="app">

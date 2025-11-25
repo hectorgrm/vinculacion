@@ -54,7 +54,6 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Revisión de Documento - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
 </head>
 
