@@ -1,0 +1,7 @@
+/* Aggregate styles for Documentos module */
+@import url('../documentos/documentoglobalstyles.css');
+@import url('../documentos/documento_list.css');
+@import url('../documentos/documento_view.css');
+@import url('../documentos/documento_upload.css');
+@import url('../documentos/documento_delete.css');
+@import url('../documentos/documento_review.css');

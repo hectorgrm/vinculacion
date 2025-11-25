@@ -102,7 +102,8 @@ $machoteRevisarUrl = $machoteChildId !== null
     <title>Detalle de Convenio · Residencias Profesionales</title>
 
     <!-- Estilos para esta vista -->
-    <link rel="stylesheet" href="../../assets/css/convenios/convenio_view.css" />
+    <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+    <link rel="stylesheet" href="../../assets/css/modules/convenio.css" />
 
 </head>
 

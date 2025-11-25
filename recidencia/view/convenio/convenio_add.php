@@ -23,8 +23,8 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registrar Convenio - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/convenios/convenioadd.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/convenio.css" />
 </head>
 
 <body>

@@ -139,9 +139,8 @@ if (!empty($_GET['reabrir_error'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>📝 Revisión de Machote · Residencias</title>
 
-  <link rel="stylesheet" href="../../assets/css/dashboard.css">
-  <link rel="stylesheet" href="../../assets/css/machote/revisar.css">
-  <link rel="stylesheet" href="../../assets/css/machote/machote_revisar.css">
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/machote.css" />
 
 
 </head>

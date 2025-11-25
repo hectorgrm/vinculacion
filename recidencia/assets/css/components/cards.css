@@ -1,0 +1,23 @@
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  padding: 18px;
+}
+
+.card + .card {
+  margin-top: 12px;
+}
+
+.card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card__title {
+  font-size: 18px;
+  margin: 0;
+}

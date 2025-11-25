@@ -30,7 +30,8 @@ $newConvenioUrl = $handlerResult['newConvenioUrl'];
   <title>Renovar Convenio · Residencias Profesionales</title>
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/convenios/convenio_renovar.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/convenio.css" />
 </head>
 
 <body>

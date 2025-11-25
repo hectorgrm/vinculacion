@@ -6,8 +6,8 @@
   <title>Empresas · Residencia Profesional</title>
 
   <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/empresas/empresalist.css">
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
 </head>
 <body>
   <div class="app">

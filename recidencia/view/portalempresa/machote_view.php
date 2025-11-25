@@ -7,7 +7,8 @@
   <title>Portal Empresa · Revisión de Acuerdo</title>
 
   <!-- Reutiliza tu CSS existente si ya lo tienes -->
-  <link rel="stylesheet" href="../../assets/css/portal/machote_view.css">
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/portal.css" />
   <style>
     /* Ajustes de lenguaje no técnico (opcional si ya tienes tu CSS) */
     .metric {background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:12px;text-align:center}

@@ -32,7 +32,8 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>✏️ Editar Empresa · Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/empresas/empresaedit.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
 </head>
 
 <body>

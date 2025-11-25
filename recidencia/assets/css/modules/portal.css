@@ -1,0 +1,6 @@
+/* Aggregate styles for Portal module */
+@import url('../portal/portalglobalstyles.css');
+@import url('../portal/portal_list.css');
+@import url('../portal/portal_view.css');
+@import url('../portal/portalempresa.css');
+@import url('../portal/machote_view.css');

@@ -37,8 +37,8 @@ if (isset($_GET['ok']) && $_GET['ok'] === 'convenio') {
   <title>📝 Machote Revisado · Residencias</title>
 
   <!-- Reutiliza tus estilos globales -->
-  <link rel="stylesheet" href="../../assets/css/dashboard.css">
-  <link rel="stylesheet" href="../../assets/css/machote/revisar.css">
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/machote.css" />
 
   <style>
     /* Ajustes locales */

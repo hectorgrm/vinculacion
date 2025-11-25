@@ -34,7 +34,8 @@ $savedDocument = $handlerResult['savedDocument'];
   <title>Subir Documento - Residencias Profesionales</title>
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/documentos/documento_upload.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
 </head>
 
 <body>

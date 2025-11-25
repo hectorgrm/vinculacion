@@ -1,0 +1,11 @@
+/* Aggregate styles for Empresa module */
+@import url('../empresas/empresaglobalstyles.css');
+@import url('../empresas/empresalist.css');
+@import url('../empresas/empresaview.css');
+@import url('../empresas/empresaAdd.css');
+@import url('../empresas/empresadelete.css');
+@import url('../empresas/empresalogo.css');
+@import url('../empresas/empresaedit.css');
+@import url('../empresas/portalacceso.css');
+@import url('../empresas/empresadocs.css');
+@import url('../residencias/empresaprogreso.css');

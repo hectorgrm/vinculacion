@@ -1,0 +1,16 @@
+header.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header.topbar h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+header.topbar .actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

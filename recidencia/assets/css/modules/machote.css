@@ -1,0 +1,10 @@
+/* Aggregate styles for Machote module */
+@import url('../machote/machoteglobalstyles.css');
+@import url('../machote/machote_list.css');
+@import url('../machote/machote_add.css');
+@import url('../machote/machote_edit.css');
+@import url('../machote/machote_delete.css');
+@import url('../machote/machote_view.css');
+@import url('../machote/machote_revisar.css');
+@import url('../machote/machote_revisado.css');
+@import url('../machote/revisar.css');

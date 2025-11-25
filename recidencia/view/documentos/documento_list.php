@@ -22,7 +22,8 @@ $errorMessage = $handlerResult['errorMessage'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestion de Documentos - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/documentos/documento_list.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
 
  
 </head>

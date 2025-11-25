@@ -7,7 +7,7 @@
 
   <!-- Tus estilos globales -->
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
-  <link rel="stylesheet" href="../../assets/css/machote/machote_list.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/machote.css" />
 
   <style>
     :root{

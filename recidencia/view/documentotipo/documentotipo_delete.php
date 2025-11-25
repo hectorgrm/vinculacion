@@ -36,7 +36,8 @@ $activoClass = $activo ? 'badge ok' : 'badge warn';
   <title>Eliminar Tipo de Documento - Residencias</title>
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/documentotipo/documentotipo.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentotipo.css" />
 </head>
 
 <body>

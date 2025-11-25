@@ -58,7 +58,9 @@ $usageMessage = empresaDocumentoTipoDeleteUsageMessage($usageCount);
   <title>Eliminar documento individual - Residencias Profesionales</title>
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/documentotipo/documentotipo.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentotipo.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
 
   <style>
     .danger-zone {

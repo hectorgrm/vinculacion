@@ -124,7 +124,8 @@ if (is_array($document)) {
   <title>Eliminar Documento - Residencias Profesionales</title>
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/documentos/documento_delete.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
 </head>
 
 <body>

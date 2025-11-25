@@ -1,0 +1,4 @@
+/* Aggregate styles for Tipo de Documento module */
+@import url('../documentotipo/documentotipo_globalstyles.css');
+@import url('../documentotipo/documentotipo.css');
+@import url('../documentotipo/documentotipolist.css');

@@ -51,8 +51,9 @@ $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . ur
   <title>Documentacion de Empresa - Residencias Profesionales</title>
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
-  <link rel="stylesheet" href="../../assets/css/empresas/empresadocs.css" />
-  <link rel="stylesheet" href="../../assets/css/documentotipo/documentotipolist.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentotipo.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
 
 
 </head>

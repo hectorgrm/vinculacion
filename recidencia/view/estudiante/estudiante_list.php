@@ -10,7 +10,8 @@ require __DIR__ . '/../../handler/estudiante/estudiante_list_handler.php';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Estudiantes · Residencia Profesional</title>
 
-  <link rel="stylesheet" href="../../assets/css/estudiantes/estudiante_list.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/estudiante.css" />
 
 
 </head>

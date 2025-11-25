@@ -1,0 +1,27 @@
+table.data-table {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--panel);
+}
+
+table.data-table th,
+table.data-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+table.data-table th {
+  background: #f8fafc;
+  font-weight: 700;
+}
+
+table.data-table tr:nth-child(odd) {
+  background: #fcfdff;
+}
+
+table.data-table tr:hover {
+  background: rgba(31, 111, 235, 0.04);
+}

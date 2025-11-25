@@ -32,7 +32,8 @@ $estatusOptions = $handlerResult['estatusOptions'];
     <title>Nuevo Estudiante · Residencia Profesional</title>
 
 
-    <link rel="stylesheet" href="../../assets/css/estudiantes/estudiante_add.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+    <link rel="stylesheet" href="../../assets/css/modules/estudiante.css" />
 
 </head>
 

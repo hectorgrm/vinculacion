@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eliminar Machote · Residencias</title>
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
-  <link rel="stylesheet" href="../../assets/css/machote/machote_delete.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/machote.css" />
 </head>
 <body>
   <div class="app">
