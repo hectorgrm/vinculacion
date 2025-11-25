@@ -324,18 +324,39 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               Esta empresa aún está en revisión; no es posible subir documentos hasta que esté activa.
             </p>
           <?php endif; ?>
-          <div class="docs-summary" style="margin-bottom:15px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
-            <div style="flex:1;">
-              <strong>📄 Documentos requeridos:</strong> <?php echo htmlspecialchars((string) $docsTotal, ENT_QUOTES, 'UTF-8'); ?><br>
-              <strong>📤 Subidos:</strong> <?php echo htmlspecialchars((string) $docsSubidos, ENT_QUOTES, 'UTF-8'); ?>
-              <strong>✅ Aprobados:</strong> <?php echo htmlspecialchars((string) $docsAprobados, ENT_QUOTES, 'UTF-8'); ?>
-            </div>
-            <div style="flex:1;">
-              <label style="font-weight:600;">Progreso general:</label>
-              <div style="background:#eee; border-radius:8px; overflow:hidden; height:10px; margin-top:4px;">
-                <div style="width:<?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>%; height:10px; background:#4caf50;"></div>
+          <div class="docs-summary">
+            <div class="docs-stats">
+              <div class="docs-stat">
+                <span class="stat-icon">📄</span>
+                <div class="stat-body">
+                  <span class="stat-label">Documentos requeridos</span>
+                  <span class="stat-value"><?php echo htmlspecialchars((string) $docsTotal, ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
               </div>
-              <small><?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>% completado</small>
+              <div class="docs-stat">
+                <span class="stat-icon">📤</span>
+                <div class="stat-body">
+                  <span class="stat-label">Subidos</span>
+                  <span class="stat-value"><?php echo htmlspecialchars((string) $docsSubidos, ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
+              </div>
+              <div class="docs-stat">
+                <span class="stat-icon">✅</span>
+                <div class="stat-body">
+                  <span class="stat-label">Aprobados</span>
+                  <span class="stat-value"><?php echo htmlspecialchars((string) $docsAprobados, ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
+              </div>
+            </div>
+            <div class="docs-progress">
+              <div class="progress-heading">
+                <span class="progress-label">Progreso general</span>
+                <span class="progress-value"><?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" style="width:<?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>%;"></div>
+              </div>
+              <small class="progress-meta"><?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>% completado</small>
             </div>
           </div>
 
@@ -384,15 +405,15 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                       : '';
                   ?>
                   <tr>
-                    <td>
-                      <?php echo htmlspecialchars($documentoNombre, ENT_QUOTES, 'UTF-8'); ?>
-                      <?php if ($documentoOpcional) : ?>
-                        <span class="badge secondary">Opcional</span>
-                      <?php endif; ?>
-                    </td>
+                  <td>
+                    <?php echo htmlspecialchars($documentoNombre, ENT_QUOTES, 'UTF-8'); ?>
+                    <?php if ($documentoOpcional) : ?>
+                      <span class="badge secondary">Opcional</span>
+                    <?php endif; ?>
+                  </td>
                     <td><span class="<?php echo htmlspecialchars($documentoEstadoClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($documentoEstadoLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
                     <td><?php echo htmlspecialchars($documentoActualizado !== '' ? $documentoActualizado : '—', ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td>
+                    <td class="doc-actions">
                       <?php if (
                           $accionUrl !== '' &&
                           !($empresaIsEnRevision && $accionVariant === 'upload')
@@ -400,13 +421,13 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                         <a href="<?php echo htmlspecialchars($accionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($accionClass, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $accionAttrs; ?>><?php echo htmlspecialchars($accionPrefix . $accionLabel, ENT_QUOTES, 'UTF-8'); ?></a>
                       <?php endif; ?>
                       <?php if (!$empresaIsEnRevision && $accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
-                        <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">📁 Subir</a>
+                        <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">📁 Subir</a>
                       <?php endif; ?>
                       <?php if ($documentoEstatus === 'aprobado' && $detailUrl !== '') : ?>
-                        <a href="<?php echo htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">🔍 Detalle</a>
+                        <a href="<?php echo htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">🔍 Detalle</a>
                       <?php endif; ?>
                       <?php if (in_array($documentoEstatus, ['revision', 'pendiente'], true) && $reviewUrl !== '') : ?>
-                        <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary" style="margin-left:6px;">📝 Revisar</a>
+                        <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">📝 Revisar</a>
                       <?php endif; ?>
                     </td>
                   </tr>
