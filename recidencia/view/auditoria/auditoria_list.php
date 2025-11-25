@@ -23,7 +23,6 @@ $errorMessage = $handlerResult['errorMessage'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Historial de Auditoría - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
   <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
 
   <style>

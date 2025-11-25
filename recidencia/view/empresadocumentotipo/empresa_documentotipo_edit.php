@@ -80,7 +80,6 @@ if ($supportsActivo && $documentoId !== null) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editar documento individual - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/stylesrecidencia.css" />
   <link rel="stylesheet" href="../../assets/css/modules/documentotipo.css" />
   <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
 
