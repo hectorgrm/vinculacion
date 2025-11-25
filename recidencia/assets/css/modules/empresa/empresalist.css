@@ -1,0 +1,220 @@
+/* ============================================================
+   EMPRESA LIST – Estilos específicos para empresa_list.php
+   Incluye: base + components + utilities
+   ============================================================ */
+
+/* ------------------------------------------
+   IMPORTAR SISTEMA DE DISEÑO
+--------------------------------------------*/
+
+/* 1) Theme y Reset */
+@import url('../../theme.css');
+@import url('../../base/reset.css');
+@import url('../../base/base.css');
+
+/* 2) Layout global */
+@import url('../../../layout/containers.css');
+@import url('../../../layout/grid.css');
+@import url('../../../layout/header.css');
+@import url('../../../layout/responsive.css');
+@import url('../../../layout/sidebar.css');
+
+/* 2) Components (TU SISTEMA DE COMPONENTES) */
+@import url('../../components/buttons.css');
+@import url('../../components/forms.css');
+@import url('../../components/cards.css');
+@import url('../../components/badges.css');
+@import url('../../components/alerts.css');
+@import url('../../components/breadcrumbs.css');
+@import url('../../components/modal.css');
+@import url('../../components/tables.css');
+@import url('../../components/progress.css');
+
+/* 3) Utilities */
+@import url('../../utilities/utilities.css');
+
+/* ============================================================
+   2. LAYOUT GENERAL
+============================================================ */
+
+.main {
+  display: grid;
+  gap: 24px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.topbar h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--ink);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+  color: var(--primary);
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   3. CARD GENERAL
+============================================================ */
+
+.card {
+  background: #fff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.card > header {
+  padding: 18px 22px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.card .content {
+  padding: 22px;
+}
+
+/* ============================================================
+   4. FORMULARIO DE BUSQUEDA
+============================================================ */
+
+.search-form {
+  margin-bottom: 18px;
+}
+
+.search-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.search-field label {
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.search-field input {
+  width: 250px;
+}
+
+.search-actions .btn {
+  white-space: nowrap;
+}
+
+/* ============================================================
+   5. TABLA DE EMPRESAS
+============================================================ */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table#empresasTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+}
+
+table#empresasTable th {
+  padding: 12px 14px;
+  background: #f8fafc;
+  color: var(--ink);
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+table#empresasTable td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #0f172a;
+}
+
+table#empresasTable tbody tr:hover {
+  background: #f1f5f9;
+}
+
+/* Fila de filtros */
+.filter-row input {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+/* Acciones dentro de tabla */
+td.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.actions-column {
+  min-width: 250px;
+  text-align: left;
+}
+
+/* ============================================================
+   6. EMPTY STATE
+============================================================ */
+
+.empty-state {
+  text-align: center;
+  padding: 16px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* ============================================================
+   7. RESPONSIVE
+============================================================ */
+
+@media (max-width: 880px) {
+  .actions-column {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .search-actions .btn {
+    flex: 1;
+  }
+}

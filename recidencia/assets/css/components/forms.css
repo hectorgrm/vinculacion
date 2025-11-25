@@ -1,39 +1,15 @@
-.form-group {
-  display: grid;
-  gap: 6px;
-}
-
-label {
-  font-weight: 600;
-  color: var(--ink);
-}
-
-input,
-select,
-textarea {
+input, select, textarea {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
   background: #fff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-size: 15px;
+  transition: .2s ease-in-out;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
+input:focus, select:focus, textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.12);
-}
-
-input.error,
-select.error,
-textarea.error {
-  border-color: var(--danger);
-}
-
-.form-help {
-  color: var(--muted);
-  font-size: 14px;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
+  outline: none;
 }

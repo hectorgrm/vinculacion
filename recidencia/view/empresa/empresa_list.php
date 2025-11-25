@@ -13,7 +13,7 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
   <title>Empresas · Residencia Profesional</title>
 
   <!-- Estilos específicos para este listado -->
-  <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/empresa/empresalist.css" />
 
 
 
