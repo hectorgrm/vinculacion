@@ -1,0 +1,212 @@
+
+/* ------------------------------------------
+   IMPORTAR SISTEMA DE DISEÑO
+--------------------------------------------*/
+
+/* 1) Theme y Reset */
+@import url('../../theme.css');
+@import url('../../base/reset.css');
+@import url('../../base/base.css');
+
+/* 2) Layout global */
+@import url('../../layout/containers.css');
+@import url('../../layout/grid.css');
+@import url('../../layout/header.css');
+@import url('../../layout/responsive.css');
+@import url('../../layout/sidebar.css');
+
+/* 2) Components (TU SISTEMA DE COMPONENTES) */
+@import url('../../components/buttons.css');
+@import url('../../components/forms.css');
+@import url('../../components/cards.css');
+@import url('../../components/badges.css');
+@import url('../../components/alerts.css');
+@import url('../../components/breadcrumbs.css');
+@import url('../../components/modal.css');
+@import url('../../components/tables.css');
+@import url('../../components/progress.css');
+
+/* 3) Utilities */
+@import url('../../utilities/utilities.css');
+
+/* ============================================================
+   BANNER DE EMPRESA – Estilo Profesional + Futurista (C + D)
+============================================================ */
+
+.empresa-banner {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f8ff 100%);
+  padding: 28px 32px;
+  border-radius: 20px;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 0 6px 20px rgba(109, 120, 178, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  gap: 24px;
+}
+
+/* Brand (logo + nombre) */
+.empresa-brand {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Contenedor del logo */
+.empresa-logo {
+  width: 90px;
+  height: 90px;
+  border-radius: 16px;
+  background: #f0f4ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
+  border: 1px solid rgba(99, 102, 241, 0.20);
+}
+
+.empresa-logo__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+/* Placeholder futurista */
+.empresa-placeholder {
+  font-size: 40px;
+  opacity: 0.6;
+}
+
+/* Botón del lápiz flotante estilo futurista */
+.upload-btn {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #6366f1;
+  color: #fff;
+  display: flex;
+  font-size: 16px;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+  transition: all 0.25s ease;
+}
+
+.upload-btn:hover {
+  background: #4f46e5;
+  transform: scale(1.05);
+}
+
+.upload-btn input {
+  display: none;
+}
+
+/* Títulos */
+.empresa-titles h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1e293b;
+}
+
+.empresa-titles p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 15px;
+}
+
+/* Botones */
+.empresa-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.empresa-actions .btn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+/* Responsive */
+@media (max-width: 780px) {
+  .empresa-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .empresa-brand {
+    flex-direction: column;
+  }
+
+  .empresa-actions {
+    justify-content: center;
+    width: 100%;
+  }
+}
+/* ============================================================
+   INFORMACIÓN GENERAL – Tarjeta Profesional + Futurista
+=============================================================== */
+
+.empresa-info {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Grid elegante para los datos */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  padding: 6px 4px;
+}
+
+/* Cada dato individual */
+.info-item {
+  background: #f9fafc;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 0 2px 6px rgba(109, 120, 178, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info-item strong {
+  font-size: 14px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.info-item span {
+  font-size: 15px;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+/* Estatus dentro de info */
+.info-item .badge {
+  margin-top: 4px;
+}
+
+/* Botón Editar */
+.info-edit-btn {
+  margin-top: 10px;
+  display: inline-block;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}

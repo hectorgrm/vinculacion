@@ -64,9 +64,13 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
             <div class="search-row">
               <div class="field search-field">
                 <label for="search">Buscar empresa:</label>
-                <input type="text" id="search" name="search" placeholder="Nombre, contacto o RFC..."
-                  value="<?php echo htmlspecialchars((string) $search, ENT_QUOTES, 'UTF-8'); ?>" />
+
+                <div class="input-wrapper">
+                  <span class="icon">🔎</span>
+                  <input type="text" id="search" name="search" placeholder="Nombre, contacto o RFC...">
+                </div>
               </div>
+
               <div class="actions search-actions">
                 <button type="submit" class="btn primary">🔍 Buscar</button>
                 <a href="empresa_list.php" class="btn">Limpiar</a>
