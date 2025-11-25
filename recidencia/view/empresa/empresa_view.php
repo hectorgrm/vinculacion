@@ -439,7 +439,11 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               <strong><?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></strong>
               <span class="subtitle">Listado de estudiantes con estatus activo o finalizado.</span>
             </div>
-            <a href="<?php echo htmlspecialchars($nuevoEstudianteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Agregar estudiante</a>
+            <?php if ($empresaIsEnRevision): ?>
+              <span class="section-note" style="color:#dc2626;">empresa aun esta en revicion no se puede agregar estudiantes</span>
+            <?php else: ?>
+              <a href="<?php echo htmlspecialchars($nuevoEstudianteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Agregar estudiante</a>
+            <?php endif; ?>
           </div>
 
           <div class="table-wrapper">
