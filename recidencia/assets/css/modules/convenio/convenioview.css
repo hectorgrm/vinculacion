@@ -1,0 +1,289 @@
+/* ------------------------------------------
+   IMPORTAR SISTEMA DE DISENO
+--------------------------------------------*/
+
+/* 1) Theme y Reset */
+@import url('../../theme.css');
+@import url('../../base/reset.css');
+@import url('../../base/base.css');
+
+/* 2) Layout global */
+@import url('../../layout/containers.css');
+@import url('../../layout/grid.css');
+@import url('../../layout/header.css');
+@import url('../../layout/responsive.css');
+@import url('../../layout/sidebar.css');
+
+/* 2) Components (TU SISTEMA DE COMPONENTES) */
+@import url('../../components/buttons.css');
+@import url('../../components/forms.css');
+@import url('../../components/cards.css');
+@import url('../../components/badges.css');
+@import url('../../components/alerts.css');
+@import url('../../components/breadcrumbs.css');
+@import url('../../components/modal.css');
+@import url('../../components/tables.css');
+@import url('../../components/progress.css');
+
+/* 3) Utilities */
+@import url('../../utilities/utilities.css');
+
+/* ============================================================
+   LAYOUT GENERAL
+============================================================ */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 0 6px 32px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.card > header {
+  padding: 18px 22px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.08), rgba(79, 70, 229, 0.03));
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card .content {
+  padding: 22px;
+}
+
+/* ============================================================
+   TOPBAR Y BREADCRUMB
+============================================================ */
+
+.topbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.topbar h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.breadcrumb a {
+  color: #4f46e5;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.top-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   GRID Y CAMPOS
+============================================================ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px 18px;
+  align-items: flex-start;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.field label {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.field .text-muted {
+  color: #475569;
+}
+
+.col-span-2 {
+  grid-column: span 2;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.actions .btn {
+  min-width: 150px;
+}
+
+.text-muted {
+  color: #475569;
+  font-size: 14px;
+}
+
+/* ============================================================
+   BADGES Y ESTADOS
+============================================================ */
+
+.badge.ok {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.badge.en_revision {
+  background: #fef9c3;
+  color: #a16207;
+  border: 1px solid #fde68a;
+}
+
+/* ============================================================
+   PREVIEW Y SECCIONES RELACIONADAS
+============================================================ */
+
+.preview iframe {
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.related .content {
+  display: grid;
+  gap: 10px;
+  color: #0f172a;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px 18px;
+}
+
+.info-grid strong {
+  color: #475569;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ============================================================
+   MACHOTE
+============================================================ */
+
+.machote-summary {
+  display: grid;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.machote-summary .actions {
+  justify-content: flex-start;
+}
+
+/* ============================================================
+   ALERTAS
+============================================================ */
+
+.alert {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
+.alert-danger,
+.alert.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.alert-warning,
+.alert.warning {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #c2410c;
+}
+
+.alert-success,
+.alert.success {
+  background: #ecfdf3;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 900px) {
+  .card {
+    border-radius: 14px;
+  }
+
+  .card > header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 0 4px 24px;
+  }
+
+  .grid,
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .col-span-2 {
+    grid-column: span 1;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+}

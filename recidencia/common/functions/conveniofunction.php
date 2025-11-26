@@ -396,7 +396,7 @@ if (!function_exists('convenioRenderBadgeClass')) {
 
         return match ($estatus) {
             'activa' => 'badge ok',
-            'en revisiÃ³n', 'en revision' => 'badge secondary',
+            'en revisión', 'en revision' => 'badge en_revision',
             'inactiva' => 'badge warn',
             'suspendida' => 'badge err',
             default => 'badge secondary',
@@ -473,4 +473,8 @@ if (!function_exists('convenioFormatDateTime')) {
         return $date->format('d/m/Y H:i');
     }
 }
+
+
+
+
 

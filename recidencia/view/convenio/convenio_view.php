@@ -102,7 +102,7 @@ $machoteRevisarUrl = $machoteChildId !== null
     <title>Detalle de Convenio · Residencias Profesionales</title>
 
     <!-- Estilos para esta vista -->
-      <link rel="stylesheet" href="../../assets/css/modules/convenio.css" />
+    <link rel="stylesheet" href="../../assets/css/modules/convenio/convenioview.css" />
 
 </head>
 
@@ -137,7 +137,7 @@ $machoteRevisarUrl = $machoteChildId !== null
                             target="_blank"
                             rel="noopener noreferrer"><?php echo htmlspecialchars($downloadLabel, ENT_QUOTES, 'UTF-8'); ?></a>
                     <?php endif; ?>
-                    <a href="convenio_list.php" class="btn secondary">⬅ Volver</a>
+                    <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn secondary">⬅️ Volver</a>
                 </div>
             </header>
 
@@ -293,31 +293,40 @@ $machoteRevisarUrl = $machoteChildId !== null
                                         <strong>Machote del convenio:</strong>
                                         versión <?php echo htmlspecialchars($machoteVersionLabel, ENT_QUOTES, 'UTF-8'); ?>
                                         <?php if ($machoteActualizadoLabel !== 'N/D'): ?>
-                                            · actualizado el <?php echo htmlspecialchars($machoteActualizadoLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                            · actualizado el
+                                            <?php echo htmlspecialchars($machoteActualizadoLabel, ENT_QUOTES, 'UTF-8'); ?>
                                         <?php endif; ?>
                                         <?php if ($machotePadreId !== null): ?>
-                                            <span class="text-muted">(plantilla institucional #<?php echo htmlspecialchars((string) $machotePadreId, ENT_QUOTES, 'UTF-8'); ?>)</span>
+                                            <span class="text-muted">(plantilla institucional
+                                                #<?php echo htmlspecialchars((string) $machotePadreId, ENT_QUOTES, 'UTF-8'); ?>)</span>
                                         <?php endif; ?>
                                     </div>
                                     <div class="actions" style="display:flex; gap:12px; flex-wrap:wrap;">
                                         <?php if ($machoteBloqueado): ?>
-                                            <button class="btn" type="button" disabled title="El machote ya fue confirmado por la empresa. Reabre la revisión para volver a editarlo.">✏️ Editar machote</button>
+                                            <button class="btn" type="button" disabled
+                                                title="El machote ya fue confirmado por la empresa. Reabre la revisión para volver a editarlo.">✏️
+                                                Editar machote</button>
                                         <?php else: ?>
-                                            <a href="<?php echo htmlspecialchars($machoteEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">✏️ Editar machote</a>
+                                            <a href="<?php echo htmlspecialchars($machoteEditUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                                class="btn">✏️ Editar machote</a>
                                         <?php endif; ?>
                                         <?php if ($machotePdfUrl !== null): ?>
-                                            <a href="<?php echo htmlspecialchars($machotePdfUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-outline" target="_blank" rel="noopener noreferrer">📄 Generar PDF</a>
+                                            <a href="<?php echo htmlspecialchars($machotePdfUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                                class="btn btn-outline" target="_blank" rel="noopener noreferrer">📄 Generar PDF</a>
                                         <?php endif; ?>
                                         <?php if ($machoteBloqueado && $machoteRevisarUrl !== null): ?>
-                                            <a href="<?php echo htmlspecialchars($machoteRevisarUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-outline">🔎 Ver revisión</a>
+                                            <a href="<?php echo htmlspecialchars($machoteRevisarUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                                class="btn btn-outline">🔎 Ver revisión</a>
                                         <?php endif; ?>
                                     </div>
                                     <?php if ($machoteBloqueado): ?>
-                                        <p class="text-muted" style="margin:0;">Machote aprobado por la empresa; reabre la revisión desde la vista de comentarios para habilitar la edición.</p>
+                                        <p class="text-muted" style="margin:0;">Machote aprobado por la empresa; reabre la revisión
+                                            desde la vista de comentarios para habilitar la edición.</p>
                                     <?php endif; ?>
                                 </div>
                             <?php elseif ($machoteGenerateUrl !== null): ?>
-                                <a class="btn btn-outline" href="<?php echo htmlspecialchars($machoteGenerateUrl, ENT_QUOTES, 'UTF-8'); ?>">
+                                <a class="btn btn-outline"
+                                    href="<?php echo htmlspecialchars($machoteGenerateUrl, ENT_QUOTES, 'UTF-8'); ?>">
                                     📄 Generar machote desde plantilla global
                                 </a>
                             <?php endif; ?>
@@ -465,5 +474,3 @@ $machoteRevisarUrl = $machoteChildId !== null
 </body>
 
 </html>
-
-
