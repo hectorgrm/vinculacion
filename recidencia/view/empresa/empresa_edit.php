@@ -48,9 +48,8 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
           <p class="subtitle">Actualiza la información institucional y de contacto</p>
         </div>
         <div class="top-actions">
-          <a href="empresa_list.php" class="btn secondary">⬅ Volver</a>
           <?php if ($empresaId !== null && $loadError === null && $controllerError === null) : ?>
-            <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">👁️ Ver</a>
+            <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn secondary">⬅️ </a>
           <?php endif; ?>
         </div>
       </header>
