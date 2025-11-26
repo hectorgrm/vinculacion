@@ -18,7 +18,7 @@ if (!function_exists('renderBadgeClass')) {
                 return 'badge ok';
             case 'en revisión':
             case 'en revision':
-                return 'badge secondary';
+                return 'badge en_revision';
             case 'inactiva':
                 return 'badge warn';
             case 'suspendida':
@@ -364,3 +364,7 @@ if (!function_exists('empresaFormValue')) {
         return isset($data[$field]) ? (string) $data[$field] : '';
     }
 }
+
+
+
+

@@ -1,0 +1,240 @@
+/* ------------------------------------------
+   IMPORTAR SISTEMA DE DISENO
+--------------------------------------------*/
+
+/* 1) Theme y Reset */
+@import url('../../theme.css');
+@import url('../../base/reset.css');
+@import url('../../base/base.css');
+
+/* 2) Layout global */
+@import url('../../layout/containers.css');
+@import url('../../layout/grid.css');
+@import url('../../layout/header.css');
+@import url('../../layout/responsive.css');
+@import url('../../layout/sidebar.css');
+
+/* 2) Components (TU SISTEMA DE COMPONENTES) */
+@import url('../../components/buttons.css');
+@import url('../../components/forms.css');
+@import url('../../components/cards.css');
+@import url('../../components/badges.css');
+@import url('../../components/alerts.css');
+@import url('../../components/breadcrumbs.css');
+@import url('../../components/modal.css');
+@import url('../../components/tables.css');
+@import url('../../components/progress.css');
+
+/* 3) Utilities */
+@import url('../../utilities/utilities.css');
+
+/* ============================================================
+   LAYOUT GENERAL
+============================================================ */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 6px 32px;
+}
+
+/* ============================================================
+   TOPBAR Y BREADCRUMB
+============================================================ */
+
+.topbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.topbar h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.breadcrumb a {
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.top-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   ZONA DE PELIGRO
+============================================================ */
+
+.danger-zone {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #fecdd3;
+  box-shadow: 0 16px 42px rgba(190, 24, 93, 0.12);
+  overflow: hidden;
+}
+
+.danger-zone > header {
+  padding: 18px 22px;
+  font-weight: 800;
+  font-size: 1.08rem;
+  background: linear-gradient(90deg, rgba(248, 113, 113, 0.18), rgba(239, 68, 68, 0.06));
+  border-bottom: 1px solid #fecdd3;
+  color: #7f1d1d;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.danger-zone .content {
+  padding: 22px;
+  display: grid;
+  gap: 14px;
+  color: #0f172a;
+}
+
+.danger-zone p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.danger-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: #7f1d1d;
+  font-weight: 600;
+}
+
+.danger-list li {
+  list-style: disc;
+}
+
+.danger-zone strong {
+  color: #b91c1c;
+}
+
+.confirm-check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  color: #7c2d12;
+  font-weight: 600;
+}
+
+.confirm-check input[type="checkbox"] {
+  margin-top: 2px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.actions .btn {
+  min-width: 160px;
+}
+
+.btn.danger {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.22);
+}
+
+.btn.danger:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.text-muted {
+  color: #475569;
+  font-size: 14px;
+}
+
+/* ============================================================
+   ALERTAS
+============================================================ */
+
+.alert {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 1px solid transparent;
+}
+
+.alert.error,
+.alert-danger {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.alert.success,
+.alert-success {
+  border-color: #bbf7d0;
+  background: #ecfdf3;
+  color: #15803d;
+}
+
+.alert.info {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+  color: #312e81;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 720px) {
+  .main {
+    padding: 0 4px 24px;
+  }
+
+  .danger-zone {
+    border-radius: 14px;
+  }
+
+  .danger-zone > header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
