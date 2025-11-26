@@ -11,7 +11,7 @@ assets/css/
 ├── modules/         # Enlaces a estilos específicos por módulo funcional
 ├── utilities/       # Clases atómicas de apoyo
 ├── legacy/          # Espacio para estilos heredados sin refactor
-├── theme.css        # Paleta, radios, sombras y tipografías globales
+├── themes/theme.css        # Paleta, radios, sombras y tipografías globales
 └── dashboard.css    # Bundle de compatibilidad con el antiguo punto de entrada
 ```
 
@@ -19,7 +19,7 @@ assets/css/
 Incluye las hojas en el `<head>` siguiendo este orden para garantizar la cascada correcta:
 ```html
 <!-- Theme -->
-<link rel="stylesheet" href="/assets/css/theme.css">
+<link rel="stylesheet" href="/assets/css/themes/theme.css">
 <!-- Base -->
 <link rel="stylesheet" href="/assets/css/base/reset.css">
 <link rel="stylesheet" href="/assets/css/base/base.css">
@@ -51,7 +51,7 @@ Si todavía consumías `dashboard.css`, seguirá funcionando porque ahora actúa
 
 ## Qué va en cada carpeta
 - **base/**: `reset.css` normaliza el navegador y `base.css` fija tipografía, colores de texto, contenedores y helpers simples.
-- **theme.css**: centraliza variables de color, radios, sombras y tipografías. Ajusta aquí la identidad visual del proyecto.
+- **themes/theme.css**: centraliza variables de color, radios, sombras y tipografías. Ajusta aquí la identidad visual del proyecto.
 - **layout/**: estructura de página (`app`, `main`, contenedores, header y grid). `responsive.css` concentra las media queries globales.
 - **components/**: bloques reutilizables (botones, alerts, badges, tarjetas, tablas, formularios, barras de progreso, modales y breadcrumbs).
 - **utilities/**: clases atómicas (`flex`, `items-center`, `mt-4`, etc.) para maquetar rápido sin crear nuevas reglas.
@@ -59,7 +59,7 @@ Si todavía consumías `dashboard.css`, seguirá funcionando porque ahora actúa
 - **legacy/**: espacio seguro para estilos que aún no se han migrado; permite retirarlos gradualmente.
 
 ## Cómo dividir los estilos existentes
-- Mantén reglas genéricas (colores, tipografías, paddings base) en `theme.css` y `base/`.
+- Mantén reglas genéricas (colores, tipografías, paddings base) en `themes/theme.css` y `base/`.
 - Mueve estructura (distribución de columnas, cabeceras, sidebar, grids) a `layout/`.
 - Extrae patrones repetidos (botones, tarjetas, tablas, alerts) a `components/`.
 - Deja las peculiaridades de cada pantalla o dominio en el archivo correspondiente de `modules/`.
@@ -67,7 +67,7 @@ Si todavía consumías `dashboard.css`, seguirá funcionando porque ahora actúa
 
 ## Ejemplo de importación modular en una vista de Empresa
 ```html
-<link rel="stylesheet" href="/assets/css/theme.css">
+<link rel="stylesheet" href="/assets/css/themes/theme.css">
 <link rel="stylesheet" href="/assets/css/base/reset.css">
 <link rel="stylesheet" href="/assets/css/base/base.css">
 <link rel="stylesheet" href="/assets/css/layout/containers.css">
@@ -78,3 +78,4 @@ Si todavía consumías `dashboard.css`, seguirá funcionando porque ahora actúa
 ## Compatibilidad
 - `dashboard.css` ahora funciona como punto de entrada único para páginas antiguas, importando todas las capas nuevas.
 - Los archivos dentro de `modules/` solo referencian estilos de sus carpetas originales, por lo que no rompen rutas existentes mientras se actualiza el HTML.
+

@@ -128,6 +128,9 @@ $machoteRevisarUrl = $machoteChildId !== null
                     </nav>
                 </div>
                 <div class="top-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <?php if ($empresaUrl !== null): ?>
+                        <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">⬅️ Volver a empresa</a>
+                    <?php endif; ?>
                     <?php if ($convenioId !== null): ?>
                         <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn">✏️
                             Editar</a>

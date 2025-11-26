@@ -1,5 +1,5 @@
 /* Dashboard bundle: keeps existing entry points working while adopting the modular stack */
-@import url('./theme.css');
+@import url('./themes/theme.css');
 @import url('./base/reset.css');
 @import url('./base/base.css');
 

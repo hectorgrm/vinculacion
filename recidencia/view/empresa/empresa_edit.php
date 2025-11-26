@@ -49,7 +49,7 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
         </div>
         <div class="top-actions">
           <?php if ($empresaId !== null && $loadError === null && $controllerError === null) : ?>
-            <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn secondary">⬅️ Volver</a>
+            <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn secondary">⬅️ Volver a Empresa</a>
           <?php endif; ?>
         </div>
       </header>

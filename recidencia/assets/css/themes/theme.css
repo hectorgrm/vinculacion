@@ -1,0 +1,69 @@
+:root {
+  /* Brand palette */
+  --primary: #1f6feb;
+  --primary-600: #1656b8;
+  --primary-700: #4f46e5;
+  --primary-500: #6366f1;
+
+  --accent: #2db980;
+
+  --success: #2db980;
+  --success-700: #15803d;
+  --success-600: #16a34a;
+  --success-500: #22c55e;
+  --success-200: #bbf7d0;
+  --success-100: #ecfdf3;
+  --success-50: #dcfce7;
+
+  --warning: #ffb400;
+  --warning-700: #a16207;
+  --warning-600: #c2410c;
+  --warning-300: #fde68a;
+  --warning-200: #fed7aa;
+  --warning-100: #fef9c3;
+  --warning-50: #fff7ed;
+
+  --danger: #e44848;
+  --danger-700: #b91c1c;
+  --danger-600: #dc2626;
+  --danger-500: #ef4444;
+  --danger-200: #fecaca;
+  --danger-150: #fee2e2;
+  --danger-100: #fef2f2;
+
+  --ink: #0f172a;
+  --ink-800: #1e293b;
+  --ink-700: #312e81;
+  --muted: #64748b;
+  --muted-strong: #475569;
+  --muted-weak: #e2e8f0;
+  --muted-700: #7c2d12;
+
+  /* Surfaces */
+  --bg: #f5f7fb;
+  --panel: #ffffff;
+  --border: #e5e7eb;
+  --chip: #eef2ff;
+  --panel-alt: #f8fafc;
+  --hover: #eef4ff;
+  --row-alt: #fafcff;
+  --surface-subtle: #f1f5f9;
+  --surface-soft: #f9fafb;
+  --surface-ghost: #fbfdff;
+  --surface-info: #e0f2fe;
+  --surface-highlight: #ecfeff;
+
+  /* Sizing */
+  --radius-xl: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 10px rgba(2, 6, 23, 0.05);
+  --shadow-md: 0 10px 30px rgba(2, 6, 23, 0.08);
+
+  /* Typography */
+  --font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-base: 16px;
+  --line-height-base: 1.5;
+}

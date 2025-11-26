@@ -3,7 +3,7 @@
 --------------------------------------------*/
 
 /* 1) Theme y Reset */
-@import url('../../theme.css');
+@import url('../../themes/theme.css');
 @import url('../../base/reset.css');
 @import url('../../base/base.css');
 
