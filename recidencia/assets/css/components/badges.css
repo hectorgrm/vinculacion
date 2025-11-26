@@ -15,6 +15,12 @@
   color: #a86b00;
 }
 
+.badge.ok {
+  background: var(--success-100);
+  color: var(--success-700);
+  border: 1px solid var(--success-200);
+}
+
 .badge.aprobado {
   background: rgba(45, 185, 128, 0.12);
   color: #1f8a62;
