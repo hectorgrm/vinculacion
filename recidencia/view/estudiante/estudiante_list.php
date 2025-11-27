@@ -8,11 +8,9 @@ require __DIR__ . '/../../handler/estudiante/estudiante_list_handler.php';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Estudiantes · Residencia Profesional</title>
+  <title>Estudiantes | Residencia Profesional</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/estudiante.css" />
-
-
+  <link rel="stylesheet" href="../../assets/css/modules/estudiante/estudiantelist.css" />
 </head>
 
 <body>
@@ -21,24 +19,22 @@ require __DIR__ . '/../../handler/estudiante/estudiante_list_handler.php';
 
   <main class="main">
 
-    <!-- Encabezado -->
     <header class="topbar">
       <div>
-        <h2>👨‍🎓 Estudiantes · Residencia Profesional</h2>
+        <h2>Estudiantes en Residencia Profesional</h2>
         <p class="subtitle">Consulta, filtra y gestiona los estudiantes registrados por empresa o convenio.</p>
       </div>
       <div class="actions">
-        <a href="estudiante_add.php" class="btn">➕ <span>Nuevo estudiante</span></a>
+        <a href="estudiante_add.php" class="btn primary">Nuevo estudiante</a>
       </div>
     </header>
 
     <?php if (in_array('database_error', $viewErrors, true)): ?>
       <div class="alert error">
-        ⚠️ Ocurrió un problema al consultar la base de datos. Inténtalo de nuevo más tarde.
+        Ocurrió un problema al consultar la base de datos. Inténtalo de nuevo más tarde.
       </div>
     <?php endif; ?>
 
-    <!-- Filtros -->
     <section class="filters">
       <form class="filter-form" method="get">
         <label for="empresa_id">Empresa:</label>
@@ -70,14 +66,13 @@ require __DIR__ . '/../../handler/estudiante/estudiante_list_handler.php';
           <?php endforeach; ?>
         </select>
 
-        <button type="submit" class="btn secondary">🔍 <span>Filtrar</span></button>
+        <button type="submit" class="btn secondary">Filtrar</button>
         <?php if ($empresaSeleccionada !== null || $convenioSeleccionado !== null): ?>
-          <a href="estudiante_list.php" class="btn secondary" style="background:#95a5a6;">✖ Limpiar</a>
+          <a href="estudiante_list.php" class="btn secondary">Limpiar</a>
         <?php endif; ?>
       </form>
     </section>
 
-    <!-- Tabla -->
     <section class="card">
       <header>Listado general de estudiantes</header>
       <div class="content">
@@ -110,9 +105,9 @@ require __DIR__ . '/../../handler/estudiante/estudiante_list_handler.php';
                     <td><?php echo htmlspecialchars((string) ($estudiante['convenio_folio'] ?? 'Sin folio'), ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><span class="<?php echo htmlspecialchars((string) ($estudiante['estatus_badge_class'] ?? 'badge'), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) ($estudiante['estatus_badge_label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></span></td>
                     <td class="actions-cell">
-                      <a href="estudiante_view.php?id=<?php echo urlencode((string) $estudianteId); ?>" class="btn secondary">👁 Ver</a>
-                      <a href="estudiante_edit.php?id=<?php echo urlencode((string) $estudianteId); ?>" class="btn">✏️ Editar</a>
-                      <a href="estudiante_deactivate.php?id=<?php echo urlencode((string) $estudianteId); ?>" class="btn" style="background:#e74c3c;">🗑 Desactivar</a>
+                      <a href="estudiante_view.php?id=<?php echo urlencode((string) $estudianteId); ?>" class="btn secondary">Ver</a>
+                      <a href="estudiante_edit.php?id=<?php echo urlencode((string) $estudianteId); ?>" class="btn">Editar</a>
+                      <a href="estudiante_deactivate.php?id=<?php echo urlencode((string) $estudianteId); ?>" class="btn danger">Desactivar</a>
                     </td>
                   </tr>
                 <?php endforeach; ?>

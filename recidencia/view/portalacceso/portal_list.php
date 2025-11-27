@@ -24,33 +24,31 @@ $errorMessage = $handlerResult['errorMessage'];
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal de Acceso · Residencias Profesionales</title>
+  <title>Portal de Acceso | Residencias Profesionales</title>
 
-  <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/css/modules/portalacceso.css" />
-
-
+  <link rel="stylesheet" href="../../assets/css/modules/portalacceso/portalaccesolist.css" />
 </head>
 <body>
   <div class="app">
-    <!-- Sidebar -->
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-    <!-- Main -->
     <main class="main">
       <header class="topbar">
         <div>
-          <h2>🔐 Portales de Acceso</h2>
+          <h2>Portales de Acceso</h2>
           <nav class="breadcrumb">
-            <a href="../../index.php">Inicio</a> › Portal de Acceso
+            <a href="../../index.php">Inicio</a>
+            <span>&gt;</span>
+            <span>Portal de Acceso</span>
           </nav>
         </div>
-        <a class="btn primary" href="portal_add.php">➕ Crear acceso</a>
+        <div class="actions">
+          <a class="btn primary" href="portal_add.php">Crear acceso</a>
+        </div>
       </header>
 
-      <!-- Listado -->
       <section class="card">
-        <header>📋 Accesos Registrados</header>
+        <header>Accesos Registrados</header>
         <div class="content">
           <?php if ($errorMessage !== null): ?>
             <div class="alert error" role="alert">
@@ -63,7 +61,7 @@ $errorMessage = $handlerResult['errorMessage'];
               <label for="search">Buscar:</label>
               <input type="text" id="search" name="search" placeholder="Empresa, token o NIP..." value="<?php echo htmlspecialchars((string) $search, ENT_QUOTES, 'UTF-8'); ?>" />
             </div>
-            <div class="field" style="max-width:220px;">
+            <div class="field">
               <label for="status">Estatus:</label>
               <select id="status" name="status">
                 <?php foreach ($statusOptions as $value => $label): ?>
@@ -72,8 +70,8 @@ $errorMessage = $handlerResult['errorMessage'];
               </select>
             </div>
             <div class="actions">
-              <button type="submit" class="btn primary">🔍 Buscar</button>
-              <a class="btn" href="portal_list.php">Limpiar</a>
+              <button type="submit" class="btn primary">Buscar</button>
+              <a class="btn secondary" href="portal_list.php">Limpiar</a>
             </div>
           </form>
 
@@ -94,7 +92,7 @@ $errorMessage = $handlerResult['errorMessage'];
               <tbody>
                 <?php if ($portales === []): ?>
                   <tr>
-                    <td colspan="8" style="text-align:center;">No se encontraron accesos registrados.</td>
+                    <td colspan="8" class="empty-state">No se encontraron accesos registrados.</td>
                   </tr>
                 <?php else: ?>
                   <?php foreach ($portales as $portal): ?>
@@ -112,7 +110,7 @@ $errorMessage = $handlerResult['errorMessage'];
                       $creadoEn = portalAccessFormatDateTime($portal['creado_en'] ?? null);
                       $isActive = (string) ($portal['activo'] ?? '0') === '1';
                       $toggleTo = $isActive ? '0' : '1';
-                      $toggleLabel = $isActive ? '🚫 Desactivar' : '✅ Activar';
+                      $toggleLabel = $isActive ? 'Desactivar' : 'Activar';
                       $empresaLabel = $empresaNombre;
 
                       if ($empresaNumeroControl !== '') {
@@ -123,11 +121,11 @@ $errorMessage = $handlerResult['errorMessage'];
                       <td><?php echo htmlspecialchars($portalId, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td>
                         <?php if ($empresaId !== ''): ?>
-                          <a class="btn" href="../empresa/empresa_view.php?id=<?php echo urlencode($empresaId); ?>">
+                          <a class="btn small secondary" href="../empresa/empresa_view.php?id=<?php echo urlencode($empresaId); ?>">
                             <?php echo htmlspecialchars($empresaLabel, ENT_QUOTES, 'UTF-8'); ?>
                           </a>
                         <?php else: ?>
-                          <?php echo htmlspecialchars($empresaLabel !== '' ? $empresaLabel : '—', ENT_QUOTES, 'UTF-8'); ?>
+                          <?php echo htmlspecialchars($empresaLabel !== '' ? $empresaLabel : '-', ENT_QUOTES, 'UTF-8'); ?>
                         <?php endif; ?>
                       </td>
                       <td><code><?php echo htmlspecialchars($token, ENT_QUOTES, 'UTF-8'); ?></code></td>
@@ -135,11 +133,11 @@ $errorMessage = $handlerResult['errorMessage'];
                       <td><span class="<?php echo $statusClass; ?>"><?php echo htmlspecialchars($statusLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
                       <td><?php echo htmlspecialchars($expiracion, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars($creadoEn, ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td class="actions" style="display:flex;gap:6px;flex-wrap:wrap;">
-                        <a class="btn" href="portal_view.php?id=<?php echo urlencode($portalId); ?>">👁️ Ver</a>
-                        <a class="btn" href="portal_edit.php?id=<?php echo urlencode($portalId); ?>">✏️ Editar</a>
-                        <a class="btn" href="portal_toggle.php?id=<?php echo urlencode($portalId); ?>&amp;to=<?php echo urlencode($toggleTo); ?>"><?php echo $toggleLabel; ?></a>
-                        <a class="btn danger" href="portal_delete.php?id=<?php echo urlencode($portalId); ?>">🗑️ Eliminar</a>
+                      <td class="actions">
+                        <a class="btn small secondary" href="portal_view.php?id=<?php echo urlencode($portalId); ?>">Ver</a>
+                        <a class="btn small" href="portal_edit.php?id=<?php echo urlencode($portalId); ?>">Editar</a>
+                        <a class="btn small" href="portal_toggle.php?id=<?php echo urlencode($portalId); ?>&amp;to=<?php echo urlencode($toggleTo); ?>"><?php echo $toggleLabel; ?></a>
+                        <a class="btn small danger" href="portal_delete.php?id=<?php echo urlencode($portalId); ?>">Eliminar</a>
                       </td>
                     </tr>
                   <?php endforeach; ?>

@@ -25,11 +25,9 @@ $statusMessage = $handlerResult['statusMessage'];
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tipos de Documento - Residencias Profesionales</title>
+  <title>Tipos de Documento | Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/documentotipo.css" />
-
-
+  <link rel="stylesheet" href="../../assets/css/modules/documentotipo/documentotipolist.css" />
 </head>
 
 <body>
@@ -40,13 +38,15 @@ $statusMessage = $handlerResult['statusMessage'];
       <header class="topbar">
         <div>
           <h2>Tipos de Documento</h2>
-          <p class="subtitle">Catalogo de documentos requeridos por Vinculacion para empresas fisicas y morales.</p>
+          <p class="subtitle">Catálogo de documentos requeridos por Vinculación para empresas físicas y morales.</p>
         </div>
-        <a href="documentotipo_add.php" class="btn primary">Nuevo tipo</a>
+        <div class="actions">
+          <a href="documentotipo_add.php" class="btn primary">Nuevo tipo</a>
+        </div>
       </header>
 
       <section class="card">
-        <header>Filtros de busqueda</header>
+        <header>Filtros de búsqueda</header>
         <div class="content">
           <form class="form" method="get" action="documentotipo_list.php">
             <div class="filters">
@@ -56,7 +56,7 @@ $statusMessage = $handlerResult['statusMessage'];
                   id="q"
                   name="q"
                   type="text"
-                  placeholder="Nombre o descripcion del documento"
+                  placeholder="Nombre o descripción del documento"
                   value="<?php echo htmlspecialchars($searchValue, ENT_QUOTES, 'UTF-8'); ?>"
                 />
               </div>
@@ -78,7 +78,7 @@ $statusMessage = $handlerResult['statusMessage'];
 
               <div class="actions">
                 <button class="btn primary" type="submit">Buscar</button>
-                <a class="btn" href="documentotipo_list.php">Limpiar</a>
+                <a class="btn secondary" href="documentotipo_list.php">Limpiar</a>
               </div>
             </div>
           </form>
@@ -88,7 +88,7 @@ $statusMessage = $handlerResult['statusMessage'];
       <?php if ($statusMessage !== null): ?>
         <section class="card">
           <div class="content">
-            <div class="alert alert-success">
+            <div class="alert success">
               <?php echo htmlspecialchars($statusMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           </div>
@@ -98,7 +98,7 @@ $statusMessage = $handlerResult['statusMessage'];
       <?php if ($errorMessage !== null): ?>
         <section class="card">
           <div class="content">
-            <div class="alert alert-danger">
+            <div class="alert error">
               <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           </div>
@@ -114,7 +114,7 @@ $statusMessage = $handlerResult['statusMessage'];
                 <tr>
                   <th>ID</th>
                   <th>Nombre del documento</th>
-                  <th>Descripcion</th>
+                  <th>Descripción</th>
                   <th>Tipo de empresa</th>
                   <th>Obligatorio</th>
                   <th>Estado</th>
@@ -124,14 +124,14 @@ $statusMessage = $handlerResult['statusMessage'];
               <tbody>
                 <?php if ($tipos === []): ?>
                   <tr>
-                    <td colspan="7" style="text-align:center;">No se encontraron tipos de documento.</td>
+                    <td colspan="7" class="empty-state">No se encontraron tipos de documento.</td>
                   </tr>
                 <?php else: ?>
                   <?php foreach ($tipos as $tipo): ?>
                     <?php
                       $id = isset($tipo['id']) ? (int) $tipo['id'] : null;
                       $nombre = documentoTipoValueOrDefault($tipo['nombre'] ?? null, 'Sin nombre');
-                      $descripcion = documentoTipoValueOrDefault($tipo['descripcion'] ?? null, 'Sin descripcion');
+                      $descripcion = documentoTipoValueOrDefault($tipo['descripcion'] ?? null, 'Sin descripción');
                       $tipoEmpresaLabel = documentoTipoRenderEmpresaLabel($tipo['tipo_empresa'] ?? null);
                       $obligatorioClass = documentoTipoRenderObligatorioClass($tipo['obligatorio'] ?? null);
                       $obligatorioLabel = documentoTipoRenderObligatorioLabel($tipo['obligatorio'] ?? null);
@@ -163,7 +163,7 @@ $statusMessage = $handlerResult['statusMessage'];
                           <a class="btn small" href="documentotipo_edit.php?id=<?php echo urlencode((string) $id); ?>">Editar</a>
                           <a class="btn small danger" href="documentotipo_delete.php?id=<?php echo urlencode((string) $id); ?>">Eliminar</a>
                         <?php else: ?>
-                          <span class="text-muted">Acciones no disponibles</span>
+                          <span class="muted">Acciones no disponibles</span>
                         <?php endif; ?>
                       </td>
                     </tr>
@@ -175,7 +175,7 @@ $statusMessage = $handlerResult['statusMessage'];
 
           <div class="legend">
             <strong>Leyenda:</strong>
-            <span class="badge ok">Si (Obligatorio)</span>
+            <span class="badge ok">Sí (Obligatorio)</span>
             <span class="badge warn">No (Opcional)</span>
           </div>
         </div>
