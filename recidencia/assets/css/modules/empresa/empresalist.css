@@ -1,11 +1,7 @@
 /* ============================================================
-   EMPRESA LIST – Estilos específicos para empresa_list.php
+   EMPRESA LIST - Estilos específicos para empresa_list.php
    Incluye: base + components + utilities
    ============================================================ */
-
-/* ------------------------------------------
-   IMPORTAR SISTEMA DE DISEÑO
---------------------------------------------*/
 
 /* 1) Theme y Reset */
 @import url('../../themes/theme.css');
@@ -19,7 +15,7 @@
 @import url('../../layout/responsive.css');
 @import url('../../layout/sidebar.css');
 
-/* 2) Components (TU SISTEMA DE COMPONENTES) */
+/* 3) Componentes */
 @import url('../../components/buttons.css');
 @import url('../../components/forms.css');
 @import url('../../components/cards.css');
@@ -30,11 +26,11 @@
 @import url('../../components/tables.css');
 @import url('../../components/progress.css');
 
-/* 3) Utilities */
+/* 4) Utilidades */
 @import url('../../utilities/utilities.css');
 
 /* ============================================================
-   2. LAYOUT GENERAL
+   LAYOUT GENERAL
 ============================================================ */
 
 .main {
@@ -45,13 +41,13 @@
 .topbar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 16px;
 }
 
 .topbar h2 {
-  margin: 0;
+  margin: 0 0 6px;
   font-size: 1.8rem;
   color: var(--ink);
 }
@@ -73,8 +69,18 @@
   text-decoration: underline;
 }
 
+.topbar .actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.topbar .btn {
+  border-radius: 12px;
+}
+
 /* ============================================================
-   3. CARD GENERAL
+   CARD GENERAL
 ============================================================ */
 
 .card {
@@ -89,7 +95,8 @@
   background: var(--panel-alt);
   border-bottom: 1px solid var(--border);
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  color: var(--ink-800);
 }
 
 .card .content {
@@ -97,7 +104,7 @@
 }
 
 /* ============================================================
-   4. FORMULARIO DE BÚSQUEDA (REDISEÑADO)
+   FORMULARIO DE BÚSQUEDA
 ============================================================ */
 
 .search-form {
@@ -111,7 +118,6 @@
   align-items: flex-end;
 }
 
-/* Contenedor del campo */
 .search-field {
   display: flex;
   flex-direction: column;
@@ -124,7 +130,6 @@
   font-size: 14px;
 }
 
-/* Input moderno con icono */
 .search-field .input-wrapper {
   position: relative;
   width: 280px;
@@ -137,16 +142,15 @@
   border: 1px solid var(--border);
   background: var(--panel);
   font-size: 15px;
-  transition: border .2s ease, box-shadow .2s ease;
+  transition: border .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
 .search-field .input-wrapper input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.18);
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.18);
   outline: none;
 }
 
-/* Icono dentro del input */
 .search-field .input-wrapper .icon {
   position: absolute;
   top: 50%;
@@ -157,7 +161,6 @@
   color: #64748b;
 }
 
-/* Botones */
 .search-actions {
   display: flex;
   gap: 10px;
@@ -169,10 +172,31 @@
   font-size: 14px;
 }
 
+/* ============================================================
+   BOTONES DE ESTADO
+============================================================ */
 
+.btn.warn {
+  background: var(--warning-100);
+  color: var(--warning-700);
+  border-color: var(--warning-300);
+}
+
+.btn.warn:hover {
+  background: var(--warning-200);
+}
+
+.btn.success {
+  background: var(--success);
+  color: #fff;
+}
+
+.btn.success:hover {
+  background: var(--success-600);
+}
 
 /* ============================================================
-   5. TABLA DE EMPRESAS (REDISEÑADA)
+   TABLA DE EMPRESAS (DataTables)
 ============================================================ */
 
 .table-wrapper {
@@ -180,12 +204,17 @@
   background: var(--panel);
   border-radius: 16px;
   border: 1px solid var(--border);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
   padding: 0;
 }
 
-/* Cabecera */
-table#empresasTable thead tr:first-child th {
+#empresasTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+#empresasTable thead tr:first-child th {
   background: var(--surface-subtle);
   padding: 16px 18px;
   font-size: 15px;
@@ -194,47 +223,44 @@ table#empresasTable thead tr:first-child th {
   border-bottom: 1px solid var(--muted-weak);
 }
 
-/* Fila de filtros */
-table#empresasTable thead tr.filter-row th {
+#empresasTable thead tr.filter-row th {
   background: var(--panel-alt);
   padding: 6px 8px !important;
 }
 
-table#empresasTable thead tr.filter-row input {
+#empresasTable thead tr.filter-row input {
   width: 100%;
   height: 34px;
   padding: 6px 8px;
   font-size: 13px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--panel);
   transition: border .2s ease, box-shadow .2s ease;
 }
 
-table#empresasTable thead tr.filter-row input:focus {
+#empresasTable thead tr.filter-row input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(31, 111, 235, .25);
+  box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.18);
   outline: none;
 }
 
-/* Filas */
-table#empresasTable tbody td {
+#empresasTable tbody td {
   padding: 14px 18px;
   font-size: 14px;
   color: var(--ink);
   border-bottom: 1px solid var(--border);
 }
 
-table#empresasTable tbody tr:nth-child(odd) {
+#empresasTable tbody tr:nth-child(odd) {
   background: var(--row-alt);
 }
 
-table#empresasTable tbody tr:hover {
+#empresasTable tbody tr:hover {
   background: var(--hover);
   transition: background .15s ease-in-out;
 }
 
-/* Acciones */
 td.actions {
   display: flex;
   gap: 10px;
@@ -248,26 +274,34 @@ td.actions .btn {
   border-radius: 10px;
 }
 
-/* Chip de empresa inactiva */
-.badge.warn {
-  background: var(--danger-150);
-  color: var(--danger-700);
-  border: 1px solid var(--danger-200);
+.actions-column {
+  min-width: 260px;
 }
 
-/* Chip de empresa en revisión */
+.badge.warn {
+  background: var(--warning-100);
+  color: var(--warning-700);
+  border: 1px solid var(--warning-300);
+}
+
 .badge.en_revision {
   background: var(--warning-100);
   color: var(--warning-700);
   border: 1px solid var(--warning-300);
 }
 
-/* Columna Acciones */
-.actions-column {
-  min-width: 260px;
+.badge.ok {
+  background: var(--success-100);
+  color: var(--success-700);
+  border: 1px solid var(--success-200);
 }
 
-/* Empty State */
+.badge.err {
+  background: var(--danger-150);
+  color: var(--danger-700);
+  border: 1px solid var(--danger-200);
+}
+
 .empty-state {
   text-align: center;
   padding: 20px;
@@ -275,31 +309,72 @@ td.actions .btn {
   font-size: 15px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  td.actions {
-    justify-content: center;
-  }
-}
-
 /* ============================================================
-   6. EMPTY STATE
+   DataTables UI (filtros, paginación, etc.)
 ============================================================ */
 
-.empty-state {
-  text-align: center;
-  padding: 16px;
-  font-size: 15px;
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: var(--ink);
+}
+
+.dataTables_wrapper .dataTables_length select:focus,
+.dataTables_wrapper .dataTables_filter input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.18);
+  outline: none;
+}
+
+.dataTables_wrapper .dataTables_filter {
   color: var(--muted);
 }
 
+.dataTables_wrapper .dataTables_info {
+  color: var(--muted);
+  padding: 12px 0;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+  margin-top: 8px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 10px;
+  margin-left: 6px;
+  color: var(--ink) !important;
+  background: var(--panel);
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: var(--surface-soft) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+  opacity: 0.5;
+}
+
 /* ============================================================
-   7. RESPONSIVE
+   RESPONSIVE
 ============================================================ */
 
 @media (max-width: 880px) {
   .actions-column {
     min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  td.actions {
+    justify-content: center;
   }
 }
 

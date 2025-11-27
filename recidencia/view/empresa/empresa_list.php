@@ -10,12 +10,10 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Empresas · Residencia Profesional</title>
+  <title>Empresas | Residencia Profesional</title>
 
   <!-- Estilos específicos para este listado -->
   <link rel="stylesheet" href="../../assets/css/modules/empresa/empresalist.css" />
-
-
 
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -34,51 +32,49 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
 
 <body>
   <div class="app">
-    <!-- Sidebar (usa el que ya configuraste con tus rutas) -->
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-    <!-- Main -->
     <main class="main">
       <header class="topbar">
         <div>
-          <h2>Empresas · Residencia Profesional</h2>
+          <h2>Empresas | Residencia Profesional</h2>
           <nav class="breadcrumb">
             <a href="../../index.php">Inicio</a>
-            <span>›</span>
+            <span>&gt;</span>
             <span>Empresas</span>
           </nav>
         </div>
-        <a href="empresa_add.php" class="btn primary">➕ Registrar Nueva Empresa</a>
+        <div class="actions">
+          <a href="empresa_add.php" class="btn primary">Registrar nueva empresa</a>
+        </div>
       </header>
 
       <section class="card">
-        <header>📂 Lista de Empresas Registradas</header>
+        <header>Lista de empresas registradas</header>
         <div class="content">
           <?php if ($errorMessage !== null): ?>
             <div class="alert error" role="alert">
               <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
-          <!-- BUSCADOR -->
+
           <form class="form search-form">
             <div class="search-row">
               <div class="field search-field">
-                <label for="search">Buscar empresa:</label>
-
+                <label for="search">Buscar empresa</label>
                 <div class="input-wrapper">
-                  <span class="icon">🔎</span>
+                  <span class="icon">&#128269;</span>
                   <input type="text" id="search" name="search" placeholder="Nombre, contacto o RFC...">
                 </div>
               </div>
 
               <div class="actions search-actions">
-                <button type="submit" class="btn primary">🔍 Buscar</button>
-                <a href="empresa_list.php" class="btn">Limpiar</a>
+                <button type="submit" class="btn primary">Buscar</button>
+                <a href="empresa_list.php" class="btn secondary">Limpiar</a>
               </div>
             </div>
           </form>
 
-          <!-- TABLA DE EMPRESAS -->
           <div class="table-wrapper">
             <table id="empresasTable" class="display nowrap">
               <thead>
@@ -122,32 +118,29 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
                     ?>
                     <tr>
                       <td><?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?php echo htmlspecialchars((string) ($empresa['numero_control'] ?? '-'), ENT_QUOTES, 'UTF-8'); ?>
-                      </td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['numero_control'] ?? '-'), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) $empresaNombre, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['rfc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
-                      </td>
-                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
-                      </td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td><?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['telefono'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td>
-                        <span
-                          class="<?php echo renderBadgeClass($empresaEstatus); ?>"><?php echo htmlspecialchars(renderBadgeLabel($empresaEstatus), ENT_QUOTES, 'UTF-8'); ?></span>
+                        <span class="<?php echo renderBadgeClass($empresaEstatus); ?>">
+                          <?php echo htmlspecialchars(renderBadgeLabel($empresaEstatus), ENT_QUOTES, 'UTF-8'); ?>
+                        </span>
                       </td>
                       <td class="actions">
-                        <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">👁️ Ver</a>
-                        <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️
-                          Editar</a>
+                        <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn small secondary">Ver</a>
+                        <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn small">Editar</a>
 
                         <?php if ($empresaPuedeDesactivar): ?>
                           <form id="disableForm-<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>"
                             action="../../handler/empresa/empresa_disable.php" method="post">
                             <input type="hidden" name="id"
                               value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
-                            <button type="button" class="btn warn"
+                            <button type="button" class="btn small warn"
                               onclick="confirmDisable(<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>, '<?php echo addslashes((string) $empresaNombre); ?>')">
-                              🚫 Desactivar
+                              Desactivar
                             </button>
                           </form>
                         <?php elseif ($empresaPuedeReactivar): ?>
@@ -155,13 +148,12 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
                             action="../../handler/empresa/empresa_reactivate.php" method="post">
                             <input type="hidden" name="id"
                               value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
-                            <button type="button" class="btn success"
+                            <button type="button" class="btn small success"
                               onclick="confirmReactivate(<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>, '<?php echo addslashes((string) $empresaNombre); ?>')">
-                              ✅ Reactivar
+                              Reactivar
                             </button>
                           </form>
                         <?php endif; ?>
-                        <!-- <a href="empresa_delete.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">🗑️ Eliminar</a> -->
                       </td>
                     </tr>
                   <?php endforeach; ?>
@@ -175,10 +167,6 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
   </div>
   <script>
     $(document).ready(function () {
-
-      // =======================
-      //  DataTable con filtros
-      // =======================
       const table = $('#empresasTable').DataTable({
         responsive: true,
         pageLength: 10,
@@ -216,7 +204,6 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
           });
         }
       });
-
     });
   </script>
   <script src="../../assets/js/empresa-actions.js"></script>

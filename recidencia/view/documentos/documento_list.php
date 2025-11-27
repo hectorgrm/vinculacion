@@ -20,11 +20,8 @@ $errorMessage = $handlerResult['errorMessage'];
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestion de Documentos - Residencias Profesionales</title>
-
-  <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
-
- 
+  <title>Gestión de Documentos | Residencias Profesionales</title>
+  <link rel="stylesheet" href="../../assets/css/modules/documentos/documento.css" />
 </head>
 
 <body>
@@ -34,14 +31,16 @@ $errorMessage = $handlerResult['errorMessage'];
     <main class="main">
       <header class="topbar">
         <div>
-          <h2>Gestion de Documentos</h2>
-          <p class="subtitle">Revision, control y estado de los documentos cargados por las empresas.</p>
+          <h2>Gestión de Documentos</h2>
+          <p class="subtitle">Revisión, control y estado de los documentos cargados por las empresas.</p>
         </div>
-        <a href="documento_upload.php" class="btn primary">Subir Documento</a>
+        <div class="actions">
+          <a href="documento_upload.php" class="btn primary">Subir Documento</a>
+        </div>
       </header>
 
       <section class="card">
-        <header>Filtros de busqueda</header>
+        <header>Filtros de búsqueda</header>
         <div class="content">
           <form method="GET" class="form">
             <div class="filters">
@@ -100,7 +99,7 @@ $errorMessage = $handlerResult['errorMessage'];
 
               <div class="actions">
                 <button type="submit" class="btn primary">Buscar</button>
-                <a href="documento_list.php" class="btn">Limpiar</a>
+                <a href="documento_list.php" class="btn secondary">Limpiar</a>
               </div>
             </div>
           </form>
@@ -111,13 +110,12 @@ $errorMessage = $handlerResult['errorMessage'];
         <header>Documentos registrados</header>
         <div class="content">
           <?php if ($errorMessage !== null): ?>
-            <div class="alert error" role="alert"
-              style="margin-bottom:16px; padding:12px 16px; border-radius:8px; background:#fce8e6; color:#a50e0e;">
+            <div class="alert error" role="alert">
               <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
 
-          <div class="table-wrapper" style="overflow-x:auto;">
+          <div class="table-wrapper">
             <table>
               <thead>
                 <tr>
@@ -125,15 +123,15 @@ $errorMessage = $handlerResult['errorMessage'];
                   <th>Empresa</th>
                   <th>Tipo de Documento</th>
                   <th>Estatus</th>
-                  <th>Observacion</th>
-                  <th>Fecha de Carga</th>
+                  <th>Observación</th>
+                  <th>Fecha de carga</th>
                   <th style="min-width:260px;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 <?php if ($documentos === []): ?>
                   <tr>
-                    <td colspan="7" style="text-align:center;">No se encontraron documentos con los filtros aplicados.</td>
+                    <td colspan="7" class="empty-state">No se encontraron documentos con los filtros aplicados.</td>
                   </tr>
                 <?php else: ?>
                   <?php foreach ($documentos as $documento): ?>
@@ -162,7 +160,7 @@ $errorMessage = $handlerResult['errorMessage'];
                       <td><?php echo htmlspecialchars((string) $documentoId, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td>
                         <?php if ($empresaId > 0): ?>
-                          <a class="btn small" href="../empresa/empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>">
+                          <a class="btn small secondary" href="../empresa/empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>">
                             <?php echo htmlspecialchars($empresaNombre, ENT_QUOTES, 'UTF-8'); ?>
                           </a>
                         <?php else: ?>
@@ -179,7 +177,7 @@ $errorMessage = $handlerResult['errorMessage'];
                         <?php if ($archivoUrl !== null): ?>
                           <a class="btn small" href="<?php echo htmlspecialchars($archivoUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">Ver</a>
                         <?php endif; ?>
-                        <a class="btn small" href="documento_view.php?id=<?php echo urlencode((string) $documentoId); ?>">Detalle</a>
+                        <a class="btn small secondary" href="documento_view.php?id=<?php echo urlencode((string) $documentoId); ?>">Detalle</a>
                         <?php if ($estatus !== 'aprobado'): ?>
                           <a class="btn small primary" href="documento_review.php?id=<?php echo urlencode((string) $documentoId); ?>">Revisar</a>
                         <?php endif; ?>

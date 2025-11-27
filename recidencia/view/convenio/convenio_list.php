@@ -16,8 +16,8 @@ $errorMessage = $handlerResult['errorMessage'];
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Convenios · Residencias Profesionales</title>
-  <link rel="stylesheet" href="../../assets/css/modules/convenio.css" />
+  <title>Convenios | Residencias Profesionales</title>
+  <link rel="stylesheet" href="../../assets/css/modules/convenio/conveniolist.css" />
 </head>
 
 <body>
@@ -27,15 +27,17 @@ $errorMessage = $handlerResult['errorMessage'];
     <main class="main">
       <header class="topbar">
         <div>
-          <h2>📑 Convenios con Empresas</h2>
+          <h2>Convenios con Empresas</h2>
           <p class="subtitle">Seguimiento y control de convenios activos, en revisión o vencidos</p>
         </div>
-        <a href="convenio_add.php" class="btn primary">➕ Nuevo Convenio</a>
+        <div class="actions">
+          <a href="convenio_add.php" class="btn primary">Nuevo Convenio</a>
+        </div>
       </header>
 
       <!-- FILTROS -->
       <section class="card">
-        <header>🔍 Filtros y búsqueda</header>
+        <header>Filtros y búsqueda</header>
         <div class="content">
           <form method="GET" class="form search-bar">
             <input type="text" name="search" placeholder="Buscar por empresa, folio o responsable..."
@@ -57,7 +59,7 @@ $errorMessage = $handlerResult['errorMessage'];
 
       <!-- LISTA -->
       <section class="card">
-        <header>📋 Convenios registrados</header>
+        <header>Convenios registrados</header>
         <div class="content">
           <?php if ($errorMessage !== null): ?>
             <div class="alert error" role="alert">
@@ -103,9 +105,9 @@ $errorMessage = $handlerResult['errorMessage'];
                       <td><?php echo htmlspecialchars(convenioFormatDate($convenio['fecha_fin'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars(convenioFormatDateTime($convenio['actualizado_en'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td class="actions">
-                        <a href="convenio_view.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn sm">👁️</a>
-                        <a href="convenio_edit.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn sm">✏️</a>
-                        <a href="convenio_delete.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn sm">🚫</a>
+                        <a href="convenio_view.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn small secondary">Ver</a>
+                        <a href="convenio_edit.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn small">Editar</a>
+                        <a href="convenio_delete.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn small danger">Eliminar</a>
                       </td>
                     </tr>
                   <?php endforeach; ?>

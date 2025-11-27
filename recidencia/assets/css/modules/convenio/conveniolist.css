@@ -1,0 +1,299 @@
+/* ============================================================
+   CONVENIO LIST
+   Usa theme + base + layout + components + utilities
+   ============================================================ */
+
+/* 1) Theme y Reset */
+@import url('../../themes/theme.css');
+@import url('../../base/reset.css');
+@import url('../../base/base.css');
+
+/* 2) Layout global */
+@import url('../../layout/containers.css');
+@import url('../../layout/grid.css');
+@import url('../../layout/header.css');
+@import url('../../layout/responsive.css');
+@import url('../../layout/sidebar.css');
+
+/* 3) Componentes */
+@import url('../../components/buttons.css');
+@import url('../../components/forms.css');
+@import url('../../components/cards.css');
+@import url('../../components/badges.css');
+@import url('../../components/alerts.css');
+@import url('../../components/breadcrumbs.css');
+@import url('../../components/modal.css');
+@import url('../../components/tables.css');
+@import url('../../components/progress.css');
+
+/* 4) Utilidades */
+@import url('../../utilities/utilities.css');
+
+/* ============================================================
+   LAYOUT GENERAL
+============================================================ */
+
+.main {
+  display: grid;
+  gap: 24px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.topbar h2 {
+  margin: 0 0 6px;
+  font-size: 1.8rem;
+  color: var(--ink);
+}
+
+.topbar .subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.topbar .actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ============================================================
+   CARD & SECCIONES
+============================================================ */
+
+.card {
+  background: var(--panel);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.card > header {
+  padding: 18px 22px;
+  background: var(--panel-alt);
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ink-800);
+}
+
+.card .content {
+  padding: 22px;
+}
+
+/* ============================================================
+   BARRA DE BÚSQUEDA / FILTROS
+============================================================ */
+
+.search-bar {
+  display: grid;
+  grid-template-columns: 1fr repeat(2, 180px) auto auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-bar input,
+.search-bar select {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--ink);
+  transition: border .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.search-bar input:focus,
+.search-bar select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.18);
+  outline: none;
+}
+
+.search-bar .btn {
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.search-bar .btn.secondary {
+  background: var(--surface-soft);
+  color: var(--ink-800);
+  border-color: var(--border);
+}
+
+.search-bar .btn.secondary:hover {
+  background: var(--hover);
+}
+
+/* ============================================================
+   TABLA
+============================================================ */
+
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.table-wrapper table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-wrapper th,
+.table-wrapper td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.table-wrapper thead th {
+  background: var(--surface-subtle);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-800);
+}
+
+.table-wrapper tbody tr:nth-child(odd) {
+  background: var(--row-alt);
+}
+
+.table-wrapper tbody tr:hover {
+  background: var(--hover);
+  transition: background .15s ease-in-out;
+}
+
+.table-wrapper td {
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.table-wrapper td .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.table-wrapper td .badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.65;
+}
+
+.table-wrapper td .ok {
+  background: var(--success-100);
+  color: var(--success-700);
+  border: 1px solid var(--success-200);
+}
+
+.table-wrapper td .secondary {
+  background: var(--warning-100);
+  color: var(--warning-700);
+  border: 1px solid var(--warning-300);
+}
+
+.table-wrapper td .warn {
+  background: var(--danger-150);
+  color: var(--danger-700);
+  border: 1px solid var(--danger-200);
+}
+
+.table-wrapper td .err {
+  background: var(--danger-100);
+  color: var(--danger-600);
+  border: 1px solid var(--danger-200);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.actions .btn {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+.actions .btn.secondary {
+  background: var(--surface-soft);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 18px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* ============================================================
+   LEYENDA
+============================================================ */
+
+.legend {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 0 4px;
+}
+
+.legend .badge {
+  border: 1px solid var(--border);
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 960px) {
+  .search-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .search-bar .btn {
+    width: 100%;
+  }
+
+  .actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .search-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .table-wrapper th:nth-child(1),
+  .table-wrapper td:nth-child(1),
+  .table-wrapper th:nth-child(3),
+  .table-wrapper td:nth-child(3) {
+    display: none;
+  }
+}
