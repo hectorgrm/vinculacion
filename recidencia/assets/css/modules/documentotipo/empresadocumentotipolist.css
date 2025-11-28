@@ -301,6 +301,11 @@
     color: #fff;
     border: 1px solid var(--primary-600);
 }
+.badge.ok {
+    background: #bcd8f0;
+    color: #fff;
+    border: 1px solid var(--primary-600);
+}
 
 .badge.en_revision {
     background: var(--primary-700);
