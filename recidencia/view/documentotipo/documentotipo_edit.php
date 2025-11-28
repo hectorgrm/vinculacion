@@ -37,7 +37,7 @@ $disabledAttribute = $isActivo ? '' : ' disabled';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editar Tipo de Documento - Residencias</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/documentotipo.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentotipo/documentotipoedit.css" />
 </head>
 
 <body>
