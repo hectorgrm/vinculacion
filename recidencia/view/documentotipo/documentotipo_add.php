@@ -30,7 +30,7 @@ $tipoEmpresaValue = $formData['tipo_empresa'] ?? 'ambas';
   <title>Nuevo Tipo de Documento - Residencias</title>
 
   <link rel="stylesheet" href="../../assets/stylesrecidencia.css"/>
-  <link rel="stylesheet" href="../../assets/css/modules/documentotipo.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentotipo/documentotipoadd.css" />
 </head>
 <body>
   <div class="app">
