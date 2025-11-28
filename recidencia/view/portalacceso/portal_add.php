@@ -22,22 +22,9 @@ $controllerError = $handlerResult['controllerError'];
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Crear Acceso · Residencias Profesionales</title>
+  <title>Crear Acceso - Residencias Profesionales</title>
 
-  <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/css/modules/portalacceso.css" />
-
-  <!-- (Opcional) Mini estilos locales -->
-  <style>
-    .hint{ color:#64748b; font-size:13px; margin-top:6px }
-    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px }
-    .col-span-2{ grid-column:1/3 }
-    .field label{ display:block; font-weight:700; color:#334155; margin-bottom:6px }
-    .field label.required::after{ content:" *"; color:#e44848; font-weight:800 }
-    .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:12px }
-    .inline{ display:flex; gap:10px; align-items:center; flex-wrap:wrap }
-    @media (max-width: 860px){ .grid{ grid-template-columns:1fr } .col-span-2{ grid-column:1/2 } }
-  </style>
+  <link rel="stylesheet" href="../../assets/css/modules/portalacceso/portaladd.css" />
 </head>
 <body>
  <div class="app">
@@ -45,8 +32,10 @@ $controllerError = $handlerResult['controllerError'];
 
     <main class="main">
       <header class="topbar">
-        <div>
-          <h2>➕ Crear acceso para empresa</h2>
+        <div class="page-titles">
+          <p class="eyebrow">Portal de acceso</p>
+          <h2>Crear acceso para empresa</h2>
+          <p class="lead">Genera credenciales de acceso con token y NIP para el portal de empresas.</p>
           <nav class="breadcrumb">
             <a href="../../index.php">Inicio</a>
             <span>›</span>
@@ -55,39 +44,45 @@ $controllerError = $handlerResult['controllerError'];
             <span>Nuevo</span>
           </nav>
         </div>
-        <a class="btn" href="portal_list.php">⬅ Volver</a>
+        <div class="actions">
+          <a class="btn secondary" href="portal_list.php">Volver</a>
+        </div>
       </header>
 
-      <section class="card">
-        <header>🧾 Datos del acceso</header>
-        <div class="content">
+      <?php if ($controllerError !== null || $successMessage !== null || $errors !== []) : ?>
+        <div class="message-stack">
           <?php if ($controllerError !== null) : ?>
-            <div class="alert alert-danger" style="margin-bottom:16px;">
+            <div class="alert error" role="alert">
               <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
 
           <?php if ($successMessage !== null) : ?>
-            <div class="alert alert-success" style="margin-bottom:16px;">
+            <div class="alert success" role="status">
               <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
 
           <?php if ($errors !== []) : ?>
-            <div class="alert alert-danger" style="margin-bottom:16px;">
-              <p style="margin:0 0 8px 0; font-weight:600;">Por favor corrige los siguientes errores:</p>
-              <ul style="margin:0 0 0 18px; padding:0;">
+            <div class="alert error" role="alert">
+              <p style="margin:0 0 8px 0; font-weight:700;">Por favor corrige los siguientes errores:</p>
+              <ul>
                 <?php foreach ($errors as $error) : ?>
                   <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
                 <?php endforeach; ?>
               </ul>
             </div>
           <?php endif; ?>
+        </div>
+      <?php endif; ?>
+
+      <section class="card">
+        <header>Datos del acceso</header>
+        <div class="content">
 
           <form class="form" action="" method="post" autocomplete="off">
-            <div class="grid">
+            <div class="form-grid">
 
-              <!-- Empresa -->
               <div class="field">
                 <label for="empresa_id" class="required">Empresa *</label>
                 <select id="empresa_id" name="empresa_id" required <?php echo $empresaOptions === [] ? 'disabled' : ''; ?>>
@@ -96,7 +91,7 @@ $controllerError = $handlerResult['controllerError'];
                     <?php
                       $value = htmlspecialchars($empresa['id'], ENT_QUOTES, 'UTF-8');
                       $numeroControl = trim($empresa['numero_control']) !== ''
-                        ? ' · ' . htmlspecialchars($empresa['numero_control'], ENT_QUOTES, 'UTF-8')
+                        ? ' — ' . htmlspecialchars($empresa['numero_control'], ENT_QUOTES, 'UTF-8')
                         : '';
                       $label = htmlspecialchars($empresa['nombre'], ENT_QUOTES, 'UTF-8') . $numeroControl;
                       $selected = $formData['empresa_id'] === (string) $empresa['id'] ? 'selected' : '';
@@ -109,24 +104,23 @@ $controllerError = $handlerResult['controllerError'];
                 <?php endif; ?>
               </div>
 
-              <!-- Token -->
               <div class="field">
                 <label for="token" class="required">Token *</label>
-                <div style="display:flex; gap:10px;">
-                  <input id="token" name="token" type="text" placeholder="Generar token" readonly required style="flex:1;" value="<?php echo htmlspecialchars($formData['token'], ENT_QUOTES, 'UTF-8'); ?>">
-                  <button type="button" class="btn" onclick="genToken()">🔑 Generar</button>
+                <div class="actions" style="gap:10px; padding:0;">
+                  <input id="token" name="token" type="text" placeholder="Generar token" readonly required style="flex:1;"
+                    value="<?php echo htmlspecialchars($formData['token'], ENT_QUOTES, 'UTF-8'); ?>">
+                  <button type="button" class="btn" onclick="genToken()">Generar</button>
                 </div>
                 <div class="hint">Identificador único que se usará en la URL de acceso.</div>
               </div>
 
-              <!-- NIP -->
               <div class="field">
                 <label for="nip" class="required">NIP *</label>
-                <input id="nip" name="nip" type="text" maxlength="6" placeholder="Ej: 4567" required pattern="[0-9]{4,6}" value="<?php echo htmlspecialchars($formData['nip'], ENT_QUOTES, 'UTF-8'); ?>">
+                <input id="nip" name="nip" type="text" maxlength="6" placeholder="Ej: 4567" required pattern="[0-9]{4,6}"
+                  value="<?php echo htmlspecialchars($formData['nip'], ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="hint">Código corto (4–6 dígitos) que la empresa deberá ingresar.</div>
               </div>
 
-              <!-- Activo -->
               <div class="field">
                 <label for="activo" class="required">Estatus *</label>
                 <select id="activo" name="activo" required>
@@ -135,7 +129,6 @@ $controllerError = $handlerResult['controllerError'];
                 </select>
               </div>
 
-              <!-- Expiración -->
               <div class="field">
                 <label for="expiracion">Expiración (opcional)</label>
                 <input id="expiracion" name="expiracion" type="datetime-local" value="<?php echo htmlspecialchars($formData['expiracion'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -144,9 +137,9 @@ $controllerError = $handlerResult['controllerError'];
 
             </div>
 
-            <div class="actions">
-              <a class="btn" href="portal_list.php">Cancelar</a>
-              <button class="btn primary" type="submit" <?php echo $empresaOptions === [] ? 'disabled' : ''; ?>>💾 Crear acceso</button>
+            <div class="actions form-actions">
+              <a class="btn secondary" href="portal_list.php">Cancelar</a>
+              <button class="btn primary" type="submit" <?php echo $empresaOptions === [] ? 'disabled' : ''; ?>>Crear acceso</button>
             </div>
           </form>
         </div>
@@ -154,9 +147,9 @@ $controllerError = $handlerResult['controllerError'];
 
       <section class="card">
         <header>Accesos rápidos</header>
-        <div class="content" style="display:flex; gap:8px; flex-wrap:wrap;">
-          <a class="btn" href="../empresa/empresa_list.php">🏢 Empresas</a>
-          <a class="btn" href="portal_list.php">🔐 Portal de Acceso</a>
+        <div class="content actions">
+          <a class="btn" href="../empresa/empresa_list.php">Empresas</a>
+          <a class="btn" href="portal_list.php">Portal de Acceso</a>
         </div>
       </section>
     </main>

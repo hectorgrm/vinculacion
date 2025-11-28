@@ -80,97 +80,7 @@ if ($supportsActivo && $documentoId !== null) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Editar documento individual - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/documentotipo.css" />
-  <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
-
-  <style>
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .form-grid .full {
-      grid-column: 1 / -1;
-    }
-
-    .subtitle {
-      font-size: 15px;
-      color: #555;
-      margin-top: 4px;
-    }
-
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
-      padding: 12px;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      background: #f7f8fa;
-      font-size: 14px;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn.primary {
-      background: #007bff;
-      color: #fff;
-    }
-    .btn.primary:hover { background: #0069d9; }
-
-    .btn.secondary {
-      background: #e0e0e0;
-      color: #222;
-    }
-    .btn.secondary:hover { background: #d5d5d5; }
-
-    .btn.desactivar {
-      background: #f44336;
-      color: #fff;
-    }
-    .btn.desactivar:hover { background: #d32f2f; }
-
-    .btn.activar {
-      background: #43a047;
-      color: #fff;
-    }
-    .btn.activar:hover { background: #388e3c; }
-
-    .badge.inactivo {
-      background: #f8d7da;
-      color: #721c24;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .field-note {
-      font-size: 0.85rem;
-      color: #757575;
-      margin-top: 4px;
-    }
-  </style>
+  <link rel="stylesheet" href="../../assets/css/modules/documentotipo/empresadocumentotipoedit.css" />
 </head>
 
 <body>
@@ -179,43 +89,48 @@ if ($supportsActivo && $documentoId !== null) {
 
     <main class="main">
       <header class="topbar">
-        <div>
+        <div class="page-titles">
+          <p class="eyebrow">Documentos personalizados</p>
           <h2>
             Editar documento individual
             <?php if ($documentoId !== null): ?>
               <span style="font-size:0.8em; font-weight:400;">#<?php echo htmlspecialchars((string) $documentoId, ENT_QUOTES, 'UTF-8'); ?></span>
             <?php endif; ?>
           </h2>
-          <p class="subtitle">Actualiza la informacion del requisito personalizado asignado a esta empresa.</p>
+          <p class="lead">Actualiza la informaci&oacute;n del requisito personalizado asignado a esta empresa.</p>
         </div>
-        <a href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">&laquo; Volver</a>
+        <div class="actions">
+          <a href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">&laquo; Volver</a>
+        </div>
       </header>
 
       <?php if ($controllerError !== null || $inputError !== null || $notFoundMessage !== null || $documentoNotFoundMessage !== null): ?>
         <section class="card">
           <header>Aviso</header>
           <div class="content">
+            <div class="message-stack">
             <?php if ($inputError !== null): ?>
-              <div class="alert alert-danger">
+              <div class="alert error">
                 <?php echo htmlspecialchars($inputError, ENT_QUOTES, 'UTF-8'); ?>
               </div>
             <?php endif; ?>
             <?php if ($notFoundMessage !== null): ?>
-              <div class="alert alert-danger">
+              <div class="alert error">
                 <?php echo htmlspecialchars($notFoundMessage, ENT_QUOTES, 'UTF-8'); ?>
               </div>
             <?php endif; ?>
             <?php if ($documentoNotFoundMessage !== null): ?>
-              <div class="alert alert-danger">
+              <div class="alert error">
                 <?php echo htmlspecialchars($documentoNotFoundMessage, ENT_QUOTES, 'UTF-8'); ?>
               </div>
             <?php endif; ?>
             <?php if ($controllerError !== null): ?>
-              <div class="alert alert-danger">
+              <div class="alert error">
                 <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
               </div>
             <?php endif; ?>
-            <p>Utiliza el boton volver para regresar al listado.</p>
+            </div>
+            <p class="text-muted">Utiliza el bot&oacute;n volver para regresar al listado.</p>
           </div>
         </section>
       <?php endif; ?>
@@ -224,26 +139,30 @@ if ($supportsActivo && $documentoId !== null) {
         <section class="card">
           <header>Datos del documento</header>
           <div class="content">
-            <?php if ($successMessage !== null): ?>
-              <div class="alert alert-success" style="margin-bottom:16px;">
-                <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
-              </div>
-            <?php endif; ?>
+            <?php if ($successMessage !== null || $errors !== [] || (!$isActivo && $supportsActivo)): ?>
+              <div class="message-stack">
+                <?php if ($successMessage !== null): ?>
+                  <div class="alert success" role="status">
+                    <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
+                  </div>
+                <?php endif; ?>
 
-            <?php if ($errors !== []): ?>
-              <div class="alert alert-danger" style="margin-bottom:16px;">
-                <p style="margin:0 0 8px 0; font-weight:600;">Corrige los siguientes puntos:</p>
-                <ul style="margin:0; padding-left:18px;">
-                  <?php foreach ($errors as $error): ?>
-                    <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
-                  <?php endforeach; ?>
-                </ul>
-              </div>
-            <?php endif; ?>
+                <?php if ($errors !== []): ?>
+                  <div class="alert error" role="alert">
+                    <p style="margin:0 0 8px 0; font-weight:700;">Corrige los siguientes puntos:</p>
+                    <ul>
+                      <?php foreach ($errors as $error): ?>
+                        <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
+                      <?php endforeach; ?>
+                    </ul>
+                  </div>
+                <?php endif; ?>
 
-            <?php if (!$isActivo && $supportsActivo): ?>
-              <div class="alert alert-warning" style="margin-bottom:16px;">
-                Este documento se encuentra inactivo. Reactivalo para habilitar la edicion.
+                <?php if (!$isActivo && $supportsActivo): ?>
+                  <div class="alert warning">
+                    Este documento se encuentra inactivo. React&iacute;valo para habilitar la edici&oacute;n.
+                  </div>
+                <?php endif; ?>
               </div>
             <?php endif; ?>
 
@@ -251,7 +170,7 @@ if ($supportsActivo && $documentoId !== null) {
               <div class="summary">
                 <div><strong>Empresa:</strong> <?php echo htmlspecialchars($empresaNombre !== '' ? $empresaNombre : 'Sin nombre', ENT_QUOTES, 'UTF-8'); ?></div>
                 <div><strong>RFC:</strong> <?php echo htmlspecialchars($empresaRfc !== '' ? $empresaRfc : 'Sin RFC', ENT_QUOTES, 'UTF-8'); ?></div>
-                <div><strong>Regimen fiscal:</strong> <?php echo htmlspecialchars($empresaRegimen !== '' ? $empresaRegimen : 'Sin datos', ENT_QUOTES, 'UTF-8'); ?></div>
+                <div><strong>R&eacute;gimen fiscal:</strong> <?php echo htmlspecialchars($empresaRegimen !== '' ? $empresaRegimen : 'Sin datos', ENT_QUOTES, 'UTF-8'); ?></div>
               </div>
             <?php endif; ?>
 
@@ -273,7 +192,7 @@ if ($supportsActivo && $documentoId !== null) {
                 </div>
 
                 <div class="field full">
-                  <label for="descripcion">Descripcion</label>
+                  <label for="descripcion">Descripci&oacute;n</label>
                   <textarea
                     id="descripcion"
                     name="descripcion"
@@ -285,7 +204,7 @@ if ($supportsActivo && $documentoId !== null) {
                 <div class="field">
                   <label class="required" for="obligatorio">Obligatorio *</label>
                   <select id="obligatorio" name="obligatorio" required<?php echo $fieldDisabledAttribute; ?>>
-                    <option value="1" <?php echo $obligatorioValue === '1' ? 'selected' : ''; ?>>Si</option>
+                    <option value="1" <?php echo $obligatorioValue === '1' ? 'selected' : ''; ?>>S&iacute;</option>
                     <option value="0" <?php echo $obligatorioValue === '0' ? 'selected' : ''; ?>>No</option>
                   </select>
                 </div>
@@ -316,17 +235,17 @@ if ($supportsActivo && $documentoId !== null) {
                 <?php endif; ?>
               </div>
 
-              <div class="actions">
+              <div class="actions form-actions">
                 <a href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">Cancelar</a>
 
                 <?php if ($isActivo || !$supportsActivo): ?>
                   <button type="submit" class="btn primary">Guardar cambios</button>
                   <?php if ($supportsActivo && $desactivarUrl !== null): ?>
-                    <a href="<?php echo htmlspecialchars($desactivarUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn desactivar">Desactivar</a>
+                    <a href="<?php echo htmlspecialchars($desactivarUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn danger">Desactivar</a>
                   <?php endif; ?>
                 <?php else: ?>
                   <?php if ($reactivarUrl !== null): ?>
-                    <a href="<?php echo htmlspecialchars($reactivarUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn activar">Reactivar</a>
+                    <a href="<?php echo htmlspecialchars($reactivarUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn success">Reactivar</a>
                   <?php endif; ?>
                   <span class="badge inactivo">Documento inactivo</span>
                 <?php endif; ?>
@@ -336,15 +255,11 @@ if ($supportsActivo && $documentoId !== null) {
         </section>
       <?php endif; ?>
 
-      <section class="card" style="margin-top:20px;">
-        <header>Informacion</header>
-        <div class="content">
-          <p>
-            Los <strong>documentos individuales</strong> son requisitos creados exclusivamente para la empresa seleccionada.
-          </p>
-          <p>
-            Si un documento se <strong>desactiva</strong>, deja de mostrarse a la empresa hasta que sea reactivado, pero su historial se conserva.
-          </p>
+      <section class="card">
+        <header>Información</header>
+        <div class="content info-panel">
+          <p>Los <strong>documentos individuales</strong> son requisitos creados exclusivamente para la empresa seleccionada.</p>
+          <p>Si un documento se <strong>desactiva</strong>, deja de mostrarse a la empresa hasta que sea reactivado, pero su historial se conserva.</p>
         </div>
       </section>
     </main>

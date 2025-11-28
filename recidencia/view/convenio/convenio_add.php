@@ -23,7 +23,7 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registrar Convenio - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/convenio.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/convenio/convenioadd.css" />
 </head>
 
 <body>
@@ -32,8 +32,10 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
 
     <main class="main">
       <header class="topbar">
-        <div>
+        <div class="page-titles">
+          <p class="eyebrow">Convenios</p>
           <h2>Registrar Nuevo Convenio</h2>
+          <p class="lead">Crea un convenio vinculado a una empresa, define vigencias y adjunta el archivo.</p>
           <nav class="breadcrumb">
             <a href="../../index.php">Inicio</a>
             <span>&rsaquo;</span>
@@ -42,37 +44,43 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
             <span>Nuevo</span>
           </nav>
         </div>
-        <a href="convenio_list.php" class="btn">&larr; Volver</a>
+        <div class="actions">
+          <a href="convenio_list.php" class="btn secondary">&larr; Volver</a>
+        </div>
       </header>
 
       <section class="card">
         <header>Formulario de Alta de Convenio</header>
         <div class="content">
-          <p class="text-muted" style="margin-top:-6px">
-            Registra un convenio vinculado a una empresa. Puedes adjuntar el archivo y definir su vigencia.
+          <p class="text-muted">
+            Registra un convenio vinculado a una empresa. Adjunta el archivo en PDF y define su vigencia.
           </p>
 
-          <?php if ($controllerError !== null): ?>
-          <div class="alert alert-danger" style="margin-bottom:16px;">
-            <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
-          </div>
-          <?php endif; ?>
+          <?php if ($controllerError !== null || $successMessage !== null || $errors !== []): ?>
+            <div class="message-stack">
+              <?php if ($controllerError !== null): ?>
+                <div class="alert error" role="alert">
+                  <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
+                </div>
+              <?php endif; ?>
 
-          <?php if ($successMessage !== null): ?>
-          <div class="alert alert-success" style="margin-bottom:16px;">
-            <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
-          </div>
-          <?php endif; ?>
+              <?php if ($successMessage !== null): ?>
+                <div class="alert success" role="status">
+                  <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
+                </div>
+              <?php endif; ?>
 
-          <?php if ($errors !== []): ?>
-          <div class="alert alert-danger" style="margin-bottom:16px;">
-            <p style="margin:0 0 8px 0; font-weight:600;">Por favor corrige los siguientes errores:</p>
-            <ul style="margin:0 0 0 18px; padding:0;">
-              <?php foreach ($errors as $error): ?>
-              <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
-              <?php endforeach; ?>
-            </ul>
-          </div>
+              <?php if ($errors !== []): ?>
+                <div class="alert error" role="alert">
+                  <p style="margin:0 0 8px 0; font-weight:700;">Por favor corrige los siguientes errores:</p>
+                  <ul>
+                    <?php foreach ($errors as $error): ?>
+                      <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <?php endforeach; ?>
+                  </ul>
+                </div>
+              <?php endif; ?>
+            </div>
           <?php endif; ?>
 
           <form class="form" method="POST" action="" enctype="multipart/form-data">
@@ -134,10 +142,10 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
                   value="<?php echo htmlspecialchars(convenioFormValue($formData, 'tipo_convenio'), ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
 
-              <!-- Responsable académico -->
+              <!-- Responsable academico -->
               <div class="field">
-                <label for="responsable_academico">Responsable académico</label>
-                <input type="text" name="responsable_academico" id="responsable_academico" placeholder="Ej: Mtra. Ana Pérez"
+                <label for="responsable_academico">Responsable acad&eacute;mico</label>
+                <input type="text" name="responsable_academico" id="responsable_academico" placeholder="Ej: Mtra. Ana P&eacute;rez"
                   value="<?php echo htmlspecialchars(convenioFormValue($formData, 'responsable_academico'), ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
 
@@ -149,7 +157,7 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
               </div>
 
               <div class="field">
-                <label for="fecha_fin">Fecha de término</label>
+                <label for="fecha_fin">Fecha de t&eacute;rmino</label>
                 <input type="date" name="fecha_fin" id="fecha_fin"
                   value="<?php echo htmlspecialchars(convenioFormValue($formData, 'fecha_fin'), ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
@@ -164,12 +172,12 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
               <div class="field col-span-2">
                 <label for="observaciones">Notas / Observaciones</label>
                 <textarea name="observaciones" id="observaciones" rows="4"
-                  placeholder="Comentarios internos del área de vinculación..."><?php echo htmlspecialchars(convenioFormValue($formData, 'observaciones'), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                  placeholder="Comentarios internos del &aacute;rea de vinculaci&oacute;n..."><?php echo htmlspecialchars(convenioFormValue($formData, 'observaciones'), ENT_QUOTES, 'UTF-8'); ?></textarea>
               </div>
             </div>
 
-            <div class="actions">
-              <a href="convenio_list.php" class="btn">Cancelar</a>
+            <div class="actions form-actions">
+              <a href="convenio_list.php" class="btn secondary">Cancelar</a>
               <button type="submit" class="btn primary" <?php echo $controllerAvailable ? '' : 'disabled'; ?>>Guardar
                 Convenio</button>
             </div>
@@ -183,3 +191,11 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
 </body>
 
 </html>
+
+
+
+
+
+
+
+

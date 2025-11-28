@@ -57,52 +57,7 @@ $usageMessage = empresaDocumentoTipoDeleteUsageMessage($usageCount);
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eliminar documento individual - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/documentotipo.css" />
-  <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
-
-  <style>
-    .danger-zone {
-      background: #fff;
-      border: 1px solid #fee2e2;
-      border-radius: 18px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .danger-zone > header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #fee2e2;
-      font-weight: 700;
-      color: #b91c1c;
-    }
-
-    .danger-zone .content {
-      padding: 20px;
-    }
-
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      background: #f9fafb;
-      border: 1px solid #eef2f7;
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    .badge.warn {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .note {
-      border-left: 4px solid #f97316;
-      background: #fff7ed;
-      padding: 12px 16px;
-      border-radius: 6px;
-      margin-top: 16px;
-    }
-  </style>
+  <link rel="stylesheet" href="../../assets/css/modules/documentotipo/empresadocumentotipodelete.css" />
 </head>
 
 <body>
@@ -111,7 +66,8 @@ $usageMessage = empresaDocumentoTipoDeleteUsageMessage($usageCount);
 
     <main class="main">
       <header class="topbar">
-        <div>
+        <div class="page-titles">
+          <p class="eyebrow">Documentos personalizados</p>
           <h2>Eliminar / Desactivar documento individual</h2>
           <nav class="breadcrumb">
             <a href="../../index.php">Inicio</a><span>&rsaquo;</span>
@@ -119,46 +75,40 @@ $usageMessage = empresaDocumentoTipoDeleteUsageMessage($usageCount);
             <span>Eliminar</span>
           </nav>
         </div>
-        <a class="btn" href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>">&laquo; Volver</a>
+        <div class="actions">
+          <a class="btn secondary" href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>">&laquo; Volver</a>
+        </div>
       </header>
 
       <?php if ($controllerError !== null): ?>
         <section class="card">
           <header>Aviso</header>
           <div class="content">
-            <div class="alert alert-danger">
+            <div class="alert error" role="alert">
               <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
             </div>
             <p class="text-muted" style="margin:0;">Regresa al listado e intenta nuevamente.</p>
           </div>
         </section>
       <?php else: ?>
-        <?php if ($statusMessage !== null): ?>
+        <?php if ($statusMessage !== null || $errorMessage !== null || $inputError !== null): ?>
           <section class="card">
-            <div class="content">
-              <div class="alert alert-success" style="margin:0;">
-                <?php echo htmlspecialchars($statusMessage, ENT_QUOTES, 'UTF-8'); ?>
-              </div>
-            </div>
-          </section>
-        <?php endif; ?>
-
-        <?php if ($errorMessage !== null): ?>
-          <section class="card">
-            <div class="content">
-              <div class="alert alert-danger" style="margin:0;">
-                <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
-              </div>
-            </div>
-          </section>
-        <?php endif; ?>
-
-        <?php if ($inputError !== null): ?>
-          <section class="card">
-            <div class="content">
-              <div class="alert alert-danger" style="margin:0;">
-                <?php echo htmlspecialchars($inputError, ENT_QUOTES, 'UTF-8'); ?>
-              </div>
+            <div class="content message-stack">
+              <?php if ($statusMessage !== null): ?>
+                <div class="alert success" role="status">
+                  <?php echo htmlspecialchars($statusMessage, ENT_QUOTES, 'UTF-8'); ?>
+                </div>
+              <?php endif; ?>
+              <?php if ($errorMessage !== null): ?>
+                <div class="alert error" role="alert">
+                  <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
+                </div>
+              <?php endif; ?>
+              <?php if ($inputError !== null): ?>
+                <div class="alert error" role="alert">
+                  <?php echo htmlspecialchars($inputError, ENT_QUOTES, 'UTF-8'); ?>
+                </div>
+              <?php endif; ?>
             </div>
           </section>
         <?php endif; ?>
@@ -188,7 +138,7 @@ $usageMessage = empresaDocumentoTipoDeleteUsageMessage($usageCount);
             </div>
           </section>
 
-          <section class="danger-zone" style="margin-top:20px;">
+          <section class="danger-zone">
             <header>Confirmaci&oacute;n requerida</header>
             <div class="content">
               <p>
@@ -233,17 +183,17 @@ $usageMessage = empresaDocumentoTipoDeleteUsageMessage($usageCount);
                 </p>
               </div>
 
-              <form action="<?php echo htmlspecialchars($deleteAction, ENT_QUOTES, 'UTF-8'); ?>" method="post" style="margin-top:20px;">
+              <form action="<?php echo htmlspecialchars($deleteAction, ENT_QUOTES, 'UTF-8'); ?>" method="post">
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) $documentoId, ENT_QUOTES, 'UTF-8'); ?>">
                 <input type="hidden" name="empresa_id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
 
-                <label style="display:flex; gap:8px; align-items:flex-start; margin:12px 0;">
+                <label class="field inline" style="margin:12px 0;">
                   <input type="checkbox" name="confirm" required>
                   <span>Confirmo que deseo eliminar o desactivar este documento individual para la empresa seleccionada.</span>
                 </label>
 
-                <div class="actions" style="justify-content:flex-end;">
-                  <a class="btn" href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>">Cancelar</a>
+                <div class="actions form-actions">
+                  <a class="btn secondary" href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>">Cancelar</a>
                   <button class="btn danger" type="submit">
                     <?php echo $usageCount > 0 ? 'Desactivar' : 'Eliminar'; ?>
                   </button>

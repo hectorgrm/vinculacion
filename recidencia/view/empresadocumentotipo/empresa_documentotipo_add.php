@@ -46,73 +46,7 @@ $formEnabled = $empresaId !== null && $empresa !== null && $inputError === null 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nuevo documento individual - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/documentotipo.css" />
-  <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
-
-  <style>
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .form-grid .full {
-      grid-column: 1 / -1;
-    }
-
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
-      padding: 12px;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      background: #f7f8fa;
-      font-size: 14px;
-    }
-
-    .subtitle {
-      font-size: 15px;
-      color: #555;
-      margin-top: 4px;
-    }
-
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn.primary {
-      background: #007bff;
-      color: #fff;
-    }
-    .btn.primary:hover {
-      background: #0069d9;
-    }
-
-    .btn.secondary {
-      background: #e0e0e0;
-      color: #222;
-    }
-    .btn.secondary:hover {
-      background: #d5d5d5;
-    }
-  </style>
+  <link rel="stylesheet" href="../../assets/css/modules/documentotipo/empresadocumentotipoadd.css" />
 </head>
 
 <body>
@@ -121,43 +55,46 @@ $formEnabled = $empresaId !== null && $empresa !== null && $inputError === null 
 
     <main class="main">
       <header class="topbar">
-        <div>
+        <div class="page-titles">
+          <p class="eyebrow">Documentos personalizados</p>
           <h2>Nuevo documento individual</h2>
-          <p class="subtitle">Registra un requisito documental personalizado para esta empresa.</p>
+          <p class="lead">Registra un requisito documental personalizado para esta empresa.</p>
         </div>
-        <a href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">&laquo; Volver</a>
+        <div class="actions">
+          <a href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">&laquo; Volver</a>
+        </div>
       </header>
 
       <section class="card">
         <header>Datos del documento</header>
         <div class="content">
           <?php if ($inputError !== null): ?>
-            <div class="alert alert-danger" style="margin-bottom:16px;">
+            <div class="alert error" role="alert">
               <?php echo htmlspecialchars($inputError, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
 
           <?php if ($notFoundMessage !== null): ?>
-            <div class="alert alert-danger" style="margin-bottom:16px;">
+            <div class="alert error" role="alert">
               <?php echo htmlspecialchars($notFoundMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
 
           <?php if ($controllerError !== null): ?>
-            <div class="alert alert-danger" style="margin-bottom:16px;">
+            <div class="alert error" role="alert">
               <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
 
           <?php if ($successMessage !== null): ?>
-            <div class="alert alert-success" style="margin-bottom:16px;">
+            <div class="alert success" role="status">
               <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
 
           <?php if ($errors !== []): ?>
-            <div class="alert alert-danger" style="margin-bottom:16px;">
-              <p style="margin:0 0 8px 0; font-weight:600;">Corrige los siguientes puntos:</p>
+            <div class="alert error" role="alert">
+              <p style="margin:0 0 8px 0; font-weight:700;">Corrige los siguientes puntos:</p>
               <ul style="margin:0 0 0 18px; padding:0;">
                 <?php foreach ($errors as $error): ?>
                   <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
@@ -170,7 +107,7 @@ $formEnabled = $empresaId !== null && $empresa !== null && $inputError === null 
             <div class="summary">
               <div><strong>Empresa:</strong> <?php echo htmlspecialchars($empresaNombre !== '' ? $empresaNombre : 'Sin nombre', ENT_QUOTES, 'UTF-8'); ?></div>
               <div><strong>RFC:</strong> <?php echo htmlspecialchars($empresaRfc !== '' ? $empresaRfc : 'Sin RFC', ENT_QUOTES, 'UTF-8'); ?></div>
-              <div><strong>Regimen fiscal:</strong> <?php echo htmlspecialchars($empresaRegimen !== '' ? $empresaRegimen : 'Sin datos', ENT_QUOTES, 'UTF-8'); ?></div>
+              <div><strong>R&eacute;gimen fiscal:</strong> <?php echo htmlspecialchars($empresaRegimen !== '' ? $empresaRegimen : 'Sin datos', ENT_QUOTES, 'UTF-8'); ?></div>
             </div>
           <?php endif; ?>
 
@@ -193,7 +130,7 @@ $formEnabled = $empresaId !== null && $empresa !== null && $inputError === null 
                 </div>
 
                 <div class="field full">
-                  <label for="descripcion">Descripcion</label>
+                  <label for="descripcion">Descripci&oacute;n</label>
                   <textarea
                     id="descripcion"
                     name="descripcion"
@@ -205,13 +142,13 @@ $formEnabled = $empresaId !== null && $empresa !== null && $inputError === null 
                 <div class="field">
                   <label class="required" for="obligatorio">Obligatorio *</label>
                   <select id="obligatorio" name="obligatorio" required>
-                    <option value="1" <?php echo $obligatorioValue === '1' ? 'selected' : ''; ?>>Si</option>
+                    <option value="1" <?php echo $obligatorioValue === '1' ? 'selected' : ''; ?>>S&iacute;</option>
                     <option value="0" <?php echo $obligatorioValue === '0' ? 'selected' : ''; ?>>No</option>
                   </select>
                 </div>
               </div>
 
-              <div class="actions">
+              <div class="actions form-actions">
                 <a href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">Cancelar</a>
                 <button type="submit" class="btn primary">Guardar</button>
               </div>
@@ -224,15 +161,15 @@ $formEnabled = $empresaId !== null && $empresa !== null && $inputError === null 
         </div>
       </section>
 
-      <section class="card" style="margin-top:20px;">
-        <header>Informacion</header>
-        <div class="content">
+      <section class="card">
+        <header>Informaci&oacute;n</header>
+        <div class="content info-panel">
           <p>
             Los <strong>documentos individuales</strong> son requisitos creados exclusivamente para la empresa seleccionada.
             No afectan a otras empresas dentro del sistema.
           </p>
           <p>
-            Una vez registrado, el documento aparecera en el listado de la empresa y podra recibir archivos,
+            Una vez registrado, el documento aparecer&aacute; en el listado de la empresa y podr&aacute; recibir archivos,
             revisiones y estatus igual que los documentos globales.
           </p>
         </div>
