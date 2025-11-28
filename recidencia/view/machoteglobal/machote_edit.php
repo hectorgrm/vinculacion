@@ -70,7 +70,7 @@ $actionUrl = 'machote_edit.php' . ($machoteId ? '?id=' . urlencode((string)$mach
   <title>✏️ Editar Machote Global · Vinculación</title>
 
   <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../assets/css/modules/machoteglobal.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/machoteglobal/machoteglobaledit.css" />
   <link rel="stylesheet" href="<?php echo htmlspecialchars($templateCssWebPath, ENT_QUOTES, 'UTF-8'); ?>" /> <!-- ✅ Carga estilos institucionales -->
 </head>
 <body>
