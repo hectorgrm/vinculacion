@@ -33,7 +33,7 @@ $savedDocument = $handlerResult['savedDocument'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Subir Documento - Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentos/documentoupload.css" />
 </head>
 
 <body>
@@ -42,8 +42,10 @@ $savedDocument = $handlerResult['savedDocument'];
 
     <main class="main">
       <header class="topbar">
-        <div>
+        <div class="page-titles">
+          <p class="eyebrow">Documentos</p>
           <h2>Subir Documento</h2>
+          <p class="lead">Asocia el archivo a una empresa y define si es un requisito global o personalizado.</p>
           <nav class="breadcrumb">
             <a href="../../index.php">Inicio</a>
             <span>/</span>
@@ -52,24 +54,26 @@ $savedDocument = $handlerResult['savedDocument'];
             <span>Subir</span>
           </nav>
         </div>
-        <a href="documento_list.php" class="btn">Volver</a>
+        <div class="actions">
+          <a href="documento_list.php" class="btn secondary">Volver</a>
+        </div>
       </header>
 
       <section class="card">
         <header>Datos del Documento</header>
         <div class="content">
-          <p class="text-muted" style="margin-top:-6px">
-            Asocia el archivo a una empresa y selecciona si el documento corresponde a un requisito global o a uno personalizado de la empresa.
+          <p class="text-muted">
+            Selecciona la empresa, define el origen (global o personalizado) y carga el archivo correspondiente.
           </p>
 
           <?php if ($controllerError !== null): ?>
-            <div class="alert alert-danger" style="margin-bottom:16px;">
+            <div class="alert error" role="alert">
               <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           <?php endif; ?>
 
           <?php if ($successMessage !== null): ?>
-            <div class="alert alert-success" style="margin-bottom:16px;">
+            <div class="alert success" role="status">
               <p style="margin:0 0 8px 0;"><?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?></p>
               <?php if (is_array($savedDocument) && isset($savedDocument['ruta'])): ?>
                 <?php
@@ -89,9 +93,9 @@ $savedDocument = $handlerResult['savedDocument'];
           <?php endif; ?>
 
           <?php if ($errors !== []): ?>
-            <div class="alert alert-danger" style="margin-bottom:16px;">
-              <p style="margin:0 0 8px 0; font-weight:600;">Por favor corrige los siguientes errores:</p>
-              <ul style="margin:0 0 0 18px; padding:0;">
+            <div class="alert error" role="alert">
+              <p style="margin:0 0 8px 0; font-weight:700;">Por favor corrige los siguientes errores:</p>
+              <ul>
                 <?php foreach ($errors as $error): ?>
                   <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
                 <?php endforeach; ?>
@@ -125,7 +129,7 @@ $savedDocument = $handlerResult['savedDocument'];
                   <option value="personalizado" <?php echo $formData['tipo_origen'] === 'personalizado' ? 'selected' : ''; ?>>Personalizado de la empresa</option>
                 </select>
                 <div class="help">
-                  Selecciona "Global" para requisitos generales o "Personalizado" para documentos específicos de la empresa.
+                  Selecciona "Global" para requisitos generales o "Personalizado" para documentos espec&iacute;ficos de la empresa.
                 </div>
               </div>
 
@@ -171,7 +175,7 @@ $savedDocument = $handlerResult['savedDocument'];
                 <?php if ($tiposPersonalizados === [] && $formData['empresa_id'] !== ''): ?>
                   <div class="help">La empresa seleccionada no tiene documentos personalizados registrados.</div>
                 <?php else: ?>
-                  <div class="help">Este listado se llena automáticamente con los documentos personalizados registrados para la empresa.</div>
+                  <div class="help">Este listado se llena autom&aacute;ticamente con los documentos personalizados registrados para la empresa.</div>
                 <?php endif; ?>
               </div>
 
@@ -207,8 +211,8 @@ $savedDocument = $handlerResult['savedDocument'];
               </div>
             </div>
 
-            <div class="actions">
-              <a href="documento_list.php<?php echo $formData['empresa_id'] !== '' ? '?empresa=' . urlencode($formData['empresa_id']) : ''; ?>" class="btn">Cancelar</a>
+            <div class="actions form-actions">
+              <a href="documento_list.php<?php echo $formData['empresa_id'] !== '' ? '?empresa=' . urlencode($formData['empresa_id']) : ''; ?>" class="btn secondary">Cancelar</a>
               <button type="submit" class="btn primary">Guardar y subir</button>
             </div>
           </form>
@@ -218,9 +222,11 @@ $savedDocument = $handlerResult['savedDocument'];
       <?php if ($formData['empresa_id'] !== ''): ?>
         <section class="card">
           <header>Accesos r&aacute;pidos</header>
-          <div class="content actions" style="justify-content:flex-start;">
-            <a class="btn" href="../empresa/empresa_view.php?id=<?php echo urlencode($formData['empresa_id']); ?>">Ver empresa</a>
-            <a class="btn" href="documento_list.php?empresa=<?php echo urlencode($formData['empresa_id']); ?>">Ver documentos de esta empresa</a>
+          <div class="content">
+            <div class="quick-actions">
+              <a class="btn" href="../empresa/empresa_view.php?id=<?php echo urlencode($formData['empresa_id']); ?>">Ver empresa</a>
+              <a class="btn" href="documento_list.php?empresa=<?php echo urlencode($formData['empresa_id']); ?>">Ver documentos de esta empresa</a>
+            </div>
           </div>
         </section>
       <?php endif; ?>
@@ -297,3 +303,8 @@ $savedDocument = $handlerResult['savedDocument'];
 </body>
 
 </html>
+
+
+
+
+
