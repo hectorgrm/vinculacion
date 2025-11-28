@@ -47,9 +47,9 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Detalle del Documento - Residencias Profesionales</title>
+  <title>Detalle del Documento | Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentos/documentoview.css" />
 
 </head>
 
@@ -60,14 +60,12 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
     <main class="main">
       <header class="topbar">
         <div>
-          <h2>Detalle del
-            Documento<?php echo $documentId !== null ? ' #' . htmlspecialchars((string) $documentId, ENT_QUOTES, 'UTF-8') : ''; ?>
-          </h2>
+          <h2>Detalle del Documento<?php echo $documentId !== null ? ' #' . htmlspecialchars((string) $documentId, ENT_QUOTES, 'UTF-8') : ''; ?></h2>
           <nav class="breadcrumb">
             <a href="../../index.php">Inicio</a>
-            <span>/</span>
+            <span>&gt;</span>
             <a href="documento_list.php">Documentos</a>
-            <span>/</span>
+            <span>&gt;</span>
             <span>Ver</span>
           </nav>
         </div>
@@ -76,14 +74,14 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
             <a href="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>" class="btn"
               target="_blank" rel="noopener noreferrer">Descargar</a>
           <?php endif; ?>
-          <a href="documento_list.php" class="btn">Volver</a>
+          <a href="documento_list.php" class="btn secondary">Volver</a>
         </div>
       </header>
 
       <?php if ($controllerError !== null): ?>
         <section class="card">
           <div class="content">
-            <div class="alert alert-danger">
+            <div class="alert alert-error">
               <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           </div>
@@ -171,7 +169,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
               </div>
 
               <div class="field">
-                <label>Tamano</label>
+                <label>Tamaño</label>
                 <div><?php echo htmlspecialchars($fileMeta['sizeLabel'] ?? 'N/D', ENT_QUOTES, 'UTF-8'); ?></div>
               </div>
 
@@ -203,7 +201,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
                 $uploadUrl = 'documento_upload.php?' . http_build_query($uploadParams);
                 ?>
                 <a class="btn" href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>">Subir nueva
-                  version</a>
+                  versión</a>
               <?php endif; ?>
               <?php if ($empresaId !== null): ?>
                 <a class="btn" href="documento_list.php?empresa=<?php echo urlencode((string) $empresaId); ?>">Ver
@@ -214,18 +212,18 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
         </section>
 
         <section class="card">
-          <header>Vista rapida</header>
+          <header>Vista rápida</header>
           <div class="content preview">
             <?php if ($fileMeta['canPreview'] && $fileMeta['publicUrl'] !== null): ?>
               <iframe src="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>"
                 title="Vista previa del documento"></iframe>
             <?php elseif ($fileMeta['publicUrl'] !== null): ?>
               <div class="alert alert-info">
-                La vista previa solo esta disponible para archivos PDF. Usa el boton descargar para abrir el archivo.
+                La vista previa solo está disponible para archivos PDF. Usa el botón descargar para abrir el archivo.
               </div>
             <?php else: ?>
               <div class="alert alert-warning">
-                No se encontro el archivo asociado al documento.
+                No se encontró el archivo asociado al documento.
               </div>
             <?php endif; ?>
           </div>
@@ -235,7 +233,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
           <header>Historial relacionado</header>
           <div class="content history-columns">
             <div class="history-section">
-              <h4 class="history-section__title">dY"? Versiones del documento</h4>
+              <h4 class="history-section__title">Versiones del documento</h4>
               <?php if ($history !== []): ?>
                 <ul class="history-list">
                   <?php foreach ($history as $entry): ?>
@@ -262,7 +260,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
             </div>
 
             <div class="history-section">
-              <h4 class="history-section__title">dY"o Historial de acciones</h4>
+              <h4 class="history-section__title">Historial de acciones</h4>
               <?php if ($auditHistory !== []): ?>
                 <ul class="history-list">
                   <?php foreach ($auditHistory as $entry): ?>
@@ -286,8 +284,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
                   <?php endforeach; ?>
                 </ul>
               <?php else: ?>
-                <p class="text-muted history-placeholder">No hay acciones registradas en la auditor&iacute;a para este
-                  documento.</p>
+                <p class="text-muted history-placeholder">No hay acciones registradas en la auditor&iacute;a para este documento.</p>
               <?php endif; ?>
             </div>
           </div>

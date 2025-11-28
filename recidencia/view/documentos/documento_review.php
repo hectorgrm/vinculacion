@@ -52,9 +52,8 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Revisión de Documento - Residencias Profesionales</title>
-
-  <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
+  <title>Revisión de Documento | Residencias Profesionales</title>
+  <link rel="stylesheet" href="../../assets/css/modules/documentos/documentoreview.css" />
 </head>
 
 <body>
@@ -73,8 +72,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
       <?php if ($controllerError !== null): ?>
         <section class="card">
           <div class="content">
-            <div class="alert error" role="alert"
-              style="margin-bottom:0; padding:12px 16px; border-radius:8px; background:#fce8e6; color:#a50e0e;">
+            <div class="alert error" role="alert">
               <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           </div>
@@ -84,8 +82,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
       <?php if ($notFoundMessage !== null): ?>
         <section class="card">
           <div class="content">
-            <div class="alert warning" role="alert"
-              style="margin-bottom:0; padding:12px 16px; border-radius:8px; background:#fff4ce; color:#7a5c00;">
+            <div class="alert warning" role="alert">
               <?php echo htmlspecialchars($notFoundMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           </div>
@@ -114,7 +111,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
                 <div>
                   <?php echo htmlspecialchars((string) $document['tipo_label'], ENT_QUOTES, 'UTF-8'); ?>
                   <?php if (!empty($document['tipo_obligatorio'])): ?>
-                    <span class="badge ok" style="margin-left:6px;">Obligatorio</span>
+                    <span class="badge ok">Obligatorio</span>
                   <?php endif; ?>
                 </div>
               </div>
@@ -138,20 +135,18 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
 
         <section class="card">
           <header>Vista previa</header>
-          <div class="content">
+          <div class="content preview">
             <?php if ($fileMeta['publicUrl'] !== null && $fileMeta['canPreview']): ?>
-              <iframe src="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>" title="Vista previa del documento" style="width:100%; height:420px; border:0;"></iframe>
+              <iframe src="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>" title="Vista previa del documento"></iframe>
             <?php elseif ($fileMeta['publicUrl'] !== null): ?>
-              <div class="alert info" role="alert"
-                style="margin-bottom:16px; padding:12px 16px; border-radius:8px; background:#e8f0fe; color:#1a73e8;">
+              <div class="alert info" role="alert">
                 La vista previa solo está disponible para archivos PDF. Usa el enlace para descargar el archivo.
               </div>
               <a class="btn" href="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
                 Descargar archivo
               </a>
             <?php else: ?>
-              <div class="alert warning" role="alert"
-                style="margin-bottom:0; padding:12px 16px; border-radius:8px; background:#fff4ce; color:#7a5c00;">
+              <div class="alert warning" role="alert">
                 No se encontró el archivo asociado a este documento.
               </div>
             <?php endif; ?>
@@ -162,16 +157,14 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
           <header>Evaluación del documento</header>
           <div class="content">
             <?php if ($successMessage !== null): ?>
-              <div class="alert success" role="alert"
-                style="margin-bottom:16px; padding:12px 16px; border-radius:8px; background:#e6f4ea; color:#0b6a0b;">
+              <div class="alert success" role="alert">
                 <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
               </div>
             <?php endif; ?>
 
             <?php if ($errors !== []): ?>
-              <div class="alert error" role="alert"
-                style="margin-bottom:16px; padding:12px 16px; border-radius:8px; background:#fce8e6; color:#a50e0e;">
-                <ul style="margin:0; padding-left:18px;">
+              <div class="alert error" role="alert">
+                <ul>
                   <?php foreach ($errors as $error): ?>
                     <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
                   <?php endforeach; ?>
@@ -191,7 +184,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
                 <div>
                   <?php echo htmlspecialchars((string) $document['tipo_label'], ENT_QUOTES, 'UTF-8'); ?>
                   <?php if (!empty($document['tipo_obligatorio'])): ?>
-                    <span class="badge ok" style="margin-left:6px;">Obligatorio</span>
+                    <span class="badge ok">Obligatorio</span>
                   <?php endif; ?>
                 </div>
               </div>

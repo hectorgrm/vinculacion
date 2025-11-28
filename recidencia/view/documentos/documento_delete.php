@@ -121,9 +121,9 @@ if (is_array($document)) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eliminar Documento - Residencias Profesionales</title>
+  <title>Eliminar Documento | Residencias Profesionales</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/documentos.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/documentos/documentodelete.css" />
 </head>
 
 <body>
@@ -136,24 +136,24 @@ if (is_array($document)) {
           <h2>Eliminar Documento<?php echo $documentId !== null ? ' #' . htmlspecialchars((string) $documentId, ENT_QUOTES, 'UTF-8') : ''; ?></h2>
           <nav class="breadcrumb">
             <a href="../../index.php">Inicio</a>
-            <span>/</span>
+            <span>&gt;</span>
             <a href="documento_list.php">Documentos</a>
-            <span>/</span>
+            <span>&gt;</span>
             <span>Eliminar</span>
           </nav>
         </div>
-        <div class="top-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
+        <div class="top-actions">
           <?php if ($documentId !== null): ?>
-            <a href="<?php echo htmlspecialchars($viewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">Ver</a>
+            <a href="<?php echo htmlspecialchars($viewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">Ver</a>
           <?php endif; ?>
-          <a href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">Volver</a>
+          <a href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">Volver</a>
         </div>
       </header>
 
       <?php if ($controllerError !== null): ?>
         <section class="card">
           <div class="content">
-            <div class="alert alert-danger">
+            <div class="alert error">
               <?php echo htmlspecialchars($controllerError, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           </div>
@@ -163,7 +163,7 @@ if (is_array($document)) {
       <?php if ($errorMessage !== null): ?>
         <section class="card">
           <div class="content">
-            <div class="alert alert-warning">
+            <div class="alert warning">
               <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           </div>
@@ -173,7 +173,7 @@ if (is_array($document)) {
       <?php if ($notFoundMessage !== null): ?>
         <section class="card">
           <div class="content">
-            <div class="alert alert-warning">
+            <div class="alert warning">
               <?php echo htmlspecialchars($notFoundMessage, ENT_QUOTES, 'UTF-8'); ?>
             </div>
           </div>
@@ -181,16 +181,16 @@ if (is_array($document)) {
       <?php endif; ?>
 
       <section class="danger-zone">
-        <header>Confirmaci&oacute;n requerida</header>
+        <header>Confirmación requerida</header>
         <div class="content">
           <?php if (is_array($document)): ?>
             <p>
-              Est&aacute;s a punto de <strong>eliminar definitivamente</strong> el documento
+              Estás a punto de <strong>eliminar definitivamente</strong> el documento
               <strong>#<?php echo htmlspecialchars((string) $documentId, ENT_QUOTES, 'UTF-8'); ?></strong>
               (<em><?php echo htmlspecialchars((string) $tipoLabel, ENT_QUOTES, 'UTF-8'); ?></em>)
               de la empresa
               <?php if ($empresaUrl !== null): ?>
-                <a class="btn" href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>">
+                <a class="btn secondary" href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>">
                   <?php echo htmlspecialchars((string) $empresaLabel, ENT_QUOTES, 'UTF-8'); ?>
                 </a>
               <?php else: ?>
@@ -199,7 +199,7 @@ if (is_array($document)) {
               <span class="badge secondary" style="margin-left:6px;">
                 <?php echo $tipoOrigen === 'personalizado' ? 'Documento personalizado' : 'Documento global'; ?>
               </span>.
-              Esta acci&oacute;n <strong>no se puede deshacer</strong>.
+              Esta acción <strong>no se puede deshacer</strong>.
             </p>
 
             <div class="grid-2" style="margin-top:12px;">
@@ -222,7 +222,7 @@ if (is_array($document)) {
                 </p>
                 <p class="text-muted">Fecha de carga: <?php echo htmlspecialchars((string) $creadoEnLabel, ENT_QUOTES, 'UTF-8'); ?></p>
                 <p class="text-muted">
-                  Observaci&oacute;n:
+                  Observación:
                   <?php echo $observacion !== '' ? nl2br(htmlspecialchars($observacion, ENT_QUOTES, 'UTF-8')) : 'Sin observaciones.'; ?>
                 </p>
               </div>
@@ -230,22 +230,22 @@ if (is_array($document)) {
                 <h3>Archivo</h3>
                 <?php if ($fileMeta['publicUrl'] !== null): ?>
                   <p>
-                    <a class="btn" href="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
+                    <a class="btn secondary" href="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
                       Abrir archivo
                     </a>
                   </p>
                 <?php else: ?>
-                  <p class="text-muted">No se encontr&oacute; el archivo asociado.</p>
+                  <p class="text-muted">No se encontró el archivo asociado.</p>
                 <?php endif; ?>
                 <p class="text-muted">
                   Nombre: <?php echo htmlspecialchars((string) $archivoLabel, ENT_QUOTES, 'UTF-8'); ?><br>
-                  Tama&ntilde;o: <?php echo htmlspecialchars($fileSizeLabel ?? 'N/D', ENT_QUOTES, 'UTF-8'); ?>
+                  Tamaño: <?php echo htmlspecialchars($fileSizeLabel ?? 'N/D', ENT_QUOTES, 'UTF-8'); ?>
                 </p>
               </div>
             </div>
           <?php else: ?>
             <p class="text-muted" style="margin-bottom:0;">
-              No se cuenta con informaci&oacute;n del documento solicitado.
+              No se cuenta con información del documento solicitado.
             </p>
           <?php endif; ?>
 
@@ -258,9 +258,9 @@ if (is_array($document)) {
 
             <div class="links-inline">
               <?php if ($empresaUrl !== null): ?>
-                <a class="btn" href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>">Ver empresa</a>
+                <a class="btn secondary" href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>">Ver empresa</a>
               <?php endif; ?>
-              <a class="btn" href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>">Volver a documentos</a>
+              <a class="btn secondary" href="<?php echo htmlspecialchars($listUrl, ENT_QUOTES, 'UTF-8'); ?>">Volver a documentos</a>
             </div>
           </div>
 
@@ -270,21 +270,20 @@ if (is_array($document)) {
               <?php if ($empresaId !== null): ?>
                 <input type="hidden" name="empresa_id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
               <?php endif; ?>
-              <!-- <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?? ''; ?>"> -->
 
               <label style="display:flex; gap:8px; align-items:flex-start; margin:12px 0;">
                 <input type="checkbox" name="confirm" required>
-                <span>He le&iacute;do las advertencias y deseo <strong>eliminar permanentemente</strong> este documento.</span>
+                <span>He leído las advertencias y deseo <strong>eliminar permanentemente</strong> este documento.</span>
               </label>
 
               <div class="field" style="margin-top:10px;">
                 <label for="motivo">Motivo (opcional)</label>
-                <textarea id="motivo" name="motivo" rows="3" maxlength="500" placeholder="Breve explicaci&oacute;n para la bit&aacute;cora interna..."></textarea>
+                <textarea id="motivo" name="motivo" rows="3" maxlength="500" placeholder="Breve explicación para la bitácora interna..."></textarea>
                 <small class="text-muted">Este texto no se almacena en la base de datos, se registra en el log de eventos.</small>
               </div>
 
               <div class="actions" style="justify-content:flex-end;">
-                <a href="<?php echo htmlspecialchars($viewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">Cancelar</a>
+                <a href="<?php echo htmlspecialchars($viewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">Cancelar</a>
                 <button type="submit" class="btn danger">Eliminar documento</button>
               </div>
             </form>
@@ -300,4 +299,3 @@ if (is_array($document)) {
 </body>
 
 </html>
-

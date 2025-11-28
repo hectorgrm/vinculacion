@@ -6,8 +6,8 @@ require_once __DIR__ . '/../../handler/machote/machote_revisar_handler.php';
 // Variables esperadas desde el handler:
 // $machote, $empresa, $convenio, $comentarios, $progreso, $estado, $errorMessage, $totales, $currentUser
 
-// Fallbacks por si algo viene vacío (para evitar notices)
-$empresaNombre   = isset($empresa['nombre']) ? (string) $empresa['nombre'] : '—';
+// Fallbacks
+$empresaNombre   = isset($empresa['nombre']) ? (string) $empresa['nombre'] : '-';
 $empresaId       = isset($empresa['id']) ? (int) $empresa['id'] : 0;
 $machoteId       = isset($machote['id']) ? (int) $machote['id'] : (int) ($_GET['id'] ?? 0);
 $versionLocal    = isset($machote['version_local']) ? (string) $machote['version_local'] : 'v1.0';
@@ -25,7 +25,7 @@ $machoteConfirmado = (int) ($machote['confirmacion_empresa'] ?? 0) === 1;
 $machoteBloqueado = $machoteConfirmado;
 $comentariosBloqueados = $machoteBloqueado;
 
-// KPIs rápidos
+// KPIs
 $comentAbiertos  = (int) ($totales['pendientes'] ?? 0);
 $comentResueltos = (int) ($totales['resueltos'] ?? 0);
 
@@ -65,7 +65,7 @@ if (!function_exists('renderMachoteThreadMessage')) {
           <p><?= nl2br(htmlspecialchars($comentario)) ?></p>
           <?php if ($archivoHref !== null): ?>
             <div class="files">
-              <a href="<?= htmlspecialchars($archivoHref) ?>" target="_blank" rel="noopener">📎 Ver archivo</a>
+              <a href="<?= htmlspecialchars($archivoHref) ?>" target="_blank" rel="noopener">Ver archivo</a>
             </div>
           <?php endif; ?>
         </div>
@@ -109,7 +109,7 @@ if (!empty($_GET['comentario_error'])) {
         'invalid'   => 'Datos incompletos para procesar el comentario.',
         'not_found' => 'El comentario solicitado no existe.',
         'internal'  => 'Ocurrió un error al actualizar los comentarios.',
-        'locked'    => 'El documento aprobado mantiene los comentarios bloqueados. Reabre la revisión para continuar gestionándolos.',
+        'locked'    => 'El documento aprobado mantiene los comentarios bloqueados. Reabre la revisión para gestionarlos.',
     ];
     $flashMessages[] = ['type' => 'error', 'text' => $messages[$errorKey] ?? 'Ocurrió un error al gestionar el comentario.'];
 }
@@ -137,11 +137,9 @@ if (!empty($_GET['reabrir_error'])) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>📝 Revisión de Machote · Residencias</title>
+  <title>Revisión de Machote | Residencias</title>
 
-  <link rel="stylesheet" href="../../assets/css/modules/machote.css" />
-
-
+  <link rel="stylesheet" href="../../assets/css/modules/machote/machoterevisar.css" />
 </head>
 <body data-machote-bloqueado="<?= $machoteBloqueado ? '1' : '0' ?>">
   <div class="app">
@@ -150,7 +148,7 @@ if (!empty($_GET['reabrir_error'])) {
     <main class="main machote-revisar">
       <header class="topbar">
         <div>
-          <h2>📝 Revisión de Machote</h2>
+          <h2>Revisión de Machote</h2>
           <p class="subtitle">
             Empresa: <strong><?= htmlspecialchars($empresaNombre) ?></strong>
             · Machote <strong>#<?= (int) $machoteId ?></strong>
@@ -170,10 +168,10 @@ if (!empty($_GET['reabrir_error'])) {
             href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>"
             target="_blank" rel="noopener"
             title="Generar vista PDF desde el HTML actual"
-          >📄 Ver PDF</a>
+          >Ver PDF</a>
 
           <?php if ($empresaId > 0): ?>
-            <a href="../empresa/empresa_view.php?id=<?= (int) $empresaId ?>" class="btn secondary">⬅ Volver a la empresa</a>
+            <a href="../empresa/empresa_view.php?id=<?= (int) $empresaId ?>" class="btn secondary">Volver a la empresa</a>
           <?php endif; ?>
 
           <?php if ($machoteBloqueado): ?>
@@ -181,10 +179,10 @@ if (!empty($_GET['reabrir_error'])) {
               class="inline-form"
               action="../../handler/machote/machote_reabrir_handler.php"
               method="post"
-              onsubmit="return confirm('¿Reabrir la revisión para que la empresa vuelva a comentar y confirmar?');"
+              onsubmit="return confirm('Reabrir la revisión para que la empresa vuelva a comentar y confirmar?');"
             >
               <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
-              <button class="btn danger" type="submit">↺ Reabrir revisión</button>
+              <button class="btn danger" type="submit">Reabrir revisión</button>
             </form>
           <?php endif; ?>
         </div>
@@ -197,7 +195,7 @@ if (!empty($_GET['reabrir_error'])) {
       <?php endforeach; ?>
 
       <?php if (!empty($errorMessage)): ?>
-        <section class="viewer-error"><?= htmlspecialchars($errorMessage) ?></section>
+        <section class="flash error"><?= htmlspecialchars($errorMessage) ?></section>
       <?php endif; ?>
 
       <!-- KPIs -->
@@ -224,7 +222,7 @@ if (!empty($_GET['reabrir_error'])) {
 
       <!-- Split: Editor + Comentarios -->
       <section class="split">
-        <!-- 📄 Editor (CKEditor) -->
+        <!-- Editor -->
         <div class="card editor-card">
           <header>Documento a revisar (HTML editable)</header>
           <div class="content">
@@ -237,19 +235,19 @@ if (!empty($_GET['reabrir_error'])) {
               <textarea id="editor" name="contenido" rows="24"><?= $contenidoHtml ?></textarea>
 
               <div class="editor-actions">
-                <button class="btn" type="button" onclick="togglePreview()">👁️ Vista limpia</button>
+                <button class="btn" type="button" onclick="togglePreview()">Vista limpia</button>
                 <button class="btn primary" type="submit" <?= $machoteBloqueado ? 'disabled' : '' ?>>Guardar cambios</button>
                 <a class="btn" target="_blank" rel="noopener"
-                   href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>">📄 Previsualizar PDF</a>
+                   href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>">Previsualizar PDF</a>
               </div>
             </form>
           </div>
         </div>
 
-        <!-- 💬 Comentarios -->
+        <!-- Comentarios -->
         <div class="card comments-card">
           <header style="display:flex;justify-content:space-between;align-items:center;">
-            <span>💬 Comentarios</span>
+            <span>Comentarios</span>
             <div class="filters">
               <span class="chip">Abiertos (<?= (int) $comentAbiertos ?>)</span>
               <span class="chip">Resueltos (<?= (int) $comentResueltos ?>)</span>
@@ -259,11 +257,11 @@ if (!empty($_GET['reabrir_error'])) {
 
           <div class="content comments-content">
             <?php if ($comentariosBloqueados): ?>
-              <p class="readonly-note" style="margin:0">Los comentarios están bloqueados porque la empresa confirmó el documento. Reabre la revisión para habilitarlos nuevamente.</p>
+              <p class="readonly-note">Los comentarios están bloqueados porque la empresa confirmó el documento. Reabre la revisión para habilitarlos nuevamente.</p>
             <?php endif; ?>
             <!-- Crear nuevo comentario -->
             <details class="card comment-card" open>
-              <summary class="comment-summary">➕ Nuevo comentario</summary>
+              <summary class="comment-summary">Nuevo comentario</summary>
               <div class="content comment-content">
                 <form class="comment-form" action="../../handler/machote/machote_comentario_add_handler.php" method="post">
                   <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
@@ -277,7 +275,7 @@ if (!empty($_GET['reabrir_error'])) {
                     </div>
                     <div class="comment-field">
                       <label for="comentario">Comentario</label>
-                      <textarea class="comment-textarea" id="comentario" name="comentario" rows="3" required placeholder="Describe el ajuste, duda o cambio que solicitas…"></textarea>
+                      <textarea class="comment-textarea" id="comentario" name="comentario" rows="3" required placeholder="Describe el ajuste, duda o cambio que solicitas..."></textarea>
                     </div>
                     <div class="comment-actions">
                       <button class="btn primary" <?= $comentariosBloqueados ? 'disabled' : '' ?>>Publicar</button>
@@ -287,7 +285,7 @@ if (!empty($_GET['reabrir_error'])) {
               </div>
             </details>
 
-            <!-- Lista simple de comentarios -->
+            <!-- Lista de comentarios -->
             <div class="threads">
               <?php if (empty($comentarios)): ?>
                 <p style="color:#64748b">Sin comentarios aún.</p>
@@ -322,21 +320,21 @@ if (!empty($_GET['reabrir_error'])) {
 
                     <div class="row-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
                       <?php if ($isAbierto): ?>
-                        <form action="../../handler/machote/machote_comentario_resolver_handler.php" method="post" onsubmit="return confirm('¿Marcar como resuelto?')">
+                        <form action="../../handler/machote/machote_comentario_resolver_handler.php" method="post" onsubmit="return confirm('Marcar como resuelto?')">
                           <input type="hidden" name="id" value="<?= (int) ($c['id'] ?? 0) ?>">
                           <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
-                          <button class="btn small danger" <?= $comentariosBloqueados ? 'disabled' : '' ?>>✓ Marcar como resuelto</button>
+                          <button class="btn small danger" <?= $comentariosBloqueados ? 'disabled' : '' ?>>Marcar como resuelto</button>
                         </form>
                       <?php else: ?>
                         <form action="../../handler/machote/machote_comentario_reabrir_handler.php" method="post">
                           <input type="hidden" name="id" value="<?= (int) ($c['id'] ?? 0) ?>">
                           <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
-                          <button class="btn small" <?= $comentariosBloqueados ? 'disabled' : '' ?>>↺ Reabrir</button>
+                          <button class="btn small" <?= $comentariosBloqueados ? 'disabled' : '' ?>>Reabrir</button>
                         </form>
                       <?php endif; ?>
                     </div>
 
-                                        <?php if ($isAbierto): ?>
+                    <?php if ($isAbierto): ?>
                       <form class="reply" action="../../handler/machote/machote_reply_handler.php" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
                         <input type="hidden" name="respuesta_a" value="<?= (int) ($c['id'] ?? 0) ?>">
@@ -349,7 +347,7 @@ if (!empty($_GET['reabrir_error'])) {
                         </fieldset>
                       </form>
                     <?php else: ?>
-                      <p style="color:#64748b;font-size:13px;margin:6px 0 0;">Este comentario esta resuelto; las respuestas estan deshabilitadas.</p>
+                      <p style="color:#64748b;font-size:13px;margin:6px 0 0;">Este comentario está resuelto; las respuestas están deshabilitadas.</p>
                     <?php endif; ?>
                   </article>
                 <?php endforeach; ?>
@@ -359,7 +357,7 @@ if (!empty($_GET['reabrir_error'])) {
         </div>
       </section>
 
-      <footer class="hint" style="margin-top:10px;color:#64748b">
+      <footer class="hint">
         <small>Consejo: guarda con frecuencia. El PDF refleja los cambios del HTML actual.</small>
       </footer>
     </main>
