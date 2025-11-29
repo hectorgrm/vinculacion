@@ -134,6 +134,10 @@ $machoteRevisarUrl = $machoteChildId !== null
 $empresaId = $convenio !== null && isset($convenio['empresa_id']) ? (int) $convenio['empresa_id'] : null;
 $convenioEstatus = $convenio !== null && isset($convenio['estatus']) ? trim((string) $convenio['estatus']) : '';
 $convenioEsActiva = $convenioEstatus === 'Activa';
+$convenioTieneFirmado = $convenio !== null
+    && isset($convenio['firmado_path'])
+    && trim((string) $convenio['firmado_path']) !== '';
+$convenioPuedeSubir = $convenioEsActiva && !$convenioTieneFirmado;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -350,7 +354,7 @@ $convenioEsActiva = $convenioEstatus === 'Activa';
                                 <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">🏢 Ver
                                     empresa</a>
                             <?php endif; ?>
-                            <?php if ($convenioEsActiva && $convenioId !== null): ?>
+                            <?php if ($convenioPuedeSubir && $convenioId !== null): ?>
                                 <form action="../../handler/convenio/convenio_upload_handler.php" method="post"
                                     enctype="multipart/form-data"
                                     style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
@@ -363,6 +367,11 @@ $convenioEsActiva = $convenioEstatus === 'Activa';
                                     <input type="file" name="convenio_pdf" accept="application/pdf" required>
                                     <button class="btn" type="submit">⬆️ Subir convenio (PDF)</button>
                                 </form>
+                            <?php elseif ($convenioTieneFirmado): ?>
+                                <div style="padding:10px 12px; border:1px solid #c9d6ff; background:#f4f7ff; color:#1b2b52; border-radius:8px; display:flex; align-items:center; gap:8px; font-weight:600;">
+                                    <span aria-hidden="true">📄</span>
+                                    <span>Archivo final del convenio registrado.</span>
+                                </div>
                             <?php endif; ?>
                         </div>
                         <div class="form-group" style="margin-top: 16px;">
