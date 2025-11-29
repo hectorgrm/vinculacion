@@ -53,6 +53,14 @@ $machoteEstatus = $metadata['machoteEstatus'];
 
 $machoteStatusParam = isset($_GET['machote_status']) ? (string) $_GET['machote_status'] : null;
 $machoteErrorParam = isset($_GET['machote_error']) ? (string) $_GET['machote_error'] : null;
+$uploadStatusParam = isset($_GET['upload_status']) ? (string) $_GET['upload_status'] : null;
+$uploadErrorParam = isset($_GET['upload_error']) ? (string) $_GET['upload_error'] : null;
+$uploadErrorDetailParam = isset($_GET['upload_error_detail']) ? (string) $_GET['upload_error_detail'] : null;
+
+$uploadSuccessMessage = null;
+if ($uploadStatusParam === 'success') {
+    $uploadSuccessMessage = 'El archivo del convenio se cargo correctamente.';
+}
 
 $machoteSuccessMessage = null;
 if ($machoteStatusParam === 'created') {
@@ -75,6 +83,37 @@ switch ($machoteErrorParam) {
         break;
 }
 
+$uploadErrorMessage = null;
+switch ($uploadErrorParam) {
+    case 'invalid_request':
+        $uploadErrorMessage = 'La peticion de carga no es valida.';
+        break;
+    case 'missing_id':
+        $uploadErrorMessage = 'No se encontro el convenio para adjuntar el archivo.';
+        break;
+    case 'controller_unavailable':
+        $uploadErrorMessage = 'No se pudo conectar para guardar el archivo del convenio.';
+        break;
+    case 'not_found':
+        $uploadErrorMessage = 'El convenio indicado no existe.';
+        break;
+    case 'empresa_mismatch':
+        $uploadErrorMessage = 'La empresa del convenio no coincide con la solicitud enviada.';
+        break;
+    case 'wrong_status':
+        $uploadErrorMessage = 'Solo se pueden adjuntar archivos cuando el convenio esta Activa.';
+        break;
+    case 'no_file':
+        $uploadErrorMessage = 'Selecciona un archivo PDF para subir.';
+        break;
+    case 'upload_error':
+        $uploadErrorMessage = $uploadErrorDetailParam ?? 'No se pudo procesar el archivo del convenio.';
+        break;
+    case 'save_failed':
+        $uploadErrorMessage = 'No se pudo guardar el archivo del convenio.';
+        break;
+}
+
 $machoteGenerateUrl = null;
 if ($convenioId !== null && isset($convenio['empresa_id'])) {
     $machoteGenerateUrl = '../../handler/machote/machote_generate_handler.php?' . http_build_query([
@@ -92,6 +131,9 @@ $machotePdfUrl = $machoteChildId !== null
 $machoteRevisarUrl = $machoteChildId !== null
     ? '../machote/machote_revisar.php?id=' . urlencode((string) $machoteChildId)
     : null;
+$empresaId = $convenio !== null && isset($convenio['empresa_id']) ? (int) $convenio['empresa_id'] : null;
+$convenioEstatus = $convenio !== null && isset($convenio['estatus']) ? trim((string) $convenio['estatus']) : '';
+$convenioEsActiva = $convenioEstatus === 'Activa';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -194,6 +236,26 @@ $machoteRevisarUrl = $machoteChildId !== null
                 </section>
             <?php endif; ?>
 
+            <?php if ($uploadSuccessMessage !== null): ?>
+                <section class="card">
+                    <div class="content">
+                        <div class="alert alert-success" role="status">
+                            <?php echo htmlspecialchars($uploadSuccessMessage, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($uploadErrorMessage !== null): ?>
+                <section class="card">
+                    <div class="content">
+                        <div class="alert alert-warning" role="alert">
+                            <?php echo htmlspecialchars($uploadErrorMessage, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
             <?php if ($convenio !== null): ?>
                 <!-- Información principal -->
                 <section class="card">
@@ -287,6 +349,20 @@ $machoteRevisarUrl = $machoteChildId !== null
                             <?php if ($empresaUrl !== null): ?>
                                 <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">🏢 Ver
                                     empresa</a>
+                            <?php endif; ?>
+                            <?php if ($convenioEsActiva && $convenioId !== null): ?>
+                                <form action="../../handler/convenio/convenio_upload_handler.php" method="post"
+                                    enctype="multipart/form-data"
+                                    style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                                    <input type="hidden" name="convenio_id"
+                                        value="<?php echo htmlspecialchars((string) $convenioId, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php if ($empresaId !== null): ?>
+                                        <input type="hidden" name="empresa_id"
+                                            value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php endif; ?>
+                                    <input type="file" name="convenio_pdf" accept="application/pdf" required>
+                                    <button class="btn" type="submit">⬆️ Subir convenio (PDF)</button>
+                                </form>
                             <?php endif; ?>
                         </div>
                         <div class="form-group" style="margin-top: 16px;">
