@@ -55,7 +55,7 @@ $returnUrl = $estudianteId !== null
   <title>Desactivar Estudiante · Residencia Profesional</title>
 
 
-  <link rel="stylesheet" href="../../assets/css/modules/estudiante.css" />
+  <link rel="stylesheet" href="../../assets/css/modules/estudiante/estudiantedesactivar.css" />
 
 
 </head>

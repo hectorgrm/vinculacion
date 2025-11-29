@@ -1,0 +1,210 @@
+/* ============================================================
+   ESTUDIANTE EDIT
+   Usa theme + base + layout + componentes + utilidades
+   ============================================================ */
+
+@import url('../../themes/theme.css');
+@import url('../../base/reset.css');
+@import url('../../base/base.css');
+
+@import url('../../layout/containers.css');
+@import url('../../layout/grid.css');
+@import url('../../layout/header.css');
+@import url('../../layout/responsive.css');
+@import url('../../layout/sidebar.css');
+
+@import url('../../components/buttons.css');
+@import url('../../components/forms.css');
+@import url('../../components/cards.css');
+@import url('../../components/badges.css');
+@import url('../../components/alerts.css');
+@import url('../../components/breadcrumbs.css');
+@import url('../../components/modal.css');
+@import url('../../components/tables.css');
+@import url('../../components/progress.css');
+
+@import url('../../utilities/utilities.css');
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 0 8px 32px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: linear-gradient(120deg, #f4f7fb 0%, #e8f2ff 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.topbar h2 {
+  margin: 0 0 6px;
+  font-size: 1.8rem;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.topbar .subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.topbar .actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.topbar .btn {
+  border-radius: 12px;
+  font-weight: 750;
+}
+
+.message-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.dangerbox,
+.successbox,
+.infobox {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.dangerbox {
+  background: var(--danger-100);
+  border-color: var(--danger-200);
+  color: var(--danger-700);
+}
+
+.successbox {
+  background: var(--success-100);
+  border-color: var(--success-200);
+  color: var(--success-700);
+}
+
+.infobox {
+  background: var(--surface-info);
+  border-color: var(--border);
+  color: var(--primary-600);
+}
+
+.dangerbox ul {
+  margin: 0 0 0 18px;
+  padding: 0;
+}
+
+.card {
+  background: var(--panel);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.card > header {
+  padding: 18px 22px;
+  font-weight: 750;
+  font-size: 1.05rem;
+  background: var(--panel-alt);
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-800);
+}
+
+.card .content {
+  padding: 22px;
+  display: grid;
+  gap: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 650;
+  color: var(--muted-strong);
+  font-size: 14px;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 11px 13px;
+  font-size: 15px;
+  background: var(--panel);
+  color: var(--ink);
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group select:focus,
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.18);
+  outline: none;
+}
+
+.form-group input[readonly],
+.form-group select:disabled {
+  background: var(--surface-soft);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.form-actions .btn {
+  border-radius: 12px;
+  font-weight: 750;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.foot {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: right;
+}
+
+@media (max-width: 720px) {
+  .app { grid-template-columns: 1fr; }
+  .topbar { flex-direction: column; align-items: flex-start; }
+  .topbar .actions { width: 100%; }
+  .topbar .btn { width: 100%; text-align: center; }
+  .form-actions { justify-content: center; }
+}

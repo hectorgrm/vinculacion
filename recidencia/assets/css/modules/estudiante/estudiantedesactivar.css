@@ -1,0 +1,174 @@
+/* ============================================================
+   ESTUDIANTE - DESACTIVAR
+   Usa theme + base + layout + componentes + utilidades
+   ============================================================ */
+
+@import url('../../themes/theme.css');
+@import url('../../base/reset.css');
+@import url('../../base/base.css');
+
+@import url('../../layout/containers.css');
+@import url('../../layout/grid.css');
+@import url('../../layout/header.css');
+@import url('../../layout/responsive.css');
+@import url('../../layout/sidebar.css');
+
+@import url('../../components/buttons.css');
+@import url('../../components/forms.css');
+@import url('../../components/cards.css');
+@import url('../../components/badges.css');
+@import url('../../components/alerts.css');
+@import url('../../components/breadcrumbs.css');
+@import url('../../components/modal.css');
+@import url('../../components/tables.css');
+@import url('../../components/progress.css');
+
+@import url('../../utilities/utilities.css');
+
+.main {
+  display: grid;
+  gap: 22px;
+  padding: 0 8px 32px;
+}
+
+.card {
+  background: var(--panel);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.card > header {
+  padding: 18px 22px;
+  font-weight: 750;
+  font-size: 1.05rem;
+  background: var(--panel-alt);
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-800);
+}
+
+.card .content {
+  padding: 22px;
+  display: grid;
+  gap: 16px;
+}
+
+.warning-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--warning-100);
+  color: var(--warning-700);
+  font-weight: 800;
+  font-size: 24px;
+  border: 1px solid var(--warning-200);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7);
+}
+
+.alert-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 750;
+  color: var(--ink);
+}
+
+.alert-text {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.message {
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.message.error {
+  background: var(--danger-100);
+  border-color: var(--danger-200);
+  color: var(--danger-700);
+}
+
+.message.success {
+  background: var(--success-100);
+  border-color: var(--success-200);
+  color: var(--success-700);
+}
+
+.message ul {
+  margin: 4px 0 0 18px;
+  padding: 0;
+}
+
+.data-box {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 8px;
+  background: var(--surface-soft);
+}
+
+.data-box p {
+  margin: 0;
+  color: var(--ink);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.data-box strong {
+  color: var(--muted-strong);
+  min-width: 92px;
+}
+
+.badge.activo { background: var(--success-100); color: var(--success-700); border: 1px solid var(--success-200); }
+.badge.finalizado { background: var(--surface-info); color: var(--primary-600); border: 1px solid var(--border); }
+.badge.inactivo { background: var(--danger-150); color: var(--danger-700); border: 1px solid var(--danger-200); }
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.actions .btn {
+  border-radius: 12px;
+  font-weight: 750;
+}
+
+.actions .btn.danger {
+  background: var(--danger-500);
+  border-color: var(--danger-500);
+  color: #fff;
+}
+
+.actions .btn.danger:hover {
+  background: var(--danger-600);
+}
+
+.actions .btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.foot {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: right;
+}
+
+@media (max-width: 720px) {
+  .app { grid-template-columns: 1fr; }
+  .actions { flex-direction: column; align-items: stretch; }
+  .actions .btn { width: 100%; text-align: center; justify-content: center; }
+}
