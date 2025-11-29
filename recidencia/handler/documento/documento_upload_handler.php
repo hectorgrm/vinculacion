@@ -114,6 +114,9 @@ if (!function_exists('documentoUploadHandler')) {
                 $viewData['tiposPersonalizados'] = $controller->getTiposPersonalizados($empresaId);
 
                 $redirectUrl = '../empresa/empresa_view.php?id=' . urlencode((string) $empresaId);
+                if ($viewData['successMessage'] !== null && $viewData['successMessage'] !== '') {
+                    $redirectUrl .= '&success_message=' . rawurlencode($viewData['successMessage']);
+                }
                 header('Location: ' . $redirectUrl);
                 exit;
             }

@@ -157,7 +157,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
           <header>Evaluación del documento</header>
           <div class="content">
             <?php if ($successMessage !== null): ?>
-              <div class="alert success" role="alert">
+              <div class="alert success" role="alert" id="documento-review-success-alert">
                 <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
               </div>
             <?php endif; ?>
@@ -230,5 +230,19 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
     </main>
   </div>
 </body>
+<?php if ($successMessage !== null): ?>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      var alertEl = document.getElementById('documento-review-success-alert');
+      if (!alertEl) {
+        return;
+      }
+
+      setTimeout(function () {
+        alertEl.remove();
+      }, 5000);
+    });
+  </script>
+<?php endif; ?>
 
 </html>

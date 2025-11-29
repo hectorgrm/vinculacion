@@ -97,7 +97,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
     <!-- Main -->
     <main class="main">
       <?php if ($successMessage !== null && $successMessage !== ''): ?>
-        <div class="alert alert-success" style="margin: 0 0 16px;">
+        <div class="alert alert-success" id="empresa-success-alert" style="margin: 0 0 16px;">
           <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
         </div>
         <div id="empresa-success-toast"
@@ -856,6 +856,18 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
   </div>
   <?php if ($successMessage !== null && $successMessage !== ''): ?>
     <script src="../../assets/js/empresa-success-toast.js" defer></script>
+    <script>
+      window.addEventListener('DOMContentLoaded', function () {
+        var alertEl = document.getElementById('empresa-success-alert');
+        if (!alertEl) {
+          return;
+        }
+
+        setTimeout(function () {
+          alertEl.remove();
+        }, 5000);
+      });
+    </script>
   <?php endif; ?>
 </body>
 

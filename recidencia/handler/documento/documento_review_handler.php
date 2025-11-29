@@ -120,6 +120,9 @@ if (!function_exists('documentoReviewHandler')) {
 
             if ($empresaIdForRedirect !== null && $empresaIdForRedirect > 0) {
                 $redirectUrl = '../empresa/empresa_view.php?id=' . urlencode((string) $empresaIdForRedirect);
+                if ($viewData['successMessage'] !== null && $viewData['successMessage'] !== '') {
+                    $redirectUrl .= '&success_message=' . rawurlencode($viewData['successMessage']);
+                }
                 header('Location: ' . $redirectUrl);
                 exit;
             }
