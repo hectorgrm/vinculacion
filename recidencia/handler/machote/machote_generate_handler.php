@@ -60,7 +60,7 @@ try {
 // Si ya existe un machote hijo asociado al convenio → redirigir a editar
 $existingMachote = $convenioMachoteModel->getByConvenio($convenioId);
 if ($existingMachote !== null) {
-    header('Location: ../../view/machote/machote_edit.php?id=' . urlencode((string) $existingMachote['id']));
+    header('Location: ../../view/machote/machote_revisar.php?id=' . urlencode((string) $existingMachote['id']));
     exit;
 }
 
@@ -168,7 +168,7 @@ convenioRegisterAuditEvent('generar_machote', $convenioId, $auditContext, $audit
 // ===============================================================
 // 9️⃣ REDIRECCIONAR AL EDITOR DEL MACHOTE HIJO
 // ===============================================================
-$redirectUrl = '../../view/machote/machote_edit.php?id=' . urlencode((string) $nuevoMachoteId) . '&machote_status=created';
+$redirectUrl = '../../view/machote/machote_revisar.php?id=' . urlencode((string) $nuevoMachoteId) . '&machote_status=created';
 header('Location: ' . $redirectUrl);
 exit;
 
