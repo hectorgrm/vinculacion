@@ -415,6 +415,14 @@ if (!empty($_GET['reabrir_error'])) {
       return true;
     });
   }
+
+  // Oculta los mensajes flash tras 5 segundos para limpiar la vista
+  document.querySelectorAll('.flash').forEach((flashEl) => {
+    setTimeout(() => {
+      flashEl.classList.add('is-hidden');
+      flashEl.addEventListener('transitionend', () => flashEl.remove(), { once: true });
+    }, 5000);
+  });
 </script>
 
   <style>

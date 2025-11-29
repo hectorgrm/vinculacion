@@ -76,6 +76,7 @@
   color: var(--ink-800);
   box-shadow: var(--shadow-sm);
   font-weight: 600;
+  transition: opacity .3s ease, transform .3s ease;
 }
 
 .flash.success {
@@ -88,6 +89,11 @@
   border-color: var(--danger-200);
   background: var(--danger-150);
   color: var(--danger-700);
+}
+.flash.is-hidden {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
 }
 
 .card {
