@@ -194,7 +194,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
 
       <!-- 📜 Convenios asociados -->
       <section class="card">
-        <header>📜 Convenios activos y en revisión</header>
+        <header>📜 Convenios activos, en revisión o suspendidos</header>
         <div class="content<?php echo $empresaIsEnRevision ? ' content--dimmed' : ''; ?>">
           <?php if ($empresaIsEnRevision): ?>
             <p class="section-note">
@@ -219,7 +219,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                 </tr>
               <?php elseif ($conveniosActivos === []): ?>
                 <tr>
-                  <td colspan="6" style="text-align:center;">No existen convenios activos o en revisión registrados para esta empresa.</td>
+                  <td colspan="6" style="text-align:center;">No existen convenios activos, en revisión o suspendidos registrados para esta empresa.</td>
                 </tr>
               <?php else: ?>
                 <?php foreach ($conveniosActivos as $convenio): ?>

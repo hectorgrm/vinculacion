@@ -173,6 +173,20 @@ if (!function_exists('empresaViewIsStatusActiva')) {
     }
 }
 
+if (!function_exists('empresaViewIsConvenioBloqueanteStatus')) {
+    function empresaViewIsConvenioBloqueanteStatus(?string $estatus): bool
+    {
+        $clean = empresaViewSanitizeStatusForComparison(empresaNormalizeStatus($estatus));
+        $clean = str_replace('a3', 'o', $clean);
+
+        if (strpos($clean, 'enrevisi') === 0) {
+            $clean = 'enrevision';
+        }
+
+        return in_array($clean, ['activa', 'enrevision', 'suspendida'], true);
+    }
+}
+
 if (!function_exists('empresaViewHasConvenioActivo')) {
     /**
      * @param array<int, array<string, mixed>> $conveniosActivos
@@ -184,7 +198,7 @@ if (!function_exists('empresaViewHasConvenioActivo')) {
                 continue;
             }
 
-            if (empresaViewIsStatusActiva($convenio['estatus'] ?? null)) {
+            if (empresaViewIsConvenioBloqueanteStatus($convenio['estatus'] ?? null)) {
                 return true;
             }
         }

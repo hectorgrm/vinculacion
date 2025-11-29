@@ -39,10 +39,10 @@ if (!function_exists('convenioHandleAddRequest')) {
 
             try {
                 if ($controller->empresaTieneConvenioActivo($empresaId)) {
-                    $errors[] = 'La empresa seleccionada ya tiene un convenio activo. Finaliza o desactivalo antes de crear uno nuevo.';
+                    $errors[] = 'La empresa seleccionada ya tiene un convenio en estatus Activa, En revisiA3n o Suspendida. Finaliza o marca como Inactiva/Completado antes de crear uno nuevo.';
                 }
             } catch (\Throwable) {
-                $errors[] = 'No se pudo validar si la empresa ya tiene un convenio activo. Intenta nuevamente.';
+                $errors[] = 'No se pudo validar si la empresa ya tiene un convenio registrado en estatus bloqueante. Intenta nuevamente.';
             }
         }
 

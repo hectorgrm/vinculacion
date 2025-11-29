@@ -122,13 +122,13 @@ class ConvenioModel
                    numero_control,
                    estatus
               FROM rp_empresa
-             WHERE estatus IN ('Activa', 'En revisiA3n')
+             WHERE estatus IN ('Activa', 'En revisiA3n', 'En revisión')
                AND NOT EXISTS (
                    SELECT 1
                      FROM rp_convenio AS c
                     WHERE c.empresa_id = rp_empresa.id
-                      AND c.estatus = 'Activa'
-               )
+                      AND c.estatus IN ('Activa', 'En revisiA3n', 'En revisión', 'Suspendida')
+                )
              ORDER BY nombre ASC
         SQL;
 
@@ -143,7 +143,7 @@ class ConvenioModel
             SELECT 1
               FROM rp_convenio
              WHERE empresa_id = :empresa_id
-               AND estatus = 'Activa'
+               AND estatus IN ('Activa', 'En revisiA3n', 'En revisión', 'Suspendida')
              LIMIT 1
         SQL;
 

@@ -59,7 +59,8 @@ class EmpresaViewModel
     }
 
     /**
-     * Obtiene los convenios de la empresa con estatus "Activa" o "En revisión".
+     * Obtiene los convenios de la empresa que bloquean crear uno nuevo
+     * (Activa, En revisión o Suspendida).
      *
      * @return array<int, array<string, mixed>>
      */
@@ -81,7 +82,7 @@ class EmpresaViewModel
                    actualizado_en
               FROM rp_convenio
              WHERE empresa_id = :empresa_id
-               AND estatus IN ('Activa', 'En revisión')
+               AND estatus IN ('Activa', 'En revisión', 'En revisiA3n', 'Suspendida')
              ORDER BY fecha_fin DESC,
                       fecha_inicio DESC,
                       id DESC
