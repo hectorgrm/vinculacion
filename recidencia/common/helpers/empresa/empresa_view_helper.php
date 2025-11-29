@@ -18,6 +18,7 @@ if (!function_exists('empresaViewTemplateHelper')) {
         $headerData = empresaViewBuildHeaderData($handlerResult);
         $documentosData = empresaViewDocumentosHelper($handlerResult);
         $machoteData = empresaViewMachoteHelper($handlerResult['machoteData'] ?? null);
+        $machoteGenerateUrl = empresaViewMachoteGenerateUrl($handlerResult, $machoteData);
         $auditoriaData = empresaViewAuditoriaHelper($auditoriaHandlerResult);
         $portalData = empresaViewPortalAccessHelper($handlerResult);
 
@@ -27,6 +28,7 @@ if (!function_exists('empresaViewTemplateHelper')) {
             $portalData,
             [
                 'machoteData' => $machoteData,
+                'machoteGenerateUrl' => $machoteGenerateUrl,
                 'auditoriaItems' => $auditoriaData['items'],
                 'auditoriaControllerError' => $auditoriaData['controllerError'],
                 'auditoriaInputError' => $auditoriaData['inputError'],

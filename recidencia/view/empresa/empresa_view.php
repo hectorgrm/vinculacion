@@ -29,6 +29,9 @@ $documentos = $preparedData['documentos'] ?? [];
 $documentosStats = $preparedData['documentosStats'] ?? [];
 $documentosGestionUrl = $preparedData['documentosGestionUrl'] ?? null;
 $machoteData = $preparedData['machoteData'] ?? null;
+$machoteGenerateUrl = isset($preparedData['machoteGenerateUrl']) && is_string($preparedData['machoteGenerateUrl'])
+    ? $preparedData['machoteGenerateUrl']
+    : null;
 $auditoriaItems = $preparedData['auditoriaItems'] ?? [];
 $auditoriaControllerError = $preparedData['auditoriaControllerError'] ?? null;
 $auditoriaInputError = $preparedData['auditoriaInputError'] ?? null;
@@ -270,6 +273,14 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
             <p style="margin:0; color:#475569;">
               Esta empresa aún no tiene un machote registrado o se encuentra en preparación.
             </p>
+            <?php if ($machoteGenerateUrl !== null): ?>
+              <div class="actions" style="margin-top:12px; justify-content:flex-start;">
+                <a class="btn btn-outline"
+                   href="<?php echo htmlspecialchars($machoteGenerateUrl, ENT_QUOTES, 'UTF-8'); ?>">
+                  📄 Generar machote desde plantilla global
+                </a>
+              </div>
+            <?php endif; ?>
           <?php else : ?>
             <section class="kpis">
               <div class="kpi">
