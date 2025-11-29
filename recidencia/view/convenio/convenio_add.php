@@ -35,7 +35,7 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
         <div class="page-titles">
           <p class="eyebrow">Convenios</p>
           <h2>Registrar Nuevo Convenio</h2>
-          <p class="lead">Crea un convenio vinculado a una empresa, define vigencias y adjunta el archivo.</p>
+          <p class="lead">Crea un convenio vinculado a una empresa y define sus vigencias.</p>
           <nav class="breadcrumb">
             <a href="../../index.php">Inicio</a>
             <span>&rsaquo;</span>
@@ -53,7 +53,7 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
         <header>Formulario de Alta de Convenio</header>
         <div class="content">
           <p class="text-muted">
-            Registra un convenio vinculado a una empresa. Adjunta el archivo en PDF y define su vigencia.
+            Registra un convenio vinculado a una empresa y define su vigencia.
           </p>
 
           <?php if ($controllerError !== null || $successMessage !== null || $errors !== []): ?>
@@ -160,12 +160,6 @@ $empresaSelectDisabled = !$controllerAvailable || $empresaLockedId !== null;
                 <label for="fecha_fin">Fecha de t&eacute;rmino</label>
                 <input type="date" name="fecha_fin" id="fecha_fin"
                   value="<?php echo htmlspecialchars(convenioFormValue($formData, 'fecha_fin'), ENT_QUOTES, 'UTF-8'); ?>" />
-              </div>
-
-              <!-- Archivo -->
-              <div class="field col-span-2">
-                <label for="borrador_path">Archivo del convenio (PDF)</label>
-                <input type="file" name="borrador_path" id="borrador_path" accept="application/pdf" />
               </div>
 
               <!-- Observaciones -->
