@@ -146,7 +146,6 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
     </div>
 
     <div class="empresa-actions">
-      <a href="<?php echo htmlspecialchars($empresaProgresoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">📊 Ver Progreso</a>
       <a href="empresa_list.php" class="btn secondary">⬅ Volver</a>
     </div>
   </section>
@@ -183,10 +182,10 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               <div><strong>Fecha de Registro:</strong> <?php echo htmlspecialchars($creadoEn, ENT_QUOTES, 'UTF-8'); ?></div>
               <div><strong>Última actualización:</strong> <?php echo htmlspecialchars($actualizadoEn, ENT_QUOTES, 'UTF-8'); ?></div>
             </div>
-            
           <?php endif; ?>
-                                  <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️
-                          Editar</a>
+          <div class="actions actions--end">
+            <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️ Editar</a>
+          </div>
         </div>
       </section>
 
