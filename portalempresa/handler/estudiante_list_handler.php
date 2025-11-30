@@ -34,4 +34,9 @@ try {
     $listErrorMessage = 'No se pudo cargar el listado de estudiantes. Intenta nuevamente más tarde.';
 }
 
+$empresa = [
+    'nombre' => $empresaNombre,
+    'logo_path' => $portalSession['empresa_logo_path'] ?? null,
+];
+
 require __DIR__ . '/../view/estudiantes_list.php';

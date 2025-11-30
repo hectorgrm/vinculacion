@@ -27,6 +27,7 @@ class EmpresaDocumentoListModel
             SELECT id,
                    nombre,
                    numero_control,
+                   logo_path,
                    regimen_fiscal
               FROM rp_empresa
              WHERE id = :id

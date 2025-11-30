@@ -60,6 +60,9 @@ if (!function_exists('portalEmpresaRequireSession')) {
         $session['empresa_nombre'] = (string) ($record['empresa_nombre'] ?? $session['empresa_nombre'] ?? '');
         $session['empresa_numero_control'] = (string) ($record['empresa_numero_control'] ?? $session['empresa_numero_control'] ?? '');
         $session['empresa_estatus'] = $status;
+        $session['empresa_logo_path'] = isset($record['empresa_logo_path'])
+            ? (string) $record['empresa_logo_path']
+            : (string) ($session['empresa_logo_path'] ?? '');
 
         $_SESSION['portal_empresa'] = $session;
 

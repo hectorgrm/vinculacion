@@ -37,7 +37,8 @@ class PortalEmpresaLoginModel
                    pa.creado_en,
                    e.nombre AS empresa_nombre,
                    e.numero_control AS empresa_numero_control,
-                   e.estatus AS empresa_estatus
+                   e.estatus AS empresa_estatus,
+                   e.logo_path AS empresa_logo_path
               FROM rp_portal_acceso AS pa
               INNER JOIN rp_empresa AS e ON e.id = pa.empresa_id
              WHERE pa.token = :token

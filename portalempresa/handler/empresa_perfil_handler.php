@@ -11,6 +11,7 @@ require_once __DIR__ . '/../common/functions/empresaperfil_function.php';
 require_once __DIR__ . '/../common/functions/portal_session_guard.php';
 
 $sessionEmpresa = portalEmpresaRequireSession('../view/login.php');
+$portalSession = $sessionEmpresa;
 $empresaId = (int) ($sessionEmpresa['empresa_id'] ?? 0);
 
 $controller = new EmpresaPerfilController();
@@ -45,5 +46,10 @@ $estatusBadgeLabel = empresaPerfilBadgeLabel($estatus);
 if ($empresaNombre === '') {
     $empresaNombre = 'Empresa';
 }
+
+$empresa = [
+    'nombre' => $empresaNombre,
+    'logo_path' => $perfil['logo_path'] ?? ($sessionEmpresa['empresa_logo_path'] ?? null),
+];
 
 require __DIR__ . '/../view/perfil_empresa.php';

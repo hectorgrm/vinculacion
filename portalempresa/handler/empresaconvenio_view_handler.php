@@ -50,5 +50,10 @@ $empresaNombre = $empresaData['nombre'] ?? (string) ($portalSession['empresa_nom
 $empresaBadgeVariant = $empresaData['estatus_badge_variant'] ?? EmpresaConvenioHelper::mapBadgeVariant($empresaData['estatus'] ?? ($portalSession['empresa_estatus'] ?? null));
 $empresaBadgeLabel = $empresaData['estatus_label'] ?? EmpresaConvenioHelper::valueOrDefault($empresaData['estatus'] ?? ($portalSession['empresa_estatus'] ?? null), 'Sin estatus');
 
+$empresa = $empresaData ?? [
+    'nombre' => $empresaNombre,
+    'logo_path' => $portalSession['empresa_logo_path'] ?? null,
+];
+
 $hasConvenio = $convenioData !== null && ($statusMeta['has_convenio'] ?? true);
 $documentAvailable = $hasConvenio && ($convenioData['has_document'] ?? false);

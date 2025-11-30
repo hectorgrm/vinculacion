@@ -11,6 +11,7 @@ require_once __DIR__ . '/../common/functions/portal_session_guard.php';
 require_once __DIR__ . '/../controller/EmpresaDocumentoListController.php';
 
 $sessionEmpresa = portalEmpresaRequireSession('../view/login.php');
+$portalSession = $sessionEmpresa;
 $empresaId = (int) ($sessionEmpresa['empresa_id'] ?? 0);
 
 $controller = new EmpresaDocumentoListController();
@@ -23,6 +24,7 @@ try {
     $payload = [
         'empresa' => [
             'nombre' => (string) ($sessionEmpresa['empresa_nombre'] ?? ''),
+            'logo_path' => $sessionEmpresa['empresa_logo_path'] ?? null,
         ],
         'documentos' => [],
         'kpis' => ['aprobado' => 0, 'pendiente' => 0, 'rechazado' => 0],
@@ -31,6 +33,11 @@ try {
         'uploadOptions' => [],
     ];
     $errorMessage = 'No se pudo cargar la información de los documentos. Intenta nuevamente más tarde.';
+}
+
+$empresa = isset($payload['empresa']) && is_array($payload['empresa']) ? $payload['empresa'] : [];
+if (!isset($empresa['logo_path']) || $empresa['logo_path'] === '') {
+    $empresa['logo_path'] = $sessionEmpresa['empresa_logo_path'] ?? null;
 }
 
 $empresaNombre = $payload['empresa']['nombre'] ?? (string) ($sessionEmpresa['empresa_nombre'] ?? '');

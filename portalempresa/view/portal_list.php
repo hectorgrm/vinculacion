@@ -106,7 +106,6 @@ $kpiDocsPend     = 1;
       <p>Datos del convenio vigente, anexos y renovación.</p>
       <div class="actions">
         <a class="btn primary" href="convenio_view.php">📑 Ver convenio</a>
-        <a class="btn" href="convenio_view.php#renovar">↺ Solicitar renovación</a>
       </div>
     </article>
 

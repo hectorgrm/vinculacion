@@ -44,6 +44,19 @@ if ($headerLogoUrl === null && isset($empresa['logo_path'])) {
     }
 }
 
+if ($headerLogoUrl === null && isset($portalSession['empresa_logo_path'])) {
+    $logoPath = trim((string) $portalSession['empresa_logo_path']);
+    if ($logoPath !== '') {
+        $logoPath = str_replace('\\', '/', $logoPath);
+        $logoPath = ltrim($logoPath, '/');
+        if ($logoPath !== '' && strpos($logoPath, '..') === false) {
+            $headerLogoUrl = preg_match('/^https?:\\/\\//i', $logoPath) === 1
+                ? $logoPath
+                : '../../recidencia/' . $logoPath;
+        }
+    }
+}
+
 $headerLogoUrl = $headerLogoUrl ?: 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';
 ?>
 

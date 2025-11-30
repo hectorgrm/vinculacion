@@ -27,6 +27,7 @@ class EmpresaPerfilModel
             SELECT id,
                    numero_control,
                    nombre,
+                   logo_path,
                    rfc,
                    representante,
                    cargo_representante,

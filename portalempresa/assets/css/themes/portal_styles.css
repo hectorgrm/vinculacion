@@ -3,8 +3,8 @@
 :root {
   --primary: #1d4ed8;
   --primary-strong: #1e3a8a;
-  --primary-soft: #dbeafe;
-  --accent: #0ea5e9;
+  --primary-soft: #5f9bea;
+  --accent: #068bc9;
   --success: #16a34a;
   --warning: #f59e0b;
   --danger: #ef4444;
@@ -17,7 +17,7 @@
   --radius-sm: 10px;
   --radius: 14px;
   --radius-lg: 18px;
-  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --shadow: 0 10px 30px rgba(5, 8, 15, 0.08);
   --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.06);
   --gradient: linear-gradient(135deg, #1d4ed8, #0ea5e9);
   --transition: all 0.25s ease;
