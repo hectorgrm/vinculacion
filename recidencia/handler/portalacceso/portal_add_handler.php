@@ -79,8 +79,13 @@ if (!function_exists('portalAccessAddHandler')) {
 
         try {
             $accessId = $controller->createPortalAccess($viewData['formData'], $viewData['empresaOptions']);
-            $viewData['successMessage'] = portalAccessSuccessMessage($accessId);
-            $viewData['formData'] = portalAccessFormDefaults();
+            $empresaId = (int) $viewData['formData']['empresa_id'];
+            $successMessage = portalAccessSuccessMessage($accessId);
+            $redirectUrl = '../empresa/empresa_view.php?id=' . rawurlencode((string) $empresaId)
+                . '&success_message=' . rawurlencode($successMessage);
+
+            header('Location: ' . $redirectUrl);
+            exit;
         } catch (\Throwable $exception) {
             $pdoException = null;
 
