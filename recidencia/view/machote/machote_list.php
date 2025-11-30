@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../../handler/machote/machote_list_handler.php';
+
+$totalMachotes = is_array($machotes ?? null) ? count($machotes) : 0;
+$searchTerm = $search ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -13,31 +16,43 @@ require_once __DIR__ . '/../../handler/machote/machote_list_handler.php';
   <div class="app">
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-    <main class="main">
+    <main class="main machote-view">
 
-      <header class="topbar">
-        <div>
-          <h2>Machotes de Convenio</h2>
+      <header class="hero">
+        <div class="hero__text">
+          <p class="eyebrow">Plantillas y revisiones</p>
+          <div class="hero__headline">
+            <h1>Machotes de Convenio</h1>
+            <span class="pill"><?= $totalMachotes; ?> registrados</span>
+          </div>
           <p class="subtitle">
-            Administra las versiones de machotes institucionales y revisiones activas con empresas.
+            Administra versiones institucionales, revisiones activas con empresas y acciones rápidas sobre cada machote.
           </p>
         </div>
-        <div class="actions">
+        <div class="hero__actions">
           <a href="machote_add.php" class="btn primary">Nuevo machote</a>
         </div>
       </header>
 
       <section class="card">
+        <header>Búsqueda y listado</header>
         <div class="content">
-          <form class="search-bar" method="get">
-            <input
-              type="text"
-              name="search"
-              placeholder="Buscar por empresa o versión..."
-              value="<?= htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8'); ?>"
-            />
-            <button type="submit" class="btn primary">Buscar</button>
-            <a href="machote_list.php" class="btn secondary">Limpiar</a>
+          <form class="filters" method="get">
+            <label class="filters__field">
+              <span>Buscar</span>
+              <div class="filters__control">
+                <input
+                  type="text"
+                  name="search"
+                  placeholder="Buscar por empresa o versión..."
+                  value="<?= htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8'); ?>"
+                />
+              </div>
+            </label>
+            <div class="filters__actions">
+              <button type="submit" class="btn primary">Buscar</button>
+              <a href="machote_list.php" class="btn secondary">Limpiar</a>
+            </div>
           </form>
 
           <div class="table-wrapper">
@@ -47,7 +62,7 @@ require_once __DIR__ . '/../../handler/machote/machote_list_handler.php';
                   <tr>
                     <th>#</th>
                     <th>Empresa</th>
-                    <th>Versión Machote</th>
+                    <th>Versión</th>
                     <th>Fecha</th>
                     <th>Estatus</th>
                     <th style="min-width:220px;">Acciones</th>

@@ -1,8 +1,0 @@
-/* Aggregate styles for Convenio module */
-@import url('../convenios/convenioglobalstyles.css');
-@import url('../convenios/convenio_list.css');
-@import url('../convenios/convenio_view.css');
-@import url('../convenios/convenio_edit.css');
-@import url('../convenios/convenio_delete.css');
-@import url('../convenios/convenioadd.css');
-@import url('../convenios/convenio_renovar.css');
