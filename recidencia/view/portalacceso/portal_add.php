@@ -86,12 +86,12 @@ $controllerError = $handlerResult['controllerError'];
               <div class="field">
                 <label for="empresa_id" class="required">Empresa *</label>
                 <select id="empresa_id" name="empresa_id" required <?php echo $empresaOptions === [] ? 'disabled' : ''; ?>>
-                  <option value="">— Selecciona una empresa —</option>
+                  <option value="">- Selecciona una empresa -</option>
                   <?php foreach ($empresaOptions as $empresa) : ?>
                     <?php
                       $value = htmlspecialchars($empresa['id'], ENT_QUOTES, 'UTF-8');
                       $numeroControl = trim($empresa['numero_control']) !== ''
-                        ? ' — ' . htmlspecialchars($empresa['numero_control'], ENT_QUOTES, 'UTF-8')
+                        ? ' - ' . htmlspecialchars($empresa['numero_control'], ENT_QUOTES, 'UTF-8')
                         : '';
                       $label = htmlspecialchars($empresa['nombre'], ENT_QUOTES, 'UTF-8') . $numeroControl;
                       $selected = $formData['empresa_id'] === (string) $empresa['id'] ? 'selected' : '';
@@ -100,7 +100,7 @@ $controllerError = $handlerResult['controllerError'];
                   <?php endforeach; ?>
                 </select>
                 <?php if ($empresaOptions === []) : ?>
-                  <div class="hint">Registra al menos una empresa antes de crear accesos.</div>
+                  <div class="hint">No hay empresas activas sin un acceso asignado. Usa el acceso existente o elimina uno para habilitar un nuevo registro.</div>
                 <?php endif; ?>
               </div>
 

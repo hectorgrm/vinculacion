@@ -26,10 +26,15 @@ class PortalAddModel
     public function getEmpresas(): array
     {
         $sql = <<<'SQL'
-            SELECT id, nombre, numero_control
-              FROM rp_empresa
-             WHERE estatus = 'Activa'
-             ORDER BY nombre ASC
+            SELECT e.id, e.nombre, e.numero_control
+              FROM rp_empresa e
+             WHERE e.estatus = 'Activa'
+               AND NOT EXISTS (
+                   SELECT 1
+                     FROM rp_portal_acceso pa
+                    WHERE pa.empresa_id = e.id
+               )
+             ORDER BY e.nombre ASC
         SQL;
 
         $statement = $this->pdo->query($sql);

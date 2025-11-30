@@ -464,6 +464,10 @@ if (!function_exists('empresaViewPortalAccessHelper')) {
             }
         }
 
+        if ($record !== null) {
+            $createUrl = null;
+        }
+
         $actionsEnabled = $empresaIsActiva && $empresaId !== null;
         $disabledReason = null;
 

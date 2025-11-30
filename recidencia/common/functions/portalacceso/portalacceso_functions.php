@@ -148,7 +148,7 @@ if (!function_exists('portalAccessValidateData')) {
         }
 
         if ($empresaIds === []) {
-            $errors[] = 'No hay empresas registradas. Registra una empresa antes de crear accesos.';
+            $errors[] = 'No hay empresas activas disponibles sin acceso. Usa un acceso existente o elimina uno antes de crear otro.';
         }
 
         if ($data['empresa_id'] === '') {

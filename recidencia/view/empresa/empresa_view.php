@@ -519,7 +519,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
           </div>
         </div>
       </section>
-
+      <?php $portalAccessExists = is_array($portalAccess) && isset($portalAccess['id']); ?>
       <section class="portal-card">
         <div class="portal-header">
           <div class="portal-title">
@@ -527,10 +527,12 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
             <span class="portal-subtitle">Control del token y NIP asignado a la empresa</span>
           </div>
 
-          <?php if ($portalAccessActionsEnabled && is_string($portalAccessCreateUrl) && $portalAccessCreateUrl !== '') : ?>
-            <a class="portal-btn-create" href="<?php echo htmlspecialchars($portalAccessCreateUrl, ENT_QUOTES, 'UTF-8'); ?>">➕ Crear acceso</a>
-          <?php else : ?>
-            <button class="portal-btn-create" type="button" disabled title="<?php echo htmlspecialchars($portalAccessDisabledReason ?? 'La empresa debe estar activa para generar accesos.', ENT_QUOTES, 'UTF-8'); ?>">➕ Crear acceso</button>
+          <?php if (!$portalAccessExists) : ?>
+            <?php if ($portalAccessActionsEnabled && is_string($portalAccessCreateUrl) && $portalAccessCreateUrl !== '') : ?>
+              <a class="portal-btn-create" href="<?php echo htmlspecialchars($portalAccessCreateUrl, ENT_QUOTES, 'UTF-8'); ?>">Crear acceso</a>
+            <?php else : ?>
+              <button class="portal-btn-create" type="button" disabled title="<?php echo htmlspecialchars($portalAccessDisabledReason ?? 'La empresa debe estar activa para generar accesos.', ENT_QUOTES, 'UTF-8'); ?>">Crear acceso</button>
+            <?php endif; ?>
           <?php endif; ?>
         </div>
 
@@ -538,7 +540,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
           <p class="portal-note">Para generar o modificar accesos, la empresa debe contar con estatus <strong>Activo</strong>.</p>
         <?php endif; ?>
 
-        <?php if (!is_array($portalAccess) || !isset($portalAccess['id'])) : ?>
+        <?php if (!$portalAccessExists) : ?>
           <div class="portal-empty">
             Esta empresa aún no tiene un acceso generado para su portal.
           </div>
@@ -872,5 +874,3 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
 </body>
 
 </html>
-
-

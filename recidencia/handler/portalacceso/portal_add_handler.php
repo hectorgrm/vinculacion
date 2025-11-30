@@ -39,6 +39,22 @@ if (!function_exists('portalAccessAddHandler')) {
             $empresaIdFromQuery = isset($_GET['empresa_id']) ? trim((string) $_GET['empresa_id']) : '';
 
             if ($empresaIdFromQuery !== '' && preg_match('/^\d+$/', $empresaIdFromQuery) === 1) {
+                $empresaIdInt = (int) $empresaIdFromQuery;
+
+                try {
+                    if ($controller->empresaHasPortalAccess($empresaIdInt)) {
+                        $viewData['errors'][] = 'La empresa seleccionada ya cuenta con un acceso al portal. Usa el acceso existente o elimina el actual antes de crear uno nuevo.';
+
+                        return $viewData;
+                    }
+                } catch (\Throwable $exception) {
+                    $controllerError = portalAccessControllerErrorMessage($exception);
+                    $viewData['controllerError'] = $controllerError;
+                    $viewData['errors'][] = $controllerError;
+
+                    return $viewData;
+                }
+
                 foreach ($viewData['empresaOptions'] as $empresaOption) {
                     if (!isset($empresaOption['id'])) {
                         continue;
