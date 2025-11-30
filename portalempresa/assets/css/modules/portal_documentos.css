@@ -6,6 +6,7 @@
 @import "../components/forms.css";
 @import "../components/alerts.css";
 @import "../components/utilities.css";
+@import "../utilities/responsive.css";
 
 /* portal_documentos.css - Vista de documentos con tema unificado */
 
@@ -93,8 +94,3 @@ main {
   background: var(--primary-strong);
 }
 
-@media (max-width: 768px) {
-  main { padding: 20px; }
-  th, td { font-size: 14px; padding: 10px; }
-  .btn { padding: 8px 14px; }
-}

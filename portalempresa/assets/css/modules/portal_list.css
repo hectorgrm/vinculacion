@@ -6,6 +6,7 @@
 @import "../components/forms.css";
 @import "../components/alerts.css";
 @import "../components/utilities.css";
+@import "../utilities/responsive.css";
 
 /* portal_list.css - Home/landing del portal con tema unificado */
 
@@ -136,12 +137,3 @@ body {
   margin-top: 16px;
 }
 
-@media (max-width: 1024px) {
-  .strip { grid-template-columns: 1fr; }
-  .cards { grid-template-columns: 1fr 1fr; }
-}
-
-@media (max-width: 680px) {
-  .cards { grid-template-columns: 1fr; }
-  .stats { grid-template-columns: 1fr 1fr; }
-}

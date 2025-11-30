@@ -6,6 +6,7 @@
 @import "../components/forms.css";
 @import "../components/alerts.css";
 @import "../components/utilities.css";
+@import "../utilities/responsive.css";
 
 /* machoteaprobado.css - Vista de machote aprobado con tema unificado */
 
@@ -269,6 +270,3 @@ body {
   font-size: 13px;
 }
 
-@media (max-width: 960px) {
-  .layout { grid-template-columns: 1fr; padding: 20px; }
-}

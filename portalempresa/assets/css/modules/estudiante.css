@@ -6,6 +6,7 @@
 @import "../components/forms.css";
 @import "../components/alerts.css";
 @import "../components/utilities.css";
+@import "../utilities/responsive.css";
 
 /* estudiante.css - Listado y detalle de estudiantes con tema unificado */
 
@@ -300,12 +301,3 @@ tbody tr:hover {
   font-weight: 600;
 }
 
-@media (max-width: 920px) {
-  .kpis {
-    grid-template-columns: 1fr;
-  }
-
-  .detail-grid {
-    grid-template-columns: 1fr;
-  }
-}

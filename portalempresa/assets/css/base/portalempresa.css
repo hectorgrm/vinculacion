@@ -6,6 +6,7 @@
 @import "../components/forms.css";
 @import "../components/alerts.css";
 @import "../components/utilities.css";
+@import "../utilities/responsive.css";
 
 body {
   margin: 0;

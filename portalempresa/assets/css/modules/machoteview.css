@@ -7,6 +7,7 @@
 @import "../components/forms.css";
 @import "../components/alerts.css";
 @import "../components/utilities.css";
+@import "../utilities/responsive.css";
 
 /* Tema futurista/neón adaptado a la vista de machote */
 
@@ -367,17 +368,4 @@ section.right {
   font-size: 0.75rem;
   color: var(--text-soft);
   text-align: right;
-}
-
-@media (max-width: 1100px) {
-  main.layout { grid-template-columns: minmax(0, 1fr); }
-  .doc-surface-pdf { height: 420px; }
-}
-
-@media (max-width: 768px) {
-  .portal-header { padding: 10px 16px; flex-direction: column; align-items: flex-start; gap: 8px; }
-  .portal-header .userbox { width: 100%; justify-content: space-between; }
-  main.layout { padding: 14px 14px 20px; }
-  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .doc-surface-pdf, .doc-surface-html { max-height: 380px; }
 }

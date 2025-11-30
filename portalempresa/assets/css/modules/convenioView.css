@@ -6,6 +6,7 @@
 @import "../components/forms.css";
 @import "../components/alerts.css";
 @import "../components/utilities.css";
+@import "../utilities/responsive.css";
 
 /* convenioView.css - Detalle de convenio con tema unificado */
 
@@ -43,7 +44,6 @@ body {
 .titlebar h1 { margin: 0 0 4px 0; font-size: 22px; }
 .titlebar p { margin: 0; color: var(--muted); }
 .grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 16px; }
-@media (max-width: 1024px){ .grid { grid-template-columns: 1fr; } }
 
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-soft); }
 .card header { padding: 12px 14px; border-bottom: 1px solid var(--border); font-weight: 700; color: var(--primary-strong); }

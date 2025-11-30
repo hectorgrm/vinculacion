@@ -6,6 +6,7 @@
 @import "../components/forms.css";
 @import "../components/alerts.css";
 @import "../components/utilities.css";
+@import "../utilities/responsive.css";
 
 /* portal_login.css - Acceso empresa con tema unificado */
 
@@ -117,6 +118,3 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 560px) {
-  .login-container { margin: 0 14px; padding: 28px 22px; }
-}
