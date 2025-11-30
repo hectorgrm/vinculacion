@@ -241,4 +241,13 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
   <small>Portal de Empresa - Área de Vinculación</small>
 </footer>
 </body>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var flashes = Array.from(document.querySelectorAll('.card.flash'));
+    if (!flashes.length) return;
+    setTimeout(function () {
+      flashes.forEach(function (el) { el.style.display = 'none'; });
+    }, 5000);
+  });
+</script>
 </html>
