@@ -105,6 +105,20 @@ if (!function_exists('empresaDocumentoTipoAddAction')) {
                 : (string) ($empresaDecorated['nombre'] ?? '');
             $viewData['successMessage'] = empresaDocumentoTipoAddSuccessMessage($empresaNombre, $documentoId);
             $viewData['formData'] = empresaDocumentoTipoAddFormDefaults($empresaId);
+
+            if (
+                $empresaId !== null &&
+                $viewData['successMessage'] !== null &&
+                $viewData['successMessage'] !== ''
+            ) {
+                $redirectUrl = '../empresa/empresa_view.php?id='
+                    . rawurlencode((string) $empresaId)
+                    . '&success_message='
+                    . rawurlencode($viewData['successMessage']);
+
+                header('Location: ' . $redirectUrl);
+                exit;
+            }
         } catch (\Throwable $exception) {
             $pdoException = null;
 
