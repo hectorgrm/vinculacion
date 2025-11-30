@@ -1,4 +1,10 @@
-@import "../themes/portal_styles.css";
+@import "./reset.css";
+@import "./base.css";
+@import "../layout/containers.css";
+@import "../layout/grid.css";
+@import "../layout/header.css";
+@import "../layout/sidebar.css";
+@import "../layout/responsive.css";
 @import "../components/buttons.css";
 @import "../components/badges.css";
 @import "../components/cards.css";
@@ -6,14 +12,8 @@
 @import "../components/forms.css";
 @import "../components/alerts.css";
 @import "../components/utilities.css";
+@import "../utilities/utilities.css";
 @import "../utilities/responsive.css";
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
-}
 
 .portal {
   max-width: 1100px;

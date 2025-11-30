@@ -1,0 +1,26 @@
+/* Estilos base del portal que se aplican de forma global */
+@import "../themes/portal_styles.css";
+
+:root {
+  font-size: 16px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--ink-strong, var(--ink));
+  line-height: 1.2;
+}
+
+p, ul, ol {
+  color: var(--ink);
+}
+
+strong {
+  color: var(--ink-strong, var(--ink));
+}

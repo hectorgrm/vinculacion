@@ -1,0 +1,48 @@
+@import "../themes/portal_styles.css";
+
+/* Ajustes responsivos de layout y navegación */
+@media (max-width: 1100px) {
+  main.layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 960px) {
+  .layout,
+  .layout.responsive {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .sidebar {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media (max-width: 860px) {
+  .portal-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .portal-header.mobile-stack {
+    padding: 10px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .portal-header.mobile-stack .userbox {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .main-shell,
+  main {
+    padding: 24px 16px;
+  }
+}

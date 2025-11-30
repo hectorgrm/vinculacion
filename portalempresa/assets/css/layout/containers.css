@@ -1,0 +1,52 @@
+@import "../themes/portal_styles.css";
+
+/* Contenedores estructurales reutilizables */
+.main-shell {
+  min-height: 100vh;
+  background: var(--bg);
+  padding: 24px;
+}
+
+.page-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 18px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.layout.narrow {
+  grid-template-columns: 240px 1fr;
+}
+
+.layout.responsive {
+  grid-template-columns: 1fr;
+}
+
+.main-area {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.surface {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.surface.padded {
+  padding: 20px;
+}
+
+.surface.sectioned header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
