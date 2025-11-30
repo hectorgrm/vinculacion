@@ -10,7 +10,7 @@ require_once __DIR__ . '/../handler/empresaconvenio_view_handler.php';
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Empresa · Convenio</title>
 
-    <link rel="stylesheet" href="../assets/css/convenio/convenioView.css" />
+    <link rel="stylesheet" href="../assets/css/modules/convenioView.css" />
 </head>
 <body>
 

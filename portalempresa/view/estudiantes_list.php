@@ -29,7 +29,7 @@ $kpiTotal = isset($kpiTotal) ? (int) $kpiTotal : ($kpiActivos + count($historico
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Empresa · Estudiantes</title>
 
-<link rel="stylesheet" href="../assets/css/estudiante/estudiante.css">
+<link rel="stylesheet" href="../assets/css/modules/estudiante.css">
 
 </head>
 <body>

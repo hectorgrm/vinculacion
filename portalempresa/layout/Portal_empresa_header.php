@@ -47,7 +47,7 @@ if ($headerLogoUrl === null && isset($empresa['logo_path'])) {
 $headerLogoUrl = $headerLogoUrl ?: 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';
 ?>
 
-  <link rel="stylesheet" href="../assets/css/header.css">
+  <link rel="stylesheet" href="../assets/css/layout/header.css">
 
 <header class="portal-header">
   <div class="brand">

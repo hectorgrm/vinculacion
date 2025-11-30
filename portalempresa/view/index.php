@@ -27,7 +27,7 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal de Empresa – Inicio</title>
 
-  <link rel="stylesheet" href="../assets/css/portal/index.css">
+  <link rel="stylesheet" href="../assets/css/modules/index.css">
   
 
   <style>

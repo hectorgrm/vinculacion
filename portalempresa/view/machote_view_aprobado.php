@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal Empresa · Acuerdo Aprobado</title>
 
-  <link rel="stylesheet" href="../assets/css/portal/machoteaprobado.css">
+  <link rel="stylesheet" href="../assets/css/modules/machoteaprobado.css">
   
 
 

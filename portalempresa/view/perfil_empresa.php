@@ -34,7 +34,7 @@ $perfilErrorMessage = isset($perfilErrorMessage) && $perfilErrorMessage !== ''
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Empresa · Perfil</title>
-  <link rel="stylesheet" href="../assets/css/perfilempresa/perfilempresa.css">
+  <link rel="stylesheet" href="../assets/css/modules/perfilempresa.css">
 </head>
 <body>
 

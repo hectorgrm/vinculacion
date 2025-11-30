@@ -36,7 +36,7 @@ if ($nombreCompleto !== '') {
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Empresa · Estudiante</title>
-  <link rel="stylesheet" href="../assets/css/estudiante/estudiante.css">
+  <link rel="stylesheet" href="../assets/css/modules/estudiante.css">
 </head>
 <body>
 

@@ -12,7 +12,7 @@ if (!isset($documentos)) {
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Empresa · Documentos</title>
-  <link rel="stylesheet" href="../assets/css/documentos/documento_list.css" />
+  <link rel="stylesheet" href="../assets/css/modules/documento_list.css" />
 </head>
 <body>
 

@@ -27,7 +27,7 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal Empresa - Revisión del Acuerdo</title>
-  <link rel="stylesheet" href="../assets/css/portal/machoteview.css">
+  <link rel="stylesheet" href="../assets/css/modules/machoteview.css">
   
 
 </head>
