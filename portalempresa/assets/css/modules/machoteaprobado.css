@@ -1,4 +1,11 @@
 @import "../themes/portal_styles.css";
+@import "../components/buttons.css";
+@import "../components/badges.css";
+@import "../components/cards.css";
+@import "../components/tables.css";
+@import "../components/forms.css";
+@import "../components/alerts.css";
+@import "../components/utilities.css";
 
 /* machoteaprobado.css - Vista de machote aprobado con tema unificado */
 
@@ -103,15 +110,6 @@ body {
 .status-strip .big {
   font-weight: 700;
   color: #166534;
-}
-
-.badge.ok {
-  background: #22c55e;
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  text-transform: uppercase;
 }
 
 .kpis {

@@ -1,4 +1,11 @@
 @import "../themes/portal_styles.css";
+@import "../components/buttons.css";
+@import "../components/badges.css";
+@import "../components/cards.css";
+@import "../components/tables.css";
+@import "../components/forms.css";
+@import "../components/alerts.css";
+@import "../components/utilities.css";
 
 /* estudiante.css - Listado y detalle de estudiantes con tema unificado */
 
@@ -16,10 +23,6 @@ body {
 .userbox .company { font-weight: 700; color: var(--ink); }
 
 .container { max-width: 1200px; margin: 20px auto; padding: 0 14px; }
-.btn { display: inline-flex; border: 1px solid var(--border); background: #fff; padding: 10px 14px; border-radius: var(--radius-sm); text-decoration: none; color: var(--ink); font-weight: 600; cursor: pointer; transition: var(--transition); }
-.btn:hover { background: #f8fafc; box-shadow: var(--shadow-soft); transform: translateY(-1px); }
-.btn.primary { background: var(--gradient); border-color: var(--primary); color: #fff; }
-.btn.small { padding: 8px 10px; font-size: 13px; }
 .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
 .badge.ok { background: #dcfce7; color: #166534; }
 .badge.warn { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }

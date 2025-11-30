@@ -1,0 +1,57 @@
+@import "../themes/portal_styles.css";
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: #f8fafc;
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-1px);
+}
+
+.btn.primary {
+  background: var(--gradient);
+  color: #fff;
+  border: 1px solid var(--primary);
+}
+
+.btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--primary);
+  border-color: var(--primary-soft);
+}
+
+.btn.danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-color: #ef4444;
+  color: #fff;
+}
+
+.btn.success {
+  background: linear-gradient(135deg, #16a34a, #0f9f40);
+  border-color: #16a34a;
+  color: #fff;
+}
+
+.btn.small {
+  padding: 8px 10px;
+  font-size: 13px;
+}

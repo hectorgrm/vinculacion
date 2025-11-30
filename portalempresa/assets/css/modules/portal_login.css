@@ -1,4 +1,11 @@
 @import "../themes/portal_styles.css";
+@import "../components/buttons.css";
+@import "../components/badges.css";
+@import "../components/cards.css";
+@import "../components/tables.css";
+@import "../components/forms.css";
+@import "../components/alerts.css";
+@import "../components/utilities.css";
 
 /* portal_login.css - Acceso empresa con tema unificado */
 
@@ -98,16 +105,6 @@ body {
 }
 
 .back-link:hover { text-decoration: underline; }
-
-.alert {
-  padding: 14px;
-  background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-  border-radius: var(--radius-sm);
-  margin-bottom: 16px;
-  font-weight: 600;
-}
 
 .helper {
   color: var(--muted);

@@ -1,4 +1,11 @@
 @import "../themes/portal_styles.css";
+@import "../components/buttons.css";
+@import "../components/badges.css";
+@import "../components/cards.css";
+@import "../components/tables.css";
+@import "../components/forms.css";
+@import "../components/alerts.css";
+@import "../components/utilities.css";
 
 /* portal_list.css - Home/landing del portal con tema unificado */
 
@@ -8,42 +15,6 @@ body {
   color: var(--ink);
   font-family: "Inter", "Segoe UI", system-ui, sans-serif;
 }
-
-.btn {
-  display: inline-flex;
-  border: 1px solid var(--border);
-  background: #fff;
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-  color: var(--ink);
-  font-weight: 600;
-  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.btn:hover {
-  background: #f8fafc;
-  box-shadow: var(--shadow-soft);
-  transform: translateY(-1px);
-}
-
-.btn.primary {
-  background: var(--gradient);
-  border-color: var(--primary);
-  color: #fff;
-}
-
-.badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.badge.ok { background: #dcfce7; color: #166534; }
-.badge.warn { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
-.badge.danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
 .portal-header {
   background: var(--panel);
@@ -143,21 +114,16 @@ body {
   margin-top: 18px;
 }
 
-.card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
-  padding: 16px;
+.cards .card {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.card h3 { margin: 0; font-size: 18px; }
-.card p { margin: 0; color: var(--muted); }
+.cards .card h3 { margin: 0; font-size: 18px; }
+.cards .card p { margin: 0; color: var(--muted); }
 
-.card .actions {
+.cards .card .actions {
   margin-top: auto;
   display: flex;
   gap: 8px;

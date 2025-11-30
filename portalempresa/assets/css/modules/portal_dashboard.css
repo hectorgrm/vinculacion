@@ -1,4 +1,11 @@
 @import "../themes/portal_styles.css";
+@import "../components/buttons.css";
+@import "../components/badges.css";
+@import "../components/cards.css";
+@import "../components/tables.css";
+@import "../components/forms.css";
+@import "../components/alerts.css";
+@import "../components/utilities.css";
 
 /* portal_dashboard.css - Dashboard principal con look unificado */
 
@@ -89,14 +96,6 @@ main {
 .section h3 {
   margin: 0 0 12px;
   color: var(--primary-strong);
-}
-
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
-  padding: 20px;
 }
 
 .timeline {

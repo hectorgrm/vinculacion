@@ -1,4 +1,11 @@
 @import "../themes/portal_styles.css";
+@import "../components/buttons.css";
+@import "../components/badges.css";
+@import "../components/cards.css";
+@import "../components/tables.css";
+@import "../components/forms.css";
+@import "../components/alerts.css";
+@import "../components/utilities.css";
 
 /* portal_machote.css - Revisión de machote con estilo unificado */
 
@@ -95,24 +102,9 @@ main {
   align-self: flex-end;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 10px 18px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  text-decoration: none;
-  transition: var(--transition);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  background: #fff;
-  color: var(--ink);
-}
-
 .btn.primary { background: var(--gradient); color: #fff; border-color: var(--primary); }
 .btn.success { background: linear-gradient(135deg, #16a34a, #0f9f40); color: #fff; border-color: #16a34a; }
 .btn.danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border-color: #ef4444; }
-.btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
 
 .comment-list {
   margin-top: 15px;

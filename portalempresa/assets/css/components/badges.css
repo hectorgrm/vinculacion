@@ -1,0 +1,61 @@
+@import "../themes/portal_styles.css";
+
+.badge,
+.pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge.ok,
+.pill.ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge.warn,
+.pill.warn {
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+
+.badge.danger,
+.pill.danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.badge.secondary {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+}
+
+.status.pendiente {
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+
+.status.aprobado {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status.rechazado,
+.status.vencido {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
