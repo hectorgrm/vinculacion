@@ -47,43 +47,6 @@ body {
   margin-bottom: 40px;
 }
 
-.card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: var(--shadow-soft);
-}
-
-.card h3 {
-  margin-top: 0;
-  color: var(--primary-strong);
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: var(--gradient);
-  color: #fff;
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-  font-size: 14px;
-  border: 1px solid var(--primary);
-  transition: var(--transition);
-}
-
-.btn:hover {
-  background: var(--primary-strong);
-  box-shadow: var(--shadow);
-}
-
-.btn.danger {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  border-color: #ef4444;
-}
-
 .progress {
   background: var(--border);
   height: 8px;
