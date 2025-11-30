@@ -1,30 +1,16 @@
-/* 📜 portal_machote.css - Sección de revisión de machote */
+@import "../themes/portal_styles.css";
 
-:root {
-  --primary: #0d6efd;
-  --primary-hover: #0b5ed7;
-  --success: #198754;
-  --danger: #dc3545;
-  --warning: #ffc107;
-  --light: #f8f9fa;
-  --dark: #212529;
-  --muted: #6c757d;
-  --border: #dee2e6;
-  --radius: 10px;
-  --shadow: 0 4px 12px rgba(0,0,0,0.06);
-  --transition: all 0.3s ease;
-}
+/* portal_machote.css - Revisión de machote con estilo unificado */
 
 body {
   margin: 0;
-  font-family: "Segoe UI", Tahoma, sans-serif;
-  background: var(--light);
-  color: var(--dark);
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
 }
 
-/* HEADER */
 header {
-  background: var(--primary);
+  background: var(--gradient);
   color: #fff;
   padding: 20px 40px;
   display: flex;
@@ -33,71 +19,55 @@ header {
   box-shadow: var(--shadow);
 }
 
-header h1 {
-  margin: 0;
-  font-size: 24px;
-}
+header h1 { margin: 0; font-size: 24px; }
+header a { color: #fff; text-decoration: none; font-weight: 600; }
 
-header a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-header a:hover {
-  text-decoration: underline;
-}
-
-/* MAIN */
 main {
   padding: 40px;
   max-width: 1100px;
   margin: 0 auto;
 }
 
-/* CARD */
 .card {
-  background: #fff;
+  background: var(--panel);
   padding: 30px;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-soft);
   margin-bottom: 30px;
 }
 
 .card h2 {
   margin-top: 0;
-  color: var(--primary);
+  color: var(--primary-strong);
   font-size: 24px;
 }
 
 .card p {
-  color: #555;
+  color: var(--muted);
   margin-bottom: 20px;
 }
 
-/* CLAUSES */
 .clause {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 20px;
   margin-bottom: 20px;
-  background: #ffffff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  background: #f8fafc;
+  box-shadow: var(--shadow-soft);
 }
 
 .clause h3 {
   margin: 0 0 10px;
   font-size: 18px;
-  color: var(--primary);
+  color: var(--primary-strong);
 }
 
 .clause p {
-  margin: 0 0 15px;
-  color: #333;
+  margin: 0 0 14px;
+  color: var(--ink);
   line-height: 1.6;
 }
 
-/* FORM */
 .comment-form {
   display: flex;
   flex-direction: column;
@@ -106,17 +76,18 @@ main {
 
 .comment-form textarea {
   width: 100%;
-  padding: 10px;
-  border-radius: var(--radius);
+  padding: 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   font-size: 15px;
   resize: vertical;
-  min-height: 80px;
+  min-height: 90px;
+  transition: var(--transition);
 }
 
 .comment-form textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13,110,253,0.2);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2);
   outline: none;
 }
 
@@ -124,44 +95,24 @@ main {
   align-self: flex-end;
 }
 
-/* BUTTONS */
 .btn {
-  display: inline-block;
-  padding: 10px 20px;
-  border-radius: var(--radius);
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
   text-decoration: none;
   transition: var(--transition);
-  border: none;
+  border: 1px solid var(--border);
   cursor: pointer;
+  background: #fff;
+  color: var(--ink);
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: #fff;
-}
-
-.btn-primary:hover {
-  background: var(--primary-hover);
-}
-
-.btn-success {
-  background: var(--success);
-  color: #fff;
-}
-
-.btn-success:hover {
-  background: #157347;
-}
-
-.btn-danger {
-  background: var(--danger);
-  color: #fff;
-}
-
-.btn-danger:hover {
-  background: #bb2d3b;
-}
+.btn.primary { background: var(--gradient); color: #fff; border-color: var(--primary); }
+.btn.success { background: linear-gradient(135deg, #16a34a, #0f9f40); color: #fff; border-color: #16a34a; }
+.btn.danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border-color: #ef4444; }
+.btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
 
 .comment-list {
   margin-top: 15px;
@@ -170,26 +121,21 @@ main {
 }
 
 .comment-item {
-  background: #f8f9ff;
+  background: #f8fafc;
   padding: 10px 15px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   margin-bottom: 8px;
   font-size: 14px;
 }
 
 .comment-item strong {
-  color: var(--primary);
+  color: var(--primary-strong);
   display: block;
   margin-bottom: 5px;
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
-  main {
-    padding: 20px;
-  }
-
-  .clause {
-    padding: 15px;
-  }
+  header { padding: 18px 20px; flex-direction: column; gap: 8px; align-items: flex-start; }
+  main { padding: 24px; }
+  .clause { padding: 16px; }
 }

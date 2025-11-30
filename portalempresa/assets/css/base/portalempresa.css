@@ -1,8 +1,10 @@
+@import "../themes/portal_styles.css";
+
 body {
-  font-family: "Inter", sans-serif;
-  background: #f8fafc;
   margin: 0;
-  color: #1e293b;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
 }
 
 .portal {
@@ -22,11 +24,11 @@ body {
 .portal-header .brand h1 {
   margin: 0;
   font-size: 1.8rem;
-  color: #1e3a8a;
+  color: var(--primary-strong);
 }
 
 .portal-header .brand p {
-  color: #64748b;
+  color: var(--muted);
   margin-top: 2px;
 }
 
@@ -38,38 +40,44 @@ body {
 }
 
 .card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-soft);
 }
 
 .card h3 {
   margin-top: 0;
-  color: #1e3a8a;
+  color: var(--primary-strong);
 }
 
 .btn {
-  display: inline-block;
-  padding: 8px 14px;
-  background: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--gradient);
   color: #fff;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   font-size: 14px;
+  border: 1px solid var(--primary);
+  transition: var(--transition);
 }
 
 .btn:hover {
-  background: #1d4ed8;
+  background: var(--primary-strong);
+  box-shadow: var(--shadow);
 }
 
 .btn.danger {
-  background: #e11d48;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-color: #ef4444;
 }
 
 .progress {
-  background: #e2e8f0;
+  background: var(--border);
   height: 8px;
   border-radius: 8px;
   margin: 8px 0 12px;
@@ -77,19 +85,19 @@ body {
 
 .progress .bar {
   height: 100%;
-  background: #22c55e;
+  background: var(--success);
   border-radius: 8px;
 }
 
 .info {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 20px;
 }
 
 .portal-footer {
   text-align: center;
   margin-top: 40px;
-  color: #64748b;
+  color: var(--muted);
 }
