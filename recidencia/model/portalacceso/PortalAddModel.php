@@ -55,6 +55,21 @@ class PortalAddModel
         return $empresas;
     }
 
+    public function empresaHasPortalAccess(int $empresaId): bool
+    {
+        $sql = <<<'SQL'
+            SELECT 1
+              FROM rp_portal_acceso
+             WHERE empresa_id = :empresa_id
+             LIMIT 1
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        return (bool) $statement->fetchColumn();
+    }
+
     /**
      * @param array<string, string> $data
      */

@@ -565,6 +565,7 @@ CREATE TABLE `rp_portal_acceso` (
   `creado_en` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_portal_token` (`token`),
+  UNIQUE KEY `uk_portal_empresa` (`empresa_id`),
   KEY `idx_portal_empresa` (`empresa_id`,`activo`),
   CONSTRAINT `fk_portal_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `rp_empresa` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

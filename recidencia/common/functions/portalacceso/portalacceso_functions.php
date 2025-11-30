@@ -217,6 +217,10 @@ if (!function_exists('portalAccessDuplicateErrors')) {
             return ['El token generado ya está en uso. Genera uno diferente e inténtalo nuevamente.'];
         }
 
+        if ($detail !== '' && stripos($detail, 'uk_portal_empresa') !== false) {
+            return ['Ya existe un acceso al portal para esta empresa. Usa el acceso actual o elimina el existente antes de crear uno nuevo.'];
+        }
+
         return ['Ya existe un acceso con la información proporcionada.'];
     }
 }

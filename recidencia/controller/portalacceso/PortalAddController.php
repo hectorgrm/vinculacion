@@ -35,6 +35,15 @@ class PortalAddController
         }
     }
 
+    public function empresaHasPortalAccess(int $empresaId): bool
+    {
+        try {
+            return $this->model->empresaHasPortalAccess($empresaId);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo verificar si la empresa ya tiene acceso al portal.', 0, $exception);
+        }
+    }
+
     /**
      * @param array<string, string> $data
      * @param array<int, array<string, string>> $empresaOptions

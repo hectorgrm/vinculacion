@@ -62,6 +62,22 @@ if (!function_exists('portalAccessAddHandler')) {
         }
 
         try {
+            $empresaId = (int) $viewData['formData']['empresa_id'];
+
+            if ($controller->empresaHasPortalAccess($empresaId)) {
+                $viewData['errors'][] = 'Ya existe un acceso al portal para esta empresa. Usa el acceso actual o elimina el existente antes de crear uno nuevo.';
+
+                return $viewData;
+            }
+        } catch (\Throwable $exception) {
+            $controllerError = portalAccessControllerErrorMessage($exception);
+            $viewData['controllerError'] = $controllerError;
+            $viewData['errors'][] = $controllerError;
+
+            return $viewData;
+        }
+
+        try {
             $accessId = $controller->createPortalAccess($viewData['formData'], $viewData['empresaOptions']);
             $viewData['successMessage'] = portalAccessSuccessMessage($accessId);
             $viewData['formData'] = portalAccessFormDefaults();
