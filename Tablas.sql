@@ -242,6 +242,7 @@ CREATE TABLE `rp_documento_tipo_empresa` (
   `creado_en` datetime NOT NULL DEFAULT current_timestamp(),
   `actualizado_en` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_documento_tipo_empresa_nombre` (`empresa_id`,`nombre`),
   KEY `idx_tipo_empresa` (`empresa_id`),
   CONSTRAINT `fk_tipo_empresa_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `rp_empresa` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

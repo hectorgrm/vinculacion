@@ -99,6 +99,22 @@ if (!function_exists('empresaDocumentoTipoAddAction')) {
         }
 
         try {
+            $duplicateErrors = $controller->duplicateFieldErrors($sanitized);
+        } catch (\Throwable $exception) {
+            $controllerError = empresaDocumentoTipoAddControllerErrorMessage($exception);
+            $viewData['controllerError'] = $controllerError;
+            $viewData['errors'][] = $controllerError;
+
+            return $viewData;
+        }
+
+        if ($duplicateErrors !== []) {
+            $viewData['errors'] = $duplicateErrors;
+
+            return $viewData;
+        }
+
+        try {
             $documentoId = $controller->createDocumento($sanitized);
             $empresaNombre = isset($empresaDecorated['nombre_label'])
                 ? (string) $empresaDecorated['nombre_label']

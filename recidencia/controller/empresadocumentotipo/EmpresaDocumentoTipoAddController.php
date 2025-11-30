@@ -42,4 +42,17 @@ class EmpresaDocumentoTipoAddController
             throw new RuntimeException('No se pudo registrar el documento individual.', 0, $exception);
         }
     }
+
+    /**
+     * @param array<string, string> $data
+     * @return array<int, string>
+     */
+    public function duplicateFieldErrors(array $data): array
+    {
+        try {
+            return $this->model->duplicateFieldErrors($data);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo validar duplicados del documento individual.', 0, $exception);
+        }
+    }
 }

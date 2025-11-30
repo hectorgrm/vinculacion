@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../common/functions/empresadocumentotipo/empresa_doc
 use Common\Model\Database;
 use PDO;
 use function empresaDocumentoTipoAddPrepareForPersistence;
+use function empresaDocumentoTipoAddNormalizeEmpresaId;
 
 class EmpresaDocumentoTipoAddModel
 {
@@ -73,5 +74,38 @@ class EmpresaDocumentoTipoAddModel
         ]);
 
         return (int) $this->pdo->lastInsertId();
+    }
+
+    /**
+     * @param array<string, string> $data
+     * @return array<int, string>
+     */
+    public function duplicateFieldErrors(array $data): array
+    {
+        $empresaId = empresaDocumentoTipoAddNormalizeEmpresaId($data['empresa_id'] ?? null);
+        $nombre = trim($data['nombre'] ?? '');
+
+        if ($empresaId === null || $nombre === '') {
+            return [];
+        }
+
+        if ($this->existsByNombre($empresaId, $nombre)) {
+            return ['Ya existe un documento individual con el mismo nombre para esta empresa.'];
+        }
+
+        return [];
+    }
+
+    private function existsByNombre(int $empresaId, string $nombre): bool
+    {
+        $statement = $this->pdo->prepare(
+            'SELECT 1 FROM rp_documento_tipo_empresa WHERE empresa_id = :empresa_id AND LOWER(nombre) = LOWER(:nombre) LIMIT 1'
+        );
+        $statement->execute([
+            ':empresa_id' => $empresaId,
+            ':nombre' => $nombre,
+        ]);
+
+        return (bool) $statement->fetchColumn();
     }
 }
