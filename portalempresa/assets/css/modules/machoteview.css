@@ -9,25 +9,6 @@
 @import "../components/utilities.css";
 
 /* Tema futurista/neón adaptado a la vista de machote */
-:root {
-  --bg-main: #777e8b;
-  --bg-elevated: #f8fafc;
-  --bg-elevated-soft: #eef2f7;
-  --border-soft: rgba(18, 21, 26, 0.4);
-  --primary: #2563eb;
-  --primary-soft: rgba(37, 99, 235, 0.15);
-  --primary-strong: #1d4ed8;
-  --accent: #16a34a;
-  --accent-soft: rgba(22, 163, 74, 0.14);
-  --danger: #f87171;
-  --warning: #f59e0b;
-  --text-main: #1f2937;
-  --text-muted: #4b5563;
-  --text-soft: #6b7280;
-  --card-radius: 18px;
-  --transition-fast: 0.18s ease-out;
-  --transition-med: 0.25s ease;
-}
 
 *,
 *::before,

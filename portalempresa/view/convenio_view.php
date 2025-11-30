@@ -14,20 +14,8 @@ require_once __DIR__ . '/../handler/empresaconvenio_view_handler.php';
 </head>
 <body>
 
-  <header class="portal-header">
-    <div class="brand">
-      <div class="logo"></div>
-      <div>
-        <strong>Portal de Empresa</strong><br>
-        <small>Residencias Profesionales</small>
-      </div>
-    </div>
-    <div class="userbox">
-      <span class="company"><?= htmlspecialchars($empresaNombre) ?></span>
-      <a href="index.php" class="btn">Inicio</a>
-      <a href="../../common/logout.php" class="btn">Salir</a>
-    </div>
-  </header>
+<?php include __DIR__ . '/../layout/portal_empresa_header.php'; ?>
+
 
   <main class="container">
 
