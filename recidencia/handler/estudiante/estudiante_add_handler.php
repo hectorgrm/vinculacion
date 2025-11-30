@@ -86,7 +86,12 @@ if (!function_exists('estudianteAddHandler')) {
             $viewData['formData'] = estudianteAddFormDefaults();
 
             if ($empresaIdRedirect !== null && $empresaIdRedirect > 0) {
-                $target = '../empresa/empresa_view.php?id=' . urlencode((string) $empresaIdRedirect);
+                $target = '../empresa/empresa_view.php?id=' . rawurlencode((string) $empresaIdRedirect);
+
+                if (is_string($viewData['successMessage']) && $viewData['successMessage'] !== '') {
+                    $target .= '&success_message=' . rawurlencode($viewData['successMessage']);
+                }
+
                 header('Location: ' . $target);
                 exit;
             }
