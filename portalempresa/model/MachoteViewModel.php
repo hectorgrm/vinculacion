@@ -107,6 +107,7 @@ class MachoteViewModel
                 SUM(CASE WHEN estatus = 'resuelto' THEN 1 ELSE 0 END) AS resueltos
             FROM rp_machote_comentario
             WHERE machote_id = :machote_id
+              AND (respuesta_a IS NULL OR respuesta_a = 0)
         SQL;
 
         $statement = $this->connection->prepare($sql);

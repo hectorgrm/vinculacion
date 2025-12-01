@@ -119,7 +119,8 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
 
     <article class="card">
       <h3>Convenio</h3>
-      <p>Datos del convenio vigente, anexos y renovación.</p>
+      <p>Estatus actual: <span class="badge <?= htmlspecialchars($convenio['badgeVariant'] ?? 'warn') ?>"><?= htmlspecialchars($convenio['estatus'] ?? 'Sin convenio') ?></span></p>
+      <p class="small-meta">Folio <?= htmlspecialchars($convenio['folio'] ?? 'Sin folio') ?> &middot; Vigencia: <?= htmlspecialchars($convenio['vigenciaInicio'] ?? 'N/D') ?> – <?= htmlspecialchars($convenio['vigenciaFin'] ?? 'N/D') ?></p>
       <div class="actions">
         <a class="btn primary" href="convenio_view.php">Ver convenio</a>
       </div>
