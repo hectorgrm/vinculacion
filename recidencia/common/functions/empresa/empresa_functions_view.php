@@ -546,7 +546,9 @@ if (!function_exists('empresaViewDecorateDocumentos')) {
         $porcentaje = 0;
 
         if ($total > 0) {
-            $porcentaje = (int) round(($subidos / $total) * 100);
+            // Solo cuentan los documentos aprobados para el avance general.
+            // Si un documento está en revisión o pendiente, no incrementa el progreso.
+            $porcentaje = (int) round(($aprobados / $total) * 100);
         }
 
         return [
