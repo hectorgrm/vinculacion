@@ -268,6 +268,25 @@ $hasUploadOptions = $tiposDocumentos !== [];
 
 <script>
 (function () {
+  // Limpia los parA�metros de estado para evitar que el mensaje reaparezca al refrescar.
+  try {
+    var currentUrl = new URL(window.location.href);
+    var removed = false;
+    ['status', 'doc', 'reason'].forEach(function (param) {
+      if (currentUrl.searchParams.has(param)) {
+        currentUrl.searchParams.delete(param);
+        removed = true;
+      }
+    });
+    if (removed && window.history && window.history.replaceState) {
+      var newSearch = currentUrl.searchParams.toString();
+      var newUrl = currentUrl.pathname + (newSearch ? '?' + newSearch : '') + currentUrl.hash;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  } catch (err) {
+    // Ignora errores de navegadores antiguos.
+  }
+
   var flash = document.querySelector('.alert.toast[data-autohide]');
   if (!flash) { return; }
 
