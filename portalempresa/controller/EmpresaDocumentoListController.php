@@ -25,6 +25,7 @@ class EmpresaDocumentoListController
      *     empresa: array<string, mixed>,
      *     documentos: array<int, array<string, mixed>>,
      *     kpis: array{aprobado: int, pendiente: int, rechazado: int},
+     *     documentosStats: array{total: int, subidos: int, aprobados: int, porcentaje: int},
      *     filters: array{q: string, estatus: string},
      *     statusOptions: array<string, string>
      * }
@@ -50,11 +51,13 @@ class EmpresaDocumentoListController
         );
 
         $kpis = empresaDocumentoComputeKpis($documents);
+        $documentosStats = empresaDocumentoComputeStats($documents);
 
         return [
             'empresa' => $empresa,
             'documentos' => $filteredDocuments,
             'kpis' => $kpis,
+            'documentosStats' => $documentosStats,
             'filters' => $normalizedFilters,
             'statusOptions' => empresaDocumentoStatusOptions(),
             'uploadOptions' => empresaDocumentoUploadBuildOptions($documents),

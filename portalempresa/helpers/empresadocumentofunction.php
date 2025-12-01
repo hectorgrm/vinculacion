@@ -256,3 +256,38 @@ if (!function_exists('empresaDocumentoComputeKpis')) {
         return $kpis;
     }
 }
+
+if (!function_exists('empresaDocumentoComputeStats')) {
+    /**
+     * @param array<int, array<string, mixed>> $records
+     * @return array{total: int, subidos: int, aprobados: int, porcentaje: int}
+     */
+    function empresaDocumentoComputeStats(array $records): array
+    {
+        $stats = [
+            'total' => 0,
+            'subidos' => 0,
+            'aprobados' => 0,
+            'porcentaje' => 0,
+        ];
+
+        foreach ($records as $record) {
+            $stats['total']++;
+
+            $hasFile = isset($record['archivo_path']) && trim((string) $record['archivo_path']) !== '';
+            if ($hasFile) {
+                $stats['subidos']++;
+
+                if (empresaDocumentoNormalizeStatus($record['estatus'] ?? null) === 'aprobado') {
+                    $stats['aprobados']++;
+                }
+            }
+        }
+
+        if ($stats['total'] > 0) {
+            $stats['porcentaje'] = (int) round(($stats['aprobados'] / $stats['total']) * 100);
+        }
+
+        return $stats;
+    }
+}

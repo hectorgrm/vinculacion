@@ -28,6 +28,7 @@ try {
         ],
         'documentos' => [],
         'kpis' => ['aprobado' => 0, 'pendiente' => 0, 'rechazado' => 0],
+        'documentosStats' => ['total' => 0, 'subidos' => 0, 'aprobados' => 0, 'porcentaje' => 0],
         'filters' => empresaDocumentoNormalizeFilters($rawFilters),
         'statusOptions' => empresaDocumentoStatusOptions(),
         'uploadOptions' => [],
@@ -43,6 +44,7 @@ if (!isset($empresa['logo_path']) || $empresa['logo_path'] === '') {
 $empresaNombre = $payload['empresa']['nombre'] ?? (string) ($sessionEmpresa['empresa_nombre'] ?? '');
 $documentos = $payload['documentos'];
 $kpis = $payload['kpis'];
+$documentosStats = $payload['documentosStats'] ?? ['total' => 0, 'subidos' => 0, 'aprobados' => 0, 'porcentaje' => 0];
 $filterValues = $payload['filters'];
 $statusOptions = $payload['statusOptions'];
 $tiposDocumentos = $payload['uploadOptions'] ?? [];

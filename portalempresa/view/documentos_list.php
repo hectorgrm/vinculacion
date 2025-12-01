@@ -29,6 +29,12 @@ $kpis = isset($kpis) && is_array($kpis)
     ? array_merge(['aprobado' => 0, 'pendiente' => 0, 'rechazado' => 0], $kpis)
     : ['aprobado' => 0, 'pendiente' => 0, 'rechazado' => 0];
 
+/** @var array{total: int, subidos: int, aprobados: int, porcentaje: int} $documentosStats */
+$documentosStats = isset($documentosStats) && is_array($documentosStats)
+    ? array_merge(['total' => 0, 'subidos' => 0, 'aprobados' => 0, 'porcentaje' => 0], $documentosStats)
+    : ['total' => 0, 'subidos' => 0, 'aprobados' => 0, 'porcentaje' => 0];
+$progresoGeneral = (int) ($documentosStats['porcentaje'] ?? 0);
+
 /** @var array{q: string, estatus: string} $filterValues */
 $filterValues = isset($filterValues) && is_array($filterValues)
     ? array_merge(['q' => '', 'estatus' => ''], $filterValues)
@@ -107,6 +113,16 @@ $hasUploadOptions = $tiposDocumentos !== [];
             <div class="kpi"><div class="num"><?= $kpiOk ?></div><div class="lbl">Aprobados</div></div>
             <div class="kpi"><div class="num"><?= $kpiPend ?></div><div class="lbl">Pendientes</div></div>
             <div class="kpi"><div class="num"><?= $kpiRech ?></div><div class="lbl">Rechazados</div></div>
+          </div>
+          <div class="docs-progress">
+            <div class="progress-heading">
+              <span class="progress-label">Progreso general</span>
+              <span class="progress-value"><?= $progresoGeneral ?>%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width:<?= $progresoGeneral ?>%;"></div>
+            </div>
+            <small class="progress-meta"><?= $progresoGeneral ?>% completado</small>
           </div>
         </div>
       </div>
