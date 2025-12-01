@@ -62,6 +62,25 @@ $hasUploadOptions = $tiposDocumentos !== [];
 <!-- ======================================================= -->
 <?php include __DIR__ . '/../layout/portal_empresa_header.php'; ?>
 
+<?php if ($uploadFlash !== null): ?>
+  <?php
+    $uploadType = $uploadFlash['type'] === 'success' ? 'success' : 'error';
+    $uploadTitle = $uploadType === 'success'
+      ? 'Documento enviado'
+      : 'No pudimos procesar el archivo';
+  ?>
+  <section class="flash-bar">
+    <div class="alert toast <?= $uploadType ?>" data-autohide="true" role="status">
+      <div class="alert__icon" aria-hidden="true"><?= $uploadType === 'success' ? '&#10003;' : '!' ?></div>
+      <div class="alert__body">
+        <p class="alert__title"><?= $uploadTitle ?></p>
+        <p class="alert__message"><?= htmlspecialchars($uploadFlash['message']) ?></p>
+      </div>
+      <button class="alert__close" type="button" aria-label="Cerrar alerta">&times;</button>
+    </div>
+  </section>
+<?php endif; ?>
+
 <!-- ======================================================= -->
 <!-- CONTENIDO PRINCIPAL -->
 <!-- ======================================================= -->
@@ -185,12 +204,6 @@ $hasUploadOptions = $tiposDocumentos !== [];
         <div class="content">
           <p class="hint">Solo usa este formulario si Residencias te solicitó reemplazar un documento pendiente o rechazado.</p>
 
-          <?php if ($uploadFlash !== null): ?>
-            <div class="alert <?= $uploadFlash['type'] === 'success' ? 'success' : 'error' ?>">
-              <?= htmlspecialchars($uploadFlash['message']) ?>
-            </div>
-          <?php endif; ?>
-
           <form class="upload" method="post" enctype="multipart/form-data" action="../handler/empresa_documento_upload_handler.php">
             <div class="field">
               <label for="doc_tipo">Tipo de documento</label>
@@ -252,6 +265,36 @@ $hasUploadOptions = $tiposDocumentos !== [];
   </section>
 
 </main>
+
+<script>
+(function () {
+  var flash = document.querySelector('.alert.toast[data-autohide]');
+  if (!flash) { return; }
+
+  var closeBtn = flash.querySelector('.alert__close');
+  var hide = function () {
+    if (flash.classList.contains('is-closing')) { return; }
+    flash.classList.add('is-closing');
+    var onDone = function () {
+      flash.removeEventListener('transitionend', onDone);
+      if (flash.parentNode) {
+        flash.parentNode.removeChild(flash);
+      }
+    };
+    flash.addEventListener('transitionend', onDone);
+    setTimeout(onDone, 600);
+  };
+
+  var timer = setTimeout(hide, 5000);
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function () {
+      clearTimeout(timer);
+      hide();
+    });
+  }
+})();
+</script>
 
 </body>
 </html>

@@ -39,6 +39,16 @@ body {
 .titlebar h1 { margin: 0 0 4px 0; font-size: 22px; }
 .titlebar p { margin: 0; color: var(--muted); }
 
+.flash-bar {
+  max-width: 1200px;
+  margin: 12px auto 0;
+  padding: 0 14px;
+}
+
+.flash-bar .alert {
+  margin-bottom: 0;
+}
+
 .grid { display: grid; grid-template-columns: 1fr .9fr; gap: 16px; }
 
 .card header { padding: 12px 14px; border-bottom: 1px solid var(--border); font-weight: 700; color: var(--primary-strong); }
