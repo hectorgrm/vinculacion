@@ -75,7 +75,7 @@ $headerLogoUrl = $headerLogoUrl ?: 'https://upload.wikimedia.org/wikipedia/commo
 
   <div class="userbox">
     <span class="company"><?= htmlspecialchars($headerEmpresaNombre) ?></span>
-    <a href="index.php" class="btn">Inicio</a>
+    <a href="../view/index.php" class="btn">Inicio</a>
     <a href="../../common/logout.php" class="btn">Salir</a>
   </div>
 </header>
