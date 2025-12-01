@@ -244,11 +244,20 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
             <?php if ($uploadSuccessMessage !== null): ?>
                 <section class="card">
                     <div class="content">
-                        <div class="alert alert-success" role="status">
+                        <div class="alert alert-success" role="status" id="upload-success-alert">
                             <?php echo htmlspecialchars($uploadSuccessMessage, ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                     </div>
                 </section>
+                <script>
+                    // Oculta la alerta de carga correcta después de 5 segundos
+                    setTimeout(function () {
+                        var alertEl = document.getElementById('upload-success-alert');
+                        if (alertEl) {
+                            alertEl.style.display = 'none';
+                        }
+                    }, 5000);
+                </script>
             <?php endif; ?>
 
             <?php if ($uploadErrorMessage !== null): ?>
