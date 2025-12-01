@@ -10,6 +10,10 @@ $dashboardError = $portalViewModel['dashboardError'] ?? null;
 $convenio = $portalViewModel['convenio'] ?? [];
 $machote = $portalViewModel['machote'] ?? [];
 $stats = $portalViewModel['stats'] ?? [];
+$documentosDashboard = $portalViewModel['documentos'] ?? ['porcentaje' => 0, 'aprobados' => 0, 'total' => 0];
+$docsAprobados = (int) ($documentosDashboard['aprobados'] ?? 0);
+$docsTotal = (int) ($documentosDashboard['total'] ?? 0);
+$docsAvance = $docsTotal > 0 ? (int) round(($docsAprobados / $docsTotal) * 100) : 0;
 
 $machoteId = (int) ($machote['id'] ?? 0);
 $machoteRevisionLink = $machote['revisionLink'] ?? null;
@@ -129,6 +133,16 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
     <article class="card">
       <h3>Documentos</h3>
       <p>Consulta el estado de los documentos solicitados por Residencias.</p>
+      <div class="mini-progress" aria-label="Progreso de documentos">
+        <div class="progress-heading">
+          <span class="progress-label">Progreso general</span>
+          <span class="progress-value"><?= $docsAvance ?>%</span>
+        </div>
+        <div class="mini-track">
+          <div class="mini-fill" style="width:<?= $docsAvance ?>%;"></div>
+        </div>
+        <div class="mini-meta"><?= $docsAvance ?>% completado</div>
+      </div>
       <div class="actions">
         <a class="btn primary" href="documentos_list.php">Ver documentos</a>
         <a class="btn" href="documentos_list.php#subir">Subir actualización</a>

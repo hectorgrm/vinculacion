@@ -23,6 +23,7 @@ $dashboard = [
         'avance' => 0,
         'estado_revision' => 'Sin documento',
     ],
+    'documentosStats' => ['total' => 0, 'subidos' => 0, 'aprobados' => 0, 'porcentaje' => 0],
 ];
 $dashboardError = null;
 

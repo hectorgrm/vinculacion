@@ -4,15 +4,20 @@ declare(strict_types=1);
 namespace PortalEmpresa\Controller;
 
 use PortalEmpresa\Helpers\EmpresaConvenioHelper;
+use PortalEmpresa\Controller\EmpresaDocumentoListController;
+use PortalEmpresa\Model\EmpresaDocumentoListModel;
 use PortalEmpresa\Model\EmpresaConvenioViewModel;
 use PortalEmpresa\Model\Machote\MachoteViewModel;
 use PortalEmpresa\Model\PortalEmpresaEmpresaModel;
 use RuntimeException;
 
 require_once __DIR__ . '/../helpers/empresaconveniofunction.php';
+require_once __DIR__ . '/../helpers/empresadocumentofunction.php';
 require_once __DIR__ . '/../model/PortalEmpresaEmpresaModel.php';
 require_once __DIR__ . '/../model/EmpresaConvenioViewModel.php';
 require_once __DIR__ . '/../model/MachoteViewModel.php';
+require_once __DIR__ . '/../model/EmpresaDocumentoListModel.php';
+require_once __DIR__ . '/../controller/EmpresaDocumentoListController.php';
 
 class PortalEmpresaDashboardController
 {
@@ -22,14 +27,18 @@ class PortalEmpresaDashboardController
 
     private MachoteViewModel $machoteModel;
 
+    private EmpresaDocumentoListModel $documentoModel;
+
     public function __construct(
         ?PortalEmpresaEmpresaModel $empresaModel = null,
         ?EmpresaConvenioViewModel $convenioModel = null,
-        ?MachoteViewModel $machoteModel = null
+        ?MachoteViewModel $machoteModel = null,
+        ?EmpresaDocumentoListModel $documentoModel = null
     ) {
         $this->empresaModel = $empresaModel ?? new PortalEmpresaEmpresaModel();
         $this->convenioModel = $convenioModel ?? new EmpresaConvenioViewModel();
         $this->machoteModel = $machoteModel ?? new MachoteViewModel();
+        $this->documentoModel = $documentoModel ?? new EmpresaDocumentoListModel();
     }
 
     /**
@@ -37,7 +46,8 @@ class PortalEmpresaDashboardController
      *     empresa: array<string, mixed>,
      *     convenio: array<string, mixed>|null,
      *     machote: array<string, mixed>|null,
-     *     stats: array{comentarios_total: int, comentarios_pendientes: int, comentarios_resueltos: int, avance: int, estado_revision: string}
+     *     stats: array{comentarios_total: int, comentarios_pendientes: int, comentarios_resueltos: int, avance: int, estado_revision: string},
+     *     documentosStats: array{total: int, subidos: int, aprobados: int, porcentaje: int}
      * }
      */
     public function loadDashboard(int $empresaId): array
@@ -61,6 +71,7 @@ class PortalEmpresaDashboardController
             'avance' => 0,
             'estado_revision' => 'Sin documento',
         ];
+        $documentosStats = ['total' => 0, 'subidos' => 0, 'aprobados' => 0, 'porcentaje' => 0];
 
         if ($convenio !== null) {
             $machoteId = isset($convenio['machote_id']) ? (int) $convenio['machote_id'] : 0;
@@ -137,12 +148,30 @@ class PortalEmpresaDashboardController
             }
         }
 
+        $tipoEmpresa = empresaDocumentoInferTipoEmpresa($empresa['regimen_fiscal'] ?? null);
+        $documentosStats = $this->loadDocumentosStats($empresaId, $tipoEmpresa);
+
         return [
             'empresa' => $empresa,
             'convenio' => $convenio,
             'machote' => $machoteResumen,
             'stats' => $stats,
+            'documentosStats' => $documentosStats,
         ];
+    }
+
+    /**
+     * @return array{total: int, subidos: int, aprobados: int, porcentaje: int}
+     */
+    private function loadDocumentosStats(int $empresaId, ?string $tipoEmpresa): array
+    {
+        try {
+            $listController = new EmpresaDocumentoListController($this->documentoModel);
+            $viewData = $listController->buildViewData($empresaId, []);
+            return $viewData['documentosStats'] ?? ['total' => 0, 'subidos' => 0, 'aprobados' => 0, 'porcentaje' => 0];
+        } catch (\Throwable) {
+            return ['total' => 0, 'subidos' => 0, 'aprobados' => 0, 'porcentaje' => 0];
+        }
     }
 
     private function puedeAgregarComentarios(?string $estatusConvenio, bool $machoteConfirmado, ?string $estatusMachote = null): bool

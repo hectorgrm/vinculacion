@@ -16,6 +16,13 @@ final class PortalEmpresaDashboardViewHelper
         'estado_revision' => 'Sin documento',
     ];
 
+    private const DEFAULT_DOCS_STATS = [
+        'total' => 0,
+        'subidos' => 0,
+        'aprobados' => 0,
+        'porcentaje' => 0,
+    ];
+
     /**
      * @param array<string, mixed> $portalSession
      * @param array<string, mixed> $dashboard
@@ -27,6 +34,7 @@ final class PortalEmpresaDashboardViewHelper
         $convenio = is_array($dashboard['convenio'] ?? null) ? $dashboard['convenio'] : [];
         $machoteResumen = is_array($dashboard['machote'] ?? null) ? $dashboard['machote'] : [];
         $machoteStats = self::normalizeStats($dashboard['stats'] ?? []);
+        $documentosStats = self::normalizeDocumentosStats($dashboard['documentosStats'] ?? []);
 
         return [
             'empresaNombre' => self::resolveEmpresaNombre($empresa, $portalSession),
@@ -36,6 +44,7 @@ final class PortalEmpresaDashboardViewHelper
             'convenio' => self::buildConvenioSection($convenio),
             'machote' => self::buildMachoteSection($machoteResumen, $machoteStats),
             'stats' => self::buildStatsSection($machoteStats),
+            'documentos' => self::buildDocumentosSection($documentosStats),
         ];
     }
 
@@ -74,6 +83,19 @@ final class PortalEmpresaDashboardViewHelper
         }
 
         return array_merge(self::DEFAULT_STATS, $stats);
+    }
+
+    /**
+     * @param mixed $stats
+     * @return array<string, int>
+     */
+    private static function normalizeDocumentosStats($stats): array
+    {
+        if (!is_array($stats)) {
+            return self::DEFAULT_DOCS_STATS;
+        }
+
+        return array_merge(self::DEFAULT_DOCS_STATS, $stats);
     }
 
     private static function normalizeError(?string $error): ?string
@@ -167,6 +189,21 @@ final class PortalEmpresaDashboardViewHelper
             'comentariosPendientes' => $pendientes,
             'comentariosResueltos' => $resueltos,
             'avancePct' => $avance,
+        ];
+    }
+
+    /**
+     * @param array<string, int> $documentosStats
+     * @return array<string, int>
+     */
+    private static function buildDocumentosSection(array $documentosStats): array
+    {
+        $porcentaje = max(0, min(100, (int) ($documentosStats['porcentaje'] ?? 0)));
+
+        return [
+            'porcentaje' => $porcentaje,
+            'aprobados' => max(0, (int) ($documentosStats['aprobados'] ?? 0)),
+            'total' => max(0, (int) ($documentosStats['total'] ?? 0)),
         ];
     }
 
