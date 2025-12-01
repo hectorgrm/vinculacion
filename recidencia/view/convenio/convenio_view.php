@@ -101,7 +101,7 @@ switch ($uploadErrorParam) {
         $uploadErrorMessage = 'La empresa del convenio no coincide con la solicitud enviada.';
         break;
     case 'wrong_status':
-        $uploadErrorMessage = 'Solo se pueden adjuntar archivos cuando el convenio esta Activa.';
+        $uploadErrorMessage = 'Solo se pueden adjuntar archivos cuando el convenio esta En Revision.';
         break;
     case 'no_file':
         $uploadErrorMessage = 'Selecciona un archivo PDF para subir.';
@@ -133,11 +133,12 @@ $machoteRevisarUrl = $machoteChildId !== null
     : null;
 $empresaId = $convenio !== null && isset($convenio['empresa_id']) ? (int) $convenio['empresa_id'] : null;
 $convenioEstatus = $convenio !== null && isset($convenio['estatus']) ? trim((string) $convenio['estatus']) : '';
-$convenioEsActiva = $convenioEstatus === 'Activa';
+$convenioEstatusLower = strtolower($convenioEstatus);
+$convenioEnRevision = $convenioEstatusLower === 'en revision' || $convenioEstatusLower === 'en revisión';
 $convenioTieneFirmado = $convenio !== null
     && isset($convenio['firmado_path'])
     && trim((string) $convenio['firmado_path']) !== '';
-$convenioPuedeSubir = $convenioEsActiva && !$convenioTieneFirmado;
+$convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
 ?>
 <!DOCTYPE html>
 <html lang="es">

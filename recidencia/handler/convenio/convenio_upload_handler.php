@@ -70,8 +70,9 @@ if ($postedEmpresaId !== null && $convenioEmpresaId !== null && $convenioEmpresa
 }
 
 $estatus = isset($convenio['estatus']) ? trim((string) $convenio['estatus']) : '';
+$estatusLower = strtolower($estatus);
 
-if ($estatus !== 'Activa') {
+if ($estatusLower !== 'en revision' && $estatusLower !== 'en revisión') {
     convenioUploadRedirect($convenioId, null, 'wrong_status');
 }
 
@@ -103,7 +104,7 @@ $previousFirmado = isset($convenio['firmado_path']) && $convenio['firmado_path']
 $payload = [
     'empresa_id' => $convenioEmpresaId !== null ? $convenioEmpresaId : 0,
     'folio' => $convenio['folio'] ?? null,
-    'estatus' => $estatus !== '' ? $estatus : 'En revision',
+    'estatus' => $estatus !== '' ? $estatus : 'En Revision',
     'tipo_convenio' => $convenio['tipo_convenio'] ?? null,
     'responsable_academico' => $convenio['responsable_academico'] ?? null,
     'fecha_inicio' => $convenio['fecha_inicio'] ?? null,
