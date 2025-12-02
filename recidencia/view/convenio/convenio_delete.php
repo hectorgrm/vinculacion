@@ -8,6 +8,7 @@ $errors = $handlerResult['errors'];
 $successMessage = $handlerResult['successMessage'];
 $convenioIdDisplay = $handlerResult['convenioIdDisplay'];
 $empresaIdDisplay = $handlerResult['empresaIdDisplay'];
+$machoteIdDisplay = $handlerResult['machoteIdDisplay'] ?? '';
 $empresaNombreDisplay = $handlerResult['empresaNombreDisplay'];
 $motivoValue = $handlerResult['motivoValue'];
 $confirmChecked = $handlerResult['confirmChecked'];
@@ -107,21 +108,13 @@ $formDisabled = $handlerResult['formDisabled'];
             <div class="links-inline" style="margin-top:10px;">
               <?php if ($empresaIdDisplay !== '' && $convenioIdDisplay !== ''): ?>
               <a class="btn secondary" href="../documentos/documento_list.php?empresa=<?php echo htmlspecialchars($empresaIdDisplay, ENT_QUOTES, 'UTF-8'); ?>&convenio=<?php echo htmlspecialchars($convenioIdDisplay, ENT_QUOTES, 'UTF-8'); ?>">Ver documentos</a>
-              <a class="btn secondary" href="../machote/revisar.php?id_empresa=<?php echo htmlspecialchars($empresaIdDisplay, ENT_QUOTES, 'UTF-8'); ?>&convenio=<?php echo htmlspecialchars($convenioIdDisplay, ENT_QUOTES, 'UTF-8'); ?>">Revisar machote</a>
+              <?php endif; ?>
+              <?php if ($machoteIdDisplay !== ''): ?>
+              <a class="btn secondary" href="../machote/machote_revisar.php?id=<?php echo htmlspecialchars($machoteIdDisplay, ENT_QUOTES, 'UTF-8'); ?>">Revisar machote</a>
               <?php endif; ?>
             </div>
           </div>
 
-          <div class="grid-2" style="margin-top:16px;">
-            <div class="card mini">
-              <h3>Documentos del convenio</h3>
-              <p class="text-muted">Aprobados: - · Pendientes: -</p>
-            </div>
-            <div class="card mini">
-              <h3>Observaciones de machote</h3>
-              <p class="text-muted">Aprobadas: - · En revisión: -</p>
-            </div>
-          </div>
 
           <form action="" method="post">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($convenioIdDisplay, ENT_QUOTES, 'UTF-8'); ?>">
