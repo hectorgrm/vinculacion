@@ -69,6 +69,10 @@ final class MachoteComentarioModel
             throw new RuntimeException('El comentario seleccionado no pertenece al machote indicado.');
         }
 
+        if ($this->machoteEstaBloqueadoPorConvenio($machoteId)) {
+            throw new RuntimeException('El machote está bloqueado por el estatus del convenio.');
+        }
+
         $archivoPath = $this->saveUploadedFile($archivo);
 
         $sql = <<<'SQL'
@@ -193,5 +197,50 @@ final class MachoteComentarioModel
         ]);
 
         return $statement->fetchColumn() !== false;
+    }
+
+    private function machoteEstaBloqueadoPorConvenio(int $machoteId): bool
+    {
+        $sql = 'SELECT m.confirmacion_empresa, c.estatus AS convenio_estatus
+                FROM rp_convenio_machote AS m
+                INNER JOIN rp_convenio AS c ON c.id = m.convenio_id
+                WHERE m.id = :machote_id
+                LIMIT 1';
+
+        $statement = $this->db->prepare($sql);
+        $statement->execute([':machote_id' => $machoteId]);
+
+        $record = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($record === false) {
+            return true;
+        }
+
+        if ((int) ($record['confirmacion_empresa'] ?? 0) === 1) {
+            return true;
+        }
+
+        return !$this->estatusConvenioActivo($record['convenio_estatus'] ?? null);
+    }
+
+    private function estatusConvenioActivo(?string $estatus): bool
+    {
+        if ($estatus === null) {
+            return false;
+        }
+
+        $normalizado = str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], (string) $estatus);
+        $normalizado = function_exists('mb_strtolower') ? mb_strtolower($normalizado, 'UTF-8') : strtolower($normalizado);
+        $normalizado = trim($normalizado);
+
+        if ($normalizado === '') {
+            return false;
+        }
+
+        if (str_contains($normalizado, 'activa')) {
+            return true;
+        }
+
+        return str_contains($normalizado, 'revisi');
     }
 }

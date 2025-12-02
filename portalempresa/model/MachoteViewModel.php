@@ -128,6 +128,16 @@ class MachoteViewModel
             throw new RuntimeException('No es posible agregar comentarios a este machote.');
         }
 
+        $estado = $this->fetchEstadoMachote($machoteId, $empresaId);
+
+        if ($estado === null || (int) ($estado['confirmacion_empresa'] ?? 0) === 1) {
+            throw new RuntimeException('No se pueden agregar comentarios en este momento.');
+        }
+
+        if (!$this->estatusConvenioActivo($estado['convenio_estatus'] ?? null)) {
+            throw new RuntimeException('El convenio está inactivo para comentarios.');
+        }
+
         $sql = <<<'SQL'
             INSERT INTO rp_machote_comentario (machote_id, usuario_id, autor_rol, clausula, comentario, estatus, creado_en)
             VALUES (:machote_id, :usuario_id, :autor_rol, :clausula, :comentario, 'pendiente', NOW())
@@ -148,6 +158,20 @@ class MachoteViewModel
     {
         if (!$this->machoteBelongsToEmpresa($machoteId, $empresaId)) {
             throw new RuntimeException('No puedes confirmar este machote.');
+        }
+
+        $estado = $this->fetchEstadoMachote($machoteId, $empresaId);
+
+        if ($estado === null) {
+            throw new RuntimeException('No se pudo validar el estado del convenio.');
+        }
+
+        if ((int) ($estado['confirmacion_empresa'] ?? 0) === 1) {
+            return true;
+        }
+
+        if (!$this->estatusConvenioActivo($estado['convenio_estatus'] ?? null)) {
+            throw new RuntimeException('El convenio no permite confirmar el machote.');
         }
 
         $sql = <<<'SQL'
@@ -180,5 +204,55 @@ class MachoteViewModel
         ]);
 
         return $statement->fetchColumn() !== false;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function fetchEstadoMachote(int $machoteId, ?int $empresaId = null): ?array
+    {
+        $sql = <<<'SQL'
+            SELECT m.confirmacion_empresa, c.estatus AS convenio_estatus
+            FROM rp_convenio_machote AS m
+            INNER JOIN rp_convenio AS c ON c.id = m.convenio_id
+            WHERE m.id = :machote_id
+        SQL;
+
+        $params = [':machote_id' => $machoteId];
+
+        if ($empresaId !== null) {
+            $sql .= ' AND c.empresa_id = :empresa_id';
+            $params[':empresa_id'] = $empresaId;
+        }
+
+        $sql .= ' LIMIT 1';
+
+        $statement = $this->connection->prepare($sql);
+        $statement->execute($params);
+
+        $record = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $record !== false ? $record : null;
+    }
+
+    private function estatusConvenioActivo(?string $estatus): bool
+    {
+        if ($estatus === null) {
+            return false;
+        }
+
+        $normalizado = str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], (string) $estatus);
+        $normalizado = function_exists('mb_strtolower') ? mb_strtolower($normalizado, 'UTF-8') : strtolower($normalizado);
+        $normalizado = trim($normalizado);
+
+        if ($normalizado === '') {
+            return false;
+        }
+
+        if (str_contains($normalizado, 'activa')) {
+            return true;
+        }
+
+        return str_contains($normalizado, 'revisi');
     }
 }

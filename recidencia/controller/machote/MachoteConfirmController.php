@@ -40,6 +40,10 @@ final class MachoteConfirmController
             return ['status' => 'already'];
         }
 
+        if (!$this->estatusConvenioActivo($machote['convenio_estatus'] ?? null)) {
+            return ['status' => 'locked'];
+        }
+
         $pendientes = $this->model->countComentariosPendientes($machoteId);
 
         if ($pendientes > 0) {
@@ -110,5 +114,26 @@ final class MachoteConfirmController
         }
 
         auditoriaRegistrarEvento($payload);
+    }
+
+    private function estatusConvenioActivo(?string $estatus): bool
+    {
+        if ($estatus === null) {
+            return false;
+        }
+
+        $normalizado = str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], (string) $estatus);
+        $normalizado = function_exists('mb_strtolower') ? mb_strtolower($normalizado, 'UTF-8') : strtolower($normalizado);
+        $normalizado = trim($normalizado);
+
+        if ($normalizado === '') {
+            return false;
+        }
+
+        if (str_contains($normalizado, 'activa')) {
+            return true;
+        }
+
+        return str_contains($normalizado, 'revisi');
     }
 }

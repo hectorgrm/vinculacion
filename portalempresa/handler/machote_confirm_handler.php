@@ -30,6 +30,8 @@ if ($machoteId === null || $machoteId === false || $machoteId <= 0) {
             $status = 'already';
         } elseif ($resultado['status'] === 'pending') {
             $error = 'pending';
+        } elseif ($resultado['status'] === 'locked') {
+            $error = 'locked';
         } else {
             $error = 'internal';
         }

@@ -132,13 +132,54 @@ class MachoteComentarioModel
 
     public function machoteEstaBloqueado(int $machoteId): bool
     {
-        $sql = 'SELECT confirmacion_empresa FROM rp_convenio_machote WHERE id = :machote_id LIMIT 1';
+        $sql = 'SELECT m.confirmacion_empresa, c.estatus AS convenio_estatus
+                FROM rp_convenio_machote AS m
+                INNER JOIN rp_convenio AS c ON c.id = m.convenio_id
+                WHERE m.id = :machote_id
+                LIMIT 1';
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':machote_id' => $machoteId]);
 
-        $confirmacion = $stmt->fetchColumn();
+        $record = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $confirmacion !== false && (int) $confirmacion === 1;
+        if ($record === false) {
+            return true;
+        }
+
+        if ((int) ($record['confirmacion_empresa'] ?? 0) === 1) {
+            return true;
+        }
+
+        $estatusConvenio = $record['convenio_estatus'] ?? null;
+        $estatusNormalizado = $this->normalizeEstatus($estatusConvenio);
+
+        if ($estatusNormalizado === null) {
+            return true;
+        }
+
+        return str_contains($estatusNormalizado, 'suspend')
+            || str_contains($estatusNormalizado, 'inactiv')
+            || str_contains($estatusNormalizado, 'complet');
+    }
+
+    private function normalizeEstatus(?string $estatus): ?string
+    {
+        if ($estatus === null) {
+            return null;
+        }
+
+        $estatus = trim((string) $estatus);
+
+        if ($estatus === '') {
+            return null;
+        }
+
+        $estatus = str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], $estatus);
+
+        return function_exists('mb_strtolower')
+            ? mb_strtolower($estatus, 'UTF-8')
+            : strtolower($estatus);
     }
 
     // ===============================================================
