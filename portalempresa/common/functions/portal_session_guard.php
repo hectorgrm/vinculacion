@@ -52,7 +52,9 @@ if (!function_exists('portalEmpresaRequireSession')) {
                 : strtolower($statusNormalized);
         }
 
-        if ($statusNormalized !== 'activa') {
+        $statusAllowed = ['activa', 'en revisión', 'en revision'];
+
+        if (!in_array($statusNormalized, $statusAllowed, true)) {
             unset($_SESSION['portal_empresa']);
             portalEmpresaRedirectToLogin($loginPath, 'inactive');
         }

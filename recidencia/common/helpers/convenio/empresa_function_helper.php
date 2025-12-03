@@ -62,20 +62,15 @@ if (!function_exists('empresaRegistrarEventoReactivacion')) {
     function empresaRegistrarEventoReactivacion(
         int $empresaId,
         ?int $actorId,
-        int $conveniosAfectados,
         int $accesosAfectados
     ): void {
         $resumen = [];
-
-        if ($conveniosAfectados > 0) {
-            $resumen[] = 'convenios:' . $conveniosAfectados;
-        }
 
         if ($accesosAfectados > 0) {
             $resumen[] = 'accesos:' . $accesosAfectados;
         }
 
-        $accion = 'reactivar_cascada';
+        $accion = 'reactivar_en_revision';
 
         if ($resumen !== []) {
             $accion .= ' [' . implode(', ', $resumen) . ']';

@@ -67,7 +67,9 @@ class PortalEmpresaLoginController
                 : strtolower($statusNormalized);
         }
 
-        if ($statusNormalized !== 'activa') {
+        $statusAllowed = ['activa', 'en revisión', 'en revision'];
+
+        if (!in_array($statusNormalized, $statusAllowed, true)) {
             return [
                 'success' => false,
                 'reason' => 'empresa_inactiva',

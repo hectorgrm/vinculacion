@@ -150,7 +150,12 @@ if (!function_exists('empresaViewSanitizeStatusForComparison')) {
         }
 
         $lower = function_exists('mb_strtolower') ? mb_strtolower($normalized, 'UTF-8') : strtolower($normalized);
-        $clean = preg_replace('/[^a-z]/', '', $lower);
+        $withoutAccents = strtr($lower, [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'Á' => 'a', 'É' => 'e', 'Í' => 'i', 'Ó' => 'o', 'Ú' => 'u',
+            'ñ' => 'n', 'Ñ' => 'n',
+        ]);
+        $clean = preg_replace('/[^a-z]/', '', $withoutAccents);
 
         return $clean ?? '';
     }
@@ -417,9 +422,11 @@ if (!function_exists('empresaViewPortalAccessHelper')) {
         }
 
         $empresaIsActiva = false;
+        $empresaIsEnRevision = false;
 
         if (is_array($empresa)) {
             $empresaIsActiva = empresaViewIsStatusActiva($empresa['estatus'] ?? null);
+            $empresaIsEnRevision = empresaViewIsStatusRevision($empresa['estatus'] ?? null);
         }
 
         $empresaIdQuery = $empresaId !== null ? (string) $empresaId : '';
@@ -468,12 +475,12 @@ if (!function_exists('empresaViewPortalAccessHelper')) {
             $createUrl = null;
         }
 
-        $actionsEnabled = $empresaIsActiva && $empresaId !== null;
+        $actionsEnabled = ($empresaIsActiva || $empresaIsEnRevision) && $empresaId !== null;
         $disabledReason = null;
 
         if (!$actionsEnabled) {
-            $disabledReason = !$empresaIsActiva
-                ? 'Activa la empresa para gestionar su acceso al portal.'
+            $disabledReason = (!$empresaIsActiva && !$empresaIsEnRevision)
+                ? 'Activa o coloca en revisión la empresa para gestionar su acceso al portal.'
                 : 'No se puede gestionar el portal sin un identificador de empresa válido.';
         }
 

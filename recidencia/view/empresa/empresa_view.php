@@ -329,11 +329,6 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
         </header>
 
         <div class="content">
-          <?php if ($empresaIsEnRevision): ?>
-            <p class="section-note">
-              Esta empresa aún está en revisión; no es posible subir documentos hasta que esté activa.
-            </p>
-          <?php endif; ?>
           <div class="docs-summary">
             <div class="docs-stats">
               <div class="docs-stat">
@@ -424,13 +419,10 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                     <td><span class="<?php echo htmlspecialchars($documentoEstadoClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($documentoEstadoLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
                     <td><?php echo htmlspecialchars($documentoActualizado !== '' ? $documentoActualizado : '—', ENT_QUOTES, 'UTF-8'); ?></td>
                     <td class="doc-actions">
-                      <?php if (
-                          $accionUrl !== '' &&
-                          !($empresaIsEnRevision && $accionVariant === 'upload')
-                      ) : ?>
+                      <?php if ($accionUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($accionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($accionClass, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $accionAttrs; ?>><?php echo htmlspecialchars($accionPrefix . $accionLabel, ENT_QUOTES, 'UTF-8'); ?></a>
                       <?php endif; ?>
-                      <?php if (!$empresaIsEnRevision && $accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
+                      <?php if ($accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
                         <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">📁 Subir</a>
                       <?php endif; ?>
                       <?php if ($documentoEstatus === 'aprobado' && $detailUrl !== '') : ?>
@@ -448,7 +440,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
 
           
           <!-- 🔗 Acción principal -->
-          <?php if (!$empresaIsEnRevision && $documentosGestionUrl !== null && $documentosGestionUrl !== '') : ?>
+          <?php if ($documentosGestionUrl !== null && $documentosGestionUrl !== '') : ?>
             <div class="actions" style="margin-top:16px; justify-content:flex-end;">
               <a href="<?php echo htmlspecialchars($documentosGestionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📁 Gestionar Documentos</a>
             </div>
@@ -536,8 +528,8 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
           <?php endif; ?>
         </div>
 
-        <?php if (!$empresaIsActiva) : ?>
-          <p class="portal-note">Para generar o modificar accesos, la empresa debe contar con estatus <strong>Activo</strong>.</p>
+        <?php if (!$empresaIsActiva && !$empresaIsEnRevision) : ?>
+          <p class="portal-note">Para generar o modificar accesos, la empresa debe contar con estatus <strong>Activo</strong> o <strong>En revisión</strong>.</p>
         <?php endif; ?>
 
         <?php if (!$portalAccessExists) : ?>
