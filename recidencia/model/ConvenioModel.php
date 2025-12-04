@@ -154,6 +154,24 @@ class ConvenioModel
         return (bool) $statement->fetchColumn();
     }
 
+    public function folioExists(string $folio, ?int $excludeConvenioId = null): bool
+    {
+        $sql = 'SELECT 1 FROM rp_convenio WHERE folio = :folio';
+        $params = [':folio' => $folio];
+
+        if ($excludeConvenioId !== null) {
+            $sql .= ' AND id <> :id';
+            $params[':id'] = $excludeConvenioId;
+        }
+
+        $sql .= ' LIMIT 1';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($params);
+
+        return (bool) $statement->fetchColumn();
+    }
+
     /**
      * @param array<string, mixed> $data
      */

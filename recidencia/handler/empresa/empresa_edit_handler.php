@@ -92,6 +92,24 @@ if (!function_exists('empresaEditHandler')) {
 
         if (
             $viewData['errors'] === [] &&
+            isset($estatusOriginal) &&
+            $estatusOriginal !== 'Activa' &&
+            $estatusNuevo === 'Activa'
+        ) {
+            try {
+                $tieneConvenioActivo = $controller->empresaHasConvenioActivo((int) $viewData['empresaId']);
+            } catch (\RuntimeException $exception) {
+                $viewData['errors'][] = $exception->getMessage();
+                $tieneConvenioActivo = null;
+            }
+
+            if ($tieneConvenioActivo === false && $viewData['errors'] === []) {
+                $viewData['errors'][] = 'Se requiere convenio activo para cambiar la empresa a estatus Activa.';
+            }
+        }
+
+        if (
+            $viewData['errors'] === [] &&
             empresaStatusRequiresConvenioActivo($viewData['formData']['estatus'] ?? null)
         ) {
             try {

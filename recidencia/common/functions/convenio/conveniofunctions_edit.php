@@ -55,6 +55,24 @@ if (!function_exists('convenioHandleEditRequest')) {
             $errors[] = 'No se pueden editar convenios porque la empresa está en estatus Completada.';
         }
 
+        if ($errors === []) {
+            $folio = trim((string) ($formData['folio'] ?? ''));
+
+            if ($folio !== '') {
+                try {
+                    $convenioActualId = isset($currentConvenio['id']) && is_numeric((string) $currentConvenio['id'])
+                        ? (int) $currentConvenio['id']
+                        : $convenioId;
+
+                    if ($controller->folioExists($folio, $convenioActualId)) {
+                        $errors[] = 'Ya existe un convenio registrado con el folio proporcionado.';
+                    }
+                } catch (\Throwable) {
+                    $errors[] = 'No se pudo validar el folio del convenio. Intenta nuevamente.';
+                }
+            }
+        }
+
         $previousRelativePath = isset($currentConvenio['borrador_path']) && is_string($currentConvenio['borrador_path'])
             ? trim($currentConvenio['borrador_path'])
             : '';
@@ -82,6 +100,21 @@ if (!function_exists('convenioHandleEditRequest')) {
             } else {
                 $errors[] = 'El archivo del convenio no se recibió correctamente.';
             }
+        }
+
+        $estatusNuevo = convenioNormalizeStatus($formData['estatus'] ?? null);
+        $existingBorrador = isset($currentConvenio['borrador_path']) && $currentConvenio['borrador_path'] !== null
+            ? trim((string) $currentConvenio['borrador_path'])
+            : '';
+        $existingFirmado = isset($currentConvenio['firmado_path']) && $currentConvenio['firmado_path'] !== null
+            ? trim((string) $currentConvenio['firmado_path'])
+            : '';
+        $tieneArchivo = ($uploadRelativePath !== null && $uploadRelativePath !== '')
+            || $existingBorrador !== ''
+            || $existingFirmado !== '';
+
+        if ($errors === [] && $estatusNuevo === 'Activa' && !$tieneArchivo) {
+            $errors[] = 'El convenio requiere archivo para ser Activa.';
         }
 
         if ($errors === []) {

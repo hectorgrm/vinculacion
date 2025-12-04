@@ -46,6 +46,20 @@ if (!function_exists('convenioHandleAddRequest')) {
             }
         }
 
+        if ($errors === []) {
+            $folio = trim((string) ($formData['folio'] ?? ''));
+
+            if ($folio !== '') {
+                try {
+                    if ($controller->folioExists($folio)) {
+                        $errors[] = 'Ya existe un convenio registrado con el folio proporcionado.';
+                    }
+                } catch (\Throwable) {
+                    $errors[] = 'No se pudo validar el folio del convenio. Intenta nuevamente.';
+                }
+            }
+        }
+
         if ($errors === [] && array_key_exists('borrador_path', $files)) {
             $fileData = $files['borrador_path'];
 
