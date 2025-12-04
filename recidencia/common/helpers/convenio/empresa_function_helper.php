@@ -21,7 +21,8 @@ if (!function_exists('empresaRegistrarEventoDesactivacion')) {
         ?int $actorId,
         int $conveniosAfectados,
         int $documentosAfectados,
-        int $accesosAfectados
+        int $accesosAfectados,
+        int $asignacionesAfectadas = 0
     ): void {
         $resumen = [];
 
@@ -35,6 +36,10 @@ if (!function_exists('empresaRegistrarEventoDesactivacion')) {
 
         if ($accesosAfectados > 0) {
             $resumen[] = 'accesos:' . $accesosAfectados;
+        }
+
+        if ($asignacionesAfectadas > 0) {
+            $resumen[] = 'asignaciones:' . $asignacionesAfectadas;
         }
 
         $accion = 'desactivar_cascada';

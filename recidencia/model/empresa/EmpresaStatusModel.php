@@ -75,20 +75,23 @@ class EmpresaStatusModel
                  WHERE empresa_id = :id
                    AND estatus != 'concluido'
             SQL;
-            $this->pdo->prepare($sqlAsignaciones)->execute([':id' => $empresaId]);
+            $statementAsignaciones = $this->pdo->prepare($sqlAsignaciones);
+            $statementAsignaciones->execute([':id' => $empresaId]);
 
             $this->pdo->commit();
 
             $conveniosActualizados = $statementConvenios->rowCount();
             $documentosActualizados = $statementDocumentos->rowCount();
             $accesosActualizados = $statementPortal->rowCount();
+            $asignacionesActualizadas = $statementAsignaciones->rowCount();
 
             empresaRegistrarEventoDesactivacion(
                 $empresaId,
                 $byUserId,
                 $conveniosActualizados,
                 $documentosActualizados,
-                $accesosActualizados
+                $accesosActualizados,
+                $asignacionesActualizadas
             );
 
             return true;

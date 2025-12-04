@@ -8,6 +8,7 @@ use Exception;
 use PortalEmpresa\Model\PortalEmpresaLoginModel;
 
 require_once __DIR__ . '/../model/PortalEmpresaLoginModel.php';
+require_once __DIR__ . '/../common/functions/portal_session_guard.php';
 
 class PortalEmpresaLoginController
 {
@@ -59,15 +60,7 @@ class PortalEmpresaLoginController
         }
 
         $empresaStatus = trim((string) ($record['empresa_estatus'] ?? ''));
-        $statusNormalized = $empresaStatus;
-
-        if ($statusNormalized !== '') {
-            $statusNormalized = function_exists('mb_strtolower')
-                ? mb_strtolower($statusNormalized, 'UTF-8')
-                : strtolower($statusNormalized);
-        }
-        $statusNormalized = str_replace(['?', '?', '?', '?', '?'], ['a', 'e', 'i', 'o', 'u'], $statusNormalized);
-
+        $statusNormalized = portalEmpresaNormalizeStatus($empresaStatus);
         $statusAllowed = ['activa', 'en revision', 'completada'];
 
         if ($statusNormalized === 'inactiva') {
