@@ -12,9 +12,15 @@ require_once __DIR__ . '/../controller/EmpresaDocumentoUploadController.php';
 
 $sessionEmpresa = portalEmpresaRequireSession('../view/login.php');
 $empresaId = (int) ($sessionEmpresa['empresa_id'] ?? 0);
+$portalReadOnly = portalEmpresaIsReadOnly($sessionEmpresa);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: empresa_documento_list_handler.php');
+    exit;
+}
+
+if ($portalReadOnly) {
+    header('Location: empresa_documento_list_handler.php?status=upload_readonly');
     exit;
 }
 

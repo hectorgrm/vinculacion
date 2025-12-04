@@ -35,6 +35,10 @@ if (!function_exists('convenioHandleEditRequest')) {
         $errors = convenioValidateData($formData);
         $successMessage = null;
         $updatedConvenio = $currentConvenio;
+        $empresaEstatus = isset($currentConvenio['empresa_estatus'])
+            ? trim((string) $currentConvenio['empresa_estatus'])
+            : '';
+        $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
 
         $postedIdRaw = $request['id'] ?? null;
         $postedId = 0;
@@ -45,6 +49,10 @@ if (!function_exists('convenioHandleEditRequest')) {
 
         if ($postedId !== $convenioId) {
             $errors[] = 'La solicitud enviada no es válida.';
+        }
+
+        if ($empresaIsCompletada) {
+            $errors[] = 'No se pueden editar convenios porque la empresa está en estatus Completada.';
         }
 
         $previousRelativePath = isset($currentConvenio['borrador_path']) && is_string($currentConvenio['borrador_path'])

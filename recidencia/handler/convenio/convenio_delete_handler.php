@@ -49,6 +49,8 @@ $sanitizedPost = null;
 $convenio = null;
 $machoteIdDisplay = '';
 $machoteModel = null;
+$empresaEstatus = '';
+$empresaIsCompletada = false;
 
 try {
     $machoteModel = \Residencia\Model\Convenio\ConvenioMachoteModel::createWithDefaultConnection();
@@ -71,24 +73,33 @@ if ($editController !== null && $requestedId > 0) {
     }
 }
 
+if ($convenio !== null && isset($convenio['empresa_estatus'])) {
+    $empresaEstatus = trim((string) $convenio['empresa_estatus']);
+    $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
+}
+
 if ($controller !== null && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-    $handleResult = convenioHandleDeleteRequest($controller, $_POST);
-    $sanitizedPost = $handleResult['sanitized'];
-    $errors = array_merge($errors, $handleResult['errors']);
-    $successMessage = $handleResult['successMessage'];
+    if ($empresaIsCompletada) {
+        $errors[] = 'No se puede desactivar el convenio porque la empresa está en estatus Completada.';
+    } else {
+        $handleResult = convenioHandleDeleteRequest($controller, $_POST);
+        $sanitizedPost = $handleResult['sanitized'];
+        $errors = array_merge($errors, $handleResult['errors']);
+        $successMessage = $handleResult['successMessage'];
 
-    if ($handleResult['convenioId'] > 0) {
-        $requestedId = $handleResult['convenioId'];
-    }
+        if ($handleResult['convenioId'] > 0) {
+            $requestedId = $handleResult['convenioId'];
+        }
 
-    if ($successMessage !== null && $requestedId > 0 && $editController !== null) {
-        try {
-            $refreshed = $editController->getConvenioById($requestedId);
-            if ($refreshed !== null) {
-                $convenio = $refreshed;
+        if ($successMessage !== null && $requestedId > 0 && $editController !== null) {
+            try {
+                $refreshed = $editController->getConvenioById($requestedId);
+                if ($refreshed !== null) {
+                    $convenio = $refreshed;
+                }
+            } catch (\RuntimeException $runtimeException) {
+                $errors[] = $runtimeException->getMessage();
             }
-        } catch (\RuntimeException $runtimeException) {
-            $errors[] = $runtimeException->getMessage();
         }
     }
 } elseif (($controller === null || $editController === null) && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
@@ -142,7 +153,16 @@ $isAlreadyInactive = $convenio !== null
     && isset($convenio['estatus'])
     && (string) $convenio['estatus'] === 'Inactiva';
 
-$formDisabled = $successMessage !== null || $isAlreadyInactive || $controller === null || $editController === null;
+if ($convenio !== null && isset($convenio['empresa_estatus'])) {
+    $empresaEstatus = trim((string) $convenio['empresa_estatus']);
+    $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
+}
+
+$formDisabled = $successMessage !== null
+    || $isAlreadyInactive
+    || $controller === null
+    || $editController === null
+    || $empresaIsCompletada;
 
 return [
     'controllerError' => $controllerError,
@@ -156,4 +176,5 @@ return [
     'confirmChecked' => $confirmChecked,
     'isAlreadyInactive' => $isAlreadyInactive,
     'formDisabled' => $formDisabled,
+    'empresaIsCompletada' => $empresaIsCompletada,
 ];

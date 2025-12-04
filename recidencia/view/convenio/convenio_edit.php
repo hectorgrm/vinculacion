@@ -19,6 +19,9 @@ $empresaLink = $handlerResult['empresaLink'];
 $convenioListLink = $handlerResult['convenioListLink'];
 $machoteLink = $handlerResult['machoteLink'];
 $cancelLink = $handlerResult['cancelLink'];
+$formDisabled = $handlerResult['formDisabled'] ?? false;
+$empresaIsCompletada = $handlerResult['empresaIsCompletada'] ?? false;
+$empresaEstatus = $handlerResult['empresaEstatus'] ?? '';
 
 ?>
 <!DOCTYPE html>
@@ -98,12 +101,20 @@ $cancelLink = $handlerResult['cancelLink'];
           </div>
           <?php endif; ?>
 
+          <?php if ($empresaIsCompletada): ?>
+          <div class="alert alert-warning" style="margin-bottom:16px;">
+            La empresa está en estatus <strong>Completada</strong>. El convenio se muestra en modo de solo lectura y no
+            es posible guardar cambios.
+          </div>
+          <?php endif; ?>
+
           <?php if ($convenio !== null): ?>
           <form class="form" method="POST" action="" enctype="multipart/form-data">
             <input type="hidden" name="id"
               value="<?php echo htmlspecialchars((string) $convenioId, ENT_QUOTES, 'UTF-8'); ?>" />
             <input type="hidden" name="empresa_id"
               value="<?php echo htmlspecialchars(convenioFormValue($formData, 'empresa_id'), ENT_QUOTES, 'UTF-8'); ?>" />
+            <?php $disabledAttr = $formDisabled ? 'disabled' : ''; ?>
 
             <div class="grid">
               <div class="field col-span-2">
@@ -116,12 +127,13 @@ $cancelLink = $handlerResult['cancelLink'];
               <div class="field">
                 <label for="folio">Folio</label>
                 <input type="text" id="folio" name="folio" placeholder="Ej: CBR-2025-01"
-                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'folio'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'folio'), ENT_QUOTES, 'UTF-8'); ?>"
+                  <?php echo $disabledAttr; ?> />
               </div>
 
               <div class="field">
                 <label for="estatus" class="required">Estatus *</label>
-                <select id="estatus" name="estatus" required>
+                <select id="estatus" name="estatus" required <?php echo $disabledAttr; ?>>
                   <?php foreach ($estatusOptions as $option): ?>
                   <option value="<?php echo htmlspecialchars($option, ENT_QUOTES, 'UTF-8'); ?>"
                     <?php echo convenioFormValue($formData, 'estatus') === $option ? 'selected' : ''; ?>>
@@ -134,25 +146,29 @@ $cancelLink = $handlerResult['cancelLink'];
               <div class="field">
                 <label for="tipo_convenio">Tipo de convenio</label>
                 <input type="text" id="tipo_convenio" name="tipo_convenio" placeholder="Ej: convenio marco"
-                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'tipo_convenio'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'tipo_convenio'), ENT_QUOTES, 'UTF-8'); ?>"
+                  <?php echo $disabledAttr; ?> />
               </div>
 
               <div class="field">
                 <label for="responsable_academico">Responsable académico</label>
                 <input type="text" id="responsable_academico" name="responsable_academico" placeholder="Ej: Mtra. Ana Pérez"
-                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'responsable_academico'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'responsable_academico'), ENT_QUOTES, 'UTF-8'); ?>"
+                  <?php echo $disabledAttr; ?> />
               </div>
 
               <div class="field">
                 <label for="fecha_inicio">Fecha de inicio</label>
                 <input type="date" id="fecha_inicio" name="fecha_inicio"
-                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'fecha_inicio'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'fecha_inicio'), ENT_QUOTES, 'UTF-8'); ?>"
+                  <?php echo $disabledAttr; ?> />
               </div>
 
               <div class="field">
                 <label for="fecha_fin">Fecha de término</label>
                 <input type="date" id="fecha_fin" name="fecha_fin"
-                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'fecha_fin'), ENT_QUOTES, 'UTF-8'); ?>" />
+                  value="<?php echo htmlspecialchars(convenioFormValue($formData, 'fecha_fin'), ENT_QUOTES, 'UTF-8'); ?>"
+                  <?php echo $disabledAttr; ?> />
               </div>
 
               <div class="field">
@@ -172,20 +188,20 @@ $cancelLink = $handlerResult['cancelLink'];
 
               <div class="field">
                 <label for="borrador_path">Reemplazar PDF</label>
-                <input type="file" id="borrador_path" name="borrador_path" accept="application/pdf" />
+                <input type="file" id="borrador_path" name="borrador_path" accept="application/pdf" <?php echo $disabledAttr; ?> />
                 <div class="help">Sube un archivo únicamente si deseas reemplazar el documento actual.</div>
               </div>
 
               <div class="field col-span-2">
                 <label for="observaciones">Notas / Observaciones</label>
                 <textarea id="observaciones" name="observaciones" rows="4"
-                  placeholder="Comentarios internos del área de vinculación..."><?php echo htmlspecialchars(convenioFormValue($formData, 'observaciones'), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                  placeholder="Comentarios internos del área de vinculación..." <?php echo $disabledAttr; ?>><?php echo htmlspecialchars(convenioFormValue($formData, 'observaciones'), ENT_QUOTES, 'UTF-8'); ?></textarea>
               </div>
             </div>
 
             <div class="actions">
               <a href="<?php echo htmlspecialchars($cancelLink, ENT_QUOTES, 'UTF-8'); ?>" class="btn">⬅ Cancelar</a>
-              <button type="submit" class="btn primary">💾 Guardar Cambios</button>
+              <button type="submit" class="btn primary" <?php echo $disabledAttr; ?>>💾 Guardar Cambios</button>
             </div>
           </form>
           <?php else: ?>

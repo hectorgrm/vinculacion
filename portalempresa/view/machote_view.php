@@ -10,7 +10,7 @@ $documento = machoteViewNormalizeDocumento($documento ?? null);
 $machote = is_array($machote ?? null) ? $machote : [];
 $comentarios = is_array($comentarios ?? null) ? $comentarios : [];
 $empresaNombre = isset($empresaNombre) ? (string) $empresaNombre : 'Empresa';
-$estatus = (string) ($stats['estado'] ?? 'En revisión');
+$estatus = (string) ($stats['estado'] ?? 'En revision');
 $comentAbiertos = (int) ($stats['pendientes'] ?? 0);
 $comentResueltos = (int) ($stats['resueltos'] ?? 0);
 $avancePct = max(0, min(100, (int) ($stats['progreso'] ?? 0)));
@@ -18,6 +18,10 @@ $confirmado = (bool) ($machote['confirmado'] ?? false);
 $versionMachote = (string) ($machote['version_local'] ?? 'v1.0');
 $machoteId = (int) ($machoteActualId ?? ($machote['id'] ?? 0));
 $uploadsBasePath = '../../uploads/';
+$portalReadOnly = !empty($portalReadOnly);
+$portalReadOnlyMessage = isset($portalReadOnlyMessage) ? (string) $portalReadOnlyMessage : null;
+$canComment = $permisos['puede_comentar'] && !$portalReadOnly;
+$canConfirm = $permisos['puede_confirmar'] && !$portalReadOnly;
 
 $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
 ?>
@@ -26,10 +30,8 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Portal Empresa - Revisión del Acuerdo</title>
+  <title>Portal Empresa - Revision del Acuerdo</title>
   <link rel="stylesheet" href="../assets/css/modules/machoteview.css">
-  
-
 </head>
 <body>
 <?php include __DIR__ . '/../layout/portal_empresa_header.php'; ?>
@@ -56,6 +58,15 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
         </div>
       </div>
     <?php endforeach; ?>
+
+    <?php if ($portalReadOnly): ?>
+      <div class="card">
+        <header>Portal en modo lectura</header>
+        <div class="content">
+          <p class="warn"><?= htmlspecialchars($portalReadOnlyMessage ?? 'La empresa esta en estatus Completada; las acciones de edicion estan bloqueadas.') ?></p>
+        </div>
+      </div>
+    <?php endif; ?>
 
     <!-- Estado general -->
     <div class="card">
@@ -110,14 +121,14 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
               </div>
             </div>
             <p class="doc-note">
-              Mostrando versión editable actual registrada por Vinculación.
+              Mostrando version editable actual registrada por Vinculacion.
             </p>
 
           <?php else: ?>
             <div class="doc-empty">
               <p>
                 No hay documento disponible para mostrar.
-                Es posible que Vinculación aún no haya generado el machote hijo.
+                Es posible que Vinculacion aun no haya generado el machote hijo.
               </p>
             </div>
           <?php endif; ?>
@@ -125,25 +136,29 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
       </div>
     </div>
 
-    <!-- Confirmación -->
+    <!-- Confirmacion -->
     <div class="card">
-      <header>Confirmación de Empresa</header>
+      <header>Confirmacion de Empresa</header>
       <div class="content approval">
         <form action="../handler/machote_confirm_handler.php" method="post">
           <input type="hidden" name="machote_id" value="<?= $machoteId ?>">
           <label class="switch">
-            <input type="checkbox" name="confirmacion_empresa" value="1" <?= $confirmado ? 'checked disabled' : '' ?>>
+            <input type="checkbox" name="confirmacion_empresa" value="1" <?= $confirmado ? 'checked disabled' : ($portalReadOnly ? 'disabled' : '') ?>>
             <span class="slider"></span>
             <span class="label">Estoy de acuerdo con el contenido del documento</span>
           </label>
           <?php if ($confirmado): ?>
-            <p class="ok-note">Listo. Confirmación registrada. Si necesitas más ajustes, contacta a Vinculación para reabrir la revisión.</p>
+            <p class="ok-note">Listo. Confirmacion registrada. Si necesitas mas ajustes, contacta a Vinculacion para reabrir la revision.</p>
           <?php else: ?>
             <div class="actions">
-              <button type="submit" class="btn primary" <?= $permisos['puede_confirmar'] ? '' : 'disabled' ?>>Guardar confirmación</button>
+              <button type="submit" class="btn primary" <?= $canConfirm ? '' : 'disabled' ?>>Guardar confirmacion</button>
             </div>
-            <?php if (!$permisos['puede_confirmar']): ?>
-              <p class="note">Resuelve primero los comentarios pendientes para habilitar la confirmación.</p>
+            <?php if (!$canConfirm): ?>
+              <?php if ($portalReadOnly): ?>
+                <p class="note">La confirmacion esta bloqueada porque la empresa esta en estatus Completada.</p>
+              <?php elseif (!$permisos['puede_confirmar']): ?>
+                <p class="note">Resuelve primero los comentarios pendientes para habilitar la confirmacion.</p>
+              <?php endif; ?>
             <?php endif; ?>
           <?php endif; ?>
         </form>
@@ -159,7 +174,7 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
     <div class="card">
       <header>Agregar comentario</header>
       <div class="content">
-        <?php if ($permisos['puede_comentar']): ?>
+        <?php if ($canComment): ?>
         <form action="../handler/machote_comentario_add_handler.php" method="post">
           <input type="hidden" name="machote_id" value="<?= $machoteId ?>">
           <div class="field">
@@ -167,7 +182,7 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
             <input type="text" id="asunto" name="asunto" required>
           </div>
           <div class="field">
-            <label for="comentario">Descripción</label>
+            <label for="comentario">Descripcion</label>
             <textarea id="comentario" name="comentario" rows="3" required></textarea>
           </div>
           <div class="actions">
@@ -175,7 +190,11 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
           </div>
         </form>
         <?php else: ?>
-          <p class="note">Los comentarios están disponibles solo mientras el convenio está en revisión.</p>
+          <?php if ($portalReadOnly): ?>
+            <p class="note">Los comentarios estan bloqueados porque la empresa esta en estatus Completada.</p>
+          <?php else: ?>
+            <p class="note">Los comentarios estan disponibles solo mientras el convenio esta en revision.</p>
+          <?php endif; ?>
         <?php endif; ?>
       </div>
     </div>
@@ -185,7 +204,7 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
       <header>Comentarios recientes</header>
       <div class="content threads">
         <?php if (count($comentarios) === 0): ?>
-          <p class="empty">Aún no hay comentarios registrados.</p>
+          <p class="empty">Aun no hay comentarios registrados.</p>
         <?php else: ?>
           <?php foreach ($comentarios as $comentario): ?>
             <?php
@@ -213,7 +232,7 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
                 <?php machoteViewRenderThreadMessage($comentario, $uploadsBasePath); ?>
               </div>
 
-              <?php if ($permisos['puede_comentar'] && $isAbierto): ?>
+              <?php if ($canComment && $isAbierto): ?>
                 <form class="reply" action="../handler/machote_reply_handler.php" method="post" enctype="multipart/form-data">
                   <input type="hidden" name="machote_id" value="<?= $machoteId ?>">
                   <input type="hidden" name="respuesta_a" value="<?= (int) ($comentario['id'] ?? 0) ?>">
@@ -238,7 +257,7 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
 </main>
 
 <footer class="portal-foot">
-  <small>Portal de Empresa - Área de Vinculación</small>
+  <small>Portal de Empresa - Area de Vinculacion</small>
 </footer>
 </body>
 <script>

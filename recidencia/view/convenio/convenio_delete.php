@@ -14,6 +14,7 @@ $motivoValue = $handlerResult['motivoValue'];
 $confirmChecked = $handlerResult['confirmChecked'];
 $isAlreadyInactive = $handlerResult['isAlreadyInactive'];
 $formDisabled = $handlerResult['formDisabled'];
+$empresaIsCompletada = $handlerResult['empresaIsCompletada'] ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -70,6 +71,12 @@ $formDisabled = $handlerResult['formDisabled'];
           <?php if ($successMessage !== null): ?>
           <div class="alert success" role="alert">
             <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
+          </div>
+          <?php endif; ?>
+
+          <?php if ($empresaIsCompletada): ?>
+          <div class="alert warning" role="alert">
+            No se puede desactivar este convenio porque la empresa está en estatus <strong>Completada</strong>.
           </div>
           <?php endif; ?>
 

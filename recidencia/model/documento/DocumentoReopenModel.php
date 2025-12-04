@@ -38,6 +38,13 @@ class DocumentoReopenModel
                 ? mb_strtolower($estatusActual, 'UTF-8')
                 : strtolower($estatusActual);
 
+            $empresaEstatus = isset($document['empresa_estatus']) ? trim((string) $document['empresa_estatus']) : '';
+            $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
+
+            if ($empresaIsCompletada) {
+                throw new RuntimeException('No se pueden reabrir documentos de empresas en estatus Completada.', 403);
+            }
+
             if ($estatusActual !== 'aprobado') {
                 throw new RuntimeException('Solo se pueden reabrir documentos aprobados.', 400);
             }
@@ -80,6 +87,7 @@ class DocumentoReopenModel
             SELECT d.id,
                    d.empresa_id,
                    e.nombre AS empresa_nombre,
+                   e.estatus AS empresa_estatus,
                    d.tipo_global_id,
                    d.tipo_personalizado_id,
                    d.ruta,

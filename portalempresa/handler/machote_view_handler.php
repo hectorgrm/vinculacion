@@ -9,6 +9,10 @@ require_once __DIR__ . '/../controller/MachoteViewController.php';
 
 $portalSession = portalEmpresaRequireSession('../view/login.php');
 $empresaId = (int) ($portalSession['empresa_id'] ?? 0);
+$portalReadOnly = portalEmpresaIsReadOnly($portalSession);
+$portalReadOnlyMessage = $portalReadOnly
+    ? 'Empresa en estatus Completada: el portal esta en modo solo lectura.'
+    : null;
 
 $empresa = [];
 $machote = [];

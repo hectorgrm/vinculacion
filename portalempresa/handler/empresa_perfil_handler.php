@@ -13,6 +13,10 @@ require_once __DIR__ . '/../common/functions/portal_session_guard.php';
 $sessionEmpresa = portalEmpresaRequireSession('../view/login.php');
 $portalSession = $sessionEmpresa;
 $empresaId = (int) ($sessionEmpresa['empresa_id'] ?? 0);
+$portalReadOnly = portalEmpresaIsReadOnly($sessionEmpresa);
+$portalReadOnlyMessage = $portalReadOnly
+    ? 'Empresa en estatus Completada: el portal esta en modo solo lectura.'
+    : null;
 
 $controller = new EmpresaPerfilController();
 $perfilErrorMessage = null;

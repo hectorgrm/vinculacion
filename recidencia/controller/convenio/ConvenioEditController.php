@@ -67,7 +67,10 @@ class ConvenioEditController
      *     cancelLink: string,
      *     borradorUrl: ?string,
      *     borradorFileName: ?string,
-     *     folioLabel: string
+     *     folioLabel: string,
+     *     formDisabled: bool,
+     *     empresaEstatus: string,
+     *     empresaIsCompletada: bool
      * }
      */
     public function handle(array $query, array $post, array $files, array $server): array
@@ -81,6 +84,8 @@ class ConvenioEditController
         $controllerErrorMessage = null;
         $controllerAvailable = true;
         $method = isset($server['REQUEST_METHOD']) ? strtoupper((string) $server['REQUEST_METHOD']) : 'GET';
+        $empresaEstatus = '';
+        $empresaIsCompletada = false;
 
         if ($convenioId <= 0) {
             $errors[] = 'El identificador del convenio no es valido.';
@@ -100,12 +105,19 @@ class ConvenioEditController
             }
         }
 
+        if ($convenio !== null && isset($convenio['empresa_estatus'])) {
+            $empresaEstatus = trim((string) $convenio['empresa_estatus']);
+            $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
+        }
+
         if ($method === 'POST') {
             if (!$controllerAvailable) {
                 $errors[] = $controllerErrorMessage
                     ?? 'No se pudo procesar la solicitud. Intenta nuevamente mas tarde.';
             } elseif ($convenio === null) {
                 $errors[] = 'El convenio solicitado no existe o fue eliminado.';
+            } elseif ($empresaIsCompletada) {
+                $errors[] = 'La empresa está en estatus Completada; este convenio está en modo de solo lectura.';
             } else {
                 $handleResult = convenioHandleEditRequest(
                     $this,
@@ -138,12 +150,18 @@ class ConvenioEditController
             $errors = array_values(array_unique($errors));
         }
 
+        if ($convenio !== null && isset($convenio['empresa_estatus'])) {
+            $empresaEstatus = trim((string) $convenio['empresa_estatus']);
+            $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
+        }
+
         $empresaData = $this->resolveEmpresaData($convenio);
         $borradorData = $this->resolveBorradorData($convenio);
         $folioLabel = $convenio !== null
             ? convenioValueOrDefault($convenio['folio'] ?? null, 'Sin folio asignado')
             : 'Sin folio asignado';
         $links = $this->buildLinks($empresaData['id'], $convenioId);
+        $formDisabled = !$controllerAvailable || $empresaIsCompletada;
 
         return [
             'estatusOptions' => $estatusOptions,
@@ -163,6 +181,9 @@ class ConvenioEditController
             'borradorUrl' => $borradorData['url'],
             'borradorFileName' => $borradorData['fileName'],
             'folioLabel' => $folioLabel,
+            'formDisabled' => $formDisabled,
+            'empresaEstatus' => $empresaEstatus,
+            'empresaIsCompletada' => $empresaIsCompletada,
         ];
     }
 

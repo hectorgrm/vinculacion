@@ -6,6 +6,62 @@ require_once __DIR__ . '/../../model/PortalEmpresaLoginModel.php';
 
 use PortalEmpresa\Model\PortalEmpresaLoginModel;
 
+if (!function_exists('portalEmpresaNormalizeStatus')) {
+    function portalEmpresaNormalizeStatus(?string $status): string
+    {
+        $status = trim((string) $status);
+
+        if ($status === '') {
+            return '';
+        }
+
+        $normalized = function_exists('mb_strtolower')
+            ? mb_strtolower($status, 'UTF-8')
+            : strtolower($status);
+
+        if (function_exists('iconv')) {
+            $transliterated = @iconv('UTF-8', 'ASCII//TRANSLIT', $normalized);
+            if ($transliterated !== false) {
+                $normalized = $transliterated;
+            }
+        }
+
+        $normalized = preg_replace('/[^a-z ]/', '', $normalized) ?? $normalized;
+
+        return match ($normalized) {
+            'activa' => 'activa',
+            'en revision' => 'en revision',
+            'completada' => 'completada',
+            'inactiva' => 'inactiva',
+            'suspendida' => 'suspendida',
+            default => $normalized,
+        };
+    }
+}
+
+if (!function_exists('portalEmpresaIsReadOnlyStatus')) {
+    function portalEmpresaIsReadOnlyStatus(string $normalizedStatus): bool
+    {
+        return $normalizedStatus === 'completada';
+    }
+}
+
+if (!function_exists('portalEmpresaIsReadOnly')) {
+    /**
+     * @param array<string, mixed> $session
+     */
+    function portalEmpresaIsReadOnly(array $session): bool
+    {
+        if (!empty($session['empresa_readonly'])) {
+            return true;
+        }
+
+        $status = portalEmpresaNormalizeStatus($session['empresa_estatus'] ?? '');
+
+        return portalEmpresaIsReadOnlyStatus($status);
+    }
+}
+
 if (!function_exists('portalEmpresaRequireSession')) {
     /**
      * @return array<string, mixed>
@@ -44,17 +100,10 @@ if (!function_exists('portalEmpresaRequireSession')) {
         }
 
         $status = trim((string) ($record['empresa_estatus'] ?? ''));
-        $statusNormalized = $status;
+        $statusNormalized = portalEmpresaNormalizeStatus($status);
+        $statusAllowed = ['activa', 'en revision', 'completada'];
 
-        if ($statusNormalized !== '') {
-            $statusNormalized = function_exists('mb_strtolower')
-                ? mb_strtolower($statusNormalized, 'UTF-8')
-                : strtolower($statusNormalized);
-        }
-
-        $statusAllowed = ['activa', 'en revisión', 'en revision'];
-
-        if (!in_array($statusNormalized, $statusAllowed, true)) {
+        if ($statusNormalized === '' || !in_array($statusNormalized, $statusAllowed, true)) {
             unset($_SESSION['portal_empresa']);
             portalEmpresaRedirectToLogin($loginPath, 'inactive');
         }
@@ -62,6 +111,8 @@ if (!function_exists('portalEmpresaRequireSession')) {
         $session['empresa_nombre'] = (string) ($record['empresa_nombre'] ?? $session['empresa_nombre'] ?? '');
         $session['empresa_numero_control'] = (string) ($record['empresa_numero_control'] ?? $session['empresa_numero_control'] ?? '');
         $session['empresa_estatus'] = $status;
+        $session['empresa_estatus_normalizado'] = $statusNormalized;
+        $session['empresa_readonly'] = portalEmpresaIsReadOnlyStatus($statusNormalized);
         $session['empresa_logo_path'] = isset($record['empresa_logo_path'])
             ? (string) $record['empresa_logo_path']
             : (string) ($session['empresa_logo_path'] ?? '');

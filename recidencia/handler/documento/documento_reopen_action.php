@@ -54,6 +54,7 @@ try {
     $errorCode = match ($exception->getCode()) {
         404 => 'not_found',
         400 => 'invalid_status',
+        403 => 'empresa_completada',
         default => 'reopen_failed',
     };
 

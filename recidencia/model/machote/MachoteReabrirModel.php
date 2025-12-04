@@ -25,7 +25,18 @@ final class MachoteReabrirModel
      */
     public function findMachoteById(int $machoteId): ?array
     {
-        $sql = 'SELECT id, convenio_id, confirmacion_empresa, estatus FROM rp_convenio_machote WHERE id = :machote_id LIMIT 1';
+        $sql = <<<'SQL'
+            SELECT m.id,
+                   m.convenio_id,
+                   m.confirmacion_empresa,
+                   m.estatus,
+                   e.estatus AS empresa_estatus
+              FROM rp_convenio_machote AS m
+              INNER JOIN rp_convenio AS c ON m.convenio_id = c.id
+              INNER JOIN rp_empresa AS e ON c.empresa_id = e.id
+             WHERE m.id = :machote_id
+             LIMIT 1
+        SQL;
 
         $statement = $this->connection->prepare($sql);
         $statement->execute([':machote_id' => $machoteId]);

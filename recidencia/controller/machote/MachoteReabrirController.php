@@ -37,6 +37,11 @@ final class MachoteReabrirController
             throw new RuntimeException('Machote no encontrado.');
         }
 
+        $empresaEstatus = isset($machote['empresa_estatus']) ? trim((string) $machote['empresa_estatus']) : '';
+        if (strcasecmp($empresaEstatus, 'Completada') === 0) {
+            throw new RuntimeException('La empresa estAЎ en estatus Completada; no se puede reabrir la revisiA3n.', 403);
+        }
+
         if ((int) ($machote['confirmacion_empresa'] ?? 0) === 0) {
             return ['status' => 'already_open'];
         }

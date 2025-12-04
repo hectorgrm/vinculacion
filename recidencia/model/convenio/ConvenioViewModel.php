@@ -27,6 +27,7 @@ class ConvenioViewModel
             SELECT c.id,
                    c.empresa_id,
                    e.nombre AS empresa_nombre,
+                   e.estatus AS empresa_estatus,
                    e.numero_control AS empresa_numero_control,
                    e.representante AS empresa_representante,
                    e.cargo_representante AS empresa_representante_cargo,

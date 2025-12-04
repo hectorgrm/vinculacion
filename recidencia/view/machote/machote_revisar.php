@@ -132,6 +132,7 @@ if (!empty($_GET['reabrir_error'])) {
     $errorKey = (string) $_GET['reabrir_error'];
     $messages = [
         'invalid' => 'No se pudo identificar el machote a reabrir.',
+        'empresa_completada' => 'La empresa está en estatus Completada; no se puede reabrir la revisión.',
         'internal' => 'Ocurrió un problema al reabrir la revisión. Intenta nuevamente.',
     ];
     $flashMessages[] = ['type' => 'error', 'text' => $messages[$errorKey] ?? 'No se pudo reabrir la revisión.'];
@@ -179,7 +180,7 @@ if (!empty($_GET['reabrir_error'])) {
             <a href="../empresa/empresa_view.php?id=<?= (int) $empresaId ?>" class="btn secondary">Volver a la empresa</a>
           <?php endif; ?>
 
-          <?php if ($machoteBloqueado): ?>
+          <?php if ($machoteBloqueado && !$empresaCompletada): ?>
             <form
               class="inline-form"
               action="../../handler/machote/machote_reabrir_handler.php"
@@ -189,6 +190,8 @@ if (!empty($_GET['reabrir_error'])) {
               <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
               <button class="btn danger" type="submit">Reabrir revisión</button>
             </form>
+          <?php elseif ($empresaCompletada): ?>
+            <span class="btn danger" style="pointer-events:none;opacity:0.6;">Reabrir revisión</span>
           <?php endif; ?>
         </div>
       </header>

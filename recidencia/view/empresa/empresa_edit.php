@@ -23,6 +23,11 @@ $controllerError = $handlerResult['controllerError'];
 $loadError = $handlerResult['loadError'];
 
 $empresaNombre = empresaFormValue($formData, 'nombre');
+$empresaEstatus = (string) empresaFormValue($formData, 'estatus');
+$empresaIsCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
+$fieldsetDisabled = $empresaIsCompletada ? 'disabled' : '';
+$notasReadonly = $empresaIsCompletada ? 'readonly' : '';
+$regimenDisabled = $empresaIsCompletada ? 'disabled' : '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -30,33 +35,31 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>✏️ Editar Empresa · Residencias Profesionales</title>
+  <title>Editar Empresa · Residencias Profesionales</title>
 
   <link rel="stylesheet" href="../../assets/css/modules/empresa/empresaedit.css" />
 </head>
 
 <body>
   <div class="app">
-    <!-- Sidebar -->
     <?php include __DIR__ . '/../../layout/sidebar.php'; ?>
 
-    <!-- Main -->
     <main class="main">
       <header class="topbar">
         <div>
-          <h2>✏️ Editar Empresa</h2>
+          <h2>Editar Empresa</h2>
           <p class="subtitle">Actualiza la información institucional y de contacto</p>
         </div>
         <div class="top-actions">
           <?php if ($empresaId !== null && $loadError === null && $controllerError === null) : ?>
-            <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn secondary">⬅️ Volver a Empresa</a>
+            <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn secondary">Volver a Empresa</a>
           <?php endif; ?>
         </div>
       </header>
 
       <?php if ($controllerError !== null || $loadError !== null) : ?>
         <section class="card">
-          <header>⚠️ Aviso</header>
+          <header>Aviso</header>
           <div class="content">
             <?php if ($controllerError !== null) : ?>
               <div class="alert error">
@@ -73,20 +76,27 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
         </section>
       <?php else : ?>
 
-        <!-- Aviso contextual -->
         <section class="card">
-          <header>📌 Contexto</header>
+          <header>Contexto</header>
           <div class="content">
             <div class="alert info">
               Estás editando la empresa <strong><?php echo htmlspecialchars($empresaNombre, ENT_QUOTES, 'UTF-8'); ?></strong>
               (ID <strong>#<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?></strong>).
             </div>
+            <?php if ($empresaIsCompletada): ?>
+              <div class="alert warning" style="margin-top:12px;">
+                La empresa está en estatus <strong>Completada</strong>; los datos generales están congelados.
+                Solo puedes reactivarla desde la sección de configuración.
+              </div>
+            <?php endif; ?>
           </div>
         </section>
 
-        <!-- Formulario principal -->
         <form class="form-grid" method="post" action="">
           <input type="hidden" name="empresa_id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>" />
+          <?php if ($empresaIsCompletada): ?>
+            <input type="hidden" name="lock_fields" value="1" />
+          <?php endif; ?>
 
           <?php if ($successMessage !== null) : ?>
             <div class="alert success" role="alert">
@@ -105,9 +115,9 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
             </div>
           <?php endif; ?>
 
-          <!-- 📄 Datos generales -->
+          <?php if ($empresaIsCompletada): ?><fieldset <?php echo $fieldsetDisabled; ?>><?php endif; ?>
           <section class="card">
-            <header>🏢 Datos Generales</header>
+            <header>Datos Generales</header>
             <div class="content grid">
               <div class="field">
                 <label for="numero_control">No. de control</label>
@@ -128,7 +138,7 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
 
               <div class="field">
                 <label for="representante">Representante legal</label>
-                <input id="representante" name="representante" type="text" placeholder="Ej: José Manuel Velador"
+                <input id="representante" name="representante" type="text" placeholder="Ej: Jose Manuel Velador"
                   value="<?php echo htmlspecialchars(empresaFormValue($formData, 'representante'), ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
 
@@ -140,7 +150,7 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
 
               <div class="field">
                 <label for="sector">Sector / Giro</label>
-                <input id="sector" name="sector" type="text" placeholder="Ej: Educación / Social"
+                <input id="sector" name="sector" type="text" placeholder="Ej: Educacion / Social"
                   value="<?php echo htmlspecialchars(empresaFormValue($formData, 'sector'), ENT_QUOTES, 'UTF-8'); ?>" />
               </div>
 
@@ -152,9 +162,8 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
             </div>
           </section>
 
-          <!-- 📬 Contacto y Dirección -->
           <section class="card">
-            <header>📬 Contacto y Dirección</header>
+            <header>Contacto y Dirección</header>
             <div class="content grid">
               <div class="field">
                 <label for="contacto_nombre">Nombre de contacto</label>
@@ -199,18 +208,25 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
               </div>
             </div>
           </section>
+          <?php if ($empresaIsCompletada): ?></fieldset><?php endif; ?>
 
-          <!-- ⚙️ Configuración -->
           <section class="card">
-            <header>⚙️ Configuración</header>
+            <header>Configuración</header>
             <?php $regimenFiscalOptions = empresaRegimenFiscalOptions(); ?>
             <div class="content grid">
               <div class="field">
                 <label for="estatus">Estatus</label>
                 <select id="estatus" name="estatus">
                   <?php foreach ($estatusOptions as $option) : ?>
+                    <?php
+                      $isSelected = empresaFormValue($formData, 'estatus') === $option;
+                      $isReactivate = strcasecmp($option, 'Activa') === 0;
+                      $isCompletada = strcasecmp($option, 'Completada') === 0;
+                      $disableOption = $empresaIsCompletada && !$isReactivate && !$isCompletada;
+                    ?>
                     <option value="<?php echo htmlspecialchars($option, ENT_QUOTES, 'UTF-8'); ?>"
-                      <?php echo empresaFormValue($formData, 'estatus') === $option ? 'selected' : ''; ?>>
+                      <?php echo $isSelected ? 'selected' : ''; ?>
+                      <?php echo $disableOption ? 'disabled' : ''; ?>>
                       <?php echo htmlspecialchars($option, ENT_QUOTES, 'UTF-8'); ?>
                     </option>
                   <?php endforeach; ?>
@@ -219,7 +235,7 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
 
               <div class="field">
                 <label for="regimen_fiscal">Régimen fiscal</label>
-                <select id="regimen_fiscal" name="regimen_fiscal">
+                <select id="regimen_fiscal" name="regimen_fiscal" <?php echo $regimenDisabled; ?>>
                   <option value="">Selecciona tipo de empresa</option>
                   <?php foreach ($regimenFiscalOptions as $value => $label) : ?>
                     <option value="<?php echo htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); ?>"
@@ -228,18 +244,20 @@ $empresaNombre = empresaFormValue($formData, 'nombre');
                     </option>
                   <?php endforeach; ?>
                 </select>
+                <?php if ($empresaIsCompletada): ?>
+                  <input type="hidden" name="regimen_fiscal" value="<?php echo htmlspecialchars(empresaFormValue($formData, 'regimen_fiscal'), ENT_QUOTES, 'UTF-8'); ?>" />
+                <?php endif; ?>
               </div>
 
               <div class="field col-span-2">
                 <label for="notas">Notas / Observaciones</label>
-                <textarea id="notas" name="notas" rows="4"
-                  placeholder="Comentarios internos del área de vinculación..."><?php echo htmlspecialchars(empresaFormValue($formData, 'notas'), ENT_QUOTES, 'UTF-8'); ?></textarea>
+                <textarea id="notas" name="notas" rows="4" placeholder="Comentarios internos del área de vinculación..." <?php echo $notasReadonly; ?>><?php echo htmlspecialchars(empresaFormValue($formData, 'notas'), ENT_QUOTES, 'UTF-8'); ?></textarea>
               </div>
             </div>
 
             <div class="actions">
               <a href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn secondary">Cancelar</a>
-              <button type="submit" class="btn primary">💾 Guardar Cambios</button>
+              <button type="submit" class="btn primary">Guardar Cambios</button>
             </div>
           </section>
         </form>

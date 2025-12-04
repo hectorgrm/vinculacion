@@ -7,6 +7,7 @@ namespace PortalEmpresa\Controller;
 require_once __DIR__ . '/../model/EmpresaDocumentoUploadModel.php';
 require_once __DIR__ . '/../helpers/empresadocumentofunction.php';
 require_once __DIR__ . '/../common/functions/empresadocumentofunctions.php';
+require_once __DIR__ . '/../common/functions/portal_session_guard.php';
 require_once __DIR__ . '/../../recidencia/common/functions/documento/documentofunctions_list.php';
 
 use PortalEmpresa\Model\EmpresaDocumentoUploadModel;
@@ -40,6 +41,7 @@ class EmpresaDocumentoUploadController
             return ['success' => false, 'status_code' => 'upload_invalid_tipo'];
         }
 
+        $empresaStatus = portalEmpresaNormalizeStatus($empresa['estatus'] ?? '');
         $tipoEmpresa = empresaDocumentoInferTipoEmpresa($empresa['regimen_fiscal'] ?? null);
 
         $documentSlot = $this->model->findDocumentSlot($empresaId, $scope, $tipoId, $tipoEmpresa);
@@ -48,12 +50,21 @@ class EmpresaDocumentoUploadController
             return ['success' => false, 'status_code' => 'upload_not_assigned'];
         }
 
+        $documentName = (string) ($documentSlot['tipo_nombre'] ?? 'Documento');
+
+        if (portalEmpresaIsReadOnlyStatus($empresaStatus)) {
+            return [
+                'success' => false,
+                'status_code' => 'upload_readonly',
+                'document_name' => $documentName,
+            ];
+        }
+
         $previousSnapshot = null;
         if (isset($documentSlot['documento_id']) && (int) $documentSlot['documento_id'] > 0) {
             $previousSnapshot = documentoAuditFetchSnapshot((int) $documentSlot['documento_id']);
         }
 
-        $documentName = (string) ($documentSlot['tipo_nombre'] ?? 'Documento');
         $currentStatus = empresaDocumentoNormalizeStatus($documentSlot['documento_estatus'] ?? null);
 
         if ($currentStatus === 'aprobado') {

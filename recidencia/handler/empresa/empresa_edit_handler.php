@@ -60,6 +60,23 @@ if (!function_exists('empresaEditHandler')) {
         }
 
         $viewData['formData'] = empresaEditSanitizeInput($_POST);
+        $lockFields = isset($_POST['lock_fields']) && (string) $_POST['lock_fields'] === '1';
+
+        if (
+            $lockFields &&
+            isset($formOriginal) &&
+            strcasecmp(trim($formOriginal['estatus'] ?? ''), 'Completada') === 0
+        ) {
+            foreach ($formOriginal as $field => $value) {
+                if ($field === 'estatus') {
+                    continue;
+                }
+
+                if (!array_key_exists($field, $viewData['formData']) || $viewData['formData'][$field] === '') {
+                    $viewData['formData'][$field] = is_string($value) ? $value : (string) $value;
+                }
+            }
+        }
         $viewData['errors'] = empresaEditValidateData($viewData['formData']);
 
         if (

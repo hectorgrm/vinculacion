@@ -50,6 +50,7 @@ $machoteCreadoLabel = $metadata['machoteCreadoLabel'];
 $machoteActualizadoLabel = $metadata['machoteActualizadoLabel'];
 $machoteBloqueado = $metadata['machoteBloqueado'];
 $machoteEstatus = $metadata['machoteEstatus'];
+$empresaEsCompletada = $metadata['empresaEsCompletada'] ?? false;
 
 $machoteStatusParam = isset($_GET['machote_status']) ? (string) $_GET['machote_status'] : null;
 $machoteErrorParam = isset($_GET['machote_error']) ? (string) $_GET['machote_error'] : null;
@@ -558,10 +559,15 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                 <section class="card">
                     <div class="content actions">
                         <?php if ($convenioId !== null): ?>
-                            <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">✏️
+                            <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">
                                 Editar Convenio</a>
-                            <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>"
-                                class="btn danger">Desactivar Convenio</a>
+                            <?php if (!$empresaEsCompletada): ?>
+                                <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>"
+                                    class="btn danger">Desactivar Convenio</a>
+                            <?php else: ?>
+                                <span class="btn danger" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Desactivar
+                                    Convenio</span>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 </section>

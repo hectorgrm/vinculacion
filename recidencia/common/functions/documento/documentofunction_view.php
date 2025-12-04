@@ -197,6 +197,14 @@ if (!function_exists('documentoViewDecorateDocument')) {
             ? basename(str_replace('\\', '/', (string) $document['ruta']))
             : null;
 
+        if (!isset($document['empresa_estatus']) && isset($document['empresa_status'])) {
+            $document['empresa_estatus'] = (string) $document['empresa_status'];
+        }
+
+        $empresaEstatus = isset($document['empresa_estatus']) ? trim((string) $document['empresa_estatus']) : '';
+        $document['empresa_estatus'] = $empresaEstatus;
+        $document['empresa_es_completada'] = strcasecmp($empresaEstatus, 'Completada') === 0;
+
         return $document;
     }
 }

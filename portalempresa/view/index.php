@@ -23,17 +23,18 @@ $documentoFuenteLabel = $machote['documentoFuenteLabel'] ?? null;
 $isMachoteConfirmado = !empty($machote['confirmado']);
 $machoteActualizado = $machote['actualizadoLabel'] ?? '';
 $revisionVariant = $machote['revisionVariant'] ?? 'warn';
+$portalReadOnly = !empty($portalReadOnly);
+$portalReadOnlyMessage = $portalReadOnlyMessage ?? ($portalReadOnly ? 'Empresa en estatus Completada: el portal esta en modo lectura.' : null);
+$readOnlyLinkAttrs = $portalReadOnly ? 'style="pointer-events:none;opacity:0.6;" aria-disabled="true"' : '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Portal de Empresa – Inicio</title>
+  <title>Portal de Empresa · Inicio</title>
 
   <link rel="stylesheet" href="../assets/css/modules/index.css">
-  
-
   <style>
     .alert-card{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:14px;padding:14px;margin-bottom:16px;}
     .small-meta{color:#64748b;font-size:13px;margin-top:4px;}
@@ -47,17 +48,24 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
 <main class="container">
   <?php if ($dashboardError !== null): ?>
     <div class="alert-card">
-      <strong>Ups, algo salió mal:</strong>
+      <strong>Ups, algo salio mal:</strong>
       <p><?= htmlspecialchars($dashboardError) ?></p>
+    </div>
+  <?php endif; ?>
+
+  <?php if ($portalReadOnly): ?>
+    <div class="alert-card" style="border-color:#f59e0b;color:#7c2d12;background:#fffbeb;">
+      <strong>Portal en modo lectura</strong>
+      <p><?= htmlspecialchars($portalReadOnlyMessage ?? 'La empresa esta en estatus Completada; solo puedes consultar la informacion.') ?></p>
     </div>
   <?php endif; ?>
 
   <section class="welcome">
     <div>
       <h1>Hola, Bienvenido al Portal de Residencias ITSJ</h1>
-      <p>Desde aquí puedes consultar tu convenio, documentos, estudiantes y reportes.</p>
+      <p>Desde aqui puedes consultar tu convenio, documentos, estudiantes y reportes.</p>
       <?php if ($ultimoAccesoLabel !== ''): ?>
-        <p class="small-meta">Último acceso registrado: <?= htmlspecialchars($ultimoAccesoLabel) ?></p>
+        <p class="small-meta">Ultimo acceso registrado: <?= htmlspecialchars($ultimoAccesoLabel) ?></p>
       <?php endif; ?>
     </div>
   </section>
@@ -66,7 +74,7 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
     <div class="left">
       <h3>Estado del convenio</h3>
       <p><strong>Folio:</strong> <?= htmlspecialchars($convenio['folio'] ?? 'Sin folio') ?></p>
-      <p><strong>Vigencia:</strong> <?= htmlspecialchars($convenio['vigenciaInicio'] ?? 'N/D') ?> – <?= htmlspecialchars($convenio['vigenciaFin'] ?? 'N/D') ?></p>
+      <p><strong>Vigencia:</strong> <?= htmlspecialchars($convenio['vigenciaInicio'] ?? 'N/D') ?> · <?= htmlspecialchars($convenio['vigenciaFin'] ?? 'N/D') ?></p>
       <p>
         <strong>Estatus:</strong>
         <span class="badge <?= htmlspecialchars($convenio['badgeVariant'] ?? 'warn') ?>"><?= htmlspecialchars($convenio['estatus'] ?? 'Sin convenio') ?></span>
@@ -85,7 +93,7 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
         </div>
         <div class="kpi">
           <div class="num"><?= htmlspecialchars((string) ($stats['avancePct'] ?? 0)) ?>%</div>
-          <div class="lbl">Avance de revisión</div>
+          <div class="lbl">Avance de revision</div>
         </div>
       </div>
     </div>
@@ -93,18 +101,18 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
 
   <section class="cards">
     <article class="card">
-      <h3>Machote en revisión</h3>
+      <h3>Machote en revision</h3>
       <p>Estatus actual: <span class="badge <?= htmlspecialchars($revisionVariant) ?>"><?= htmlspecialchars($machote['estado'] ?? 'Sin documento') ?></span></p>
       <?php if ($machoteId > 0): ?>
-        <p><strong>Versión:</strong> <?= htmlspecialchars($machote['version'] ?? 'v1.0') ?></p>
+        <p><strong>Version:</strong> <?= htmlspecialchars($machote['version'] ?? 'v1.0') ?></p>
         <?php if ($machoteActualizado !== ''): ?>
-          <p class="small-meta">Última actualización: <?= htmlspecialchars($machoteActualizado) ?></p>
+          <p class="small-meta">Ultima actualizacion: <?= htmlspecialchars($machoteActualizado) ?></p>
         <?php endif; ?>
         <?php if (!empty($documentoFuenteLabel)): ?>
           <p class="small-meta">Documento disponible: <?= htmlspecialchars($documentoFuenteLabel) ?></p>
         <?php endif; ?>
       <?php else: ?>
-        <p class="small-meta">Aún no hay un machote asignado a tu empresa.</p>
+        <p class="small-meta">Aun no hay un machote asignado a tu empresa.</p>
       <?php endif; ?>
       <div class="actions">
         <?php if ($machoteRevisionLink !== null): ?>
@@ -124,7 +132,7 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
     <article class="card">
       <h3>Convenio</h3>
       <p>Estatus actual: <span class="badge <?= htmlspecialchars($convenio['badgeVariant'] ?? 'warn') ?>"><?= htmlspecialchars($convenio['estatus'] ?? 'Sin convenio') ?></span></p>
-      <p class="small-meta">Folio <?= htmlspecialchars($convenio['folio'] ?? 'Sin folio') ?> &middot; Vigencia: <?= htmlspecialchars($convenio['vigenciaInicio'] ?? 'N/D') ?> – <?= htmlspecialchars($convenio['vigenciaFin'] ?? 'N/D') ?></p>
+      <p class="small-meta">Folio <?= htmlspecialchars($convenio['folio'] ?? 'Sin folio') ?> · Vigencia: <?= htmlspecialchars($convenio['vigenciaInicio'] ?? 'N/D') ?> - <?= htmlspecialchars($convenio['vigenciaFin'] ?? 'N/D') ?></p>
       <div class="actions">
         <a class="btn primary" href="convenio_view.php">Ver convenio</a>
       </div>
@@ -145,13 +153,16 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
       </div>
       <div class="actions">
         <a class="btn primary" href="documentos_list.php">Ver documentos</a>
-        <a class="btn" href="documentos_list.php#subir">Subir actualización</a>
+        <a class="btn" href="documentos_list.php#subir" <?= $readOnlyLinkAttrs ?>>Subir actualizacion</a>
       </div>
+      <?php if ($portalReadOnly): ?>
+        <p class="small-meta" style="color:#7c2d12;">Las cargas estan deshabilitadas mientras la empresa este marcada como Completada.</p>
+      <?php endif; ?>
     </article>
 
     <article class="card">
       <h3>Estudiantes</h3>
-      <p>Revisa residencias activas e histórico de estudiantes.</p>
+      <p>Revisa residencias activas e historico de estudiantes.</p>
       <div class="actions">
         <a class="btn primary" href="estudiantes_list.php">Ver estudiantes</a>
       </div>
@@ -167,7 +178,7 @@ $revisionVariant = $machote['revisionVariant'] ?? 'warn';
     </article>
   </section>
 
-  <p class="hint">Si tienes dudas o necesitas asistencia, visita la sección <a href="soporte.php">Soporte</a>.</p>
+  <p class="hint">Si tienes dudas o necesitas asistencia, visita la seccion <a href="soporte.php">Soporte</a>.</p>
 </main>
 
 </body>

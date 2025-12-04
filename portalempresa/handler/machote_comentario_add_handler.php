@@ -10,6 +10,7 @@ require_once __DIR__ . '/../model/MachoteViewModel.php';
 
 $portalSession = portalEmpresaRequireSession('../view/login.php');
 $empresaId = (int) ($portalSession['empresa_id'] ?? 0);
+$portalReadOnly = portalEmpresaIsReadOnly($portalSession);
 
 $machoteId = filter_input(INPUT_POST, 'machote_id', FILTER_VALIDATE_INT);
 $clausula = trim((string) ($_POST['asunto'] ?? ''));
@@ -22,6 +23,8 @@ if ($machoteId === null || $machoteId === false || $machoteId <= 0) {
     $error = 'invalid';
 } elseif ($empresaId <= 0) {
     $error = 'session';
+} elseif ($portalReadOnly) {
+    $error = 'readonly';
 } elseif ($comentario === '') {
     $error = 'invalid';
 } else {

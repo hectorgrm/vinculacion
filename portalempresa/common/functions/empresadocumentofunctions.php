@@ -68,7 +68,7 @@ if (!function_exists('empresaDocumentoUploadGenerateFilename')) {
         try {
             $random = bin2hex(random_bytes(5));
         } catch (Throwable $exception) {
-            throw new RuntimeException('No se pudo generar un nombre único para el archivo a subir.', 0, $exception);
+            throw new RuntimeException('No se pudo generar un nombre unico para el archivo a subir.', 0, $exception);
         }
 
         $timestamp = date('Ymd_His');
@@ -152,7 +152,7 @@ if (!function_exists('empresaDocumentoUploadBuildOptions')) {
 
             $options[] = [
                 'value' => empresaDocumentoUploadFormatOptionValue($scope, $tipoId),
-                'label' => implode(' · ', array_filter($labelParts, static fn ($part) => $part !== '')),
+                'label' => implode(' - ', array_filter($labelParts, static fn($part) => $part !== '')),
                 'scope' => $scope,
                 'tipo_id' => $tipoId,
                 'status' => $status,
@@ -178,17 +178,17 @@ if (!function_exists('empresaDocumentoUploadStatusMessage')) {
         }
 
         $documentLabel = trim((string) $documentName) !== ''
-            ? '«' . trim((string) $documentName) . '»'
+            ? '"' . trim((string) $documentName) . '"'
             : 'el documento seleccionado';
 
         return match ($statusCode) {
             'upload_success' => [
                 'type' => 'success',
-                'message' => sprintf('Se envió %s para revisión. El estatus se actualizó a "En revisión".', $documentLabel),
+                'message' => sprintf('Se envio %s para revision. El estatus se actualizo a "En revision".', $documentLabel),
             ],
             'upload_not_allowed' => [
                 'type' => 'error',
-                'message' => sprintf('No es posible reemplazar %s porque ya está aprobado.', $documentLabel),
+                'message' => sprintf('No es posible reemplazar %s porque ya esta aprobado.', $documentLabel),
             ],
             'upload_not_assigned' => [
                 'type' => 'error',
@@ -196,22 +196,26 @@ if (!function_exists('empresaDocumentoUploadStatusMessage')) {
             ],
             'upload_invalid_tipo' => [
                 'type' => 'error',
-                'message' => 'Selecciona un tipo de documento válido para continuar.',
+                'message' => 'Selecciona un tipo de documento valido para continuar.',
+            ],
+            'upload_readonly' => [
+                'type' => 'error',
+                'message' => 'La empresa esta en estatus Completada; el portal esta en modo solo lectura y no se pueden subir archivos.',
             ],
             'upload_file_error' => [
                 'type' => 'error',
                 'message' => match ($reason) {
                     'no_file' => 'Debes adjuntar un archivo para continuar.',
-                    'invalid_upload' => 'El archivo no se recibió correctamente. Intenta nuevamente.',
-                    'too_large' => 'El archivo excede el tamaño máximo permitido (10 MB).',
+                    'invalid_upload' => 'El archivo no se recibio correctamente. Intenta nuevamente.',
+                    'too_large' => 'El archivo excede el tamano maximo permitido (10 MB).',
                     'invalid_type' => 'Solo se permiten archivos en formato PDF, JPG o PNG.',
                     'move_failed' => 'No se pudo guardar el archivo en el servidor. Intenta nuevamente.',
-                    default => 'Ocurrió un problema al procesar el archivo. Intenta nuevamente.',
+                    default => 'Ocurrio un problema al procesar el archivo. Intenta nuevamente.',
                 },
             ],
             'upload_server_error' => [
                 'type' => 'error',
-                'message' => 'Ocurrió un error inesperado. Intenta nuevamente más tarde.',
+                'message' => 'Ocurrio un error inesperado. Intenta nuevamente mas tarde.',
             ],
             default => null,
         };
@@ -240,4 +244,3 @@ if (!function_exists('empresaDocumentoUploadRemoveFile')) {
         }
     }
 }
-

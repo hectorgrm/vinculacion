@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../recidencia/controller/machote/MachoteConfirmContr
 
 $portalSession = portalEmpresaRequireSession('../view/login.php');
 $empresaId = (int) ($portalSession['empresa_id'] ?? 0);
+$portalReadOnly = portalEmpresaIsReadOnly($portalSession);
 
 $machoteId = filter_input(INPUT_POST, 'machote_id', FILTER_VALIDATE_INT);
 $status = null;
@@ -19,6 +20,8 @@ if ($machoteId === null || $machoteId === false || $machoteId <= 0) {
     $error = 'invalid';
 } elseif ($empresaId <= 0) {
     $error = 'session';
+} elseif ($portalReadOnly) {
+    $error = 'readonly';
 } else {
     try {
         $controller = new MachoteConfirmController();

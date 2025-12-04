@@ -114,6 +114,9 @@ if (is_array($document)) {
         $observacion = trim((string) $document['observacion']);
     }
 }
+$empresaEstatus = is_array($document) ? (string) ($document['empresa_estatus'] ?? '') : '';
+$empresaIsCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
+$formDisabled = $empresaIsCompletada || $controllerError !== null || $notFoundMessage !== null;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -175,6 +178,16 @@ if (is_array($document)) {
           <div class="content">
             <div class="alert warning">
               <?php echo htmlspecialchars($notFoundMessage, ENT_QUOTES, 'UTF-8'); ?>
+            </div>
+          </div>
+        </section>
+      <?php endif; ?>
+
+      <?php if ($empresaIsCompletada): ?>
+        <section class="card">
+          <div class="content">
+            <div class="alert warning">
+              La empresa est&aacute; en estatus <strong>Completada</strong>. La eliminaci&oacute;n de documentos est&aacute; bloqueada.
             </div>
           </div>
         </section>
@@ -264,7 +277,7 @@ if (is_array($document)) {
             </div>
           </div>
 
-          <?php if (is_array($document) && $documentId !== null): ?>
+          <?php if (is_array($document) && $documentId !== null && !$formDisabled): ?>
             <form action="../../handler/documento/documento_delete_action.php" method="post" style="margin-top:18px;">
               <input type="hidden" name="id" value="<?php echo htmlspecialchars((string) $documentId, ENT_QUOTES, 'UTF-8'); ?>">
               <?php if ($empresaId !== null): ?>
@@ -291,6 +304,8 @@ if (is_array($document)) {
             <p class="text-muted" style="margin-top:10px">
               Sugerencia: si solo quieres ocultarlo del flujo, considera cambiar su estatus a <em>Rechazado</em> en lugar de eliminarlo.
             </p>
+          <?php elseif ($empresaIsCompletada): ?>
+            <p class="text-muted" style="margin-top:18px;">La eliminaci&oacute;n est&aacute; deshabilitada porque la empresa est&aacute; en estatus Completada.</p>
           <?php endif; ?>
         </div>
       </section>

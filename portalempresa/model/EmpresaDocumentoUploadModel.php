@@ -27,7 +27,8 @@ class EmpresaDocumentoUploadModel
             SELECT id,
                    nombre,
                    numero_control,
-                   regimen_fiscal
+                   regimen_fiscal,
+                   estatus
               FROM rp_empresa
              WHERE id = :id
              LIMIT 1

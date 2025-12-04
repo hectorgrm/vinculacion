@@ -27,6 +27,7 @@ class DocumentoViewModel
             SELECT d.id,
                    d.empresa_id,
                    e.nombre AS empresa_nombre,
+                   e.estatus AS empresa_estatus,
                    d.tipo_global_id,
                    d.tipo_personalizado_id,
                    tg.nombre AS tipo_global_nombre,
