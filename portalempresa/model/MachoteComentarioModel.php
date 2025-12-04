@@ -46,7 +46,7 @@ final class MachoteComentarioModel
      *
      * @param array<string, mixed> $data
      */
-    public function insertRespuesta(array $data): bool
+        public function insertRespuesta(array $data): bool
     {
         $machoteId  = (int) ($data['machote_id'] ?? 0);
         $respuestaA = (int) ($data['respuesta_a'] ?? 0);
@@ -69,8 +69,22 @@ final class MachoteComentarioModel
             throw new RuntimeException('El comentario seleccionado no pertenece al machote indicado.');
         }
 
-        if ($this->machoteEstaBloqueadoPorConvenio($machoteId)) {
-            throw new RuntimeException('El machote está bloqueado por el estatus del convenio.');
+        $contexto = $this->fetchMachoteContext($machoteId);
+
+        if ($contexto === null) {
+            throw new RuntimeException('El machote no estA? disponible.');
+        }
+
+        if ((int) ($contexto['confirmacion_empresa'] ?? 0) === 1) {
+            throw new RuntimeException('El machote estA? bloqueado por el estatus del convenio.');
+        }
+
+        if ($this->isEmpresaInactiva($contexto['empresa_estatus'] ?? null)) {
+            throw new RuntimeException('Convenio ya no activo');
+        }
+
+        if (!$this->estatusConvenioActivo($contexto['convenio_estatus'] ?? null)) {
+            throw new RuntimeException('El machote estA? bloqueado por el estatus del convenio.');
         }
 
         $archivoPath = $this->saveUploadedFile($archivo);
@@ -94,7 +108,7 @@ final class MachoteComentarioModel
         ]);
     }
 
-    /**
+/**
      * @param array<int, array<string, mixed>> $rows
      * @return array<int, array<string, mixed>>
      */
@@ -199,39 +213,26 @@ final class MachoteComentarioModel
         return $statement->fetchColumn() !== false;
     }
 
-    private function machoteEstaBloqueadoPorConvenio(int $machoteId): bool
+    private function fetchMachoteContext(int $machoteId): ?array
     {
-        $sql = 'SELECT m.confirmacion_empresa, c.estatus AS convenio_estatus
-                FROM rp_convenio_machote AS m
-                INNER JOIN rp_convenio AS c ON c.id = m.convenio_id
-                WHERE m.id = :machote_id
-                LIMIT 1';
+        $sql = 'SELECT m.confirmacion_empresa, c.estatus AS convenio_estatus, e.estatus AS empresa_estatus'
+            . ' FROM rp_convenio_machote AS m'
+            . ' INNER JOIN rp_convenio AS c ON c.id = m.convenio_id'
+            . ' INNER JOIN rp_empresa AS e ON e.id = c.empresa_id'
+            . ' WHERE m.id = :machote_id'
+            . ' LIMIT 1';
 
         $statement = $this->db->prepare($sql);
         $statement->execute([':machote_id' => $machoteId]);
 
         $record = $statement->fetch(PDO::FETCH_ASSOC);
 
-        if ($record === false) {
-            return true;
-        }
-
-        if ((int) ($record['confirmacion_empresa'] ?? 0) === 1) {
-            return true;
-        }
-
-        return !$this->estatusConvenioActivo($record['convenio_estatus'] ?? null);
+        return $record !== false ? $record : null;
     }
 
     private function estatusConvenioActivo(?string $estatus): bool
     {
-        if ($estatus === null) {
-            return false;
-        }
-
-        $normalizado = str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], (string) $estatus);
-        $normalizado = function_exists('mb_strtolower') ? mb_strtolower($normalizado, 'UTF-8') : strtolower($normalizado);
-        $normalizado = trim($normalizado);
+        $normalizado = $this->normalizarEstatus($estatus);
 
         if ($normalizado === '') {
             return false;
@@ -242,5 +243,24 @@ final class MachoteComentarioModel
         }
 
         return str_contains($normalizado, 'revisi');
+    }
+
+    private function isEmpresaInactiva(?string $estatus): bool
+    {
+        $normalizado = $this->normalizarEstatus($estatus);
+
+        return $normalizado === 'inactiva';
+    }
+
+    private function normalizarEstatus(?string $estatus): string
+    {
+        if ($estatus === null) {
+            return '';
+        }
+
+        $clean = str_replace(['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú'], ['a', 'e', 'i', 'o', 'u', 'a', 'e', 'i', 'o', 'u'], (string) $estatus);
+        $clean = function_exists('mb_strtolower') ? mb_strtolower($clean, 'UTF-8') : strtolower($clean);
+
+        return trim($clean);
     }
 }

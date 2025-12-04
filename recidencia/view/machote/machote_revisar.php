@@ -12,6 +12,7 @@ $empresaId       = isset($empresa['id']) ? (int) $empresa['id'] : 0;
 $empresaEstatus  = isset($empresa['estatus']) ? (string) $empresa['estatus'] : '';
 $empresaCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
 $machoteId       = isset($machote['id']) ? (int) $machote['id'] : (int) ($_GET['id'] ?? 0);
+$empresaInactiva = strcasecmp(trim($empresaEstatus), 'Inactiva') === 0;
 $versionLocal    = isset($machote['version_local']) ? (string) $machote['version_local'] : 'v1.0';
 $contenidoHtml   = isset($machote['contenido_html']) ? (string) $machote['contenido_html'] : '';
 $comentarios     = is_array($comentarios ?? null) ? $comentarios : [];
@@ -24,11 +25,13 @@ $currentUserId   = isset($currentUser['id']) ? (int) $currentUser['id'] : 0;
 $currentUserName = isset($currentUser['name']) ? (string) $currentUser['name'] : '';
 $uploadsBasePath = '../../uploads/';
 $machoteConfirmado = (int) ($machote['confirmacion_empresa'] ?? 0) === 1;
-$machoteBloqueado = $machoteConfirmado || $empresaCompletada;
+$machoteBloqueado = $machoteConfirmado || $empresaCompletada || $empresaInactiva;
 $comentariosBloqueados = $machoteBloqueado;
 $bloqueoMensaje = $empresaCompletada
-    ? 'La empresa está en estatus Completada; la edición y los comentarios están bloqueados.'
-    : 'Este documento fue confirmado por la empresa. Reabre la revisión para habilitar nuevamente la edición.';
+    ? 'La empresa estA? en estatus Completada; la ediciA3n y los comentarios estA?n bloqueados.'
+    : ($empresaInactiva
+        ? 'Machote invalidado por empresa Inactiva; solo lectura.'
+        : 'Este documento fue confirmado por la empresa. Reabre la revisiA3n para habilitar nuevamente la ediciA3n.');
 
 // KPIs
 $comentAbiertos  = (int) ($totales['pendientes'] ?? 0);
@@ -91,10 +94,12 @@ if (isset($_GET['machote_status']) && $_GET['machote_status'] === 'saved') {
 }
 if (!empty($_GET['machote_error'])) {
     $errorKey = (string) $_GET['machote_error'];
-    $messages = [
-        'locked' => 'El documento ya fue aprobado por la empresa. Reabre la revisión para continuar editando.',
+        $messages = [
+        'locked' => 'El documento ya fue aprobado por la empresa. Reabre la revisiA3n para continuar editando.',
         'invalid_id' => 'No se pudo identificar el machote solicitado.',
+        'empresa_inactiva' => 'Machote invalidado por empresa inactiva; solo lectura.',
     ];
+
     $flashMessages[] = ['type' => 'error', 'text' => $messages[$errorKey] ?? 'No se pudieron guardar los cambios.'];
 }
 if (!empty($_GET['comentario_status'])) {
@@ -130,11 +135,13 @@ if (!empty($_GET['reabrir_status'])) {
 }
 if (!empty($_GET['reabrir_error'])) {
     $errorKey = (string) $_GET['reabrir_error'];
-    $messages = [
+        $messages = [
         'invalid' => 'No se pudo identificar el machote a reabrir.',
-        'empresa_completada' => 'La empresa está en estatus Completada; no se puede reabrir la revisión.',
-        'internal' => 'Ocurrió un problema al reabrir la revisión. Intenta nuevamente.',
+        'empresa_completada' => 'La empresa estA? en estatus Completada; no se puede reabrir la revisiA3n.',
+        'empresa_inactiva' => 'RevisiA3n cancelada porque la empresa estA? Inactiva.',
+        'internal' => 'OcurriA3 un problema al reabrir la revisiA3n. Intenta nuevamente.',
     ];
+
     $flashMessages[] = ['type' => 'error', 'text' => $messages[$errorKey] ?? 'No se pudo reabrir la revisión.'];
 }
 ?>
@@ -180,7 +187,7 @@ if (!empty($_GET['reabrir_error'])) {
             <a href="../empresa/empresa_view.php?id=<?= (int) $empresaId ?>" class="btn secondary">Volver a la empresa</a>
           <?php endif; ?>
 
-          <?php if ($machoteBloqueado && !$empresaCompletada): ?>
+          <?php if ($machoteBloqueado && !$empresaCompletada && !$empresaInactiva): ?>
             <form
               class="inline-form"
               action="../../handler/machote/machote_reabrir_handler.php"
@@ -190,7 +197,7 @@ if (!empty($_GET['reabrir_error'])) {
               <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
               <button class="btn danger" type="submit">Reabrir revisión</button>
             </form>
-          <?php elseif ($empresaCompletada): ?>
+          <?php elseif ($empresaCompletada || $empresaInactiva): ?>
             <span class="btn danger" style="pointer-events:none;opacity:0.6;">Reabrir revisión</span>
           <?php endif; ?>
         </div>

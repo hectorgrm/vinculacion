@@ -19,6 +19,7 @@ try {
     // Instanciar modelo con conexión por defecto
     $machoteModel = ConvenioMachoteModel::createWithDefaultConnection();
     $machote = $machoteModel->getById($machoteId);
+$empresa = $machoteModel->getEmpresaByMachote($machoteId);
 } catch (Throwable $e) {
     error_log('Error en machote_edit.php: ' . $e->getMessage());
     exit('Error interno al cargar el machote.');
@@ -32,8 +33,10 @@ if (!$machote) {
 $contenido = $machote['contenido_html'] ?? '';
 $convenioId = $machote['convenio_id'] ?? null;
 $contenidoEscapado = $contenido;
+$empresaEstatus = isset($empresa['estatus']) ? (string) $empresa['estatus'] : '';
+$empresaInactiva = strcasecmp(trim($empresaEstatus), 'Inactiva') === 0;
 $machoteConfirmado = (int) ($machote['confirmacion_empresa'] ?? 0) === 1;
-$machoteBloqueado = $machoteConfirmado;
+$machoteBloqueado = $machoteConfirmado || $empresaInactiva;
 
 $editorAction = '../../handler/machote/machote_update_handler.php';
 $volverUrl = $convenioId

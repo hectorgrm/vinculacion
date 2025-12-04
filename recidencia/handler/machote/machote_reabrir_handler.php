@@ -35,6 +35,9 @@ try {
     if ($code === 403) {
         redirectWithStatus($machoteId, ['reabrir_error' => 'empresa_completada']);
     }
+    if ($code === 409) {
+        redirectWithStatus($machoteId, ['reabrir_error' => 'empresa_inactiva']);
+    }
     error_log('Error al reabrir machote: ' . $exception->getMessage());
     redirectWithStatus($machoteId, ['reabrir_error' => 'internal']);
 } catch (Throwable $exception) {

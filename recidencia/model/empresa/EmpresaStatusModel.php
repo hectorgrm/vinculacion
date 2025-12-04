@@ -65,6 +65,7 @@ class EmpresaStatusModel
                 UPDATE rp_machote_revision
                    SET estado = 'cancelado'
                  WHERE empresa_id = :id
+                   AND estado != 'acordado'
             SQL;
             $this->pdo->prepare($sqlMachoteRevision)->execute([':id' => $empresaId]);
 

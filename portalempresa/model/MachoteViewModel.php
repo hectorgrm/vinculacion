@@ -122,7 +122,7 @@ class MachoteViewModel
         ];
     }
 
-    public function addComentario(int $machoteId, int $empresaId, string $clausula, string $comentario, ?int $usuarioId = null): bool
+        public function addComentario(int $machoteId, int $empresaId, string $clausula, string $comentario, ?int $usuarioId = null): bool
     {
         if (!$this->machoteBelongsToEmpresa($machoteId, $empresaId)) {
             throw new RuntimeException('No es posible agregar comentarios a este machote.');
@@ -134,8 +134,12 @@ class MachoteViewModel
             throw new RuntimeException('No se pueden agregar comentarios en este momento.');
         }
 
+        if ($this->isEmpresaInactiva($estado['empresa_estatus'] ?? null)) {
+            throw new RuntimeException('Convenio ya no activo');
+        }
+
         if (!$this->estatusConvenioActivo($estado['convenio_estatus'] ?? null)) {
-            throw new RuntimeException('El convenio está inactivo para comentarios.');
+            throw new RuntimeException('El convenio estA? inactivo para comentarios.');
         }
 
         $sql = <<<'SQL'
@@ -168,6 +172,10 @@ class MachoteViewModel
 
         if ((int) ($estado['confirmacion_empresa'] ?? 0) === 1) {
             return true;
+        }
+
+        if ($this->isEmpresaInactiva($estado['empresa_estatus'] ?? null)) {
+            throw new RuntimeException('Flujo de machote no permitido');
         }
 
         if (!$this->estatusConvenioActivo($estado['convenio_estatus'] ?? null)) {
@@ -212,9 +220,12 @@ class MachoteViewModel
     private function fetchEstadoMachote(int $machoteId, ?int $empresaId = null): ?array
     {
         $sql = <<<'SQL'
-            SELECT m.confirmacion_empresa, c.estatus AS convenio_estatus
+            SELECT m.confirmacion_empresa,
+                   c.estatus AS convenio_estatus,
+                   e.estatus AS empresa_estatus
             FROM rp_convenio_machote AS m
             INNER JOIN rp_convenio AS c ON c.id = m.convenio_id
+            INNER JOIN rp_empresa  AS e ON e.id = c.empresa_id
             WHERE m.id = :machote_id
         SQL;
 
@@ -237,13 +248,7 @@ class MachoteViewModel
 
     private function estatusConvenioActivo(?string $estatus): bool
     {
-        if ($estatus === null) {
-            return false;
-        }
-
-        $normalizado = str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], (string) $estatus);
-        $normalizado = function_exists('mb_strtolower') ? mb_strtolower($normalizado, 'UTF-8') : strtolower($normalizado);
-        $normalizado = trim($normalizado);
+        $normalizado = $this->normalizarEstatus($estatus);
 
         if ($normalizado === '') {
             return false;
@@ -254,5 +259,24 @@ class MachoteViewModel
         }
 
         return str_contains($normalizado, 'revisi');
+    }
+
+    private function isEmpresaInactiva(?string $estatus): bool
+    {
+        $normalizado = $this->normalizarEstatus($estatus);
+
+        return $normalizado === 'inactiva';
+    }
+
+    private function normalizarEstatus(?string $estatus): string
+    {
+        if ($estatus === null) {
+            return '';
+        }
+
+        $clean = str_replace(['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú'], ['a', 'e', 'i', 'o', 'u', 'a', 'e', 'i', 'o', 'u'], (string) $estatus);
+        $clean = function_exists('mb_strtolower') ? mb_strtolower($clean, 'UTF-8') : strtolower($clean);
+
+        return trim($clean);
     }
 }

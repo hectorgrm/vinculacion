@@ -41,6 +41,10 @@ final class MachoteReabrirController
         if (strcasecmp($empresaEstatus, 'Completada') === 0) {
             throw new RuntimeException('La empresa estAЎ en estatus Completada; no se puede reabrir la revisiA3n.', 403);
         }
+        if (strcasecmp($empresaEstatus, 'Inactiva') === 0) {
+            throw new RuntimeException('RevisiA3n cancelada', 409);
+        }
+
 
         if ((int) ($machote['confirmacion_empresa'] ?? 0) === 0) {
             return ['status' => 'already_open'];

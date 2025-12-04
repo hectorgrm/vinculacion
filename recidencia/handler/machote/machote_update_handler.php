@@ -33,6 +33,12 @@ if ($machoteActual === null) {
     redirectWithStatus(null, 'invalid_id', $redirect);
 }
 
+$empresa = $model->getEmpresaByMachote($id);
+$empresaEstatus = isset($empresa['estatus']) ? trim((string) $empresa['estatus']) : '';
+if (strcasecmp($empresaEstatus, 'Inactiva') === 0) {
+    redirectWithStatus($id, 'empresa_inactiva', $redirect);
+}
+
 if ((int) ($machoteActual['confirmacion_empresa'] ?? 0) === 1) {
     redirectWithStatus($id, 'locked', $redirect);
 }
