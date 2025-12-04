@@ -561,7 +561,7 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                             <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">✏️
                                 Editar Convenio</a>
                             <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>"
-                                class="btn danger">🗑️ Eliminar Convenio</a>
+                                class="btn danger">Desactivar Convenio</a>
                         <?php endif; ?>
                     </div>
                 </section>

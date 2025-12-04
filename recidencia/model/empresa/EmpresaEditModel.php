@@ -124,4 +124,30 @@ class EmpresaEditModel
 
         return (bool) $statement->fetchColumn();
     }
+
+    /**
+     * @return array{estatus: ?string}|null
+     */
+    public function findLatestMachoteStatus(int $empresaId): ?array
+    {
+        $sql = <<<'SQL'
+            SELECT cm.estatus
+              FROM rp_convenio_machote AS cm
+              INNER JOIN rp_convenio AS c ON c.id = cm.convenio_id
+             WHERE c.empresa_id = :empresa_id
+             ORDER BY cm.actualizado_en DESC, cm.id DESC
+             LIMIT 1
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        $estatus = $statement->fetchColumn();
+
+        if ($estatus === false) {
+            return null;
+        }
+
+        return ['estatus' => $estatus !== null ? (string) $estatus : null];
+    }
 }

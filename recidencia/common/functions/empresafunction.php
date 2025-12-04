@@ -117,6 +117,29 @@ if (!function_exists('empresaStatusRequiresConvenioActivo')) {
     }
 }
 
+if (!function_exists('empresaStatusRequiresMachoteAprobado')) {
+    function empresaStatusRequiresMachoteAprobado(?string $estatus): bool
+    {
+        return empresaNormalizeStatus($estatus) === 'Completada';
+    }
+}
+
+if (!function_exists('empresaMachoteIsAprobado')) {
+    function empresaMachoteIsAprobado(?string $estatus): bool
+    {
+        if ($estatus === null) {
+            return false;
+        }
+
+        $normalized = trim((string) $estatus);
+        $normalized = function_exists('mb_strtolower')
+            ? mb_strtolower($normalized, 'UTF-8')
+            : strtolower($normalized);
+
+        return $normalized === 'aprobado';
+    }
+}
+
 if (!function_exists('empresaFormDefaults')) {
     /**
      * @return array<string, string>

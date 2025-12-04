@@ -78,6 +78,25 @@ if (!function_exists('empresaEditHandler')) {
             }
         }
 
+        if (
+            $viewData['errors'] === [] &&
+            empresaStatusRequiresMachoteAprobado($viewData['formData']['estatus'] ?? null)
+        ) {
+            try {
+                $machoteStatus = $controller->getLatestMachoteStatus((int) $viewData['empresaId']);
+            } catch (\RuntimeException $exception) {
+                $viewData['errors'][] = $exception->getMessage();
+                $machoteStatus = null;
+            }
+
+            if ($viewData['errors'] === [] && $machoteStatus !== null) {
+                $estatusMachote = $machoteStatus['estatus'] ?? null;
+                if (!empresaMachoteIsAprobado($estatusMachote)) {
+                    $viewData['errors'][] = 'Para marcar la empresa como Completada el machote debe estar en estatus Aprobado.';
+                }
+            }
+        }
+
         $detallesAuditoria = isset($formOriginal)
             ? auditoriaBuildCambios($formOriginal, $viewData['formData'], empresaEditAuditFieldLabels())
             : [];

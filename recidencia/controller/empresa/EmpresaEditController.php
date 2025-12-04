@@ -45,6 +45,18 @@ class EmpresaEditController
     }
 
     /**
+     * @return array{estatus: ?string}|null
+     */
+    public function getLatestMachoteStatus(int $empresaId): ?array
+    {
+        try {
+            return $this->model->findLatestMachoteStatus($empresaId);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo validar el machote asociado a la empresa.', 0, $exception);
+        }
+    }
+
+    /**
      * @param array<string, string> $data
      */
     public function updateEmpresa(int $empresaId, array $data): void
