@@ -75,7 +75,7 @@ $searchTerm = $search ?? '';
                       <td><?= htmlspecialchars($machote['empresa'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?= htmlspecialchars($machote['version'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?= htmlspecialchars($machote['fecha'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?= $machote['badge'] ?? '<span class="badge gris">-</span>'; ?></td>
+                      <td><?= $machote['badge'] ?? '<span class="badge gris">&mdash;</span>'; ?></td>
                       <td class="actions">
                         <a href="machote_revisar.php?id=<?= urlencode((string)($machote['id'] ?? '')); ?>" class="btn small primary">Revisar</a>
                         <a href="machote_edit.php?id=<?= urlencode((string)($machote['id'] ?? '')); ?>" class="btn small">Editar</a>

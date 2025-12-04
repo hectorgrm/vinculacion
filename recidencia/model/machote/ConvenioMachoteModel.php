@@ -28,7 +28,7 @@ class ConvenioMachoteModel
                 e.nombre AS empresa_nombre,
                 m.version_local AS machote_version,
                 DATE_FORMAT(m.creado_en, '%Y-%m-%d') AS fecha,
-                c.estatus AS estado_convenio
+                m.estatus AS machote_estatus
             FROM rp_convenio_machote m
             INNER JOIN rp_convenio c ON c.id = m.convenio_id
             INNER JOIN rp_empresa e ON e.id = c.empresa_id
