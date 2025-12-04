@@ -62,6 +62,22 @@ if (!function_exists('empresaEditHandler')) {
         $viewData['formData'] = empresaEditSanitizeInput($_POST);
         $viewData['errors'] = empresaEditValidateData($viewData['formData']);
 
+        if (
+            $viewData['errors'] === [] &&
+            empresaStatusRequiresConvenioActivo($viewData['formData']['estatus'] ?? null)
+        ) {
+            try {
+                $tieneConvenioActivo = $controller->empresaHasConvenioActivo((int) $viewData['empresaId']);
+            } catch (\RuntimeException $exception) {
+                $viewData['errors'][] = $exception->getMessage();
+                $tieneConvenioActivo = null;
+            }
+
+            if ($tieneConvenioActivo === false && $viewData['errors'] === []) {
+                $viewData['errors'][] = 'Para marcar la empresa como Completada debe existir al menos un convenio en estatus Activa.';
+            }
+        }
+
         $detallesAuditoria = isset($formOriginal)
             ? auditoriaBuildCambios($formOriginal, $viewData['formData'], empresaEditAuditFieldLabels())
             : [];

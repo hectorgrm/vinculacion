@@ -25,7 +25,8 @@ class DocumentoUploadModel
     {
         $sql = <<<'SQL'
             SELECT id,
-                   nombre
+                   nombre,
+                   estatus
               FROM rp_empresa
              ORDER BY nombre ASC
         SQL;

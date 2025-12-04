@@ -41,6 +41,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
         $logoUrl = null;
         $empresaIsEnRevision = false;
         $empresaIsActiva = false;
+        $empresaIsCompletada = false;
         $empresaTieneConvenioActivo = false;
 
         if (is_array($empresa)) {
@@ -59,6 +60,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
                 : null;
             $empresaIsEnRevision = empresaViewIsStatusRevision($empresa['estatus'] ?? null);
             $empresaIsActiva = empresaViewIsStatusActiva($empresa['estatus'] ?? null);
+            $empresaIsCompletada = empresaViewIsStatusCompletada($empresa['estatus'] ?? null);
         }
 
         $empresaTieneConvenioActivo = empresaViewHasConvenioActivo($conveniosActivos);
@@ -130,6 +132,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             'empresaDeleteUrl' => $empresaDeleteUrl,
             'empresaIsEnRevision' => $empresaIsEnRevision,
             'empresaIsActiva' => $empresaIsActiva,
+            'empresaIsCompletada' => $empresaIsCompletada,
             'empresaTieneConvenioActivo' => $empresaTieneConvenioActivo,
             'estudiantes' => $estudiantes,
         ];
@@ -175,6 +178,13 @@ if (!function_exists('empresaViewIsStatusActiva')) {
     function empresaViewIsStatusActiva(?string $estatus): bool
     {
         return empresaNormalizeStatus($estatus) === 'Activa';
+    }
+}
+
+if (!function_exists('empresaViewIsStatusCompletada')) {
+    function empresaViewIsStatusCompletada(?string $estatus): bool
+    {
+        return empresaNormalizeStatus($estatus) === 'Completada';
     }
 }
 

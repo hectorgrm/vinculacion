@@ -64,6 +64,7 @@ $progreso = $preparedData['progreso'] ?? 0;
 $auditoriaHasOverflow = $preparedData['auditoriaHasOverflow'] ?? false;
 $auditoriaVisibleLimit = $preparedData['auditoriaVisibleLimit'] ?? 5;
 $empresaIsEnRevision = $preparedData['empresaIsEnRevision'] ?? false;
+$empresaIsCompletada = $preparedData['empresaIsCompletada'] ?? false;
 $estudiantes = $preparedData['estudiantes'] ?? [];
 $portalAccess = $preparedData['portalAccess'] ?? null;
 $portalAccessCreateUrl = $preparedData['portalAccessCreateUrl'] ?? '../portalacceso/portal_add.php';
@@ -195,12 +196,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
       <!-- 📜 Convenios asociados -->
       <section class="card">
         <header>📜 Convenios activos, en revisión o suspendidos</header>
-        <div class="content<?php echo $empresaIsEnRevision ? ' content--dimmed' : ''; ?>">
-          <?php if ($empresaIsEnRevision): ?>
-            <p class="section-note">
-              Para agregar un convenio la empresa tiene que estar activa.
-            </p>
-          <?php endif; ?>
+        <div class="content">
           <table>
             <thead>
               <tr>
@@ -247,7 +243,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                       <?php if ($convenioViewUrl !== null): ?>
                         <a href="<?php echo htmlspecialchars($convenioViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️ Ver</a>
                       <?php endif; ?>
-                      <?php if ($convenioEditUrl !== null): ?>
+                      <?php if ($convenioEditUrl !== null && !$empresaIsCompletada): ?>
                         <a href="<?php echo htmlspecialchars($convenioEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">✏️ Editar</a>
                       <?php endif; ?>
                     </td>
@@ -257,7 +253,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
             </tbody>
           </table>
 
-          <?php if (!$empresaIsEnRevision && !$empresaTieneConvenioActivo): ?>
+          <?php if (!$empresaTieneConvenioActivo && !$empresaIsCompletada): ?>
             <div class="actions" style="margin-top:16px; justify-content:flex-end;">
               <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Nuevo Convenio</a>
             </div>
@@ -422,13 +418,13 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                       <?php if ($accionUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($accionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($accionClass, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $accionAttrs; ?>><?php echo htmlspecialchars($accionPrefix . $accionLabel, ENT_QUOTES, 'UTF-8'); ?></a>
                       <?php endif; ?>
-                      <?php if ($accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
+                      <?php if (!$empresaIsCompletada && $accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
                         <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">📁 Subir</a>
                       <?php endif; ?>
                       <?php if ($documentoEstatus === 'aprobado' && $detailUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">🔍 Detalle</a>
                       <?php endif; ?>
-                      <?php if (in_array($documentoEstatus, ['revision', 'pendiente'], true) && $reviewUrl !== '') : ?>
+                      <?php if (!$empresaIsCompletada && in_array($documentoEstatus, ['revision', 'pendiente'], true) && $reviewUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">📝 Revisar</a>
                       <?php endif; ?>
                     </td>
@@ -440,7 +436,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
 
           
           <!-- 🔗 Acción principal -->
-          <?php if ($documentosGestionUrl !== null && $documentosGestionUrl !== '') : ?>
+          <?php if ($documentosGestionUrl !== null && $documentosGestionUrl !== '' && !$empresaIsCompletada) : ?>
             <div class="actions" style="margin-top:16px; justify-content:flex-end;">
               <a href="<?php echo htmlspecialchars($documentosGestionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📁 Gestionar Documentos</a>
             </div>
@@ -460,8 +456,8 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               <strong><?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></strong>
               <span class="subtitle">Listado de estudiantes con estatus activo o finalizado.</span>
             </div>
-            <?php if ($empresaIsEnRevision): ?>
-              <span class="section-note" style="color:#dc2626;">empresa aun esta en revicion no se puede agregar estudiantes</span>
+            <?php if ($empresaIsEnRevision || $empresaIsCompletada): ?>
+              <span class="section-note" style="color:#dc2626;">No es posible agregar estudiantes cuando la empresa está en revisión o completada.</span>
             <?php else: ?>
               <a href="<?php echo htmlspecialchars($nuevoEstudianteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Agregar estudiante</a>
             <?php endif; ?>

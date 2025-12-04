@@ -35,6 +35,15 @@ class EmpresaEditController
         return $empresa;
     }
 
+    public function empresaHasConvenioActivo(int $empresaId): bool
+    {
+        try {
+            return $this->model->hasConvenioActivo($empresaId);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo validar los convenios asociados a la empresa.', 0, $exception);
+        }
+    }
+
     /**
      * @param array<string, string> $data
      */

@@ -108,4 +108,20 @@ class EmpresaEditModel
             ':id' => $empresaId,
         ]);
     }
+
+    public function hasConvenioActivo(int $empresaId): bool
+    {
+        $sql = <<<'SQL'
+            SELECT 1
+              FROM rp_convenio
+             WHERE empresa_id = :empresa_id
+               AND estatus = 'Activa'
+             LIMIT 1
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        return (bool) $statement->fetchColumn();
+    }
 }

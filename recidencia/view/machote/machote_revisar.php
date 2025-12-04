@@ -9,6 +9,8 @@ require_once __DIR__ . '/../../handler/machote/machote_revisar_handler.php';
 // Fallbacks
 $empresaNombre   = isset($empresa['nombre']) ? (string) $empresa['nombre'] : '-';
 $empresaId       = isset($empresa['id']) ? (int) $empresa['id'] : 0;
+$empresaEstatus  = isset($empresa['estatus']) ? (string) $empresa['estatus'] : '';
+$empresaCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
 $machoteId       = isset($machote['id']) ? (int) $machote['id'] : (int) ($_GET['id'] ?? 0);
 $versionLocal    = isset($machote['version_local']) ? (string) $machote['version_local'] : 'v1.0';
 $contenidoHtml   = isset($machote['contenido_html']) ? (string) $machote['contenido_html'] : '';
@@ -22,8 +24,11 @@ $currentUserId   = isset($currentUser['id']) ? (int) $currentUser['id'] : 0;
 $currentUserName = isset($currentUser['name']) ? (string) $currentUser['name'] : '';
 $uploadsBasePath = '../../uploads/';
 $machoteConfirmado = (int) ($machote['confirmacion_empresa'] ?? 0) === 1;
-$machoteBloqueado = $machoteConfirmado;
+$machoteBloqueado = $machoteConfirmado || $empresaCompletada;
 $comentariosBloqueados = $machoteBloqueado;
+$bloqueoMensaje = $empresaCompletada
+    ? 'La empresa está en estatus Completada; la edición y los comentarios están bloqueados.'
+    : 'Este documento fue confirmado por la empresa. Reabre la revisión para habilitar nuevamente la edición.';
 
 // KPIs
 $comentAbiertos  = (int) ($totales['pendientes'] ?? 0);
@@ -227,7 +232,7 @@ if (!empty($_GET['reabrir_error'])) {
           <header>Documento a revisar (HTML editable)</header>
           <div class="content">
             <?php if ($machoteBloqueado): ?>
-              <p class="readonly-note">Este documento fue confirmado por la empresa. Reabre la revisión para habilitar nuevamente la edición.</p>
+              <p class="readonly-note"><?= htmlspecialchars($bloqueoMensaje) ?></p>
             <?php endif; ?>
             <form id="machote-editor-form" method="POST" action="../../handler/machote/machote_update_handler.php">
               <input type="hidden" name="id" value="<?= (int) $machoteId ?>">
@@ -257,7 +262,7 @@ if (!empty($_GET['reabrir_error'])) {
 
           <div class="content comments-content">
             <?php if ($comentariosBloqueados): ?>
-              <p class="readonly-note">Los comentarios están bloqueados porque la empresa confirmó el documento. Reabre la revisión para habilitarlos nuevamente.</p>
+              <p class="readonly-note"><?= htmlspecialchars($bloqueoMensaje) ?></p>
             <?php endif; ?>
             <!-- Crear nuevo comentario -->
             <details class="card comment-card" open>
