@@ -57,6 +57,18 @@ class EmpresaEditController
     }
 
     /**
+     * @return array{total:int, aprobados:int, porcentaje:int}
+     */
+    public function getDocumentosStats(int $empresaId, ?string $tipoEmpresa = null): array
+    {
+        try {
+            return $this->model->getDocumentosStats($empresaId, $tipoEmpresa);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo validar los documentos asociados a la empresa.', 0, $exception);
+        }
+    }
+
+    /**
      * @param array<string, string> $data
      */
     public function updateEmpresa(int $empresaId, array $data): void

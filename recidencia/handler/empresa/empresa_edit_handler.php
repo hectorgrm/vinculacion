@@ -97,6 +97,35 @@ if (!function_exists('empresaEditHandler')) {
             }
         }
 
+        if (
+            $viewData['errors'] === [] &&
+            empresaStatusRequiresConvenioActivo($viewData['formData']['estatus'] ?? null)
+        ) {
+            $tipoEmpresa = empresaNormalizeRegimenFiscal($viewData['formData']['regimen_fiscal'] ?? '');
+
+            if ($tipoEmpresa === '' && isset($formOriginal['regimen_fiscal'])) {
+                $tipoEmpresa = empresaNormalizeRegimenFiscal($formOriginal['regimen_fiscal']);
+            }
+
+            $tipoEmpresa = $tipoEmpresa !== '' ? $tipoEmpresa : null;
+
+            try {
+                $documentosStats = $controller->getDocumentosStats((int) $viewData['empresaId'], $tipoEmpresa);
+            } catch (\RuntimeException $exception) {
+                $viewData['errors'][] = $exception->getMessage();
+                $documentosStats = null;
+            }
+
+            if (
+                $viewData['errors'] === [] &&
+                ($documentosStats === null ||
+                 $documentosStats['total'] === 0 ||
+                 $documentosStats['porcentaje'] < 100)
+            ) {
+                $viewData['errors'][] = 'Para marcar la empresa como Completada todos los documentos asignados deben estar aprobados (progreso 100%).';
+            }
+        }
+
         $detallesAuditoria = isset($formOriginal)
             ? auditoriaBuildCambios($formOriginal, $viewData['formData'], empresaEditAuditFieldLabels())
             : [];
