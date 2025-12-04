@@ -59,14 +59,14 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
       </div>
     <?php endforeach; ?>
 
-    <?php if ($portalReadOnly): ?>
-      <div class="card">
-        <header>Portal en modo lectura</header>
-        <div class="content">
-          <p class="warn"><?= htmlspecialchars($portalReadOnlyMessage ?? 'La empresa esta en estatus Completada; las acciones de edicion estan bloqueadas.') ?></p>
-        </div>
-      </div>
-    <?php endif; ?>
+<?php if ($portalReadOnly): ?>
+  <div class="card">
+    <header>Portal en modo lectura</header>
+    <div class="content">
+      <p class="warn"><?= htmlspecialchars($portalReadOnlyMessage ?? 'Las acciones de edicion estan bloqueadas mientras el portal esta en modo solo lectura.') ?></p>
+    </div>
+  </div>
+<?php endif; ?>
 
     <!-- Estado general -->
     <div class="card">
@@ -155,7 +155,7 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
             </div>
             <?php if (!$canConfirm): ?>
               <?php if ($portalReadOnly): ?>
-                <p class="note">La confirmacion esta bloqueada porque la empresa esta en estatus Completada.</p>
+                <p class="note"><?= htmlspecialchars($portalReadOnlyMessage ?? 'La confirmacion esta bloqueada porque el portal esta en modo solo lectura.') ?></p>
               <?php elseif (!$permisos['puede_confirmar']): ?>
                 <p class="note">Resuelve primero los comentarios pendientes para habilitar la confirmacion.</p>
               <?php endif; ?>
@@ -191,7 +191,7 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
         </form>
         <?php else: ?>
           <?php if ($portalReadOnly): ?>
-            <p class="note">Los comentarios estan bloqueados porque la empresa esta en estatus Completada.</p>
+            <p class="note"><?= htmlspecialchars($portalReadOnlyMessage ?? 'Los comentarios estan bloqueados porque el portal esta en modo solo lectura.') ?></p>
           <?php else: ?>
             <p class="note">Los comentarios estan disponibles solo mientras el convenio esta en revision.</p>
           <?php endif; ?>

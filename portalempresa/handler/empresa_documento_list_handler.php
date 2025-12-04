@@ -15,7 +15,7 @@ $portalSession = $sessionEmpresa;
 $empresaId = (int) ($sessionEmpresa['empresa_id'] ?? 0);
 $portalReadOnly = portalEmpresaIsReadOnly($sessionEmpresa);
 $portalReadOnlyMessage = $portalReadOnly
-    ? 'La empresa esta en estatus Completada; el portal esta en modo de solo lectura.'
+    ? (portalEmpresaReadOnlyMessage($sessionEmpresa) ?? 'La empresa esta en modo de solo lectura.')
     : null;
 
 $controller = new EmpresaDocumentoListController();

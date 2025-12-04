@@ -15,6 +15,7 @@ $confirmChecked = $handlerResult['confirmChecked'];
 $isAlreadyInactive = $handlerResult['isAlreadyInactive'];
 $formDisabled = $handlerResult['formDisabled'];
 $empresaIsCompletada = $handlerResult['empresaIsCompletada'] ?? false;
+$empresaIsInactiva = $handlerResult['empresaIsInactiva'] ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -76,7 +77,11 @@ $empresaIsCompletada = $handlerResult['empresaIsCompletada'] ?? false;
 
           <?php if ($empresaIsCompletada): ?>
           <div class="alert warning" role="alert">
-            No se puede desactivar este convenio porque la empresa está en estatus <strong>Completada</strong>.
+            No se puede desactivar este convenio porque la empresa estA? en estatus <strong>Completada</strong>.
+          </div>
+          <?php elseif ($empresaIsInactiva): ?>
+          <div class="alert alert-danger" style="margin-bottom:16px; color:#b00020;">
+            Acción no permitida por seguridad. Empresa Inactiva.
           </div>
           <?php endif; ?>
 

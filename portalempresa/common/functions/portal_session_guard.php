@@ -42,7 +42,23 @@ if (!function_exists('portalEmpresaNormalizeStatus')) {
 if (!function_exists('portalEmpresaIsReadOnlyStatus')) {
     function portalEmpresaIsReadOnlyStatus(string $normalizedStatus): bool
     {
-        return $normalizedStatus === 'completada';
+        return in_array($normalizedStatus, ['completada', 'inactiva'], true);
+    }
+}
+
+if (!function_exists('portalEmpresaReadOnlyMessage')) {
+    /**
+     * @param array<string, mixed> $session
+     */
+    function portalEmpresaReadOnlyMessage(array $session): ?string
+    {
+        $status = portalEmpresaNormalizeStatus($session['empresa_estatus_normalizado'] ?? ($session['empresa_estatus'] ?? ''));
+
+        return match ($status) {
+            'inactiva' => 'Empresa en estatus Inactiva: el portal esta en modo solo lectura.',
+            'completada' => 'Empresa en estatus Completada: el portal esta en modo solo lectura.',
+            default => null,
+        };
     }
 }
 
@@ -101,7 +117,7 @@ if (!function_exists('portalEmpresaRequireSession')) {
 
         $status = trim((string) ($record['empresa_estatus'] ?? ''));
         $statusNormalized = portalEmpresaNormalizeStatus($status);
-        $statusAllowed = ['activa', 'en revision', 'completada'];
+        $statusAllowed = ['activa', 'en revision', 'completada', 'inactiva'];
 
         if ($statusNormalized === '' || !in_array($statusNormalized, $statusAllowed, true)) {
             unset($_SESSION['portal_empresa']);
@@ -113,6 +129,9 @@ if (!function_exists('portalEmpresaRequireSession')) {
         $session['empresa_estatus'] = $status;
         $session['empresa_estatus_normalizado'] = $statusNormalized;
         $session['empresa_readonly'] = portalEmpresaIsReadOnlyStatus($statusNormalized);
+        $session['empresa_readonly_message'] = $session['empresa_readonly']
+            ? portalEmpresaReadOnlyMessage(['empresa_estatus' => $status, 'empresa_estatus_normalizado' => $statusNormalized])
+            : null;
         $session['empresa_logo_path'] = isset($record['empresa_logo_path'])
             ? (string) $record['empresa_logo_path']
             : (string) ($session['empresa_logo_path'] ?? '');

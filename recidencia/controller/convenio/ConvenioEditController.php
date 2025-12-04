@@ -86,6 +86,7 @@ class ConvenioEditController
         $method = isset($server['REQUEST_METHOD']) ? strtoupper((string) $server['REQUEST_METHOD']) : 'GET';
         $empresaEstatus = '';
         $empresaIsCompletada = false;
+        $empresaIsInactiva = false;
 
         if ($convenioId <= 0) {
             $errors[] = 'El identificador del convenio no es valido.';
@@ -108,6 +109,7 @@ class ConvenioEditController
         if ($convenio !== null && isset($convenio['empresa_estatus'])) {
             $empresaEstatus = trim((string) $convenio['empresa_estatus']);
             $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
+            $empresaIsInactiva = strcasecmp($empresaEstatus, 'Inactiva') === 0;
         }
 
         if ($method === 'POST') {
@@ -153,6 +155,7 @@ class ConvenioEditController
         if ($convenio !== null && isset($convenio['empresa_estatus'])) {
             $empresaEstatus = trim((string) $convenio['empresa_estatus']);
             $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
+            $empresaIsInactiva = strcasecmp($empresaEstatus, 'Inactiva') === 0;
         }
 
         $empresaData = $this->resolveEmpresaData($convenio);
@@ -161,7 +164,7 @@ class ConvenioEditController
             ? convenioValueOrDefault($convenio['folio'] ?? null, 'Sin folio asignado')
             : 'Sin folio asignado';
         $links = $this->buildLinks($empresaData['id'], $convenioId);
-        $formDisabled = !$controllerAvailable || $empresaIsCompletada;
+        $formDisabled = !$controllerAvailable || $empresaIsCompletada || $empresaIsInactiva;
 
         return [
             'estatusOptions' => $estatusOptions,
@@ -184,6 +187,7 @@ class ConvenioEditController
             'formDisabled' => $formDisabled,
             'empresaEstatus' => $empresaEstatus,
             'empresaIsCompletada' => $empresaIsCompletada,
+            'empresaIsInactiva' => $empresaIsInactiva,
         ];
     }
 

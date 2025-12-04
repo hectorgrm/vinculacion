@@ -66,8 +66,16 @@ class PortalEmpresaLoginController
                 ? mb_strtolower($statusNormalized, 'UTF-8')
                 : strtolower($statusNormalized);
         }
+        $statusNormalized = str_replace(['?', '?', '?', '?', '?'], ['a', 'e', 'i', 'o', 'u'], $statusNormalized);
 
-        $statusAllowed = ['activa', 'en revisión', 'en revision'];
+        $statusAllowed = ['activa', 'en revision', 'completada'];
+
+        if ($statusNormalized === 'inactiva') {
+            return [
+                'success' => false,
+                'reason' => 'portal_disabled',
+            ];
+        }
 
         if (!in_array($statusNormalized, $statusAllowed, true)) {
             return [

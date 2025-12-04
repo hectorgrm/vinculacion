@@ -51,6 +51,7 @@ $machoteIdDisplay = '';
 $machoteModel = null;
 $empresaEstatus = '';
 $empresaIsCompletada = false;
+$empresaIsInactiva = false;
 
 try {
     $machoteModel = \Residencia\Model\Convenio\ConvenioMachoteModel::createWithDefaultConnection();
@@ -156,13 +157,15 @@ $isAlreadyInactive = $convenio !== null
 if ($convenio !== null && isset($convenio['empresa_estatus'])) {
     $empresaEstatus = trim((string) $convenio['empresa_estatus']);
     $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
+    $empresaIsInactiva = strcasecmp($empresaEstatus, 'Inactiva') === 0;
 }
 
 $formDisabled = $successMessage !== null
     || $isAlreadyInactive
     || $controller === null
     || $editController === null
-    || $empresaIsCompletada;
+    || $empresaIsCompletada
+    || $empresaIsInactiva;
 
 return [
     'controllerError' => $controllerError,
@@ -177,4 +180,5 @@ return [
     'isAlreadyInactive' => $isAlreadyInactive,
     'formDisabled' => $formDisabled,
     'empresaIsCompletada' => $empresaIsCompletada,
+    'empresaIsInactiva' => $empresaIsInactiva,
 ];

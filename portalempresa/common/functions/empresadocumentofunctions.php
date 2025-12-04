@@ -200,7 +200,7 @@ if (!function_exists('empresaDocumentoUploadStatusMessage')) {
             ],
             'upload_readonly' => [
                 'type' => 'error',
-                'message' => 'La empresa esta en estatus Completada; el portal esta en modo solo lectura y no se pueden subir archivos.',
+                'message' => 'El portal esta en modo solo lectura (empresa inactiva o completada); no se pueden subir archivos.',
             ],
             'upload_file_error' => [
                 'type' => 'error',

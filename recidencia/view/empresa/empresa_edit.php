@@ -24,10 +24,12 @@ $loadError = $handlerResult['loadError'];
 
 $empresaNombre = empresaFormValue($formData, 'nombre');
 $empresaEstatus = (string) empresaFormValue($formData, 'estatus');
+$empresaIsInactiva = strcasecmp(trim($empresaEstatus), 'Inactiva') === 0;
 $empresaIsCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
-$fieldsetDisabled = $empresaIsCompletada ? 'disabled' : '';
-$notasReadonly = $empresaIsCompletada ? 'readonly' : '';
-$regimenDisabled = $empresaIsCompletada ? 'disabled' : '';
+$empresaFieldsLocked = $empresaIsCompletada || $empresaIsInactiva;
+$fieldsetDisabled = $empresaFieldsLocked ? 'disabled' : '';
+$notasReadonly = $empresaFieldsLocked ? 'readonly' : '';
+$regimenDisabled = $empresaFieldsLocked ? 'disabled' : '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -89,12 +91,18 @@ $regimenDisabled = $empresaIsCompletada ? 'disabled' : '';
                 Solo puedes reactivarla desde la sección de configuración.
               </div>
             <?php endif; ?>
+            <?php if ($empresaIsInactiva && !$empresaIsCompletada): ?>
+              <div class="alert warning" style="margin-top:12px;">
+                La empresa está en estatus <strong>Inactiva</strong>; los campos están en modo solo lectura.
+                Cambia el estatus a Activa o En revisión para habilitar la edición completa.
+              </div>
+            <?php endif; ?>
           </div>
         </section>
 
         <form class="form-grid" method="post" action="">
           <input type="hidden" name="empresa_id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>" />
-          <?php if ($empresaIsCompletada): ?>
+          <?php if ($empresaFieldsLocked): ?>
             <input type="hidden" name="lock_fields" value="1" />
           <?php endif; ?>
 
@@ -115,7 +123,7 @@ $regimenDisabled = $empresaIsCompletada ? 'disabled' : '';
             </div>
           <?php endif; ?>
 
-          <?php if ($empresaIsCompletada): ?><fieldset <?php echo $fieldsetDisabled; ?>><?php endif; ?>
+          <?php if ($empresaFieldsLocked): ?><fieldset <?php echo $fieldsetDisabled; ?>><?php endif; ?>
           <section class="card">
             <header>Datos Generales</header>
             <div class="content grid">
@@ -208,7 +216,7 @@ $regimenDisabled = $empresaIsCompletada ? 'disabled' : '';
               </div>
             </div>
           </section>
-          <?php if ($empresaIsCompletada): ?></fieldset><?php endif; ?>
+          <?php if ($empresaFieldsLocked): ?></fieldset><?php endif; ?>
 
           <section class="card">
             <header>Configuración</header>
@@ -222,7 +230,9 @@ $regimenDisabled = $empresaIsCompletada ? 'disabled' : '';
                       $isSelected = empresaFormValue($formData, 'estatus') === $option;
                       $isReactivate = strcasecmp($option, 'Activa') === 0;
                       $isCompletada = strcasecmp($option, 'Completada') === 0;
-                      $disableOption = $empresaIsCompletada && !$isReactivate && !$isCompletada;
+                      $isEnRevisionOption = stripos($option, 'revisi') !== false;
+                      $disableOption = ($empresaIsCompletada && !$isReactivate && !$isCompletada)
+                        || ($empresaIsInactiva && $isCompletada);
                     ?>
                     <option value="<?php echo htmlspecialchars($option, ENT_QUOTES, 'UTF-8'); ?>"
                       <?php echo $isSelected ? 'selected' : ''; ?>
@@ -244,7 +254,7 @@ $regimenDisabled = $empresaIsCompletada ? 'disabled' : '';
                     </option>
                   <?php endforeach; ?>
                 </select>
-                <?php if ($empresaIsCompletada): ?>
+                <?php if ($empresaFieldsLocked): ?>
                   <input type="hidden" name="regimen_fiscal" value="<?php echo htmlspecialchars(empresaFormValue($formData, 'regimen_fiscal'), ENT_QUOTES, 'UTF-8'); ?>" />
                 <?php endif; ?>
               </div>

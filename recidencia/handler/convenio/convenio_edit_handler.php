@@ -72,4 +72,8 @@ return [
     'borradorUrl' => null,
     'borradorFileName' => null,
     'folioLabel' => 'Sin folio asignado',
+    'formDisabled' => true,
+    'empresaEstatus' => '',
+    'empresaIsCompletada' => false,
+    'empresaIsInactiva' => false,
 ];

@@ -24,7 +24,10 @@ $isMachoteConfirmado = !empty($machote['confirmado']);
 $machoteActualizado = $machote['actualizadoLabel'] ?? '';
 $revisionVariant = $machote['revisionVariant'] ?? 'warn';
 $portalReadOnly = !empty($portalReadOnly);
-$portalReadOnlyMessage = $portalReadOnlyMessage ?? ($portalReadOnly ? 'Empresa en estatus Completada: el portal esta en modo lectura.' : null);
+$portalReadOnlyMessage = $portalReadOnlyMessage
+    ?? ($portalReadOnly && function_exists('portalEmpresaReadOnlyMessage') && isset($portalSession)
+        ? portalEmpresaReadOnlyMessage($portalSession)
+        : null);
 $readOnlyLinkAttrs = $portalReadOnly ? 'style="pointer-events:none;opacity:0.6;" aria-disabled="true"' : '';
 ?>
 <!DOCTYPE html>
@@ -56,7 +59,7 @@ $readOnlyLinkAttrs = $portalReadOnly ? 'style="pointer-events:none;opacity:0.6;"
   <?php if ($portalReadOnly): ?>
     <div class="alert-card" style="border-color:#f59e0b;color:#7c2d12;background:#fffbeb;">
       <strong>Portal en modo lectura</strong>
-      <p><?= htmlspecialchars($portalReadOnlyMessage ?? 'La empresa esta en estatus Completada; solo puedes consultar la informacion.') ?></p>
+      <p><?= htmlspecialchars($portalReadOnlyMessage ?? 'La empresa esta en modo solo lectura; solo puedes consultar la informacion.') ?></p>
     </div>
   <?php endif; ?>
 
@@ -156,7 +159,7 @@ $readOnlyLinkAttrs = $portalReadOnly ? 'style="pointer-events:none;opacity:0.6;"
         <a class="btn" href="documentos_list.php#subir" <?= $readOnlyLinkAttrs ?>>Subir actualizacion</a>
       </div>
       <?php if ($portalReadOnly): ?>
-        <p class="small-meta" style="color:#7c2d12;">Las cargas estan deshabilitadas mientras la empresa este marcada como Completada.</p>
+        <p class="small-meta" style="color:#7c2d12;"><?= htmlspecialchars($portalReadOnlyMessage ?? 'Las cargas estan deshabilitadas mientras la empresa esta en modo solo lectura.') ?></p>
       <?php endif; ?>
     </article>
 

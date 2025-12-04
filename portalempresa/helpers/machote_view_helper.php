@@ -85,7 +85,7 @@ function machoteViewBuildFlashMessages(array $queryParams): array
         'invalid' => 'No fue posible identificar el documento a confirmar.',
         'session' => 'Tu sesion expiro. Inicia sesion nuevamente.',
         'pending' => 'Aun quedan comentarios pendientes por resolver.',
-        'readonly' => 'La confirmacion esta bloqueada porque la empresa esta en estatus Completada.',
+        'readonly' => 'La confirmacion esta bloqueada porque el portal esta en modo solo lectura.',
         'internal' => 'Ocurrio un problema al registrar la confirmacion.',
     ];
     if ($confirmError !== '' && isset($confirmErrorMap[$confirmError])) {

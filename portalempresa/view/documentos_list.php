@@ -96,7 +96,7 @@ $uploadDisabled = $portalReadOnly || !$hasUploadOptions;
         <div class="alert__icon" aria-hidden="true">!</div>
         <div class="alert__body">
           <p class="alert__title">Portal en modo lectura</p>
-          <p class="alert__message"><?= htmlspecialchars($portalReadOnlyMessage ?? 'La empresa esta en estatus Completada; solo puedes consultar la informacion.') ?></p>
+          <p class="alert__message"><?= htmlspecialchars($portalReadOnlyMessage ?? 'Solo puedes consultar la informacion del portal mientras la empresa esta en modo de solo lectura.') ?></p>
         </div>
       </div>
     </section>
@@ -230,7 +230,7 @@ $uploadDisabled = $portalReadOnly || !$hasUploadOptions;
         <div class="content">
           <p class="hint">Solo usa este formulario si Residencias te solicito reemplazar un documento pendiente o rechazado.</p>
           <?php if ($portalReadOnly): ?>
-            <div class="alert warn" style="margin-top:8px;">No es posible subir archivos porque la empresa esta en estatus Completada.</div>
+            <div class="alert warn" style="margin-top:8px;"><?= htmlspecialchars($portalReadOnlyMessage ?? 'No es posible subir archivos mientras el portal esta en modo solo lectura.') ?></div>
           <?php endif; ?>
 
           <form class="upload" method="post" enctype="multipart/form-data" action="../handler/empresa_documento_upload_handler.php">
@@ -276,7 +276,7 @@ $uploadDisabled = $portalReadOnly || !$hasUploadOptions;
             <?php if (!$hasUploadOptions && !$portalReadOnly): ?>
               <p class="hint">Todos los documentos asignados estan aprobados o no requieren cambios por ahora.</p>
             <?php elseif ($portalReadOnly): ?>
-              <p class="hint">Las cargas de documentos estan deshabilitadas mientras la empresa este marcada como Completada.</p>
+              <p class="hint"><?= htmlspecialchars($portalReadOnlyMessage ?? 'Las cargas de documentos estan deshabilitadas porque la empresa esta en modo solo lectura.') ?></p>
             <?php endif; ?>
           </form>
         </div>

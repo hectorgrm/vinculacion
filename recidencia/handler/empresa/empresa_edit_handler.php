@@ -49,6 +49,7 @@ if (!function_exists('empresaEditHandler')) {
             $empresa = $controller->getEmpresaById($viewData['empresaId']);
             $formOriginal = empresaHydrateForm(empresaFormDefaults(), $empresa);
             $viewData['formData'] = $formOriginal;
+            $estatusOriginal = empresaNormalizeStatus($formOriginal['estatus'] ?? null);
         } catch (\RuntimeException $exception) {
             $viewData['loadError'] = $exception->getMessage();
 
@@ -65,7 +66,8 @@ if (!function_exists('empresaEditHandler')) {
         if (
             $lockFields &&
             isset($formOriginal) &&
-            strcasecmp(trim($formOriginal['estatus'] ?? ''), 'Completada') === 0
+            isset($estatusOriginal) &&
+            in_array($estatusOriginal, ['Completada', 'Inactiva'], true)
         ) {
             foreach ($formOriginal as $field => $value) {
                 if ($field === 'estatus') {
@@ -78,6 +80,15 @@ if (!function_exists('empresaEditHandler')) {
             }
         }
         $viewData['errors'] = empresaEditValidateData($viewData['formData']);
+
+        $estatusNuevo = empresaNormalizeStatus($viewData['formData']['estatus'] ?? null);
+
+        if (
+            ($estatusOriginal ?? null) === 'Inactiva' &&
+            $estatusNuevo === 'Completada'
+        ) {
+            $viewData['errors'][] = 'Empresa inactiva no puede completarse.';
+        }
 
         if (
             $viewData['errors'] === [] &&

@@ -42,6 +42,9 @@ switch ($reason) {
     case 'empresa_inactiva':
         $errorCode = 'expired';
         break;
+    case 'portal_disabled':
+        $errorCode = 'portal_disabled';
+        break;
     case 'missing_fields':
         $errorCode = 'missing';
         break;

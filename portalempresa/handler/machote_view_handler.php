@@ -11,7 +11,7 @@ $portalSession = portalEmpresaRequireSession('../view/login.php');
 $empresaId = (int) ($portalSession['empresa_id'] ?? 0);
 $portalReadOnly = portalEmpresaIsReadOnly($portalSession);
 $portalReadOnlyMessage = $portalReadOnly
-    ? 'Empresa en estatus Completada: el portal esta en modo solo lectura.'
+    ? (portalEmpresaReadOnlyMessage($portalSession) ?? 'El portal esta en modo solo lectura.')
     : null;
 
 $empresa = [];

@@ -22,6 +22,7 @@ $cancelLink = $handlerResult['cancelLink'];
 $formDisabled = $handlerResult['formDisabled'] ?? false;
 $empresaIsCompletada = $handlerResult['empresaIsCompletada'] ?? false;
 $empresaEstatus = $handlerResult['empresaEstatus'] ?? '';
+$empresaIsInactiva = $handlerResult['empresaIsInactiva'] ?? false;
 
 ?>
 <!DOCTYPE html>
@@ -103,8 +104,12 @@ $empresaEstatus = $handlerResult['empresaEstatus'] ?? '';
 
           <?php if ($empresaIsCompletada): ?>
           <div class="alert alert-warning" style="margin-bottom:16px;">
-            La empresa está en estatus <strong>Completada</strong>. El convenio se muestra en modo de solo lectura y no
+            La empresa estA? en estatus <strong>Completada</strong>. El convenio se muestra en modo de solo lectura y no
             es posible guardar cambios.
+          </div>
+          <?php elseif (isset($empresaIsInactiva) && $empresaIsInactiva): ?>
+          <div class="alert alert-danger" style="margin-bottom:16px;">
+            Empresa inactiva: convenio en solo lectura. No se pueden editar ni reemplazar archivos.
           </div>
           <?php endif; ?>
 
@@ -217,7 +222,6 @@ $empresaEstatus = $handlerResult['empresaEstatus'] ?? '';
           <a class="btn" href="<?php echo htmlspecialchars($empresaLink, ENT_QUOTES, 'UTF-8'); ?>">🏢 Ver empresa</a>
           <a class="btn" href="<?php echo htmlspecialchars($convenioListLink, ENT_QUOTES, 'UTF-8'); ?>">📑 Ver convenios de esta
             empresa</a>
-          <a class="btn" href="<?php echo htmlspecialchars($machoteLink, ENT_QUOTES, 'UTF-8'); ?>">📝 Revisar machote</a>
         </div>
       </section>
     </main>

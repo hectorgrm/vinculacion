@@ -67,7 +67,13 @@ if (!$headerReadOnly && isset($portalSession) && is_array($portalSession) && fun
 }
 
 if ($headerReadOnly && $headerReadOnlyMessage === null) {
-    $headerReadOnlyMessage = 'Portal en modo solo lectura por estatus Completada.';
+    if (isset($portalSession) && is_array($portalSession) && function_exists('portalEmpresaReadOnlyMessage')) {
+        $headerReadOnlyMessage = portalEmpresaReadOnlyMessage($portalSession);
+    }
+
+    if ($headerReadOnlyMessage === null) {
+        $headerReadOnlyMessage = 'Portal en modo solo lectura por estatus actual de la empresa.';
+    }
 }
 
 $headerLogoUrl = $headerLogoUrl ?: 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';

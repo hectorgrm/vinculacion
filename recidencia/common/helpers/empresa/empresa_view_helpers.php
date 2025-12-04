@@ -42,6 +42,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
         $empresaIsEnRevision = false;
         $empresaIsActiva = false;
         $empresaIsCompletada = false;
+        $empresaIsInactiva = false;
         $empresaTieneConvenioActivo = false;
 
         if (is_array($empresa)) {
@@ -61,6 +62,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             $empresaIsEnRevision = empresaViewIsStatusRevision($empresa['estatus'] ?? null);
             $empresaIsActiva = empresaViewIsStatusActiva($empresa['estatus'] ?? null);
             $empresaIsCompletada = empresaViewIsStatusCompletada($empresa['estatus'] ?? null);
+            $empresaIsInactiva = empresaViewIsStatusInactiva($empresa['estatus'] ?? null);
         }
 
         $empresaTieneConvenioActivo = empresaViewHasConvenioActivo($conveniosActivos);
@@ -133,6 +135,8 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             'empresaIsEnRevision' => $empresaIsEnRevision,
             'empresaIsActiva' => $empresaIsActiva,
             'empresaIsCompletada' => $empresaIsCompletada,
+            'empresaIsInactiva' => $empresaIsInactiva,
+            'empresaIsReadOnly' => $empresaIsCompletada || $empresaIsInactiva,
             'empresaTieneConvenioActivo' => $empresaTieneConvenioActivo,
             'estudiantes' => $estudiantes,
         ];
@@ -185,6 +189,13 @@ if (!function_exists('empresaViewIsStatusCompletada')) {
     function empresaViewIsStatusCompletada(?string $estatus): bool
     {
         return empresaNormalizeStatus($estatus) === 'Completada';
+    }
+}
+
+if (!function_exists('empresaViewIsStatusInactiva')) {
+    function empresaViewIsStatusInactiva(?string $estatus): bool
+    {
+        return empresaNormalizeStatus($estatus) === 'Inactiva';
     }
 }
 
