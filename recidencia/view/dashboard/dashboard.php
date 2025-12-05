@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/../../../config/session.php';
+require_once __DIR__ . '/../../handler/dashboard/dashboard_empresa_handler.php';
+require_once __DIR__ . '/../../handler/dashboard/dashboard_convenio_handler.php';
+require_once __DIR__ . '/../../handler/dashboard/dashboard_documento_handler.php';
+require_once __DIR__ . '/../../handler/dashboard/dashboard_comentario_handler.php';
 
 $user = $_SESSION['user'] ?? null;
 $allowedRoles = ['res_admin'];
@@ -15,67 +19,61 @@ if (!is_array($user) || !in_array(strtolower((string) ($user['role'] ?? '')), $a
 //   Listos para reemplazar con BD
 // ===============================
 
-// Convenio actual (si existe)
-$convenioActual = [
-    'estado' => 'Activa',
-    'folio' => 'RP/2025/0142',
-    'tipo' => 'Convenio Marco',
+// 4) COMENTARIOS / MACHOTE PENDIENTES
+$machotePendientes = [
+    [
+        'empresa'      => 'ACME S.A.',
+        'version'      => 'v1.3',
+        'comentarios'  => 2,
+        'machote_id'   => 34,
+    ],
+    [
+        'empresa'      => 'Tech Corp',
+        'version'      => 'v2.0',
+        'comentarios'  => 1,
+        'machote_id'   => 41,
+    ],
 ];
 
-// KPI Machote
-$kpiMachote = [
-    'version' => 'v1.3',
-    'comentariosPendientes' => 2,
-    'ultimaRevision' => '01/12/2025',
-    'estado' => 'En revisión',
-    'avance' => 68,
-];
+// 5) Alertas críticas (construidas a partir de lo anterior)
+$alertasCriticas = [];
 
-// KPI Documentos legales
-$kpiDocs = [
-    'aprobados' => 5,
-    'total' => 7,
-    'pendientes' => 2,
-];
-$docsPercent = $kpiDocs['total'] > 0 ? round(($kpiDocs['aprobados'] / $kpiDocs['total']) * 100) : 0;
+if ($docsStats['pendientes'] > 0) {
+    $alertasCriticas[] = [
+        'titulo' => 'Documentos pendientes por revisar',
+        'detalle' => (string) $docsStats['pendientes'],
+        'icono' => '!',
+    ];
+}
 
-// KPI Estudiantes
-$kpiEstudiantes = [
-    'asignados' => 142,
-    'activos' => 96,
-    'finalizados' => 28,
-    'sinAsignar' => 12,
-];
+if (!empty($machotePendientes)) {
+    $totalComentarios = array_sum(array_map(
+        static fn(array $m): int => (int) $m['comentarios'],
+        $machotePendientes
+    ));
 
-// Timeline general del convenio
-$timelineConvenio = [
-    ['etapa' => 'Machote aprobado', 'estado' => 'completo', 'detalle' => 'Versión vigente publicada'],
-    ['etapa' => 'Documentación completa', 'estado' => 'incompleto', 'detalle' => 'Faltan 2 documentos firmados'],
-    ['etapa' => 'Estudiantes asignados', 'estado' => 'completo', 'detalle' => 'Asignaciones confirmadas'],
-    ['etapa' => 'Convenio Activo', 'estado' => 'pendiente', 'detalle' => 'Activar al completar documentación'],
-];
+    $alertasCriticas[] = [
+        'titulo' => 'Comentarios de machote sin revisar',
+        'detalle' => (string) $totalComentarios,
+        'icono' => '!',
+    ];
+}
 
-// Alertas críticas
-$alertasCriticas = [
-    ['titulo' => 'Documentos pendientes requeridos', 'detalle' => '2', 'icono' => '!'],
-    ['titulo' => 'Comentarios sin resolver en machote', 'detalle' => '1', 'icono' => '!'],
-    ['titulo' => 'Revisiones abiertas', 'detalle' => '3', 'icono' => '!'],
-];
+if ($conveniosStats['activos'] === 0) {
+    $alertasCriticas[] = [
+        'titulo' => 'Sin convenios activos',
+        'detalle' => '',
+        'icono' => '!',
+    ];
+}
 
-// Actividades recientes
-$actividadesRecientes = [
-    ['tiempo' => 'Hace 10 min', 'detalle' => 'Documento "Identificación" aprobado'],
-    ['tiempo' => 'Hace 25 min', 'detalle' => 'Comentario resuelto en machote'],
-    ['tiempo' => 'Hace 2h', 'detalle' => 'Estudiante asignado'],
-];
-
-// Accesos rápidos
+// 6) Accesos rápidos
 $shortcuts = [
-    ['label' => 'Subir documento', 'icono' => '📄', 'href' => '../documentos/documento_upload.php'],
-    ['label' => 'Revisar machote', 'icono' => '📝', 'href' => '../machote/machote_list.php'],
-    ['label' => 'Ver convenio', 'icono' => '🧾', 'href' => '../convenio/convenio_list.php'],
-    ['label' => 'Ver estudiantes', 'icono' => '👨‍🎓', 'href' => '../estudiante/estudiante_list.php'],
-    ['label' => 'Convenios archivados', 'icono' => '🗂', 'href' => '../convenio/convenio_archivado.php'],
+    ['label' => 'Empresas',              'icono' => '🏢', 'href' => '../empresa/empresa_list.php'],
+    ['label' => 'Convenios',             'icono' => '📑', 'href' => '../convenio/convenio_list.php'],
+    ['label' => 'Documentos legales',    'icono' => '📄', 'href' => '../documentos/documento_list.php'],
+    ['label' => 'Revisión de machotes',  'icono' => '📝', 'href' => '../machote/machote_list.php'],
+    ['label' => 'Convenios archivados',  'icono' => '🗂', 'href' => '../convenio/convenio_archivado.php'],
 ];
 
 ?>
@@ -86,10 +84,10 @@ $shortcuts = [
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard | Sistema de Vinculación</title>
+
+    <!-- Tus estilos existentes -->
     <link rel="stylesheet" href="../../assets/css/modules/empresa/empresalist.css" />
-
     <link rel="stylesheet" href="../../assets/DashboardCSS/dashboard.css" />
-
 </head>
 
 <body>
@@ -105,7 +103,9 @@ $shortcuts = [
             <section class="card alert-card">
                 <div class="card-header">
                     <h3 class="card-title">Pendientes críticos</h3>
-                    <span class="pill warning">Atención prioritaria</span>
+                    <span class="pill warning">
+                        <?php echo empty($alertasCriticas) ? 'Sin alertas' : 'Atención prioritaria'; ?>
+                    </span>
                 </div>
 
                 <?php if (empty($alertasCriticas)): ?>
@@ -129,48 +129,53 @@ $shortcuts = [
             </section>
 
             <!-- ===================================== -->
-            <!--   KPIs PRINCIPALES                    -->
+            <!--   KPIs SIMPLES (EMPRESAS / CONVENIOS / DOCS) -->
             <!-- ===================================== -->
             <section class="kpi-row">
 
-                <!-- CONVENIO -->
+                <!-- EMPRESAS -->
                 <article class="kpi-card primary">
                     <div class="spaced">
-                        <div class="kpi-icon">C</div>
-                        <span class="kpi-pill">Convenio actual</span>
+                        <div class="kpi-icon">E</div>
+                        <span class="kpi-pill">Empresas</span>
                     </div>
 
-                    <h3 class="kpi-title">Estado del convenio</h3>
-
-                    <?php if ($convenioActual): ?>
-                        <div class="kpi-grid">
-                            <div class="kpi-value"><?php echo htmlspecialchars($convenioActual['estado']); ?></div>
-                            <div class="kpi-sub">Folio: <?php echo htmlspecialchars($convenioActual['folio']); ?></div>
-                            <div class="kpi-sub">Tipo: <?php echo htmlspecialchars($convenioActual['tipo']); ?></div>
-                        </div>
-                    <?php else: ?>
-                        <div class="kpi-empty">No hay convenio activo.</div>
+                    <h3 class="kpi-title">Resumen de empresas</h3>
+                    <ul class="simple-list">
+                        <li>Total: <strong><?php echo (int) $empresasStats['total']; ?></strong></li>
+                        <li>Activas: <strong><?php echo (int) $empresasStats['activas']; ?></strong></li>
+                        <li>En revisión: <strong><?php echo (int) $empresasStats['revision']; ?></strong></li>
+                        <li>Completadas: <strong><?php echo (int) $empresasStats['completadas']; ?></strong></li>
+                    </ul>
+                    <?php if (!empty($empresasError)): ?>
+                        <p class="muted"><?php echo htmlspecialchars((string) $empresasError, ENT_QUOTES, 'UTF-8'); ?></p>
                     <?php endif; ?>
+
+                    <div class="actions">
+                        <a class="btn primary" href="../empresa/empresa_list.php">Ver empresas</a>
+                    </div>
                 </article>
 
-                <!-- MACHOTE -->
+                <!-- CONVENIOS -->
                 <article class="kpi-card teal">
                     <div class="spaced">
-                        <div class="kpi-icon">M</div>
-                        <span class="kpi-pill">Revisión de machote</span>
+                        <div class="kpi-icon">C</div>
+                        <span class="kpi-pill">Convenios</span>
                     </div>
 
-                    <h3 class="kpi-title">Machote <?php echo htmlspecialchars($kpiMachote['version']); ?></h3>
-                    <div class="kpi-sub">Estado: <?php echo htmlspecialchars($kpiMachote['estado']); ?></div>
-                    <div class="kpi-sub">Comentarios:
-                        <?php echo htmlspecialchars((string) $kpiMachote['comentariosPendientes']); ?></div>
-                    <div class="kpi-sub">Última revisión: <?php echo htmlspecialchars($kpiMachote['ultimaRevision']); ?>
-                    </div>
+                    <h3 class="kpi-title">Estado de convenios</h3>
+                    <ul class="simple-list">
+                        <li>Activos: <strong><?php echo (int) $conveniosStats['activos']; ?></strong></li>
+                        <li>Archivados: <strong><?php echo (int) $conveniosStats['archivados']; ?></strong></li>
+                    </ul>
+                    <?php if (!empty($conveniosError)): ?>
+                        <p class="muted"><?php echo htmlspecialchars((string) $conveniosError, ENT_QUOTES, 'UTF-8'); ?></p>
+                    <?php endif; ?>
 
-                    <div class="progress">
-                        <div class="bar" style="width: <?php echo (int) $kpiMachote['avance']; ?>%"></div>
+                    <div class="actions">
+                        <a class="btn ghost" href="../convenio/convenio_list.php">Ver convenios</a>
+                        <a class="btn primary" href="../convenio/convenio_add.php">Nuevo convenio</a>
                     </div>
-                    <div class="kpi-sub">Avance: <?php echo htmlspecialchars((string) $kpiMachote['avance']); ?>%</div>
                 </article>
 
                 <!-- DOCUMENTOS -->
@@ -180,86 +185,85 @@ $shortcuts = [
                         <span class="kpi-pill">Documentación legal</span>
                     </div>
 
-                    <h3 class="kpi-title">Documentación</h3>
+                    <h3 class="kpi-title">Documentos por aprobar</h3>
                     <div class="kpi-value">
-                        <?php echo htmlspecialchars((string) $kpiDocs['aprobados']); ?>/<?php echo htmlspecialchars((string) $kpiDocs['total']); ?>
-                        aprobados
-                    </div>
-
-                    <div class="progress">
-                        <div class="bar" style="width: <?php echo $docsPercent; ?>%"></div>
+                        <?php echo (int) $docsStats['revision']; ?>
                     </div>
 
                     <div class="kpi-sub">
-                        Pendientes: <?php echo htmlspecialchars((string) $kpiDocs['pendientes']); ?> · Avance:
-                        <?php echo $docsPercent; ?>%
-                    </div>
-                </article>
-
-                <!-- ESTUDIANTES -->
-                <article class="kpi-card pink">
-                    <div class="spaced">
-                        <div class="kpi-icon">E</div>
-                        <span class="kpi-pill">Estudiantes</span>
+                        En revisión
                     </div>
 
-                    <h3 class="kpi-title">Asignaciones</h3>
-                    <div class="kpi-value"><?php echo htmlspecialchars((string) $kpiEstudiantes['asignados']); ?></div>
-                    <div class="kpi-sub">Activos: <?php echo htmlspecialchars((string) $kpiEstudiantes['activos']); ?>
+                    <div class="actions">
+                        <a class="btn ghost" href="../documentos/documento_list.php">Ver documentos</a>
                     </div>
-                    <div class="kpi-sub">Sin asignar:
-                        <?php echo htmlspecialchars((string) $kpiEstudiantes['sinAsignar']); ?></div>
                 </article>
 
             </section>
 
             <!-- ===================================== -->
-            <!--   TIMELINE DEL CONVENIO               -->
+            <!--   DOCUMENTOS EN REVISIÓN              -->
             <!-- ===================================== -->
             <section class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Línea de tiempo del convenio</h3>
-                    <span class="pill">Ciclo completo</span>
+                    <h3 class="card-title">Documentos en revisión</h3>
+                    <span class="pill accent">
+                        <?php echo empty($docsEnRevision) ? 'Sin pendientes' : count($docsEnRevision) . ' por revisar'; ?>
+                    </span>
                 </div>
 
-                <div class="flow">
-                    <?php foreach ($timelineConvenio as $step): ?>
-                        <?php
-                        $statusClass =
-                            $step['estado'] === 'completo' ? 'ok' :
-                            ($step['estado'] === 'incompleto' ? 'warn' : 'pending');
-
-                        $statusLabel =
-                            $step['estado'] === 'completo' ? '✔ Completo' :
-                            ($step['estado'] === 'incompleto' ? '⚠ Incompleto' : 'Pendiente');
-                        ?>
-
-                        <div class="flow-step">
-                            <span class="status <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
-                            <div class="label"><?php echo htmlspecialchars($step['etapa']); ?></div>
-                            <div class="desc"><?php echo htmlspecialchars($step['detalle']); ?></div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </section>
-
-            <!-- ===================================== -->
-            <!--   ÚLTIMAS ACTIVIDADES                 -->
-            <!-- ===================================== -->
-            <section class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Últimas actividades</h3>
-                    <span class="pill accent">Historial</span>
-                </div>
-
-                <?php if (empty($actividadesRecientes)): ?>
-                    <p class="muted">No hay actividades recientes.</p>
+                <?php if (!empty($docsError)): ?>
+                    <p class="muted"><?php echo htmlspecialchars((string) $docsError, ENT_QUOTES, 'UTF-8'); ?></p>
+                <?php elseif (empty($docsEnRevision)): ?>
+                    <p class="muted">No hay documentos en revisión.</p>
                 <?php else: ?>
-                    <ul class="activity-list">
-                        <?php foreach ($actividadesRecientes as $act): ?>
-                            <li class="activity-item">
-                                <span class="activity-time"><?php echo htmlspecialchars($act['tiempo']); ?></span>
-                                <span class="activity-detail"><?php echo htmlspecialchars($act['detalle']); ?></span>
+                    <ul class="task-list">
+                        <?php foreach ($docsEnRevision as $doc): ?>
+                            <li class="task-item">
+                                <div>
+                                    <strong><?php echo htmlspecialchars((string) ($doc['empresa_nombre'] ?? 'Empresa')); ?></strong><br>
+                                    <?php echo htmlspecialchars((string) ($doc['tipo_nombre'] ?? 'Documento')); ?>
+                                </div>
+                                <a class="btn small primary"
+                                   href="../documentos/documento_review.php?id=<?php echo (int) ($doc['id'] ?? 0); ?>">
+                                    Revisar
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </section>
+
+            <!-- ===================================== -->
+            <!--   COMENTARIOS DE MACHOTE EN REVISIÓN  -->
+            <!-- ===================================== -->
+            <section class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Comentarios de machote en revisión</h3>
+                    <span class="pill accent">
+                        <?php echo (int) $comentariosStats['abiertos']; ?> abiertos
+                    </span>
+                </div>
+
+                <?php if (!empty($comentariosError)): ?>
+                    <p class="muted"><?php echo htmlspecialchars((string) $comentariosError, ENT_QUOTES, 'UTF-8'); ?></p>
+                <?php elseif (empty($comentariosRevision)): ?>
+                    <p class="muted">No hay comentarios en revisión.</p>
+                <?php else: ?>
+                    <ul class="task-list">
+                        <?php foreach ($comentariosRevision as $comentario): ?>
+                            <li class="task-item">
+                                <div>
+                                    <strong><?php echo htmlspecialchars((string) ($comentario['empresa_nombre'] ?? 'Empresa')); ?></strong><br>
+                                    <?php echo htmlspecialchars((string) ($comentario['asunto'] ?? 'Comentario')); ?> ·
+                                    Machote <?php echo htmlspecialchars((string) ($comentario['machote_version'] ?? '')); ?> ·
+                                    <?php echo htmlspecialchars((string) ($comentario['estatus'] ?? '')); ?>
+                                </div>
+
+                                <a class="btn small primary"
+                                   href="../machote/machote_revisar.php?id=<?php echo (int) ($comentario['revision_id'] ?? 0); ?>">
+                                    Abrir
+                                </a>
                             </li>
                         <?php endforeach; ?>
                     </ul>
