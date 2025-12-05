@@ -5,6 +5,7 @@ declare(strict_types=1);
  *     empresaId: ?int,
  *     empresa: ?array<string, mixed>,
  *     conveniosActivos: array<int, array<string, mixed>>,
+ *     conveniosArchivados: array<int, array<string, mixed>>,
  *     controllerError: ?string,
  *     notFoundMessage: ?string,
  *     inputError: ?string,
@@ -25,6 +26,7 @@ $notFoundMessage = $preparedData['notFoundMessage'];
 $inputError = $preparedData['inputError'];
 $successMessage = $preparedData['successMessage'] ?? null;
 $conveniosActivos = $preparedData['conveniosActivos'] ?? [];
+$conveniosArchivados = $preparedData['conveniosArchivados'] ?? [];
 $documentos = $preparedData['documentos'] ?? [];
 $documentosStats = $preparedData['documentosStats'] ?? [];
 $documentosGestionUrl = $preparedData['documentosGestionUrl'] ?? null;
@@ -266,6 +268,56 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Nuevo Convenio</a>
             </div>
           <?php endif; ?>
+        </div>
+      </section>
+
+      <!-- 🗂️ Convenios archivados -->
+      <section class="card">
+        <header>🗂️ Convenios archivados (solo lectura)</header>
+        <div class="content">
+          <table>
+            <thead>
+              <tr>
+                <th>ID archivo</th>
+                <th>Convenio original</th>
+                <th>Fecha de archivo</th>
+                <th>Motivo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php if ($controllerError !== null || $inputError !== null || $notFoundMessage !== null): ?>
+                <tr>
+                  <td colspan="5" style="text-align:center;">No hay convenios archivados disponibles.</td>
+                </tr>
+              <?php elseif ($conveniosArchivados === []): ?>
+                <tr>
+                  <td colspan="5" style="text-align:center;">Esta empresa aún no tiene convenios archivados.</td>
+                </tr>
+              <?php else: ?>
+                <?php foreach ($conveniosArchivados as $convenioArchivado): ?>
+                  <?php
+                  $archivoIdLabel = (string) ($convenioArchivado['id_label'] ?? '#');
+                  $convenioOriginalLabel = (string) ($convenioArchivado['convenio_original_label'] ?? 'N/A');
+                  $fechaArchivoLabel = (string) ($convenioArchivado['fecha_archivo_label'] ?? 'Sin fecha');
+                  $motivoLabel = (string) ($convenioArchivado['motivo_label'] ?? '—');
+                  $archivoViewUrl = isset($convenioArchivado['view_url']) ? (string) $convenioArchivado['view_url'] : null;
+                  ?>
+                  <tr>
+                    <td><?php echo htmlspecialchars($archivoIdLabel, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($convenioOriginalLabel, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($fechaArchivoLabel, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($motivoLabel, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td>
+                      <?php if ($archivoViewUrl !== null): ?>
+                        <a href="<?php echo htmlspecialchars($archivoViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️ Ver</a>
+                      <?php endif; ?>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </tbody>
+          </table>
         </div>
       </section>
 

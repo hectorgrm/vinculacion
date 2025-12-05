@@ -100,6 +100,32 @@ class EmpresaViewModel
     /**
      * @return array<int, array<string, mixed>>
      */
+    public function findArchivadosByEmpresaId(int $empresaId): array
+    {
+        $sql = <<<'SQL'
+            SELECT id,
+                   empresa_id,
+                   convenio_id_original,
+                   fecha_archivo,
+                   motivo
+              FROM rp_convenio_archivado
+             WHERE empresa_id = :empresa_id
+             ORDER BY fecha_archivo DESC,
+                      id DESC
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        /** @var array<int, array<string, mixed>> $records */
+        $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $records;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findEstudiantesByEmpresa(int $empresaId): array
     {
         $sql = <<<'SQL'
@@ -300,6 +326,7 @@ class EmpresaViewModel
               FROM rp_convenio_machote AS cm
               INNER JOIN rp_convenio AS c ON c.id = cm.convenio_id
              WHERE c.empresa_id = :empresa_id
+               AND c.estatus IN ('Activa', 'En revisiA3n', 'En revisión', 'Suspendida')
              ORDER BY cm.actualizado_en DESC, cm.id DESC
              LIMIT 1
         SQL;

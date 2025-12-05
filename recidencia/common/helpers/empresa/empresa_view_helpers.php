@@ -18,6 +18,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
         $inputError = $handlerResult['inputError'] ?? null;
         $successMessage = $handlerResult['successMessage'] ?? null;
         $conveniosActivos = $handlerResult['conveniosActivos'] ?? [];
+        $conveniosArchivados = $handlerResult['conveniosArchivados'] ?? [];
         $estudiantes = $handlerResult['estudiantes'] ?? [];
 
         if (!is_array($estudiantes)) {
@@ -26,6 +27,10 @@ if (!function_exists('empresaViewBuildHeaderData')) {
 
         if (!is_array($conveniosActivos)) {
             $conveniosActivos = [];
+        }
+
+        if (!is_array($conveniosArchivados)) {
+            $conveniosArchivados = [];
         }
 
         $nombre = 'Sin datos';
@@ -110,6 +115,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             'inputError' => $inputError,
             'successMessage' => $successMessage,
             'conveniosActivos' => $conveniosActivos,
+            'conveniosArchivados' => $conveniosArchivados,
             'nombre' => $nombre,
             'rfc' => $rfc,
             'representante' => $representante,

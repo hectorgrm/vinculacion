@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-$handlerResult = require __DIR__ . '/../../handler/convenio/convenio_delete_handler.php';
+$handlerResult = require __DIR__ . '/../../handler/convenio/convenio_archivar_handler.php';
 
 $controllerError = $handlerResult['controllerError'];
 $errors = $handlerResult['errors'];
@@ -57,6 +57,20 @@ $empresaIsInactiva = $handlerResult['empresaIsInactiva'] ?? false;
         <header>Confirmación requerida</header>
 
         <div class="content">
+
+          <?php if ($successMessage !== null): ?>
+            <div class="alert success"><?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?></div>
+          <?php endif; ?>
+
+          <?php if (!empty($errors)): ?>
+            <div class="alert danger">
+              <ul>
+                <?php foreach ($errors as $error): ?>
+                  <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+          <?php endif; ?>
 
           <p>
             Estás a punto de <strong>archivar permanentemente</strong> el convenio
@@ -114,7 +128,8 @@ $empresaIsInactiva = $handlerResult['empresaIsInactiva'] ?? false;
               value="<?php echo htmlspecialchars($empresaIdDisplay, ENT_QUOTES, 'UTF-8'); ?>">
 
             <label style="display:flex; gap:8px; align-items:flex-start; margin:12px 0;">
-              <input type="checkbox" name="confirm" value="1" <?php echo $confirmChecked ? 'checked' : ''; ?>>
+              <input type="checkbox" name="confirm" value="1" <?php echo $confirmChecked ? 'checked' : ''; ?>
+                <?php echo $formDisabled ? 'disabled' : ''; ?>>
               <span>Confirmo que comprendo que esta acción es <strong>permanente</strong> y deseo archivar este convenio
                 definitivamente.</span>
             </label>
@@ -122,13 +137,13 @@ $empresaIsInactiva = $handlerResult['empresaIsInactiva'] ?? false;
             <div class="field" style="margin-top:10px;">
               <label for="motivo">Motivo (opcional)</label>
               <textarea id="motivo" name="motivo" rows="3"
-                placeholder="Describe brevemente el motivo..."><?php echo htmlspecialchars($motivoValue, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                placeholder="Describe brevemente el motivo..." <?php echo $formDisabled ? 'disabled' : ''; ?>><?php echo htmlspecialchars($motivoValue, ENT_QUOTES, 'UTF-8'); ?></textarea>
             </div>
 
             <div class="actions" style="justify-content:flex-end;">
               <a href="convenio_view.php?id=<?php echo htmlspecialchars($convenioIdDisplay, ENT_QUOTES, 'UTF-8'); ?>"
                 class="btn secondary">Cancelar</a>
-              <button type="submit" class="btn danger">Archivar Convenio</button>
+              <button type="submit" class="btn danger" <?php echo $formDisabled ? 'disabled' : ''; ?>>Archivar Convenio</button>
             </div>
           </form>
 
