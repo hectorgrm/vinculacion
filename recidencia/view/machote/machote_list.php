@@ -77,14 +77,8 @@ $searchTerm = $search ?? '';
                       <td><?= htmlspecialchars($machote['fecha'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?= $machote['badge'] ?? '<span class="badge gris">&mdash;</span>'; ?></td>
                       <td class="actions">
-                        <a href="machote_revisar.php?id=<?= urlencode((string)($machote['id'] ?? '')); ?>" class="btn small primary">Revisar</a>
+                        <a href="machote_revisar.php?id=<?= urlencode((string)($machote['id'] ?? '')); ?>" class="btn small primary">Revisar comentarios</a>
                         <a href="machote_edit.php?id=<?= urlencode((string)($machote['id'] ?? '')); ?>" class="btn small">Editar</a>
-                        <a href="machote_view.php?id=<?= urlencode((string)($machote['id'] ?? '')); ?>" class="btn small secondary">Ver</a>
-                        <a
-                          href="machote_delete.php?id=<?= urlencode((string)($machote['id'] ?? '')); ?>"
-                          class="btn small danger"
-                          onclick="return confirm('¿Eliminar este machote?');"
-                        >Eliminar</a>
                       </td>
                     </tr>
                   <?php endforeach; ?>

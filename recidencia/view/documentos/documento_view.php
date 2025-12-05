@@ -42,6 +42,9 @@ if ($tipoPersonalizadoId !== null && $tipoPersonalizadoId <= 0) {
 $tipoOrigen = $document['tipo_origen'] ?? 'global';
 $empresaEstatus = $document !== null && isset($document['empresa_estatus']) ? (string) $document['empresa_estatus'] : '';
 $empresaIsCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
+$documentoArchivado = $document !== null && isset($document['estatus'])
+  ? (strcasecmp(trim((string) $document['estatus']), 'Archivado') === 0)
+  : false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -301,7 +304,7 @@ $empresaIsCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
           </div>
         </section>
 
-        <?php if ($document['estatus'] === 'aprobado' && !$empresaIsCompletada): ?>
+        <?php if ($document['estatus'] === 'aprobado' && !$empresaIsCompletada && !$documentoArchivado): ?>
           <section class="card">
             <header>&#128260; Reabrir revisi&oacute;n</header>
             <div class="content">
@@ -320,7 +323,7 @@ $empresaIsCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
         <?php endif; ?>
 
         <div class="actions">
-          <?php if (!$empresaIsCompletada): ?>
+          <?php if (!$empresaIsCompletada && !$documentoArchivado): ?>
             <a href="documento_delete.php?id=<?php echo urlencode((string) $document['id']); ?>" class="btn danger">Eliminar
               documento</a>
           <?php else: ?>

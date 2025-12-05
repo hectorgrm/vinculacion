@@ -23,6 +23,8 @@ function machote_estado_badge(?string $estado): string
             return '<span class="badge en_revision">En revisi&oacute;n</span>';
         case 'con observaciones':
             return '<span class="badge warn">Con observaciones</span>';
+        case 'archivado':
+            return '<span class="badge archivado">Archivado</span>';
         case 'cancelado':
             return '<span class="badge err">Cancelado</span>';
         default:

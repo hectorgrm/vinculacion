@@ -35,8 +35,15 @@ $convenioId = $machote['convenio_id'] ?? null;
 $contenidoEscapado = $contenido;
 $empresaEstatus = isset($empresa['estatus']) ? (string) $empresa['estatus'] : '';
 $empresaInactiva = strcasecmp(trim($empresaEstatus), 'Inactiva') === 0;
+$machoteEstatus = isset($machote['estatus']) ? (string) $machote['estatus'] : '';
+$machoteArchivado = strcasecmp(trim($machoteEstatus), 'Archivado') === 0;
 $machoteConfirmado = (int) ($machote['confirmacion_empresa'] ?? 0) === 1;
-$machoteBloqueado = $machoteConfirmado || $empresaInactiva;
+$machoteBloqueado = $machoteConfirmado || $empresaInactiva || $machoteArchivado;
+$bloqueoMensaje = $machoteArchivado
+    ? 'El machote estA? archivado; solo lectura.'
+    : ($empresaInactiva
+        ? 'Machote invalidado por empresa Inactiva; solo lectura.'
+        : 'El machote ya fue confirmado por la empresa. Reabre la revisiA3n para habilitar nuevamente la ediciA3n.');
 
 $editorAction = '../../handler/machote/machote_update_handler.php';
 $volverUrl = $convenioId
@@ -68,7 +75,7 @@ $pdfUrl = '../../handler/machote/machote_generate_pdf.php?id=' . urlencode((stri
             <header>Documento Editable</header>
             <div class="content">
                 <?php if ($machoteBloqueado): ?>
-                    <p class="text-muted" style="margin:0 0 12px;">El machote ya fue confirmado por la empresa. Reabre la revisión para habilitar nuevamente la edición.</p>
+                    <p class="text-muted" style="margin:0 0 12px;"><?= htmlspecialchars($bloqueoMensaje) ?></p>
                 <?php endif; ?>
                 <form method="POST" action="<?= htmlspecialchars($editorAction) ?>">
                     <input type="hidden" name="id" value="<?= htmlspecialchars((string)$machoteId) ?>">

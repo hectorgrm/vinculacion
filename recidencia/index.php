@@ -47,6 +47,7 @@ if (!is_array($user) || !in_array(strtolower((string) ($user['role'] ?? '')), $a
       </nav>
     </aside>
 
+    
     <!-- Main -->
     <main class="main">
       <header class="topbar">

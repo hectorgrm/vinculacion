@@ -51,6 +51,10 @@ $machoteActualizadoLabel = $metadata['machoteActualizadoLabel'];
 $machoteBloqueado = $metadata['machoteBloqueado'];
 $machoteEstatus = $metadata['machoteEstatus'];
 $empresaEsCompletada = $metadata['empresaEsCompletada'] ?? false;
+$convenioEstatus = isset($convenio['estatus']) ? (string) $convenio['estatus'] : '';
+$convenioEstatusGeneral = isset($convenio['estatus_general']) ? (string) $convenio['estatus_general'] : '';
+$convenioArchivado = strcasecmp(trim($convenioEstatus), 'Archivado') === 0
+    || strcasecmp(trim($convenioEstatusGeneral), 'Archivado') === 0;
 
 $machoteStatusParam = isset($_GET['machote_status']) ? (string) $_GET['machote_status'] : null;
 $machoteErrorParam = isset($_GET['machote_error']) ? (string) $_GET['machote_error'] : null;
@@ -178,10 +182,13 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                 <div class="top-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
                     <?php if ($empresaUrl !== null): ?>
                         <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">⬅️ Volver a empresa</a>
-                    <?php endif; ?>
-                    <?php if ($convenioId !== null): ?>
-                        <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn">✏️
-                            Editar</a>
+                    <?php endif; ?>                    <?php if ($convenioId !== null): ?>
+                        <?php if ($convenioArchivado): ?>
+                            <span class="btn" style="pointer-events:none;opacity:0.6;">Editar</span>
+                        <?php else: ?>
+                            <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn">?o??,?
+                                Editar</a>
+                        <?php endif; ?>
                     <?php endif; ?>
                     <?php if ($downloadUrl !== null): ?>
                         <a href="<?php echo htmlspecialchars($downloadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn"
@@ -365,7 +372,7 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                                 <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">🏢 Ver
                                     empresa</a>
                             <?php endif; ?>
-                            <?php if ($convenioPuedeSubir && $convenioId !== null): ?>
+                            <?php if ($convenioPuedeSubir && $convenioId !== null && !$convenioArchivado): ?>
                                 <form action="../../handler/convenio/convenio_upload_handler.php" method="post"
                                     enctype="multipart/form-data"
                                     style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
@@ -401,7 +408,7 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                                         <?php endif; ?>
                                     </div>
                                     <div class="actions" style="display:flex; gap:12px; flex-wrap:wrap;">
-                                        <?php if ($machoteBloqueado): ?>
+                                        <?php if ($convenioArchivado || $machoteBloqueado): ?>
                                             <button class="btn" type="button" disabled
                                                 title="El machote ya fue confirmado por la empresa. Reabre la revisión para volver a editarlo.">✏️
                                                 Editar machote</button>
@@ -423,7 +430,7 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                                             desde la vista de comentarios para habilitar la edición.</p>
                                     <?php endif; ?>
                                 </div>
-                            <?php elseif ($machoteGenerateUrl !== null): ?>
+                            <?php elseif ($machoteGenerateUrl !== null && !$convenioArchivado): ?>
                                 <a class="btn btn-outline"
                                     href="<?php echo htmlspecialchars($machoteGenerateUrl, ENT_QUOTES, 'UTF-8'); ?>">
                                     📄 Generar machote desde plantilla global
@@ -559,14 +566,19 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                 <section class="card">
                     <div class="content actions">
                         <?php if ($convenioId !== null): ?>
-                            <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">
-                                Editar Convenio</a>
-                            <?php if (!$empresaEsCompletada): ?>
-                                <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>"
-                                    class="btn danger">Desactivar Convenio</a>
+                            <?php if ($convenioArchivado): ?>
+                                <span class="btn primary" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Editar Convenio</span>
+                                <span class="btn danger" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Desactivar Convenio</span>
                             <?php else: ?>
-                                <span class="btn danger" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Desactivar
-                                    Convenio</span>
+                                <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">
+                                    Editar Convenio</a>
+                                <?php if (!$empresaEsCompletada): ?>
+                                    <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>"
+                                        class="btn danger">Desactivar Convenio</a>
+                                <?php else: ?>
+                                    <span class="btn danger" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Desactivar
+                                        Convenio</span>
+                                <?php endif; ?>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>

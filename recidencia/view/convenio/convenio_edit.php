@@ -23,6 +23,7 @@ $formDisabled = $handlerResult['formDisabled'] ?? false;
 $empresaIsCompletada = $handlerResult['empresaIsCompletada'] ?? false;
 $empresaEstatus = $handlerResult['empresaEstatus'] ?? '';
 $empresaIsInactiva = $handlerResult['empresaIsInactiva'] ?? false;
+$convenioArchivado = $handlerResult['convenioArchivado'] ?? false;
 
 ?>
 <!DOCTYPE html>
@@ -102,7 +103,11 @@ $empresaIsInactiva = $handlerResult['empresaIsInactiva'] ?? false;
           </div>
           <?php endif; ?>
 
-          <?php if ($empresaIsCompletada): ?>
+          <?php if ($convenioArchivado): ?>
+          <div class="alert alert-warning" style="margin-bottom:16px;">
+            Este convenio estA? en estatus <strong>Archivado</strong>. Se muestra en modo de solo lectura y no es posible editarlo.
+          </div>
+          <?php elseif ($empresaIsCompletada): ?>
           <div class="alert alert-warning" style="margin-bottom:16px;">
             La empresa estA? en estatus <strong>Completada</strong>. El convenio se muestra en modo de solo lectura y no
             es posible guardar cambios.

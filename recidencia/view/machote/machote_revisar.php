@@ -24,14 +24,18 @@ $currentUser     = is_array($currentUser ?? null) ? $currentUser : [];
 $currentUserId   = isset($currentUser['id']) ? (int) $currentUser['id'] : 0;
 $currentUserName = isset($currentUser['name']) ? (string) $currentUser['name'] : '';
 $uploadsBasePath = '../../uploads/';
+$machoteEstatus   = isset($machote['estatus']) ? (string) $machote['estatus'] : '';
+$machoteArchivado = strcasecmp(trim($machoteEstatus !== '' ? $machoteEstatus : (string) $estado), 'Archivado') === 0;
 $machoteConfirmado = (int) ($machote['confirmacion_empresa'] ?? 0) === 1;
-$machoteBloqueado = $machoteConfirmado || $empresaCompletada || $empresaInactiva;
+$machoteBloqueado = $machoteConfirmado || $empresaCompletada || $empresaInactiva || $machoteArchivado;
 $comentariosBloqueados = $machoteBloqueado;
-$bloqueoMensaje = $empresaCompletada
-    ? 'La empresa estA? en estatus Completada; la ediciA3n y los comentarios estA?n bloqueados.'
-    : ($empresaInactiva
-        ? 'Machote invalidado por empresa Inactiva; solo lectura.'
-        : 'Este documento fue confirmado por la empresa. Reabre la revisiA3n para habilitar nuevamente la ediciA3n.');
+$bloqueoMensaje = $machoteArchivado
+    ? 'El machote estA? archivado; solo lectura.'
+    : ($empresaCompletada
+        ? 'La empresa estA? en estatus Completada; la ediciA3n y los comentarios estA?n bloqueados.'
+        : ($empresaInactiva
+            ? 'Machote invalidado por empresa Inactiva; solo lectura.'
+            : 'Este documento fue confirmado por la empresa. Reabre la revisiA3n para habilitar nuevamente la ediciA3n.'));
 
 // KPIs
 $comentAbiertos  = (int) ($totales['pendientes'] ?? 0);
@@ -43,6 +47,7 @@ function badgeEstado(string $estado): string {
     'Aprobado'          => '<span class="badge aprobado">Aprobado</span>',
     'Con observaciones' => '<span class="badge con_observaciones">Con observaciones</span>',
     'En revisión'       => '<span class="badge en_revision">En revisión</span>',
+    'Archivado'         => '<span class="badge archivado">Archivado</span>',
   ];
   return $map[$estado] ?? '<span class="badge en_revision">En revisión</span>';
 }
@@ -187,7 +192,7 @@ if (!empty($_GET['reabrir_error'])) {
             <a href="../empresa/empresa_view.php?id=<?= (int) $empresaId ?>" class="btn secondary">Volver a la empresa</a>
           <?php endif; ?>
 
-          <?php if ($machoteBloqueado && !$empresaCompletada && !$empresaInactiva): ?>
+          <?php if ($machoteBloqueado && !$empresaCompletada && !$empresaInactiva && !$machoteArchivado): ?>
             <form
               class="inline-form"
               action="../../handler/machote/machote_reabrir_handler.php"
@@ -197,7 +202,7 @@ if (!empty($_GET['reabrir_error'])) {
               <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
               <button class="btn danger" type="submit">Reabrir revisión</button>
             </form>
-          <?php elseif ($empresaCompletada || $empresaInactiva): ?>
+          <?php elseif ($empresaCompletada || $empresaInactiva || $machoteArchivado): ?>
             <span class="btn danger" style="pointer-events:none;opacity:0.6;">Reabrir revisión</span>
           <?php endif; ?>
         </div>

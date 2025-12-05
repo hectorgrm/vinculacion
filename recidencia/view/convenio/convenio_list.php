@@ -91,6 +91,10 @@ $errorMessage = $handlerResult['errorMessage'];
                   </tr>
                 <?php else: ?>
                   <?php foreach ($convenios as $convenio): ?>
+                    <?php
+                      $estatusConvenio = isset($convenio['estatus']) ? (string) $convenio['estatus'] : '';
+                      $convenioArchivado = strcasecmp(trim($estatusConvenio), 'Archivado') === 0;
+                    ?>
                     <tr>
                       <td><?php echo htmlspecialchars((string) ($convenio['id'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['empresa_nombre'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
@@ -106,8 +110,10 @@ $errorMessage = $handlerResult['errorMessage'];
                       <td><?php echo htmlspecialchars(convenioFormatDateTime($convenio['actualizado_en'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td class="actions">
                         <a href="convenio_view.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn small secondary">Ver</a>
-                        <a href="convenio_edit.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn small">Editar</a>
-                        <a href="convenio_delete.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn small danger">Eliminar</a>
+                        <?php if (!$convenioArchivado): ?>
+                          <a href="convenio_edit.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn small">Editar</a>
+                          <a href="convenio_delete.php?id=<?php echo urlencode((string) ($convenio['id'] ?? '')); ?>" class="btn small danger">Eliminar</a>
+                        <?php endif; ?>
                       </td>
                     </tr>
                   <?php endforeach; ?>

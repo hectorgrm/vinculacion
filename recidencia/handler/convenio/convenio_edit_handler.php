@@ -76,4 +76,5 @@ return [
     'empresaEstatus' => '',
     'empresaIsCompletada' => false,
     'empresaIsInactiva' => false,
+    'convenioArchivado' => false,
 ];

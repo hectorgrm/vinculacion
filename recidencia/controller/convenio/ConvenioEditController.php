@@ -115,6 +115,16 @@ class ConvenioEditController
             }
         }
 
+        $convenioArchivado = false;
+
+        if ($convenio !== null && isset($convenio['estatus'])) {
+            $convenioArchivado = strcasecmp(trim((string) $convenio['estatus']), 'Archivado') === 0;
+        }
+
+        if ($convenio !== null && isset($convenio['estatus_general']) && !$convenioArchivado) {
+            $convenioArchivado = strcasecmp(trim((string) $convenio['estatus_general']), 'Archivado') === 0;
+        }
+
         if ($convenio !== null && isset($convenio['empresa_estatus'])) {
             $empresaEstatus = trim((string) $convenio['empresa_estatus']);
             $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
@@ -173,7 +183,7 @@ class ConvenioEditController
             ? convenioValueOrDefault($convenio['folio'] ?? null, 'Sin folio asignado')
             : 'Sin folio asignado';
         $links = $this->buildLinks($empresaData['id'], $convenioId);
-        $formDisabled = !$controllerAvailable || $empresaIsCompletada || $empresaIsInactiva;
+        $formDisabled = !$controllerAvailable || $empresaIsCompletada || $empresaIsInactiva || $convenioArchivado;
 
         return [
             'estatusOptions' => $estatusOptions,
@@ -197,6 +207,7 @@ class ConvenioEditController
             'empresaEstatus' => $empresaEstatus,
             'empresaIsCompletada' => $empresaIsCompletada,
             'empresaIsInactiva' => $empresaIsInactiva,
+            'convenioArchivado' => $convenioArchivado,
         ];
     }
 
