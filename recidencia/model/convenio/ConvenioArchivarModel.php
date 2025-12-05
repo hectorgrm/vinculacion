@@ -275,25 +275,25 @@ class ConvenioArchivarModel
 
     private function updateEstados(int $convenioId, int $empresaId): void
     {
-        $updateConvenio = $this->pdo->prepare('UPDATE rp_convenio SET estatus = "Inactiva" WHERE id = :id');
+        $updateConvenio = $this->pdo->prepare('UPDATE rp_convenio SET estatus = "Archivado" WHERE id = :id');
         $updateConvenio->execute([':id' => $convenioId]);
 
         $updateMachote = $this->pdo->prepare(
             'UPDATE rp_convenio_machote
-                SET estatus_general = "Cerrado",
-                    estatus = "Con observaciones"
+                SET estatus_general = "Archivado",
+                    estatus = "Archivado"
               WHERE convenio_id = :id'
         );
         $updateMachote->execute([':id' => $convenioId]);
 
         $updateComentarios = $this->pdo->prepare(
             'UPDATE rp_machote_comentario
-                SET estatus = "resuelto", estatus_general = "Cerrado"
+                SET estatus = "Archivado", estatus_general = "Archivado"
               WHERE machote_id IN (SELECT id FROM rp_convenio_machote WHERE convenio_id = :id)'
         );
         $updateComentarios->execute([':id' => $convenioId]);
 
-        $updateDocumentos = $this->pdo->prepare('UPDATE rp_empresa_doc SET estatus = "revision" WHERE empresa_id = :empresa_id');
+        $updateDocumentos = $this->pdo->prepare('UPDATE rp_empresa_doc SET estatus = "Archivado" WHERE empresa_id = :empresa_id');
         $updateDocumentos->execute([':empresa_id' => $empresaId]);
 
         $updateEstudiantes = $this->pdo->prepare('UPDATE rp_estudiante SET convenio_id = NULL WHERE convenio_id = :convenio_id');
@@ -304,14 +304,14 @@ class ConvenioArchivarModel
 
         $updateRevisiones = $this->pdo->prepare(
             'UPDATE rp_machote_revision
-                SET estado = "cancelado", cerrado_en = IFNULL(cerrado_en, NOW())
+                SET estado = "Archivado", cerrado_en = IFNULL(cerrado_en, NOW())
               WHERE empresa_id = :empresa_id AND estado <> "acordado"'
         );
         $updateRevisiones->execute([':empresa_id' => $empresaId]);
 
         $updateRevisionMensajes = $this->pdo->prepare(
             'UPDATE rp_machote_revision_msg
-                SET estatus = "resuelto"
+                SET estatus = "Archivado"
               WHERE revision_id IN (SELECT id FROM rp_machote_revision WHERE empresa_id = :empresa_id)'
         );
         $updateRevisionMensajes->execute([':empresa_id' => $empresaId]);
