@@ -10,7 +10,7 @@ use Residencia\Controller\Dashboard\DashboardComentarioController;
 if (!function_exists('dashboardComentarioHandler')) {
     /**
      * @return array{
-     *     comentariosStats: array{total: int, abiertos: int, resueltos: int},
+     *     comentariosStats: array{total: int, abiertos: int, resueltos: int, archivados: int, revisiones: int},
      *     comentariosRevision: array<int, array<string, mixed>>,
      *     comentariosError: ?string
      * }

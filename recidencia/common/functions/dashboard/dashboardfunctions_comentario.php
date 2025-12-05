@@ -5,7 +5,7 @@ declare(strict_types=1);
 if (!function_exists('dashboardComentarioDefaults')) {
     /**
      * @return array{
-     *     comentariosStats: array{total: int, abiertos: int, resueltos: int},
+     *     comentariosStats: array{total: int, abiertos: int, resueltos: int, archivados: int, revisiones: int},
      *     comentariosRevision: array<int, array<string, mixed>>,
      *     comentariosError: ?string
      * }
@@ -17,6 +17,8 @@ if (!function_exists('dashboardComentarioDefaults')) {
                 'total' => 0,
                 'abiertos' => 0,
                 'resueltos' => 0,
+                'archivados' => 0,
+                'revisiones' => 0,
             ],
             'comentariosRevision' => [],
             'comentariosError' => null,

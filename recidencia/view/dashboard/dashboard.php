@@ -100,7 +100,7 @@ $shortcuts = [
             <!-- ===================================== -->
             <!--   ALERTAS CRÍTICAS                    -->
             <!-- ===================================== -->
-            <section class="card alert-card">
+            <!-- <section class="card alert-card">
                 <div class="card-header">
                     <h3 class="card-title">Pendientes críticos</h3>
                     <span class="pill warning">
@@ -126,7 +126,7 @@ $shortcuts = [
                         <?php endforeach; ?>
                     </ul>
                 <?php endif; ?>
-            </section>
+            </section> -->
 
             <!-- ===================================== -->
             <!--   KPIs SIMPLES (EMPRESAS / CONVENIOS / DOCS) -->
@@ -194,12 +194,43 @@ $shortcuts = [
                         En revisión
                     </div>
 
-                    <div class="actions">
-                        <a class="btn ghost" href="../documentos/documento_list.php">Ver documentos</a>
-                    </div>
-                </article>
+                  <div class="actions">
+                      <a class="btn ghost" href="../documentos/documento_list.php">Ver documentos</a>
+                  </div>
+              </article>
 
-            </section>
+              <!-- MACHOTES / COMENTARIOS -->
+              <article class="kpi-card pink">
+                  <div class="spaced">
+                      <div class="kpi-icon">M</div>
+                      <div class="inline">
+                          <span class="kpi-pill">Machotes</span>
+                          <span class="pill warning">
+                              <?php echo (int) $comentariosStats['revisiones']; ?> en revision
+                          </span>
+                      </div>
+                  </div>
+
+                  <h3 class="kpi-title">Comentarios en revision</h3>
+
+                  <div class="stat">
+                      <div class="number"><?php echo (int) $comentariosStats['abiertos']; ?></div>
+                      <div class="label">Comentarios abiertos</div>
+                  </div>
+
+                  <ul class="simple-list">
+                      <li>Resueltos: <strong><?php echo (int) $comentariosStats['resueltos']; ?></strong></li>
+                      <li>Archivados: <strong><?php echo (int) $comentariosStats['archivados']; ?></strong></li>
+                      <li>Total mensajes: <strong><?php echo (int) $comentariosStats['total']; ?></strong></li>
+                  </ul>
+
+                  <div class="actions">
+                      <a class="btn ghost" href="../machote/machote_list.php">Ver revisiones</a>
+                      <a class="btn primary" href="../machote/machote_list.php?estado=en_revision">Pendientes</a>
+                  </div>
+              </article>
+
+          </section>
 
             <!-- ===================================== -->
             <!--   DOCUMENTOS EN REVISIÓN              -->
@@ -235,29 +266,62 @@ $shortcuts = [
             </section>
 
             <!-- ===================================== -->
-            <!--   COMENTARIOS DE MACHOTE EN REVISIÓN  -->
+            <!--   COMENTARIOS DE MACHOTE EN REVISION  -->
             <!-- ===================================== -->
             <section class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Comentarios de machote en revisión</h3>
-                    <span class="pill accent">
-                        <?php echo (int) $comentariosStats['abiertos']; ?> abiertos
-                    </span>
+                    <div>
+                        <h3 class="card-title">Comentarios de machote en revision</h3>
+                        <p class="card-subtitle">
+                            Revisiones activas: <?php echo (int) $comentariosStats['revisiones']; ?>
+                        </p>
+                    </div>
+                    <div class="inline">
+                        <span class="pill warning">
+                            Abiertos <?php echo (int) $comentariosStats['abiertos']; ?>
+                        </span>
+                        <span class="pill accent">
+                            Resueltos <?php echo (int) $comentariosStats['resueltos']; ?>
+                        </span>
+                        <span class="pill">
+                            Archivados <?php echo (int) $comentariosStats['archivados']; ?>
+                        </span>
+                    </div>
                 </div>
 
                 <?php if (!empty($comentariosError)): ?>
                     <p class="muted"><?php echo htmlspecialchars((string) $comentariosError, ENT_QUOTES, 'UTF-8'); ?></p>
                 <?php elseif (empty($comentariosRevision)): ?>
-                    <p class="muted">No hay comentarios en revisión.</p>
+                    <p class="muted">No hay comentarios en revision.</p>
                 <?php else: ?>
                     <ul class="task-list">
                         <?php foreach ($comentariosRevision as $comentario): ?>
+                            <?php
+                            $estatus = strtolower((string) ($comentario['estado'] ?? ''));
+                            $pillClass = $estatus === 'en_revision' ? 'warning' : ($estatus === 'acordado' ? 'accent' : '');
+                            $estadoLabel = $estatus !== '' ? str_replace('_', ' ', ucfirst($estatus)) : 'Revision';
+                            $abiertos = (int) ($comentario['abiertos'] ?? 0);
+                            $resueltos = (int) ($comentario['resueltos'] ?? 0);
+                            $total = (int) ($comentario['total'] ?? 0);
+                            $progreso = max(0, min(100, (int) ($comentario['progreso'] ?? 0)));
+                            $empresaNombre = (string) ($comentario['empresa_nombre'] ?? 'Empresa');
+                            $versionMachote = trim((string) ($comentario['machote_version'] ?? ''));
+                            ?>
                             <li class="task-item">
-                                <div>
-                                    <strong><?php echo htmlspecialchars((string) ($comentario['empresa_nombre'] ?? 'Empresa')); ?></strong><br>
-                                    <?php echo htmlspecialchars((string) ($comentario['asunto'] ?? 'Comentario')); ?> ·
-                                    Machote <?php echo htmlspecialchars((string) ($comentario['machote_version'] ?? '')); ?> ·
-                                    <?php echo htmlspecialchars((string) ($comentario['estatus'] ?? '')); ?>
+                                <div class="task-meta">
+                                    <div class="inline">
+                                        <strong><?php echo htmlspecialchars($empresaNombre); ?></strong>
+                                        <span class="pill <?php echo $pillClass; ?>">
+                                            <?php echo htmlspecialchars($estadoLabel); ?>
+                                        </span>
+                                    </div>
+                                    <div class="muted">
+                                        Machote <?php echo htmlspecialchars($versionMachote); ?> &middot; <?php echo $abiertos; ?> abiertos de <?php echo $total; ?> comentarios
+                                    </div>
+                                    <div class="progress">
+                                        <div class="bar" style="width: <?php echo $progreso; ?>%"></div>
+                                    </div>
+                                    <small class="muted"><?php echo $progreso; ?>% completado | <?php echo $resueltos; ?> resueltos</small>
                                 </div>
 
                                 <a class="btn small primary"
@@ -269,9 +333,7 @@ $shortcuts = [
                     </ul>
                 <?php endif; ?>
             </section>
-
-            <!-- ===================================== -->
-            <!--   ACCESOS RÁPIDOS                     -->
+<!--   ACCESOS RÁPIDOS                     -->
             <!-- ===================================== -->
             <section class="card">
                 <div class="card-header">

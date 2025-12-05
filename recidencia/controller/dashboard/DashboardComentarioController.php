@@ -24,7 +24,7 @@ class DashboardComentarioController
     }
 
     /**
-     * @return array{total: int, abiertos: int, resueltos: int}
+     * @return array{total: int, abiertos: int, resueltos: int, archivados: int, revisiones: int}
      */
     public function getStats(): array
     {
@@ -53,8 +53,22 @@ class DashboardComentarioController
     }
 
     /**
+     * @param int $limit
+     * @return array<int, array<string, mixed>>
+     */
+    public function getRevisiones(int $limit = 6): array
+    {
+        try {
+            return $this->model->fetchRevisiones($limit);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudieron obtener las revisiones de machote.', 0, $exception);
+        }
+    }
+
+
+    /**
      * @return array{
-     *     comentariosStats: array{total: int, abiertos: int, resueltos: int},
+     *     comentariosStats: array{total: int, abiertos: int, resueltos: int, archivados: int, revisiones: int},
      *     comentariosRevision: array<int, array<string, mixed>>,
      *     comentariosError: ?string
      * }
@@ -65,7 +79,7 @@ class DashboardComentarioController
 
         try {
             $result['comentariosStats'] = $this->getStats();
-            $result['comentariosRevision'] = $this->getComentarios();
+            $result['comentariosRevision'] = $this->getRevisiones();
         } catch (RuntimeException $exception) {
             $result['comentariosError'] = dashboardComentarioErrorMessage($exception->getMessage());
         }
