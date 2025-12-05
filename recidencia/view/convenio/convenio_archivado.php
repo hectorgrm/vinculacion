@@ -39,6 +39,22 @@ $responsable = $convenioResumen['responsable_academico'] ?? '—';
 $tipoConvenio = $convenioResumen['tipo_convenio'] ?? '—';
 $fechaInicio = $convenioResumen['fecha_inicio'] ?? '—';
 $fechaFin = $convenioResumen['fecha_fin'] ?? '—';
+
+$snapshotConvenio = $snapshot['convenio'] ?? [];
+$snapshotMachote = $snapshot['machote'] ?? [];
+$snapshotRevisiones = $snapshot['machote_revisiones'] ?? [];
+$snapshotRevisionMsgs = $snapshot['machote_revision_mensajes'] ?? [];
+$snapshotRevisionFiles = $snapshot['machote_revision_archivos'] ?? [];
+$snapshotComentarios = $snapshot['comentarios'] ?? [];
+$snapshotDocumentos = $snapshot['documentos'] ?? [];
+$snapshotEstudiantes = $snapshot['estudiantes'] ?? [];
+$snapshotAsignaciones = $snapshot['asignaciones'] ?? [];
+$snapshotAuditoria = $snapshot['auditoria_detalle'] ?? ($snapshot['bitacora'] ?? []);
+$snapshotMetadataRaw = $snapshot['metadata'] ?? [];
+$snapshotMetadata = [];
+if ($snapshotMetadataRaw !== [] && is_array($snapshotMetadataRaw)) {
+    $snapshotMetadata = array_values($snapshotMetadataRaw) === $snapshotMetadataRaw ? $snapshotMetadataRaw : [$snapshotMetadataRaw];
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -48,6 +64,39 @@ $fechaFin = $convenioResumen['fecha_fin'] ?? '—';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Convenio Archivado | Residencias Profesionales</title>
   <link rel="stylesheet" href="../../assets/css/modules/convenio/convenioarchiva.css" />
+  <style>
+    .accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .accordion-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: var(--panel-strong);
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+    }
+
+    .accordion-body {
+      padding: 16px;
+      display: none;
+    }
+
+    .accordion-item.open .accordion-body {
+      display: block;
+    }
+  </style>
 </head>
 
 <body>
@@ -138,19 +187,84 @@ $fechaFin = $convenioResumen['fecha_fin'] ?? '—';
           </div>
         </section>
 
-        <div class="snapshot-grid">
-          <?php foreach ($snapshotSections as $section): ?>
-            <section class="card snapshot-card">
-              <header><?php echo htmlspecialchars($section['title'], ENT_QUOTES, 'UTF-8'); ?></header>
-              <div class="content">
-                <?php echo renderSnapshotTable(is_array($section['data']) ? $section['data'] : []); ?>
+        <section class="snapshot">
+          <h2>Snapshot del Convenio</h2>
+          <p class="subtitle">Todos los datos congelados al momento del archivado</p>
+
+          <div class="accordion">
+            <div class="accordion-item">
+              <button class="accordion-header">📄 Convenio</button>
+              <div class="accordion-body">
+                <?php echo renderSnapshotTable(is_array($snapshotConvenio) ? $snapshotConvenio : []); ?>
               </div>
-            </section>
-          <?php endforeach; ?>
-        </div>
+            </div>
+
+            <div class="accordion-item">
+              <button class="accordion-header">📝 Machote y Revisiones</button>
+              <div class="accordion-body">
+                <h4>Machote</h4>
+                <?php echo renderSnapshotTable(is_array($snapshotMachote) ? $snapshotMachote : []); ?>
+
+                <h4>Revisiones</h4>
+                <?php echo renderSnapshotTable(is_array($snapshotRevisiones) ? $snapshotRevisiones : []); ?>
+
+                <h4>Mensajes de Revisión</h4>
+                <?php echo renderSnapshotTable(is_array($snapshotRevisionMsgs) ? $snapshotRevisionMsgs : []); ?>
+
+                <h4>Archivos de Revisión</h4>
+                <?php echo renderSnapshotTable(is_array($snapshotRevisionFiles) ? $snapshotRevisionFiles : []); ?>
+
+                <h4>Comentarios</h4>
+                <?php echo renderSnapshotTable(is_array($snapshotComentarios) ? $snapshotComentarios : []); ?>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <button class="accordion-header">📂 Documentos</button>
+              <div class="accordion-body">
+                <?php echo renderSnapshotTable(is_array($snapshotDocumentos) ? $snapshotDocumentos : []); ?>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <button class="accordion-header">👥 Estudiantes y Asignaciones</button>
+              <div class="accordion-body">
+                <h4>Estudiantes</h4>
+                <?php echo renderSnapshotTable(is_array($snapshotEstudiantes) ? $snapshotEstudiantes : []); ?>
+
+                <h4>Asignaciones</h4>
+                <?php echo renderSnapshotTable(is_array($snapshotAsignaciones) ? $snapshotAsignaciones : []); ?>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <button class="accordion-header">🧾 Auditoría</button>
+              <div class="accordion-body">
+                <?php echo renderSnapshotTable(is_array($snapshotAuditoria) ? $snapshotAuditoria : []); ?>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <button class="accordion-header">🕒 Metadata del Archivado</button>
+              <div class="accordion-body">
+                <?php echo renderSnapshotTable(is_array($snapshotMetadata) ? $snapshotMetadata : []); ?>
+              </div>
+            </div>
+          </div>
+        </section>
       <?php endif; ?>
     </main>
   </div>
 </body>
+<script>
+  document.querySelectorAll('.accordion-header').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      if (item) {
+        item.classList.toggle('open');
+      }
+    });
+  });
+</script>
 
 </html>
