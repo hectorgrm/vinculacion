@@ -34,6 +34,7 @@ if (!is_array($user) || !in_array(strtolower((string) ($user['role'] ?? '')), $a
 
       <nav class="nav">
         <a href="index.php" class="active">🏠 Dashboard</a>
+        <a href="view/dashboard/dashboard.php" class="active">🏠 Dashboard</a>
         <a href="view/empresa/empresa_list.php">🏢 Empresas</a>
         <a href="view/convenio/convenio_list.php">📑 Convenios</a>
         <a href="view/documentos/documento_list.php">📂 Documentos</a>
@@ -47,7 +48,7 @@ if (!is_array($user) || !in_array(strtolower((string) ($user['role'] ?? '')), $a
       </nav>
     </aside>
 
-    
+
     <!-- Main -->
     <main class="main">
       <header class="topbar">
