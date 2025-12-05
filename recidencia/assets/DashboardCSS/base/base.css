@@ -7,7 +7,7 @@
 body {
   margin: 0;
   background: var(--bg-gradient);
-  color: #e6edf7;
+  color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
@@ -25,7 +25,7 @@ h3,
 h4 {
   font-family: var(--font-display);
   margin: 0;
-  color: #f4f7ff;
+  color: var(--ink-800);
 }
 
 p {
@@ -44,8 +44,8 @@ img {
   gap: 8px;
   padding: 6px 12px;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.06);
-  color: #d0defa;
+  background: var(--chip);
+  color: var(--primary-700);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;

@@ -1,7 +1,7 @@
 .progress {
   width: 100%;
   height: 8px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--surface-soft);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -10,5 +10,5 @@
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(120deg, var(--primary), var(--accent));
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 10px rgba(2, 6, 23, 0.08);
 }

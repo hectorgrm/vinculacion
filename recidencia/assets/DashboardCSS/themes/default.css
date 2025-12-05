@@ -1,34 +1,64 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap');
-
 :root {
-  /* Colores base para el dashboard */
-  --primary: #2447f9;
-  --primary-600: #1d38c7;
-  --primary-700: #142b9c;
-  --accent: #0fd6c9;
-  --accent-700: #0aa99f;
-  --warning: #ffb347;
-  --danger: #ef476f;
-  --ink: #0d1426;
-  --ink-700: #161d32;
-  --muted: #7a88a2;
-  --muted-weak: #d8deeb;
+  /* Paleta institucional TecMM */
+  --primary: #003366;
+  --primary-600: #00264d;
+  --primary-700: #001f3b;
+  --primary-500: #004080;
+
+  --accent: #2db980;
+  --accent-700: #1f7a50;
+
+  --success: #2db980;
+  --success-700: #1a6645;
+  --success-600: #1f7a50;
+  --success-500: #2db980;
+
+  --warning: #d4a017;
+  --warning-700: #8b6a00;
+  --warning-600: #a67c00;
+  --warning-300: #f0d479;
+  --warning-200: #f7e3a6;
+  --warning-100: #fff8e1;
+  --warning-50: #fffaf0;
+
+  --danger: #b22222;
+
+  --ink: #0f172a;
+  --ink-800: #1e293b;
+  --ink-700: #1b2a3d;
+  --muted: #64748b;
+  --muted-strong: #475569;
+  --muted-weak: #e2e8f0;
 
   /* Superficies */
-  --bg: #050b17;
-  --bg-gradient: radial-gradient(circle at 20% 20%, rgba(48, 97, 255, 0.12), transparent 35%), radial-gradient(circle at 80% 0%, rgba(15, 214, 201, 0.16), transparent 35%), #050b17;
-  --panel: #0b1224;
-  --panel-strong: #0f1830;
-  --border: rgba(255, 255, 255, 0.08);
-  --shadow-soft: 0 20px 60px rgba(0, 0, 0, 0.22);
+  --bg: #eaeff5;
+  --bg-gradient: radial-gradient(circle at 20% 20%, rgba(0, 51, 102, 0.08), transparent 32%), radial-gradient(circle at 80% 0%, rgba(45, 185, 128, 0.1), transparent 32%), #eaeff5;
+  --panel: #f7f9fc;
+  --panel-strong: #eef3f9;
+  --panel-alt: #eef3f9;
+  --border: #cbd5e1;
+  --chip: #e6ecf8;
+  --hover: #e3e9f3;
+  --row-alt: #f1f4f9;
+  --surface-subtle: #e7edf5;
+  --surface-soft: #f2f6fb;
+  --surface-ghost: #f6f8fc;
+  --surface-info: #d2e6f6;
+  --surface-highlight: #d7f1ea;
 
-  /* TipografA-a */
-  --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
-  --font-body: 'Manrope', 'Segoe UI', sans-serif;
-  --font-size-base: 15px;
+  /* Sombras */
+  --shadow-sm: 0 2px 10px rgba(2, 6, 23, 0.05);
+  --shadow-md: 0 10px 30px rgba(2, 6, 23, 0.08);
+  --shadow-soft: var(--shadow-md);
+
+  /* Tipografía */
+  --font-display: 'Inter', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+  --font-size-base: 16px;
   --line-height-base: 1.5;
 
   /* Espaciados y bordes */
+  --radius-xl: 18px;
   --radius-lg: 18px;
   --radius-md: 12px;
   --radius-sm: 8px;

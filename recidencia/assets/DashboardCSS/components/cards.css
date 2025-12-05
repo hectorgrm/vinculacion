@@ -1,16 +1,17 @@
 .card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0)) border-box;
+  background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 18px 18px 16px;
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-sm);
   position: relative;
   overflow: hidden;
+  color: var(--ink-800);
 }
 
 .card.emphasis {
-  background: linear-gradient(150deg, rgba(36, 71, 249, 0.14) 0%, rgba(15, 214, 201, 0.12) 100%);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(145deg, rgba(0, 51, 102, 0.08) 0%, rgba(45, 185, 128, 0.08) 100%), var(--panel);
+  border-color: rgba(0, 51, 102, 0.18);
 }
 
 .card-header {
@@ -24,7 +25,7 @@
 .card-title {
   font-size: 18px;
   margin: 0;
-  color: #eaf1ff;
+  color: var(--ink-800);
 }
 
 .card-subtitle {
@@ -46,7 +47,7 @@
 .stat .number {
   font-size: 32px;
   font-weight: 700;
-  color: #fefefe;
+  color: var(--primary-700);
 }
 
 .stat .label {

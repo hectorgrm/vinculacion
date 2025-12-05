@@ -4,27 +4,27 @@
   gap: 6px;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--chip);
   border: 1px solid var(--border);
-  color: #e9eeff;
+  color: var(--primary-700);
   font-weight: 600;
   font-size: 13px;
 }
 
 .pill.accent {
-  background: rgba(15, 214, 201, 0.15);
-  border-color: rgba(15, 214, 201, 0.35);
-  color: #aaf4ef;
+  background: var(--surface-highlight);
+  border-color: rgba(31, 122, 80, 0.3);
+  color: var(--success-700);
 }
 
 .pill.warning {
-  background: rgba(255, 179, 71, 0.15);
-  border-color: rgba(255, 179, 71, 0.4);
-  color: #ffd9a1;
+  background: var(--warning-200);
+  border-color: rgba(166, 124, 0, 0.35);
+  color: var(--warning-700);
 }
 
 .pill.danger {
-  background: rgba(239, 71, 111, 0.14);
-  border-color: rgba(239, 71, 111, 0.4);
-  color: #ffb3c5;
+  background: rgba(178, 34, 34, 0.12);
+  border-color: rgba(178, 34, 34, 0.32);
+  color: var(--danger);
 }
