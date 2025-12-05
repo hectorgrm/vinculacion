@@ -209,15 +209,16 @@ class EmpresaViewModel
                            ranked.observacion,
                            ranked.creado_en,
                            ranked.actualizado_en
-                      FROM (
-                            SELECT d.*,
-                                   ROW_NUMBER() OVER (
-                                       PARTITION BY d.tipo_global_id
-                                       ORDER BY d.actualizado_en DESC, d.id DESC
-                                   ) AS rn
-                              FROM rp_empresa_doc AS d
-                             WHERE d.empresa_id = :empresa_id
-                               AND d.tipo_global_id IS NOT NULL
+                     FROM (
+                           SELECT d.*,
+                                  ROW_NUMBER() OVER (
+                                      PARTITION BY d.tipo_global_id
+                                      ORDER BY d.actualizado_en DESC, d.id DESC
+                                  ) AS rn
+                             FROM rp_empresa_doc AS d
+                            WHERE d.empresa_id = :empresa_id
+                              AND d.tipo_global_id IS NOT NULL
+                              AND (d.estatus IS NULL OR d.estatus <> 'Archivado')
                          ) AS ranked
                      WHERE ranked.rn = 1
               ) AS doc ON doc.tipo_global_id = t.id
@@ -272,15 +273,16 @@ class EmpresaViewModel
                            ranked.observacion,
                            ranked.creado_en,
                            ranked.actualizado_en
-                      FROM (
-                            SELECT d.*,
-                                   ROW_NUMBER() OVER (
-                                       PARTITION BY d.tipo_personalizado_id
-                                       ORDER BY d.actualizado_en DESC, d.id DESC
-                                   ) AS rn
-                              FROM rp_empresa_doc AS d
-                             WHERE d.empresa_id = :empresa_id
-                               AND d.tipo_personalizado_id IS NOT NULL
+                     FROM (
+                           SELECT d.*,
+                                  ROW_NUMBER() OVER (
+                                      PARTITION BY d.tipo_personalizado_id
+                                      ORDER BY d.actualizado_en DESC, d.id DESC
+                                  ) AS rn
+                             FROM rp_empresa_doc AS d
+                            WHERE d.empresa_id = :empresa_id
+                              AND d.tipo_personalizado_id IS NOT NULL
+                              AND (d.estatus IS NULL OR d.estatus <> 'Archivado')
                          ) AS ranked
                      WHERE ranked.rn = 1
               ) AS doc ON doc.tipo_personalizado_id = tipo.id
