@@ -110,50 +110,7 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
       </div>
     </div>
 
-    <!-- Versión oficial -->
-    <div class="card doc-card">
-      <header>Versión oficial - <?= htmlspecialchars($versionMachote) ?></header>
-      <div class="content">
-        <div class="doc-shell">
-          <?php if ($documento['has_pdf'] && !empty($documento['pdf_embed_url'])): ?>
-            <div class="doc-surface doc-surface-pdf">
-              <iframe
-                src="<?= htmlspecialchars((string) $documento['pdf_embed_url']) ?>"
-                title="Machote PDF"
-                class="doc-iframe"
-              ></iframe>
-            </div>
-
-            <div class="doc-toolbar">
-              <a class="btn" href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>" target="_blank">Ver en pestaña</a>
-              <a class="btn" download href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>">Descargar PDF</a>
-            </div>
-
-            <?php if (!empty($documento['fuente'])): ?>
-              <p class="doc-note">Fuente: <?= htmlspecialchars((string) $documento['fuente']) ?></p>
-            <?php endif; ?>
-
-          <?php elseif ($documento['has_html'] && !empty($documento['html'])): ?>
-            <div class="doc-surface doc-surface-html">
-              <div class="doc-html">
-                <?= $documento['html'] ?>
-              </div>
-            </div>
-            <p class="doc-note">
-              Esta es la versión oficial que Vinculación tiene registrada para tu convenio.
-            </p>
-
-          <?php else: ?>
-            <div class="doc-empty">
-              <p>
-                No hay documento oficial disponible para mostrar todavía.
-                Es posible que Vinculación aún no haya generado el machote hijo.
-              </p>
-            </div>
-          <?php endif; ?>
-        </div>
-      </div>
-    </div>    <!-- Confirmacion -->
+    <!-- Confirmacion -->
     <div class="card">
       <header>Confirmacion de Empresa</header>
       <div class="content approval">
