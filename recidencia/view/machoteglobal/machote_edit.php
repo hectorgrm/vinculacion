@@ -127,27 +127,10 @@ $actionUrl = 'machote_edit.php' . ($machoteId ? '?id=' . urlencode((string)$mach
               </div>
             </div>
 
-            <p class="hint" style="margin-top:8px">
-              💡 Usa variables entre llaves para datos dinámicos que se rellenarán al crear el convenio:
-              <code>{{empresa_nombre}}</code>, <code>{{fecha_inicio}}</code>, <code>{{fecha_fin}}</code>, <code>{{direccion_empresa}}</code>.
-            </p>
+
           </div>
 
-          <!-- Acciones rápidas -->
-          <div class="card">
-            <header>🛠️ Acciones rápidas</header>
-            <div class="row">
-              <div>
-                <button type="submit" class="btn small" form="machoteForm">💾 Guardar cambios</button>
-              </div>
-              <div>
-                <button type="button" class="btn small" data-preview>👁️ Previsualizar</button>
-              </div>
-              <div class="full">
-                <span class="hint">Estas acciones te permiten guardar la versión actual o visualizar el HTML antes de publicarlo.</span>
-              </div>
-            </div>
-          </div>
+
         </section>
 
         <!-- Editor -->

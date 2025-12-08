@@ -25,7 +25,6 @@ if (!isset($machotes)) {
         </div>
         <div class="actions">
           <a href="machote_edit.php" class="btn primary">Nuevo machote global</a>
-          <a href="machote_list.php" class="btn secondary">Ir a machotes por empresa</a>
         </div>
       </div>
 
