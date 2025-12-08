@@ -91,9 +91,28 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
       </div>
     </div>
 
-    <!-- Documento -->
+    <!-- Versión viva -->
+    <div class="card preview-card">
+      <header>Versión viva</header>
+      <div class="content">
+        <?php if (!empty($machote['contenido_preview'])): ?>
+          <div class="preview-box">
+            <?= $machote['contenido_preview'] ?>
+          </div>
+          <p class="doc-note">
+            Esta versión viva refleja los datos actuales de tu empresa mientras el machote está en revisión.
+          </p>
+        <?php else: ?>
+          <div class="doc-empty">
+            <p>La versión viva aún no está disponible; estamos esperando a que Vinculación genere el machote hijo.</p>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <!-- Versión oficial -->
     <div class="card doc-card">
-      <header>Documento a revisar - <?= htmlspecialchars($versionMachote) ?></header>
+      <header>Versión oficial - <?= htmlspecialchars($versionMachote) ?></header>
       <div class="content">
         <div class="doc-shell">
           <?php if ($documento['has_pdf'] && !empty($documento['pdf_embed_url'])): ?>
@@ -121,22 +140,20 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
               </div>
             </div>
             <p class="doc-note">
-              Mostrando version editable actual registrada por Vinculacion.
+              Esta es la versión oficial que Vinculación tiene registrada para tu convenio.
             </p>
 
           <?php else: ?>
             <div class="doc-empty">
               <p>
-                No hay documento disponible para mostrar.
-                Es posible que Vinculacion aun no haya generado el machote hijo.
+                No hay documento oficial disponible para mostrar todavía.
+                Es posible que Vinculación aún no haya generado el machote hijo.
               </p>
             </div>
           <?php endif; ?>
         </div>
       </div>
-    </div>
-
-    <!-- Confirmacion -->
+    </div>    <!-- Confirmacion -->
     <div class="card">
       <header>Confirmacion de Empresa</header>
       <div class="content approval">
@@ -270,3 +287,4 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
   });
 </script>
 </html>
+

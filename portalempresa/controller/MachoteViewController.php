@@ -7,6 +7,7 @@ require_once __DIR__ . '/../helpers/empresaconveniofunction.php';
 require_once __DIR__ . '/../model/MachoteViewModel.php';
 require_once __DIR__ . '/../model/MachoteComentarioModel.php';
 require_once __DIR__ . '/../../recidencia/common/helpers/machote/machote_revisar_helper.php';
+require_once __DIR__ . '/../../recidencia/common/helpers/machote/machote_placeholders_helper.php';
 
 use DateTimeImmutable;
 use PortalEmpresa\Helpers\EmpresaConvenioHelper;
@@ -65,6 +66,16 @@ class MachoteViewController
             'logo_path' => $record['empresa_logo'] ?? null,
         ];
 
+        $empresaInfo = [
+            'nombre' => $empresa['nombre'],
+            'representante' => $record['empresa_representante'] ?? '',
+            'cargo_representante' => $record['empresa_cargo'] ?? '',
+            'direccion' => $record['empresa_direccion'] ?? '',
+            'municipio' => $record['empresa_municipio'] ?? '',
+            'estado' => $record['empresa_estado'] ?? '',
+            'cp' => $record['empresa_cp'] ?? '',
+        ];
+
         $convenio = [
             'id' => (int) ($record['convenio_id'] ?? 0),
             'estatus' => $record['convenio_estatus'] ?? null,
@@ -79,6 +90,7 @@ class MachoteViewController
             $machote['confirmado']
         );
         $puedeConfirmar = !$machote['confirmado'] && (int) ($resumen['pendientes'] ?? 0) === 0;
+        $machote['contenido_preview'] = renderMachoteConEmpresa($machote['contenido_html'], $empresaInfo);
 
         return [
             'empresa' => $empresa,

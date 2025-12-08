@@ -240,27 +240,46 @@ if (!empty($_GET['reabrir_error'])) {
         </div>
       </section>
 
-      <!-- Split: Editor + Comentarios -->
+      <!-- Split: Editor + Previsualización + Comentarios -->
       <section class="split">
-        <!-- Editor -->
-        <div class="card editor-card">
-          <header>Documento a revisar (HTML editable)</header>
-          <div class="content">
-            <?php if ($machoteBloqueado): ?>
-              <p class="readonly-note"><?= htmlspecialchars($bloqueoMensaje) ?></p>
-            <?php endif; ?>
-            <form id="machote-editor-form" method="POST" action="../../handler/machote/machote_update_handler.php">
-              <input type="hidden" name="id" value="<?= (int) $machoteId ?>">
-              <input type="hidden" name="redirect" value="machote_revisar">
-              <textarea id="editor" name="contenido" rows="24"><?= $contenidoHtml ?></textarea>
+        <div class="split-preview-row">
+          <div class="split-preview-col">
+            <!-- Editor -->
+            <div class="card editor-card">
+              <header>Documento a revisar (HTML editable)</header>
+              <div class="content">
+                <?php if ($machoteBloqueado): ?>
+                  <p class="readonly-note"><?= htmlspecialchars($bloqueoMensaje) ?></p>
+                <?php endif; ?>
+                <form id="machote-editor-form" method="POST" action="../../handler/machote/machote_update_handler.php">
+                  <input type="hidden" name="id" value="<?= (int) $machoteId ?>">
+                  <input type="hidden" name="redirect" value="machote_revisar">
+                  <textarea id="editor" name="contenido" rows="24"><?= $contenidoHtml ?></textarea>
 
-              <div class="editor-actions">
-                <button class="btn" type="button" onclick="togglePreview()">Vista limpia</button>
-                <button class="btn primary" type="submit" <?= $machoteBloqueado ? 'disabled' : '' ?>>Guardar cambios</button>
-                <a class="btn" target="_blank" rel="noopener"
-                   href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>">Previsualizar PDF</a>
+                  <div class="editor-actions">
+                    <button class="btn" type="button" onclick="togglePreview()">Vista limpia</button>
+                    <button class="btn primary" type="submit" <?= $machoteBloqueado ? 'disabled' : '' ?>>Guardar cambios</button>
+                    <a class="btn" target="_blank" rel="noopener"
+                       href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>">Previsualizar PDF</a>
+                  </div>
+                </form>
               </div>
-            </form>
+            </div>
+          </div>
+
+          <div class="split-preview-col">
+            <div class="card preview-card">
+              <header>Vista previa viva</header>
+              <div class="content">
+                <?php if (isset($machote['contenido_preview'])): ?>
+                  <div class="preview-box">
+                    <?= $machote['contenido_preview'] ?>
+                  </div>
+                <?php else: ?>
+                  <p class="empty-note">Aún no se ha generado contenido previo.</p>
+                <?php endif; ?>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -448,6 +467,40 @@ if (!empty($_GET['reabrir_error'])) {
   <style>
     /* Reduce hints visuales de CKEditor cuando activas "Vista limpia" */
     .cke_editable.preview-clean *{ outline: none !important; }
+    .split-preview-row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .split-preview-col {
+      flex: 1;
+      min-width: 320px;
+    }
+    .preview-card .content {
+      padding: 0.75rem 1rem 1rem;
+    }
+    .preview-card header {
+      border-bottom: 1px solid #d0d7de;
+      padding-bottom: 0.5rem;
+    }
+    .preview-box {
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 1rem;
+      background: #fff;
+      min-height: 360px;
+      max-height: 520px;
+      overflow: auto;
+    }
+    .preview-box p:last-child {
+      margin-bottom: 0;
+    }
+    .empty-note {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin: 0;
+    }
   </style>
 </body>
 </html>
