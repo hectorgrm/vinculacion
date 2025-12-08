@@ -242,7 +242,12 @@ $canRenderImagePreview = in_array($fileExtension, ['png', 'jpg', 'jpeg'], true);
               </div>
 
               <div class="actions full">
-                <button type="submit" class="btn primary" <?php echo $documentoArchivado ? "disabled" : ""; ?>>Guardar revisi&oacute;n</button>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                  <button type="submit" class="btn primary" <?php echo $documentoArchivado ? "disabled" : ""; ?>>Guardar revisi&oacute;n</button>
+                  <?php if ($documentId !== null): ?>
+                    <a class="btn danger" href="documento_delete.php?id=<?php echo urlencode((string) $documentId); ?>">Eliminar documento</a>
+                  <?php endif; ?>
+                </div>
               </div>
             </form>
           </div>

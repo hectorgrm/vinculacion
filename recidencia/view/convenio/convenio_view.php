@@ -632,13 +632,13 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                         <?php if ($convenioId !== null): ?>
                             <?php if ($convenioArchivado): ?>
                                 <span class="btn primary" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Editar Convenio</span>
-                                <span class="btn danger" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Desactivar Convenio</span>
+                                <span class="btn danger" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Archivar Convenio</span>
                             <?php else: ?>
                                 <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">
                                     Editar Convenio</a>
                                 <?php if (!$empresaEsCompletada): ?>
                                     <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>"
-                                        class="btn danger">Desactivar Convenio</a>
+                                        class="btn danger">Archivar Convenio</a>
                                 <?php else: ?>
                                     <span class="btn danger" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Desactivar
                                         Convenio</span>

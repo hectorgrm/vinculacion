@@ -240,6 +240,7 @@ $empresaTieneConvenioActiva = $preparedData['empresaTieneConvenioActiva'] ?? fal
                   value="<?php echo htmlspecialchars((string) ($empresa['notas'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
                 <input type="hidden" name="empresa_id"
                   value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="redirect_to_view" value="1">
                 <button type="submit" class="btn success">Activar</button>
               </form>
             <?php endif; ?>
@@ -1070,7 +1071,7 @@ $empresaTieneConvenioActiva = $preparedData['empresaTieneConvenioActiva'] ?? fal
 
         setTimeout(function () {
           alertEl.remove();
-        }, 5000);
+        }, 3000);
       });
     </script>
   <?php endif; ?>

@@ -61,6 +61,7 @@ if (!function_exists('empresaEditHandler')) {
         }
 
         $viewData['formData'] = empresaEditSanitizeInput($_POST);
+        $redirectToView = isset($_POST['redirect_to_view']) && (string) $_POST['redirect_to_view'] === '1';
         $lockFields = isset($_POST['lock_fields']) && (string) $_POST['lock_fields'] === '1';
 
         if (
@@ -184,12 +185,29 @@ if (!function_exists('empresaEditHandler')) {
             $controller->updateEmpresa($viewData['empresaId'], $viewData['formData']);
             $viewData['successMessage'] = empresaEditSuccessMessage();
 
+            $isActivation = $redirectToView
+                && isset($estatusOriginal)
+                && $estatusOriginal !== 'Activa'
+                && $estatusNuevo === 'Activa';
+            if ($isActivation) {
+                $viewData['successMessage'] = 'Empresa activada correctamente.';
+            }
+
             if ($detallesAuditoria !== []) {
                 empresaRegistrarEventoActualizacion($viewData['empresaId'], $detallesAuditoria, empresaCurrentAuditContext());
             }
 
             $empresaActualizada = $controller->getEmpresaById($viewData['empresaId']);
             $viewData['formData'] = empresaHydrateForm(empresaFormDefaults(), $empresaActualizada);
+
+            if ($redirectToView && $viewData['empresaId'] !== null) {
+                $redirectUrl = '../empresa/empresa_view.php?id=' . urlencode((string) $viewData['empresaId']);
+                if ($viewData['successMessage'] !== null && $viewData['successMessage'] !== '') {
+                    $redirectUrl .= '&success_message=' . rawurlencode($viewData['successMessage']);
+                }
+                header('Location: ' . $redirectUrl);
+                exit;
+            }
         } catch (\RuntimeException $exception) {
             $previous = $exception->getPrevious();
 
