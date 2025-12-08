@@ -71,6 +71,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
         }
 
         $empresaTieneConvenioActivo = empresaViewHasConvenioActivo($conveniosActivos);
+        $empresaTieneConvenioActiva = empresaViewHasConvenioActiva($conveniosActivos);
 
         $empresaSubtitulo = $numeroControl !== ''
             ? 'Número de control: ' . $numeroControl
@@ -144,6 +145,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             'empresaIsInactiva' => $empresaIsInactiva,
             'empresaIsReadOnly' => $empresaIsCompletada || $empresaIsInactiva,
             'empresaTieneConvenioActivo' => $empresaTieneConvenioActivo,
+            'empresaTieneConvenioActiva' => $empresaTieneConvenioActiva,
             'estudiantes' => $estudiantes,
         ];
     }
@@ -231,6 +233,26 @@ if (!function_exists('empresaViewHasConvenioActivo')) {
             }
 
             if (empresaViewIsConvenioBloqueanteStatus($convenio['estatus'] ?? null)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+if (!function_exists('empresaViewHasConvenioActiva')) {
+    /**
+     * @param array<int, array<string, mixed>> $conveniosActivos
+     */
+    function empresaViewHasConvenioActiva(array $conveniosActivos): bool
+    {
+        foreach ($conveniosActivos as $convenio) {
+            if (!is_array($convenio)) {
+                continue;
+            }
+
+            if (empresaNormalizeStatus($convenio['estatus'] ?? null) === 'Activa') {
                 return true;
             }
         }

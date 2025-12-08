@@ -452,7 +452,7 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                                     <?php if ($empresaId !== null): ?>
                                         <input type="hidden" name="empresa_id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
                                     <?php endif; ?>
-                                    <button type="submit" class="btn primary">Activar convenio</button>
+                                    <button type="submit" class="btn success">Activar convenio</button>
                                 </form>
                             <?php endif; ?>
 </div>

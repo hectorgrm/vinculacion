@@ -27,6 +27,16 @@
   background: var(--primary-700);
 }
 
+.btn.success {
+  background: var(--success);
+  color: #fff;
+  border-color: var(--success);
+}
+
+.btn.success:hover {
+  background: var(--success-600);
+}
+
 .btn.secondary {
   background: #e2e8f0;
 }

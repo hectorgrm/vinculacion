@@ -16,6 +16,7 @@ declare(strict_types=1);
 $handlerResult = require __DIR__ . '/../../handler/empresa/empresa_view_handler.php';
 $auditoriaHandlerResult = require __DIR__ . '/../../handler/empresa/empresa_auditoria_handler.php';
 require_once __DIR__ . '/../../common/helpers/empresa/empresa_view_helper.php';
+require_once __DIR__ . '/../../common/helpers/empty_state_helper.php';
 
 $preparedData = empresaViewTemplateHelper($handlerResult, $auditoriaHandlerResult);
 
@@ -79,6 +80,7 @@ $portalAccessActionsEnabled = $preparedData['portalAccessActionsEnabled'] ?? fal
 $portalAccessDisabledReason = $preparedData['portalAccessDisabledReason'] ?? null;
 $empresaIsActiva = $preparedData['empresaIsActiva'] ?? false;
 $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? false;
+$empresaTieneConvenioActiva = $preparedData['empresaTieneConvenioActiva'] ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -115,21 +117,10 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
         </div>
       <?php endif; ?>
       <?php if (!$empresaIsActiva && !$empresaTieneConvenioActivo): ?>
-        <div class="alert alert-info" style="margin: 0 0 16px;">
-          <h4 style="margin:0 0 6px 0;">&iquest;C&oacute;mo activar esta empresa?</h4>
-          <p style="margin:0 0 8px 0;">Para mover la empresa a estatus <strong>Activa</strong> necesitas al menos un
-            convenio en estatus Activa.</p>
-          <ol style="margin:0 0 12px 18px; padding-left:6px;">
-            <li>Registra un convenio y col&oacute;calo en estatus <strong>Activa</strong>.</li>
-            <li>Luego ve a <strong>Editar empresa</strong> y selecciona el estatus <strong>Activa</strong>.</li>
-          </ol>
-          <div class="actions" style="margin-top:8px; gap:8px; padding:0; justify-content:flex-start;">
-            <a class="btn primary"
-              href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>">Registrar convenio</a>
-            <a class="btn secondary" href="<?php echo htmlspecialchars($empresaEditUrl, ENT_QUOTES, 'UTF-8'); ?>">Editar
-              empresa</a>
-          </div>
-        </div>
+        <?php emptyStateRender('guide_activar_empresa', [
+          'nuevoConvenioUrl' => $nuevoConvenioUrl,
+          'empresaEditUrl' => $empresaEditUrl,
+        ]); ?>
       <?php endif; ?>
       <!-- 🏢 Banner con logotipo y lápiz -->
       <section class="empresa-banner">
@@ -211,7 +202,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
           <?php endif; ?>
           <div class="actions actions--end">
             <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️ Editar</a>
-            <?php if ($empresaTieneConvenioActivo && !$empresaIsActiva && !$empresaIsReadOnly && is_array($empresa)): ?>
+            <?php if ($empresaTieneConvenioActiva && !$empresaIsActiva && !$empresaIsReadOnly && is_array($empresa)): ?>
               <form method="post" action="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>"
                 style="display:inline;">
                 <input type="hidden" name="numero_control"
@@ -249,7 +240,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                   value="<?php echo htmlspecialchars((string) ($empresa['notas'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
                 <input type="hidden" name="empresa_id"
                   value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, "UTF-8"); ?>">
-                <button type="submit" class="btn primary">Activar</button>
+                <button type="submit" class="btn success">Activar</button>
               </form>
             <?php endif; ?>
           </div>
@@ -261,6 +252,12 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
       <section class="card">
         <header>📜 Convenios activos, en revisión o suspendidos</header>
         <div class="content">
+          <?php if (!$empresaTieneConvenioActivo && $conveniosActivos !== []): ?>
+            <?php emptyStateRender('guide_activar_empresa', [
+              'nuevoConvenioUrl' => $nuevoConvenioUrl,
+              'empresaEditUrl' => $empresaEditUrl,
+            ]); ?>
+          <?php endif; ?>
           <table>
             <thead>
               <tr>
@@ -278,12 +275,11 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                   <td colspan="6" class="table-empty">
                     <div class="empty-state">
                       <div class="empty-state__icon">📄</div>
-                      <div class="empty-state__content">
-                        <h4>No se pudieron cargar los convenios</h4>
-                        <p>Hubo un problema al recuperar la información. Intenta recargar la página o vuelve más tarde.
-                        </p>
-                      </div>
-                    </div>
+                      <?php emptyStateRender('empty_no_convenios', [
+  'empresaIsReadOnly' => $empresaIsReadOnly,
+  'nuevoConvenioUrl' => $nuevoConvenioUrl,
+  'empresaEditUrl' => $empresaEditUrl,
+]); ?>
                   </td>
                 </tr>
               <?php elseif ($conveniosActivos === []): ?>
@@ -293,8 +289,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                       <div class="empty-state__icon">🗂️</div>
                       <div class="empty-state__content">
                         <h4>No hay convenios activos</h4>
-                        <p>Registra al menos un convenio en estatus <strong>Activa</strong> para poder activar esta
-                          empresa y permitir procesos de residencia.</p>
+                                                <p>Registra un convenio, sube el archivo firmado y marca su estatus como <strong>Activa</strong> para habilitar el proceso de residencia y la activaciA3n de la empresa.</p>
                         <?php if (!$empresaIsReadOnly): ?>
                           <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>"
                             class="btn primary">➕ Registrar convenio</a>
@@ -327,8 +322,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                     </td>
                     <td>
                       <?php if ($convenioViewUrl !== null): ?>
-                        <a href="<?php echo htmlspecialchars($convenioViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️
-                          Ver</a>
+                        <a href="<?php echo htmlspecialchars($convenioViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️Ver/🗃️Subir Convenio</a>
                       <?php endif; ?>
                       <?php if ($convenioEditUrl !== null && !$empresaIsReadOnly): ?>
                         <a href="<?php echo htmlspecialchars($convenioEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">✏️
@@ -907,11 +901,21 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               return base.endsWith('/') ? base : `${base}/`;
             };
 
+            let hideFeedbackTimeout = null;
+
+            const clearFeedbackTimeout = () => {
+              if (hideFeedbackTimeout) {
+                clearTimeout(hideFeedbackTimeout);
+                hideFeedbackTimeout = null;
+              }
+            };
+
             const setMessage = (message, type) => {
               if (!feedback) {
                 return;
               }
 
+              clearFeedbackTimeout();
               feedback.textContent = message || '';
               feedback.hidden = !message;
               feedback.classList.remove('logo-upload-feedback--success', 'logo-upload-feedback--error');
@@ -921,6 +925,12 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               }
 
               feedback.classList.add(type === 'success' ? 'logo-upload-feedback--success' : 'logo-upload-feedback--error');
+
+              if (type === 'success') {
+                hideFeedbackTimeout = setTimeout(() => {
+                  setMessage('', '');
+                }, 5000);
+              }
             };
 
             const setLoading = (isLoading) => {
