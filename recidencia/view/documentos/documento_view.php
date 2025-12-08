@@ -45,6 +45,8 @@ $empresaIsCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
 $documentoArchivado = $document !== null && isset($document['estatus'])
   ? (strcasecmp(trim((string) $document['estatus']), 'Archivado') === 0)
   : false;
+$fileExtension = isset($fileMeta['extension']) ? strtolower((string) $fileMeta['extension']) : '';
+$canRenderImagePreview = in_array($fileExtension, ['png', 'jpg', 'jpeg'], true);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -229,11 +231,18 @@ $documentoArchivado = $document !== null && isset($document['estatus'])
           <header>Vista rápida</header>
           <div class="content preview">
             <?php if ($fileMeta['canPreview'] && $fileMeta['publicUrl'] !== null): ?>
-              <iframe src="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>"
-                title="Vista previa del documento"></iframe>
+              <?php if ($canRenderImagePreview): ?>
+                <img
+                  src="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>"
+                  alt="Vista previa del documento"
+                  class="preview__image" />
+              <?php else: ?>
+                <iframe src="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>"
+                  title="Vista previa del documento"></iframe>
+              <?php endif; ?>
             <?php elseif ($fileMeta['publicUrl'] !== null): ?>
               <div class="alert alert-info">
-                La vista previa solo está disponible para archivos PDF. Usa el botón descargar para abrir el archivo.
+                La vista previa está disponible para archivos PDF e imágenes (PNG/JPG). Usa el botón descargar para abrir el archivo.
               </div>
             <?php else: ?>
               <div class="alert alert-warning">

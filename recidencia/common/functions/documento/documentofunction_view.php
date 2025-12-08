@@ -120,6 +120,8 @@ if (!function_exists('documentoViewBuildFileMeta')) {
             }
         }
 
+        $previewableExtensions = ['pdf', 'png', 'jpg', 'jpeg'];
+
         return [
             'exists' => $exists,
             'absolutePath' => $exists ? $absolutePath : null,
@@ -128,7 +130,7 @@ if (!function_exists('documentoViewBuildFileMeta')) {
             'sizeBytes' => $sizeBytes,
             'sizeLabel' => $sizeLabel,
             'extension' => $extension !== '' ? $extension : null,
-            'canPreview' => $exists && in_array($extension, ['pdf'], true),
+            'canPreview' => $exists && in_array($extension, $previewableExtensions, true),
         ];
     }
 }

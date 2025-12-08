@@ -48,6 +48,8 @@ if ($tipoPersonalizadoId !== null && $tipoPersonalizadoId <= 0) {
   $tipoPersonalizadoId = null;
 }
 $tipoOrigen = $document['tipo_origen'] ?? 'global';
+$fileExtension = isset($fileMeta['extension']) ? strtolower((string) $fileMeta['extension']) : '';
+$canRenderImagePreview = in_array($fileExtension, ['png', 'jpg', 'jpeg'], true);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -149,10 +151,17 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
           <header>Vista previa</header>
           <div class="content preview">
             <?php if ($fileMeta['publicUrl'] !== null && $fileMeta['canPreview']): ?>
-              <iframe src="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>" title="Vista previa del documento"></iframe>
+              <?php if ($canRenderImagePreview): ?>
+                <img
+                  src="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>"
+                  alt="Vista previa del documento"
+                  class="preview__image" />
+              <?php else: ?>
+                <iframe src="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>" title="Vista previa del documento"></iframe>
+              <?php endif; ?>
             <?php elseif ($fileMeta['publicUrl'] !== null): ?>
               <div class="alert info" role="alert">
-                La vista previa solo está disponible para archivos PDF. Usa el enlace para descargar el archivo.
+                La vista previa está disponible para archivos PDF e imágenes (PNG/JPG). Usa el enlace para descargar el archivo.
               </div>
               <a class="btn" href="<?php echo htmlspecialchars((string) $fileMeta['publicUrl'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
                 Descargar archivo

@@ -112,6 +112,16 @@
   background: #fff;
 }
 
+.preview img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
 .alert {
   margin: 0 0 12px 0;
 }
