@@ -7,6 +7,7 @@ require_once __DIR__ . '/../../../common/model/db.php';
 require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
 require_once __DIR__ . '/../../../portalempresa/model/MachoteComentarioModel.php';
 require_once __DIR__ . '/../../common/helpers/machote/machote_revisar_helper.php';
+require_once __DIR__ . '/../../common/helpers/machote/machote_placeholders_helper.php';
 
 use Common\Model\Database;
 use PDO;
@@ -47,6 +48,10 @@ final class MachoteRevisarController
         // 2️⃣ Cargar datos relacionados
         $empresa = $modelMachote->getEmpresaByMachote($machoteId);
         $convenio = $modelMachote->getConvenioByMachote($machoteId);
+
+        $template = (string) ($machote['contenido_html'] ?? '');
+        $machote['contenido_html_template'] = $template;
+        $machote['contenido_preview'] = renderMachoteConEmpresa($template, $empresa);
 
         // 3️⃣ Cargar comentarios
         $comentarios = $modelComentarios->getComentariosConRespuestas($machoteId);

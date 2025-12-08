@@ -32,11 +32,20 @@ final class MachoteConfirmModel
                 m.confirmacion_empresa,
                 m.estatus,
                 m.version_local,
+                m.contenido_html,
                 m.actualizado_en,
                 c.empresa_id,
-                c.estatus AS convenio_estatus
+                c.estatus AS convenio_estatus,
+                e.nombre AS empresa_nombre,
+                e.representante AS empresa_representante,
+                e.cargo_representante AS empresa_cargo,
+                e.direccion AS empresa_direccion,
+                e.municipio AS empresa_municipio,
+                e.estado AS empresa_estado,
+                e.cp AS empresa_cp
             FROM rp_convenio_machote AS m
             INNER JOIN rp_convenio AS c ON c.id = m.convenio_id
+            INNER JOIN rp_empresa AS e ON e.id = c.empresa_id
             WHERE m.id = :machote_id
               AND c.empresa_id = :empresa_id
             LIMIT 1
@@ -71,11 +80,12 @@ final class MachoteConfirmModel
         return $count !== false ? (int) $count : 0;
     }
 
-    public function confirmarMachote(int $machoteId): bool
+    public function confirmarMachote(int $machoteId, string $contenidoHtml): bool
     {
         $sql = <<<'SQL'
             UPDATE rp_convenio_machote
-            SET confirmacion_empresa = 1,
+            SET contenido_html = :contenido_html,
+                confirmacion_empresa = 1,
                 estatus = 'Aprobado',
                 actualizado_en = NOW()
             WHERE id = :machote_id
@@ -83,6 +93,9 @@ final class MachoteConfirmModel
 
         $statement = $this->connection->prepare($sql);
 
-        return $statement->execute([':machote_id' => $machoteId]);
+        return $statement->execute([
+            ':machote_id' => $machoteId,
+            ':contenido_html' => $contenidoHtml,
+        ]);
     }
 }
