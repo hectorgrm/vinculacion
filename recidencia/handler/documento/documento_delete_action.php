@@ -60,7 +60,11 @@ try {
 try {
     $deletedDocument = $controller->deleteDocument($documentId);
 } catch (\RuntimeException $exception) {
-    $errorCode = $exception->getCode() === 404 ? 'not_found' : 'delete_failed';
+    $errorCode = match ($exception->getCode()) {
+        404 => 'not_found',
+        403 => 'empresa_completada',
+        default => 'delete_failed',
+    };
 
     $redirect = documentoDeleteBuildRedirectUrl(
         '../../view/documentos/documento_delete.php',

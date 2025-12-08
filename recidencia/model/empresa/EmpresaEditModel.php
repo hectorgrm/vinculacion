@@ -108,4 +108,147 @@ class EmpresaEditModel
             ':id' => $empresaId,
         ]);
     }
+
+    public function hasConvenioActivo(int $empresaId): bool
+    {
+        $sql = <<<'SQL'
+            SELECT 1
+              FROM rp_convenio
+             WHERE empresa_id = :empresa_id
+               AND estatus = 'Activa'
+             LIMIT 1
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        return (bool) $statement->fetchColumn();
+    }
+
+    /**
+     * @return array{estatus: ?string}|null
+     */
+    public function findLatestMachoteStatus(int $empresaId): ?array
+    {
+        $sql = <<<'SQL'
+            SELECT cm.estatus
+              FROM rp_convenio_machote AS cm
+              INNER JOIN rp_convenio AS c ON c.id = cm.convenio_id
+             WHERE c.empresa_id = :empresa_id
+             ORDER BY cm.actualizado_en DESC, cm.id DESC
+             LIMIT 1
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        $estatus = $statement->fetchColumn();
+
+        if ($estatus === false) {
+            return null;
+        }
+
+        return ['estatus' => $estatus !== null ? (string) $estatus : null];
+    }
+
+    /**
+     * @return array{total:int, aprobados:int, porcentaje:int}
+     */
+    public function getDocumentosStats(int $empresaId, ?string $tipoEmpresa = null): array
+    {
+        $globalStats = $this->getGlobalDocsStats($empresaId, $tipoEmpresa);
+        $customStats = $this->getCustomDocsStats($empresaId);
+
+        $total = $globalStats['total'] + $customStats['total'];
+        $aprobados = $globalStats['aprobados'] + $customStats['aprobados'];
+        $porcentaje = $total > 0 ? (int) round(($aprobados / $total) * 100) : 0;
+
+        return [
+            'total' => $total,
+            'aprobados' => $aprobados,
+            'porcentaje' => $porcentaje,
+        ];
+    }
+
+    /**
+     * @return array{total:int, aprobados:int}
+     */
+    private function getGlobalDocsStats(int $empresaId, ?string $tipoEmpresa = null): array
+    {
+        $sql = <<<'SQL'
+            SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN LOWER(COALESCE(doc_estatus, '')) = 'aprobado' THEN 1 ELSE 0 END) AS aprobados
+            FROM (
+                SELECT
+                    t.id,
+                    (
+                        SELECT d.estatus
+                          FROM rp_empresa_doc AS d
+                         WHERE d.empresa_id = :empresa_id
+                           AND d.tipo_global_id = t.id
+                         ORDER BY d.actualizado_en DESC, d.id DESC
+                         LIMIT 1
+                    ) AS doc_estatus
+                  FROM rp_documento_tipo AS t
+                 WHERE t.activo = 1
+        SQL;
+
+        $params = [':empresa_id' => $empresaId];
+
+        if ($tipoEmpresa !== null && $tipoEmpresa !== '') {
+            $sql .= ' AND (t.tipo_empresa = :tipo_empresa OR t.tipo_empresa = \'ambas\')';
+            $params[':tipo_empresa'] = $tipoEmpresa;
+        }
+
+        $sql .= '
+            ) AS docs
+        ';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($params);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC) ?: ['total' => 0, 'aprobados' => 0];
+
+        return [
+            'total' => isset($row['total']) ? (int) $row['total'] : 0,
+            'aprobados' => isset($row['aprobados']) ? (int) $row['aprobados'] : 0,
+        ];
+    }
+
+    /**
+     * @return array{total:int, aprobados:int}
+     */
+    private function getCustomDocsStats(int $empresaId): array
+    {
+        $sql = <<<'SQL'
+            SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN LOWER(COALESCE(doc_estatus, '')) = 'aprobado' THEN 1 ELSE 0 END) AS aprobados
+            FROM (
+                SELECT
+                    tipo.id,
+                    (
+                        SELECT d.estatus
+                          FROM rp_empresa_doc AS d
+                         WHERE d.empresa_id = :empresa_id
+                           AND d.tipo_personalizado_id = tipo.id
+                         ORDER BY d.actualizado_en DESC, d.id DESC
+                         LIMIT 1
+                    ) AS doc_estatus
+                  FROM rp_documento_tipo_empresa AS tipo
+                 WHERE tipo.empresa_id = :empresa_id
+            ) AS docs
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC) ?: ['total' => 0, 'aprobados' => 0];
+
+        return [
+            'total' => isset($row['total']) ? (int) $row['total'] : 0,
+            'aprobados' => isset($row['aprobados']) ? (int) $row['aprobados'] : 0,
+        ];
+    }
 }

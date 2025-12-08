@@ -33,7 +33,8 @@ final class MachoteConfirmModel
                 m.estatus,
                 m.version_local,
                 m.actualizado_en,
-                c.empresa_id
+                c.empresa_id,
+                c.estatus AS convenio_estatus
             FROM rp_convenio_machote AS m
             INNER JOIN rp_convenio AS c ON c.id = m.convenio_id
             WHERE m.id = :machote_id

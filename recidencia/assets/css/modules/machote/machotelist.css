@@ -250,6 +250,7 @@
 .table-wrapper td .ok { background: var(--success-100); color: var(--success-700); border: 1px solid var(--success-200); }
 .table-wrapper td .warn { background: var(--warning-100); color: var(--warning-700); border: 1px solid var(--warning-300); }
 .table-wrapper td .err { background: var(--danger-150); color: var(--danger-700); border: 1px solid var(--danger-200); }
+.table-wrapper td .archivado { background: var(--danger-150); color: var(--danger-700); border: 1px solid var(--danger-200); }
 .table-wrapper td .gris { background: var(--muted-weak); color: var(--muted-strong); border: 1px solid var(--border); }
 
 .actions {

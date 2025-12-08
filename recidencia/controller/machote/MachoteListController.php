@@ -30,8 +30,8 @@ class MachoteListController
                 'empresa' => $m['empresa_nombre'],
                 'version' => $m['machote_version'],
                 'fecha' => machote_format_date($m['fecha']),
-                'estatus' => $m['estado_convenio'],
-                'badge' => machote_estado_badge($m['estado_convenio'])
+                'estatus' => $m['machote_estatus'] ?? '',
+                'badge' => machote_estado_badge($m['machote_estatus'] ?? '')
             ];
         }, $machotes);
 

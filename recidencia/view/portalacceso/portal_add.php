@@ -100,7 +100,7 @@ $controllerError = $handlerResult['controllerError'];
                   <?php endforeach; ?>
                 </select>
                 <?php if ($empresaOptions === []) : ?>
-                  <div class="hint">No hay empresas activas sin un acceso asignado. Usa el acceso existente o elimina uno para habilitar un nuevo registro.</div>
+                  <div class="hint">No hay empresas activas o en revisión sin un acceso asignado. Usa el acceso existente o elimina uno para habilitar un nuevo registro.</div>
                 <?php endif; ?>
               </div>
 

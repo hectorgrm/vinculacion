@@ -28,7 +28,7 @@ class PortalAddModel
         $sql = <<<'SQL'
             SELECT e.id, e.nombre, e.numero_control
               FROM rp_empresa e
-             WHERE e.estatus = 'Activa'
+             WHERE e.estatus IN ('Activa', 'En revisión')
                AND NOT EXISTS (
                    SELECT 1
                      FROM rp_portal_acceso pa

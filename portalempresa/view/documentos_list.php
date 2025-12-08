@@ -48,6 +48,8 @@ $statusOptions = isset($statusOptions) && is_array($statusOptions)
 $tiposDocumentos = isset($tiposDocumentos) && is_array($tiposDocumentos)
     ? $tiposDocumentos
     : [];
+$portalReadOnly = !empty($portalReadOnly);
+$portalReadOnlyMessage = isset($portalReadOnlyMessage) ? (string) $portalReadOnlyMessage : null;
 
 /** @var array{type: string, message: string}|null $uploadFlash */
 $uploadFlash = isset($uploadFlash) && is_array($uploadFlash)
@@ -61,11 +63,10 @@ $kpiPend = (int) ($kpis['pendiente'] ?? 0);
 $kpiRech = (int) ($kpis['rechazado'] ?? 0);
 
 $hasUploadOptions = $tiposDocumentos !== [];
+$uploadDisabled = $portalReadOnly || !$hasUploadOptions;
 ?>
 
-<!-- ======================================================= -->
 <!-- ENCABEZADO PORTAL -->
-<!-- ======================================================= -->
 <?php include __DIR__ . '/../layout/portal_empresa_header.php'; ?>
 
 <?php if ($uploadFlash !== null): ?>
@@ -87,18 +88,27 @@ $hasUploadOptions = $tiposDocumentos !== [];
   </section>
 <?php endif; ?>
 
-<!-- ======================================================= -->
 <!-- CONTENIDO PRINCIPAL -->
-<!-- ======================================================= -->
 <main class="container">
+  <?php if ($portalReadOnly): ?>
+    <section class="flash-bar">
+      <div class="alert toast warn" role="status">
+        <div class="alert__icon" aria-hidden="true">!</div>
+        <div class="alert__body">
+          <p class="alert__title">Portal en modo lectura</p>
+          <p class="alert__message"><?= htmlspecialchars($portalReadOnlyMessage ?? 'Solo puedes consultar la informacion del portal mientras la empresa esta en modo de solo lectura.') ?></p>
+        </div>
+      </div>
+    </section>
+  <?php endif; ?>
 
   <section class="titlebar">
     <div>
-      <h1>📂 Documentos de la empresa</h1>
-      <p>Consulta los documentos solicitados y sube tu versión actualizada si fue requerida por el área de Vinculación.</p>
+      <h1>Documentos de la empresa</h1>
+      <p>Consulta los documentos solicitados y sube tu version actualizada si fue requerida por el area de Vinculacion.</p>
     </div>
     <div class="actions">
-      <a href="convenio_view.php" class="btn">📑 Ver convenio</a>
+      <a href="convenio_view.php" class="btn">Ver convenio</a>
     </div>
   </section>
 
@@ -144,7 +154,7 @@ $hasUploadOptions = $tiposDocumentos !== [];
                 type="text"
                 id="q"
                 name="q"
-                placeholder="Nombre del documento…"
+                placeholder="Nombre del documento..."
                 value="<?= htmlspecialchars($filterValues['q']) ?>"
               >
             </div>
@@ -159,7 +169,7 @@ $hasUploadOptions = $tiposDocumentos !== [];
                 <?php endforeach; ?>
               </select>
             </div>
-            <button class="btn primary" type="submit">🔎 Filtrar</button>
+            <button class="btn primary" type="submit">Filtrar</button>
           </form>
 
           <!-- TABLA -->
@@ -170,7 +180,7 @@ $hasUploadOptions = $tiposDocumentos !== [];
                   <th>Documento</th>
                   <th>Tipo</th>
                   <th>Estado</th>
-                  <th>Última actualización</th>
+                  <th>Ultima actualizacion</th>
                   <th>Observaciones</th>
                   <th>Acciones</th>
                 </tr>
@@ -196,8 +206,8 @@ $hasUploadOptions = $tiposDocumentos !== [];
                     <td><?= isset($d['observaciones']) && $d['observaciones'] !== '' ? htmlspecialchars((string) $d['observaciones']) : '—' ?></td>
                     <td class="actions">
                       <?php if (!empty($d['archivo_path'])): ?>
-                        <a class="btn small" href="../../recidencia/<?= htmlspecialchars((string) $d['archivo_path']) ?>" target="_blank">📄 Ver</a>
-                        <a class="btn small" href="../../recidencia/<?= htmlspecialchars((string) $d['archivo_path']) ?>" download>⬇️ Descargar</a>
+                        <a class="btn small" href="../../recidencia/<?= htmlspecialchars((string) $d['archivo_path']) ?>" target="_blank">Ver</a>
+                        <a class="btn small" href="../../recidencia/<?= htmlspecialchars((string) $d['archivo_path']) ?>" download>Descargar</a>
                       <?php else: ?>
                         <span class="hint">Sin archivo</span>
                       <?php endif; ?>
@@ -218,13 +228,16 @@ $hasUploadOptions = $tiposDocumentos !== [];
       <div class="card" id="subir">
         <header>Subir / Actualizar documento</header>
         <div class="content">
-          <p class="hint">Solo usa este formulario si Residencias te solicitó reemplazar un documento pendiente o rechazado.</p>
+          <p class="hint">Solo usa este formulario si Residencias te solicito reemplazar un documento pendiente o rechazado.</p>
+          <?php if ($portalReadOnly): ?>
+            <div class="alert warn" style="margin-top:8px;"><?= htmlspecialchars($portalReadOnlyMessage ?? 'No es posible subir archivos mientras el portal esta en modo solo lectura.') ?></div>
+          <?php endif; ?>
 
           <form class="upload" method="post" enctype="multipart/form-data" action="../handler/empresa_documento_upload_handler.php">
             <div class="field">
               <label for="doc_tipo">Tipo de documento</label>
-              <select id="doc_tipo" name="doc_tipo" <?= $hasUploadOptions ? '' : 'disabled' ?> required>
-                <option value="">Selecciona…</option>
+              <select id="doc_tipo" name="doc_tipo" <?= $uploadDisabled ? 'disabled' : '' ?> required>
+                <option value="">Selecciona</option>
                 <?php foreach ($tiposDocumentos as $tipo): ?>
                   <?php
                     $optionValue = isset($tipo['value']) ? (string) $tipo['value'] : '';
@@ -233,7 +246,7 @@ $hasUploadOptions = $tiposDocumentos !== [];
                     }
 
                     $optionLabel = isset($tipo['label']) ? (string) $tipo['label'] : 'Documento';
-                    $optionDisabled = !empty($tipo['disabled']);
+                    $optionDisabled = !empty($tipo['disabled']) || $portalReadOnly;
                   ?>
                   <option value="<?= htmlspecialchars($optionValue) ?>" <?= $optionDisabled ? 'disabled' : '' ?>>
                     <?= htmlspecialchars($optionLabel) ?>
@@ -247,21 +260,23 @@ $hasUploadOptions = $tiposDocumentos !== [];
 
             <div class="field">
               <label for="archivo">Archivo (PDF/JPG/PNG)</label>
-              <input type="file" id="archivo" name="archivo" accept=".pdf,.jpg,.jpeg,.png" required>
+              <input type="file" id="archivo" name="archivo" accept=".pdf,.jpg,.jpeg,.png" required <?= $uploadDisabled ? 'disabled' : '' ?>>
             </div>
 
             <div class="field">
               <label for="comentario">Comentario (opcional)</label>
-              <textarea id="comentario" name="comentario" rows="3" placeholder="Notas para el área de Vinculación…"></textarea>
+              <textarea id="comentario" name="comentario" rows="3" placeholder="Notas para el area de Vinculacion..." <?= $uploadDisabled ? 'disabled' : '' ?>></textarea>
             </div>
 
             <div class="actions">
-              <button class="btn primary" type="submit" <?= $hasUploadOptions ? '' : 'disabled' ?>>⬆️ Subir documento</button>
+              <button class="btn primary" type="submit" <?= $uploadDisabled ? 'disabled' : '' ?>>Subir documento</button>
               <a class="btn" href="#top">Cancelar</a>
             </div>
 
-            <?php if (!$hasUploadOptions): ?>
-              <p class="hint">Todos los documentos asignados están aprobados o no requieren cambios por ahora.</p>
+            <?php if (!$hasUploadOptions && !$portalReadOnly): ?>
+              <p class="hint">Todos los documentos asignados estan aprobados o no requieren cambios por ahora.</p>
+            <?php elseif ($portalReadOnly): ?>
+              <p class="hint"><?= htmlspecialchars($portalReadOnlyMessage ?? 'Las cargas de documentos estan deshabilitadas porque la empresa esta en modo solo lectura.') ?></p>
             <?php endif; ?>
           </form>
         </div>
@@ -272,7 +287,7 @@ $hasUploadOptions = $tiposDocumentos !== [];
         <div class="content">
           <ul>
             <li>Formatos aceptados: PDF, JPG, PNG.</li>
-            <li>Tamaño máximo recomendado: 10 MB.</li>
+            <li>Tamano maximo recomendado: 10 MB.</li>
             <li>Revisa las observaciones antes de subir nuevamente un documento rechazado.</li>
           </ul>
         </div>
@@ -284,7 +299,7 @@ $hasUploadOptions = $tiposDocumentos !== [];
 
 <script>
 (function () {
-  // Limpia los parA�metros de estado para evitar que el mensaje reaparezca al refrescar.
+  // Limpia los parametros de estado para evitar que el mensaje reaparezca al refrescar.
   try {
     var currentUrl = new URL(window.location.href);
     var removed = false;

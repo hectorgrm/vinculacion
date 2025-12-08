@@ -6,10 +6,14 @@
  */
 $headerEmpresaNombre = null;
 $headerLogoUrl = null;
+$headerReadOnly = false;
+$headerReadOnlyMessage = null;
 
 if (isset($portalViewModel) && is_array($portalViewModel)) {
     $headerEmpresaNombre = $portalViewModel['empresaNombre'] ?? null;
     $headerLogoUrl = $portalViewModel['empresaLogoUrl'] ?? null;
+    $headerReadOnly = !empty($portalViewModel['readOnly']);
+    $headerReadOnlyMessage = $portalViewModel['readOnlyMessage'] ?? null;
 }
 
 // Fallbacks para vistas como machote_view.php que no crean $portalViewModel.
@@ -57,6 +61,21 @@ if ($headerLogoUrl === null && isset($portalSession['empresa_logo_path'])) {
     }
 }
 
+$headerReadOnly = isset($portalReadOnly) ? (bool) $portalReadOnly : $headerReadOnly;
+if (!$headerReadOnly && isset($portalSession) && is_array($portalSession) && function_exists('portalEmpresaIsReadOnly')) {
+    $headerReadOnly = portalEmpresaIsReadOnly($portalSession);
+}
+
+if ($headerReadOnly && $headerReadOnlyMessage === null) {
+    if (isset($portalSession) && is_array($portalSession) && function_exists('portalEmpresaReadOnlyMessage')) {
+        $headerReadOnlyMessage = portalEmpresaReadOnlyMessage($portalSession);
+    }
+
+    if ($headerReadOnlyMessage === null) {
+        $headerReadOnlyMessage = 'Portal en modo solo lectura por estatus actual de la empresa.';
+    }
+}
+
 $headerLogoUrl = $headerLogoUrl ?: 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg';
 ?>
 
@@ -71,6 +90,11 @@ $headerLogoUrl = $headerLogoUrl ?: 'https://upload.wikimedia.org/wikipedia/commo
       <strong><?= htmlspecialchars($headerEmpresaNombre) ?></strong>
       <small>Residencias Profesionales</small>
     </div>
+    <?php if ($headerReadOnly): ?>
+      <span class="badge" style="background:#f59e0b;color:#111;padding:4px 10px;border-radius:999px;font-size:12px;">
+        Solo lectura
+      </span>
+    <?php endif; ?>
   </div>
 
   <div class="userbox">

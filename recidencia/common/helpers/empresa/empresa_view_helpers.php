@@ -18,6 +18,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
         $inputError = $handlerResult['inputError'] ?? null;
         $successMessage = $handlerResult['successMessage'] ?? null;
         $conveniosActivos = $handlerResult['conveniosActivos'] ?? [];
+        $conveniosArchivados = $handlerResult['conveniosArchivados'] ?? [];
         $estudiantes = $handlerResult['estudiantes'] ?? [];
 
         if (!is_array($estudiantes)) {
@@ -26,6 +27,10 @@ if (!function_exists('empresaViewBuildHeaderData')) {
 
         if (!is_array($conveniosActivos)) {
             $conveniosActivos = [];
+        }
+
+        if (!is_array($conveniosArchivados)) {
+            $conveniosArchivados = [];
         }
 
         $nombre = 'Sin datos';
@@ -41,6 +46,8 @@ if (!function_exists('empresaViewBuildHeaderData')) {
         $logoUrl = null;
         $empresaIsEnRevision = false;
         $empresaIsActiva = false;
+        $empresaIsCompletada = false;
+        $empresaIsInactiva = false;
         $empresaTieneConvenioActivo = false;
 
         if (is_array($empresa)) {
@@ -59,6 +66,8 @@ if (!function_exists('empresaViewBuildHeaderData')) {
                 : null;
             $empresaIsEnRevision = empresaViewIsStatusRevision($empresa['estatus'] ?? null);
             $empresaIsActiva = empresaViewIsStatusActiva($empresa['estatus'] ?? null);
+            $empresaIsCompletada = empresaViewIsStatusCompletada($empresa['estatus'] ?? null);
+            $empresaIsInactiva = empresaViewIsStatusInactiva($empresa['estatus'] ?? null);
         }
 
         $empresaTieneConvenioActivo = empresaViewHasConvenioActivo($conveniosActivos);
@@ -106,6 +115,7 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             'inputError' => $inputError,
             'successMessage' => $successMessage,
             'conveniosActivos' => $conveniosActivos,
+            'conveniosArchivados' => $conveniosArchivados,
             'nombre' => $nombre,
             'rfc' => $rfc,
             'representante' => $representante,
@@ -130,6 +140,9 @@ if (!function_exists('empresaViewBuildHeaderData')) {
             'empresaDeleteUrl' => $empresaDeleteUrl,
             'empresaIsEnRevision' => $empresaIsEnRevision,
             'empresaIsActiva' => $empresaIsActiva,
+            'empresaIsCompletada' => $empresaIsCompletada,
+            'empresaIsInactiva' => $empresaIsInactiva,
+            'empresaIsReadOnly' => $empresaIsCompletada || $empresaIsInactiva,
             'empresaTieneConvenioActivo' => $empresaTieneConvenioActivo,
             'estudiantes' => $estudiantes,
         ];
@@ -150,7 +163,12 @@ if (!function_exists('empresaViewSanitizeStatusForComparison')) {
         }
 
         $lower = function_exists('mb_strtolower') ? mb_strtolower($normalized, 'UTF-8') : strtolower($normalized);
-        $clean = preg_replace('/[^a-z]/', '', $lower);
+        $withoutAccents = strtr($lower, [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'Á' => 'a', 'É' => 'e', 'Í' => 'i', 'Ó' => 'o', 'Ú' => 'u',
+            'ñ' => 'n', 'Ñ' => 'n',
+        ]);
+        $clean = preg_replace('/[^a-z]/', '', $withoutAccents);
 
         return $clean ?? '';
     }
@@ -170,6 +188,20 @@ if (!function_exists('empresaViewIsStatusActiva')) {
     function empresaViewIsStatusActiva(?string $estatus): bool
     {
         return empresaNormalizeStatus($estatus) === 'Activa';
+    }
+}
+
+if (!function_exists('empresaViewIsStatusCompletada')) {
+    function empresaViewIsStatusCompletada(?string $estatus): bool
+    {
+        return empresaNormalizeStatus($estatus) === 'Completada';
+    }
+}
+
+if (!function_exists('empresaViewIsStatusInactiva')) {
+    function empresaViewIsStatusInactiva(?string $estatus): bool
+    {
+        return empresaNormalizeStatus($estatus) === 'Inactiva';
     }
 }
 
@@ -417,9 +449,11 @@ if (!function_exists('empresaViewPortalAccessHelper')) {
         }
 
         $empresaIsActiva = false;
+        $empresaIsEnRevision = false;
 
         if (is_array($empresa)) {
             $empresaIsActiva = empresaViewIsStatusActiva($empresa['estatus'] ?? null);
+            $empresaIsEnRevision = empresaViewIsStatusRevision($empresa['estatus'] ?? null);
         }
 
         $empresaIdQuery = $empresaId !== null ? (string) $empresaId : '';
@@ -468,12 +502,12 @@ if (!function_exists('empresaViewPortalAccessHelper')) {
             $createUrl = null;
         }
 
-        $actionsEnabled = $empresaIsActiva && $empresaId !== null;
+        $actionsEnabled = ($empresaIsActiva || $empresaIsEnRevision) && $empresaId !== null;
         $disabledReason = null;
 
         if (!$actionsEnabled) {
-            $disabledReason = !$empresaIsActiva
-                ? 'Activa la empresa para gestionar su acceso al portal.'
+            $disabledReason = (!$empresaIsActiva && !$empresaIsEnRevision)
+                ? 'Activa o coloca en revisión la empresa para gestionar su acceso al portal.'
                 : 'No se puede gestionar el portal sin un identificador de empresa válido.';
         }
 

@@ -23,6 +23,8 @@ if (!function_exists('renderBadgeClass')) {
                 return 'badge warn';
             case 'suspendida':
                 return 'badge err';
+            case 'completada':
+                return 'badge ok';
             default:
                 return 'badge secondary';
         }
@@ -44,7 +46,7 @@ if (!function_exists('empresaStatusOptions')) {
      */
     function empresaStatusOptions(): array
     {
-        return ['Activa', 'En revisión', 'Inactiva', 'Suspendida'];
+        return ['Activa', 'En revisión', 'Inactiva', 'Suspendida', 'Completada'];
     }
 }
 
@@ -105,6 +107,36 @@ if (!function_exists('empresaNormalizeStatus')) {
         }
 
         return 'En revisión';
+    }
+}
+
+if (!function_exists('empresaStatusRequiresConvenioActivo')) {
+    function empresaStatusRequiresConvenioActivo(?string $estatus): bool
+    {
+        return empresaNormalizeStatus($estatus) === 'Completada';
+    }
+}
+
+if (!function_exists('empresaStatusRequiresMachoteAprobado')) {
+    function empresaStatusRequiresMachoteAprobado(?string $estatus): bool
+    {
+        return empresaNormalizeStatus($estatus) === 'Completada';
+    }
+}
+
+if (!function_exists('empresaMachoteIsAprobado')) {
+    function empresaMachoteIsAprobado(?string $estatus): bool
+    {
+        if ($estatus === null) {
+            return false;
+        }
+
+        $normalized = trim((string) $estatus);
+        $normalized = function_exists('mb_strtolower')
+            ? mb_strtolower($normalized, 'UTF-8')
+            : strtolower($normalized);
+
+        return $normalized === 'aprobado';
     }
 }
 

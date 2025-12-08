@@ -40,6 +40,11 @@ if ($tipoPersonalizadoId !== null && $tipoPersonalizadoId <= 0) {
   $tipoPersonalizadoId = null;
 }
 $tipoOrigen = $document['tipo_origen'] ?? 'global';
+$empresaEstatus = $document !== null && isset($document['empresa_estatus']) ? (string) $document['empresa_estatus'] : '';
+$empresaIsCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
+$documentoArchivado = $document !== null && isset($document['estatus'])
+  ? (strcasecmp(trim((string) $document['estatus']), 'Archivado') === 0)
+  : false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -99,6 +104,15 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
       <?php endif; ?>
 
       <?php if ($document !== null): ?>
+        <?php if ($empresaIsCompletada): ?>
+          <section class="card">
+            <div class="content">
+              <div class="alert alert-warning">
+                La empresa est&aacute; en estatus <strong>Completada</strong>. La gesti&oacute;n de documentos est&aacute; bloqueada (no se puede reabrir ni eliminar).
+              </div>
+            </div>
+          </section>
+        <?php endif; ?>
         <section class="card">
           <header>Informaci&oacute;n del Documento</header>
           <div class="content">
@@ -290,7 +304,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
           </div>
         </section>
 
-        <?php if ($document['estatus'] === 'aprobado'): ?>
+        <?php if ($document['estatus'] === 'aprobado' && !$empresaIsCompletada && !$documentoArchivado): ?>
           <section class="card">
             <header>&#128260; Reabrir revisi&oacute;n</header>
             <div class="content">
@@ -309,8 +323,12 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
         <?php endif; ?>
 
         <div class="actions">
-          <a href="documento_delete.php?id=<?php echo urlencode((string) $document['id']); ?>" class="btn danger">Eliminar
-            documento</a>
+          <?php if (!$empresaIsCompletada && !$documentoArchivado): ?>
+            <a href="documento_delete.php?id=<?php echo urlencode((string) $document['id']); ?>" class="btn danger">Eliminar
+              documento</a>
+          <?php else: ?>
+            <span class="btn danger" style="pointer-events:none;opacity:0.6;">Eliminar documento</span>
+          <?php endif; ?>
         </div>
       <?php endif; ?>
     </main>

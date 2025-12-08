@@ -14,6 +14,7 @@ use RuntimeException;
 use function empresaViewBuildGestionDocumentosUrl;
 use function empresaViewDecorate;
 use function empresaViewDecorateConvenios;
+use function empresaViewDecorateConveniosArchivados;
 use function empresaViewDecorateEstudiantes;
 use function empresaViewDecorateDocumentos;
 use function empresaViewDefaults;
@@ -52,6 +53,18 @@ class EmpresaViewController
             return $this->model->findActiveConveniosByEmpresaId($empresaId);
         } catch (PDOException $exception) {
             throw new RuntimeException('No se pudieron obtener los convenios activos de la empresa.', 0, $exception);
+        }
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getConveniosArchivados(int $empresaId): array
+    {
+        try {
+            return $this->model->findArchivadosByEmpresaId($empresaId);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudieron obtener los convenios archivados de la empresa.', 0, $exception);
         }
     }
 
@@ -144,6 +157,9 @@ class EmpresaViewController
 
         $convenios = $this->getConveniosActivos($empresaId);
         $viewData['conveniosActivos'] = empresaViewDecorateConvenios($convenios);
+
+        $conveniosArchivados = $this->getConveniosArchivados($empresaId);
+        $viewData['conveniosArchivados'] = empresaViewDecorateConveniosArchivados($conveniosArchivados);
 
         $estudiantes = $this->getEstudiantes($empresaId);
         $viewData['estudiantes'] = empresaViewDecorateEstudiantes($estudiantes);

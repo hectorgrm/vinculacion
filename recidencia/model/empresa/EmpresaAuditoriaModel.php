@@ -250,4 +250,26 @@ class EmpresaAuditoriaModel
 
         return $records ?: [];
     }
+
+    public function findEmpresaStatus(int $empresaId): ?string
+    {
+        $sql = <<<'SQL'
+            SELECT estatus
+              FROM rp_empresa
+             WHERE id = :id
+             LIMIT 1
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->bindValue(':id', $empresaId, PDO::PARAM_INT);
+        $statement->execute();
+
+        $estatus = $statement->fetchColumn();
+
+        if ($estatus === false) {
+            return null;
+        }
+
+        return is_string($estatus) ? trim($estatus) : null;
+    }
 }

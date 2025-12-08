@@ -21,7 +21,8 @@ if (!function_exists('empresaRegistrarEventoDesactivacion')) {
         ?int $actorId,
         int $conveniosAfectados,
         int $documentosAfectados,
-        int $accesosAfectados
+        int $accesosAfectados,
+        int $asignacionesAfectadas = 0
     ): void {
         $resumen = [];
 
@@ -35,6 +36,10 @@ if (!function_exists('empresaRegistrarEventoDesactivacion')) {
 
         if ($accesosAfectados > 0) {
             $resumen[] = 'accesos:' . $accesosAfectados;
+        }
+
+        if ($asignacionesAfectadas > 0) {
+            $resumen[] = 'asignaciones:' . $asignacionesAfectadas;
         }
 
         $accion = 'desactivar_cascada';
@@ -62,20 +67,15 @@ if (!function_exists('empresaRegistrarEventoReactivacion')) {
     function empresaRegistrarEventoReactivacion(
         int $empresaId,
         ?int $actorId,
-        int $conveniosAfectados,
         int $accesosAfectados
     ): void {
         $resumen = [];
-
-        if ($conveniosAfectados > 0) {
-            $resumen[] = 'convenios:' . $conveniosAfectados;
-        }
 
         if ($accesosAfectados > 0) {
             $resumen[] = 'accesos:' . $accesosAfectados;
         }
 
-        $accion = 'reactivar_cascada';
+        $accion = 'reactivar_en_revision';
 
         if ($resumen !== []) {
             $accion .= ' [' . implode(', ', $resumen) . ']';

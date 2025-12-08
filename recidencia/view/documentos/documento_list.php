@@ -141,6 +141,7 @@ $errorMessage = $handlerResult['errorMessage'];
                     $empresaNombre = documentoValueOrDefault($documento['empresa_nombre'] ?? null);
                     $tipoNombre = documentoValueOrDefault($documento['tipo_nombre'] ?? null);
                     $estatus = $documento['estatus'] ?? '';
+                    $archivado = strcasecmp(trim((string)$estatus), 'Archivado') === 0;
                     $badgeClass = documentoRenderBadgeClass($estatus);
                     $badgeLabel = documentoRenderBadgeLabel($estatus);
                     $observacion = documentoValueOrDefault($documento['observacion'] ?? null, 'Sin observaciones');
@@ -178,10 +179,12 @@ $errorMessage = $handlerResult['errorMessage'];
                           <a class="btn small" href="<?php echo htmlspecialchars($archivoUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">Ver</a>
                         <?php endif; ?>
                         <a class="btn small secondary" href="documento_view.php?id=<?php echo urlencode((string) $documentoId); ?>">Detalle</a>
-                        <?php if ($estatus !== 'aprobado'): ?>
+                        <?php if ($estatus !== 'aprobado' && !$archivado): ?>
                           <a class="btn small primary" href="documento_review.php?id=<?php echo urlencode((string) $documentoId); ?>">Revisar</a>
                         <?php endif; ?>
-                        <a class="btn small danger" href="documento_delete.php?id=<?php echo urlencode((string) $documentoId); ?>">Eliminar</a>
+                        <?php if (!$archivado): ?>
+                          <a class="btn small danger" href="documento_delete.php?id=<?php echo urlencode((string) $documentoId); ?>">Eliminar</a>
+                        <?php endif; ?>
                       </td>
                     </tr>
                   <?php endforeach; ?>

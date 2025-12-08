@@ -9,7 +9,10 @@ require_once __DIR__ . '/../../handler/machote/machote_revisar_handler.php';
 // Fallbacks
 $empresaNombre   = isset($empresa['nombre']) ? (string) $empresa['nombre'] : '-';
 $empresaId       = isset($empresa['id']) ? (int) $empresa['id'] : 0;
+$empresaEstatus  = isset($empresa['estatus']) ? (string) $empresa['estatus'] : '';
+$empresaCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
 $machoteId       = isset($machote['id']) ? (int) $machote['id'] : (int) ($_GET['id'] ?? 0);
+$empresaInactiva = strcasecmp(trim($empresaEstatus), 'Inactiva') === 0;
 $versionLocal    = isset($machote['version_local']) ? (string) $machote['version_local'] : 'v1.0';
 $contenidoHtml   = isset($machote['contenido_html']) ? (string) $machote['contenido_html'] : '';
 $comentarios     = is_array($comentarios ?? null) ? $comentarios : [];
@@ -21,9 +24,18 @@ $currentUser     = is_array($currentUser ?? null) ? $currentUser : [];
 $currentUserId   = isset($currentUser['id']) ? (int) $currentUser['id'] : 0;
 $currentUserName = isset($currentUser['name']) ? (string) $currentUser['name'] : '';
 $uploadsBasePath = '../../uploads/';
+$machoteEstatus   = isset($machote['estatus']) ? (string) $machote['estatus'] : '';
+$machoteArchivado = strcasecmp(trim($machoteEstatus !== '' ? $machoteEstatus : (string) $estado), 'Archivado') === 0;
 $machoteConfirmado = (int) ($machote['confirmacion_empresa'] ?? 0) === 1;
-$machoteBloqueado = $machoteConfirmado;
+$machoteBloqueado = $machoteConfirmado || $empresaCompletada || $empresaInactiva || $machoteArchivado;
 $comentariosBloqueados = $machoteBloqueado;
+$bloqueoMensaje = $machoteArchivado
+    ? 'El machote estA? archivado; solo lectura.'
+    : ($empresaCompletada
+        ? 'La empresa estA? en estatus Completada; la ediciA3n y los comentarios estA?n bloqueados.'
+        : ($empresaInactiva
+            ? 'Machote invalidado por empresa Inactiva; solo lectura.'
+            : 'Este documento fue confirmado por la empresa. Reabre la revisiA3n para habilitar nuevamente la ediciA3n.'));
 
 // KPIs
 $comentAbiertos  = (int) ($totales['pendientes'] ?? 0);
@@ -35,6 +47,7 @@ function badgeEstado(string $estado): string {
     'Aprobado'          => '<span class="badge aprobado">Aprobado</span>',
     'Con observaciones' => '<span class="badge con_observaciones">Con observaciones</span>',
     'En revisión'       => '<span class="badge en_revision">En revisión</span>',
+    'Archivado'         => '<span class="badge archivado">Archivado</span>',
   ];
   return $map[$estado] ?? '<span class="badge en_revision">En revisión</span>';
 }
@@ -86,10 +99,12 @@ if (isset($_GET['machote_status']) && $_GET['machote_status'] === 'saved') {
 }
 if (!empty($_GET['machote_error'])) {
     $errorKey = (string) $_GET['machote_error'];
-    $messages = [
-        'locked' => 'El documento ya fue aprobado por la empresa. Reabre la revisión para continuar editando.',
+        $messages = [
+        'locked' => 'El documento ya fue aprobado por la empresa. Reabre la revisiA3n para continuar editando.',
         'invalid_id' => 'No se pudo identificar el machote solicitado.',
+        'empresa_inactiva' => 'Machote invalidado por empresa inactiva; solo lectura.',
     ];
+
     $flashMessages[] = ['type' => 'error', 'text' => $messages[$errorKey] ?? 'No se pudieron guardar los cambios.'];
 }
 if (!empty($_GET['comentario_status'])) {
@@ -125,10 +140,13 @@ if (!empty($_GET['reabrir_status'])) {
 }
 if (!empty($_GET['reabrir_error'])) {
     $errorKey = (string) $_GET['reabrir_error'];
-    $messages = [
+        $messages = [
         'invalid' => 'No se pudo identificar el machote a reabrir.',
-        'internal' => 'Ocurrió un problema al reabrir la revisión. Intenta nuevamente.',
+        'empresa_completada' => 'La empresa estA? en estatus Completada; no se puede reabrir la revisiA3n.',
+        'empresa_inactiva' => 'RevisiA3n cancelada porque la empresa estA? Inactiva.',
+        'internal' => 'OcurriA3 un problema al reabrir la revisiA3n. Intenta nuevamente.',
     ];
+
     $flashMessages[] = ['type' => 'error', 'text' => $messages[$errorKey] ?? 'No se pudo reabrir la revisión.'];
 }
 ?>
@@ -174,7 +192,7 @@ if (!empty($_GET['reabrir_error'])) {
             <a href="../empresa/empresa_view.php?id=<?= (int) $empresaId ?>" class="btn secondary">Volver a la empresa</a>
           <?php endif; ?>
 
-          <?php if ($machoteBloqueado): ?>
+          <?php if ($machoteBloqueado && !$empresaCompletada && !$empresaInactiva && !$machoteArchivado): ?>
             <form
               class="inline-form"
               action="../../handler/machote/machote_reabrir_handler.php"
@@ -184,6 +202,8 @@ if (!empty($_GET['reabrir_error'])) {
               <input type="hidden" name="machote_id" value="<?= (int) $machoteId ?>">
               <button class="btn danger" type="submit">Reabrir revisión</button>
             </form>
+          <?php elseif ($empresaCompletada || $empresaInactiva || $machoteArchivado): ?>
+            <span class="btn danger" style="pointer-events:none;opacity:0.6;">Reabrir revisión</span>
           <?php endif; ?>
         </div>
       </header>
@@ -227,7 +247,7 @@ if (!empty($_GET['reabrir_error'])) {
           <header>Documento a revisar (HTML editable)</header>
           <div class="content">
             <?php if ($machoteBloqueado): ?>
-              <p class="readonly-note">Este documento fue confirmado por la empresa. Reabre la revisión para habilitar nuevamente la edición.</p>
+              <p class="readonly-note"><?= htmlspecialchars($bloqueoMensaje) ?></p>
             <?php endif; ?>
             <form id="machote-editor-form" method="POST" action="../../handler/machote/machote_update_handler.php">
               <input type="hidden" name="id" value="<?= (int) $machoteId ?>">
@@ -257,7 +277,7 @@ if (!empty($_GET['reabrir_error'])) {
 
           <div class="content comments-content">
             <?php if ($comentariosBloqueados): ?>
-              <p class="readonly-note">Los comentarios están bloqueados porque la empresa confirmó el documento. Reabre la revisión para habilitarlos nuevamente.</p>
+              <p class="readonly-note"><?= htmlspecialchars($bloqueoMensaje) ?></p>
             <?php endif; ?>
             <!-- Crear nuevo comentario -->
             <details class="card comment-card" open>

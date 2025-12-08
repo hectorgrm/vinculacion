@@ -12,7 +12,7 @@ function machoteViewNormalizeStats(?array $stats): array
         'pendientes' => 0,
         'resueltos' => 0,
         'progreso' => 0,
-        'estado' => 'En revisión',
+        'estado' => 'En revision',
     ];
 
     return is_array($stats) ? array_merge($defaults, $stats) : $defaults;
@@ -29,7 +29,7 @@ function machoteViewNormalizePermisos(?array $permisos): array
 }
 
 /**
- * Normaliza la información del documento mostrado en la vista.
+ * Normaliza la informacion del documento mostrado en la vista.
  */
 function machoteViewNormalizeDocumento(?array $documento): array
 {
@@ -46,7 +46,7 @@ function machoteViewNormalizeDocumento(?array $documento): array
 }
 
 /**
- * Construye los mensajes flash a partir de los parA1metros de consulta.
+ * Construye los mensajes flash a partir de los parametros de consulta.
  */
 function machoteViewBuildFlashMessages(array $queryParams): array
 {
@@ -63,8 +63,9 @@ function machoteViewBuildFlashMessages(array $queryParams): array
     $comentarioError = (string) ($queryParams['comentario_error'] ?? '');
     $comentarioErrorMap = [
         'invalid' => 'Completa todos los campos del comentario.',
-        'internal' => 'No se pudo guardar tu comentario. Intenta más tarde.',
-        'session' => 'Inicia sesión nuevamente para continuar.',
+        'internal' => 'No se pudo guardar tu comentario. Intenta mas tarde.',
+        'session' => 'Inicia sesion nuevamente para continuar.',
+        'readonly' => 'El portal esta en modo lectura; no puedes publicar comentarios.',
     ];
     if ($comentarioError !== '' && isset($comentarioErrorMap[$comentarioError])) {
         $flashMessages[] = ['type' => 'error', 'text' => $comentarioErrorMap[$comentarioError]];
@@ -72,8 +73,8 @@ function machoteViewBuildFlashMessages(array $queryParams): array
 
     $confirmStatus = (string) ($queryParams['confirm_status'] ?? '');
     $confirmStatusMap = [
-        'confirmed' => '¡Gracias! Tu confirmación fue registrada.',
-        'already' => 'Este documento ya había sido confirmado previamente.',
+        'confirmed' => 'Gracias. Tu confirmacion fue registrada.',
+        'already' => 'Este documento ya habia sido confirmado previamente.',
     ];
     if ($confirmStatus !== '' && isset($confirmStatusMap[$confirmStatus])) {
         $flashMessages[] = ['type' => 'success', 'text' => $confirmStatusMap[$confirmStatus]];
@@ -82,9 +83,10 @@ function machoteViewBuildFlashMessages(array $queryParams): array
     $confirmError = (string) ($queryParams['confirm_error'] ?? '');
     $confirmErrorMap = [
         'invalid' => 'No fue posible identificar el documento a confirmar.',
-        'session' => 'Tu sesión expiró. Inicia sesión nuevamente.',
-        'pending' => 'Aún quedan comentarios pendientes por resolver.',
-        'internal' => 'Ocurrió un problema al registrar la confirmación.',
+        'session' => 'Tu sesion expiro. Inicia sesion nuevamente.',
+        'pending' => 'Aun quedan comentarios pendientes por resolver.',
+        'readonly' => 'La confirmacion esta bloqueada porque el portal esta en modo solo lectura.',
+        'internal' => 'Ocurrio un problema al registrar la confirmacion.',
     ];
     if ($confirmError !== '' && isset($confirmErrorMap[$confirmError])) {
         $flashMessages[] = ['type' => 'error', 'text' => $confirmErrorMap[$confirmError]];
@@ -122,7 +124,7 @@ function machoteViewRenderThreadMessage(array $mensaje, string $uploadsBasePath)
       <p><?= nl2br(htmlspecialchars($comentario)) ?></p>
       <?php if ($archivoHref !== null): ?>
         <div class="files">
-          <a href="<?= htmlspecialchars($archivoHref) ?>" target="_blank" rel="noopener">dY"Z Ver archivo</a>
+          <a href="<?= htmlspecialchars($archivoHref) ?>" target="_blank" rel="noopener">Ver archivo</a>
         </div>
       <?php endif; ?>
     </div>

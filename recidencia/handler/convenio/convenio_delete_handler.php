@@ -5,6 +5,7 @@ require_once __DIR__ . '/../../controller/ConvenioController.php';
 require_once __DIR__ . '/../../controller/convenio/ConvenioEditController.php';
 require_once __DIR__ . '/../../common/functions/conveniofunction.php';
 require_once __DIR__ . '/../../common/functions/convenio/conveniofunctions_delete.php';
+require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
 
 $requestedId = 0;
 if (isset($_GET['id'])) {
@@ -46,6 +47,17 @@ $errors = [];
 $successMessage = null;
 $sanitizedPost = null;
 $convenio = null;
+$machoteIdDisplay = '';
+$machoteModel = null;
+$empresaEstatus = '';
+$empresaIsCompletada = false;
+$empresaIsInactiva = false;
+
+try {
+    $machoteModel = \Residencia\Model\Convenio\ConvenioMachoteModel::createWithDefaultConnection();
+} catch (\Throwable) {
+    $machoteModel = null;
+}
 
 if ($editController === null && $controllerError !== null) {
     $errors[] = $controllerError;
@@ -62,24 +74,33 @@ if ($editController !== null && $requestedId > 0) {
     }
 }
 
+if ($convenio !== null && isset($convenio['empresa_estatus'])) {
+    $empresaEstatus = trim((string) $convenio['empresa_estatus']);
+    $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
+}
+
 if ($controller !== null && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-    $handleResult = convenioHandleDeleteRequest($controller, $_POST);
-    $sanitizedPost = $handleResult['sanitized'];
-    $errors = array_merge($errors, $handleResult['errors']);
-    $successMessage = $handleResult['successMessage'];
+    if ($empresaIsCompletada) {
+        $errors[] = 'No se puede desactivar el convenio porque la empresa está en estatus Completada.';
+    } else {
+        $handleResult = convenioHandleDeleteRequest($controller, $_POST);
+        $sanitizedPost = $handleResult['sanitized'];
+        $errors = array_merge($errors, $handleResult['errors']);
+        $successMessage = $handleResult['successMessage'];
 
-    if ($handleResult['convenioId'] > 0) {
-        $requestedId = $handleResult['convenioId'];
-    }
+        if ($handleResult['convenioId'] > 0) {
+            $requestedId = $handleResult['convenioId'];
+        }
 
-    if ($successMessage !== null && $requestedId > 0 && $editController !== null) {
-        try {
-            $refreshed = $editController->getConvenioById($requestedId);
-            if ($refreshed !== null) {
-                $convenio = $refreshed;
+        if ($successMessage !== null && $requestedId > 0 && $editController !== null) {
+            try {
+                $refreshed = $editController->getConvenioById($requestedId);
+                if ($refreshed !== null) {
+                    $convenio = $refreshed;
+                }
+            } catch (\RuntimeException $runtimeException) {
+                $errors[] = $runtimeException->getMessage();
             }
-        } catch (\RuntimeException $runtimeException) {
-            $errors[] = $runtimeException->getMessage();
         }
     }
 } elseif (($controller === null || $editController === null) && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
@@ -99,6 +120,24 @@ if ($convenio !== null && isset($convenio['empresa_id'])) {
     $empresaIdDisplay = (string) $requestedEmpresaId;
 }
 
+$machoteIdFromConvenio = null;
+if ($convenio !== null && isset($convenio['machote_id']) && ctype_digit((string) $convenio['machote_id'])) {
+    $machoteIdFromConvenio = (int) $convenio['machote_id'];
+}
+
+if ($machoteIdFromConvenio !== null && $machoteIdFromConvenio > 0) {
+    $machoteIdDisplay = (string) $machoteIdFromConvenio;
+} elseif ($machoteModel !== null && $requestedId > 0) {
+    try {
+        $machoteRecord = $machoteModel->getByConvenio($requestedId);
+        if ($machoteRecord !== null && isset($machoteRecord['id'])) {
+            $machoteIdDisplay = (string) $machoteRecord['id'];
+        }
+    } catch (\Throwable) {
+        // Si ocurre un error al obtener el machote, simplemente no se muestra el enlace.
+    }
+}
+
 $empresaNombreDisplay = '';
 if ($convenio !== null && isset($convenio['empresa_nombre'])) {
     $empresaNombreDisplay = (string) $convenio['empresa_nombre'];
@@ -115,7 +154,18 @@ $isAlreadyInactive = $convenio !== null
     && isset($convenio['estatus'])
     && (string) $convenio['estatus'] === 'Inactiva';
 
-$formDisabled = $successMessage !== null || $isAlreadyInactive || $controller === null || $editController === null;
+if ($convenio !== null && isset($convenio['empresa_estatus'])) {
+    $empresaEstatus = trim((string) $convenio['empresa_estatus']);
+    $empresaIsCompletada = strcasecmp($empresaEstatus, 'Completada') === 0;
+    $empresaIsInactiva = strcasecmp($empresaEstatus, 'Inactiva') === 0;
+}
+
+$formDisabled = $successMessage !== null
+    || $isAlreadyInactive
+    || $controller === null
+    || $editController === null
+    || $empresaIsCompletada
+    || $empresaIsInactiva;
 
 return [
     'controllerError' => $controllerError,
@@ -123,9 +173,12 @@ return [
     'successMessage' => $successMessage,
     'convenioIdDisplay' => $convenioIdDisplay,
     'empresaIdDisplay' => $empresaIdDisplay,
+    'machoteIdDisplay' => $machoteIdDisplay,
     'empresaNombreDisplay' => $empresaNombreDisplay,
     'motivoValue' => $motivoValue,
     'confirmChecked' => $confirmChecked,
     'isAlreadyInactive' => $isAlreadyInactive,
     'formDisabled' => $formDisabled,
+    'empresaIsCompletada' => $empresaIsCompletada,
+    'empresaIsInactiva' => $empresaIsInactiva,
 ];

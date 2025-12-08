@@ -5,6 +5,7 @@ declare(strict_types=1);
  *     empresaId: ?int,
  *     empresa: ?array<string, mixed>,
  *     conveniosActivos: array<int, array<string, mixed>>,
+ *     conveniosArchivados: array<int, array<string, mixed>>,
  *     controllerError: ?string,
  *     notFoundMessage: ?string,
  *     inputError: ?string,
@@ -25,6 +26,7 @@ $notFoundMessage = $preparedData['notFoundMessage'];
 $inputError = $preparedData['inputError'];
 $successMessage = $preparedData['successMessage'] ?? null;
 $conveniosActivos = $preparedData['conveniosActivos'] ?? [];
+$conveniosArchivados = $preparedData['conveniosArchivados'] ?? [];
 $documentos = $preparedData['documentos'] ?? [];
 $documentosStats = $preparedData['documentosStats'] ?? [];
 $documentosGestionUrl = $preparedData['documentosGestionUrl'] ?? null;
@@ -64,6 +66,9 @@ $progreso = $preparedData['progreso'] ?? 0;
 $auditoriaHasOverflow = $preparedData['auditoriaHasOverflow'] ?? false;
 $auditoriaVisibleLimit = $preparedData['auditoriaVisibleLimit'] ?? 5;
 $empresaIsEnRevision = $preparedData['empresaIsEnRevision'] ?? false;
+$empresaIsCompletada = $preparedData['empresaIsCompletada'] ?? false;
+$empresaIsInactiva = $preparedData['empresaIsInactiva'] ?? false;
+$empresaIsReadOnly = $preparedData['empresaIsReadOnly'] ?? ($empresaIsCompletada || $empresaIsInactiva);
 $estudiantes = $preparedData['estudiantes'] ?? [];
 $portalAccess = $preparedData['portalAccess'] ?? null;
 $portalAccessCreateUrl = $preparedData['portalAccessCreateUrl'] ?? '../portalacceso/portal_add.php';
@@ -103,6 +108,12 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
         <div id="empresa-success-toast"
              data-toast-message="<?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>"
              hidden></div>
+      <?php endif; ?>
+
+      <?php if ($empresaIsInactiva): ?>
+        <div class="alert alert-warning" style="margin: 0 0 16px;">
+          La empresa está en estatus <strong>Inactiva</strong>. Los datos se muestran en modo solo lectura.
+        </div>
       <?php endif; ?>
   <!-- 🏢 Banner con logotipo y lápiz -->
   <section class="empresa-banner">
@@ -195,12 +206,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
       <!-- 📜 Convenios asociados -->
       <section class="card">
         <header>📜 Convenios activos, en revisión o suspendidos</header>
-        <div class="content<?php echo $empresaIsEnRevision ? ' content--dimmed' : ''; ?>">
-          <?php if ($empresaIsEnRevision): ?>
-            <p class="section-note">
-              Para agregar un convenio la empresa tiene que estar activa.
-            </p>
-          <?php endif; ?>
+        <div class="content">
           <table>
             <thead>
               <tr>
@@ -247,7 +253,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                       <?php if ($convenioViewUrl !== null): ?>
                         <a href="<?php echo htmlspecialchars($convenioViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️ Ver</a>
                       <?php endif; ?>
-                      <?php if ($convenioEditUrl !== null): ?>
+                      <?php if ($convenioEditUrl !== null && !$empresaIsReadOnly): ?>
                         <a href="<?php echo htmlspecialchars($convenioEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">✏️ Editar</a>
                       <?php endif; ?>
                     </td>
@@ -257,13 +263,15 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
             </tbody>
           </table>
 
-          <?php if (!$empresaIsEnRevision && !$empresaTieneConvenioActivo): ?>
+          <?php if (!$empresaTieneConvenioActivo && !$empresaIsReadOnly): ?>
             <div class="actions" style="margin-top:16px; justify-content:flex-end;">
               <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Nuevo Convenio</a>
             </div>
           <?php endif; ?>
         </div>
       </section>
+
+
 
       <!-- 💬 Revisión de Machote -->
       <section class="card">
@@ -329,11 +337,6 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
         </header>
 
         <div class="content">
-          <?php if ($empresaIsEnRevision): ?>
-            <p class="section-note">
-              Esta empresa aún está en revisión; no es posible subir documentos hasta que esté activa.
-            </p>
-          <?php endif; ?>
           <div class="docs-summary">
             <div class="docs-stats">
               <div class="docs-stat">
@@ -424,19 +427,16 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                     <td><span class="<?php echo htmlspecialchars($documentoEstadoClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($documentoEstadoLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
                     <td><?php echo htmlspecialchars($documentoActualizado !== '' ? $documentoActualizado : '—', ENT_QUOTES, 'UTF-8'); ?></td>
                     <td class="doc-actions">
-                      <?php if (
-                          $accionUrl !== '' &&
-                          !($empresaIsEnRevision && $accionVariant === 'upload')
-                      ) : ?>
+                      <?php if ($accionUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($accionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($accionClass, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $accionAttrs; ?>><?php echo htmlspecialchars($accionPrefix . $accionLabel, ENT_QUOTES, 'UTF-8'); ?></a>
                       <?php endif; ?>
-                      <?php if (!$empresaIsEnRevision && $accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
+                      <?php if (!$empresaIsReadOnly && $accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
                         <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">📁 Subir</a>
                       <?php endif; ?>
                       <?php if ($documentoEstatus === 'aprobado' && $detailUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">🔍 Detalle</a>
                       <?php endif; ?>
-                      <?php if (in_array($documentoEstatus, ['revision', 'pendiente'], true) && $reviewUrl !== '') : ?>
+                      <?php if (!$empresaIsReadOnly && in_array($documentoEstatus, ['revision', 'pendiente'], true) && $reviewUrl !== '') : ?>
                         <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">📝 Revisar</a>
                       <?php endif; ?>
                     </td>
@@ -448,7 +448,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
 
           
           <!-- 🔗 Acción principal -->
-          <?php if (!$empresaIsEnRevision && $documentosGestionUrl !== null && $documentosGestionUrl !== '') : ?>
+          <?php if ($documentosGestionUrl !== null && $documentosGestionUrl !== '' && !$empresaIsReadOnly) : ?>
             <div class="actions" style="margin-top:16px; justify-content:flex-end;">
               <a href="<?php echo htmlspecialchars($documentosGestionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📁 Gestionar Documentos</a>
             </div>
@@ -468,8 +468,8 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               <strong><?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></strong>
               <span class="subtitle">Listado de estudiantes con estatus activo o finalizado.</span>
             </div>
-            <?php if ($empresaIsEnRevision): ?>
-              <span class="section-note" style="color:#dc2626;">empresa aun esta en revicion no se puede agregar estudiantes</span>
+            <?php if ($empresaIsEnRevision || $empresaIsCompletada || $empresaIsInactiva): ?>
+              <span class="section-note" style="color:#dc2626;">No es posible agregar estudiantes cuando la empresa está en revisión, inactiva o completada.</span>
             <?php else: ?>
               <a href="<?php echo htmlspecialchars($nuevoEstudianteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Agregar estudiante</a>
             <?php endif; ?>
@@ -536,8 +536,8 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
           <?php endif; ?>
         </div>
 
-        <?php if (!$empresaIsActiva) : ?>
-          <p class="portal-note">Para generar o modificar accesos, la empresa debe contar con estatus <strong>Activo</strong>.</p>
+        <?php if (!$empresaIsActiva && !$empresaIsEnRevision) : ?>
+          <p class="portal-note">Para generar o modificar accesos, la empresa debe contar con estatus <strong>Activo</strong> o <strong>En revisión</strong>.</p>
         <?php endif; ?>
 
         <?php if (!$portalAccessExists) : ?>
@@ -600,6 +600,55 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
         <?php endif; ?>
       </section>
 
+            <!-- 🗂️ Convenios archivados -->
+      <section class="card">
+        <header>🗂️ Convenios archivados (solo lectura)</header>
+        <div class="content">
+          <table>
+            <thead>
+              <tr>
+                <th>ID archivo</th>
+                <th>Convenio original</th>
+                <th>Fecha de archivo</th>
+                <th>Motivo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php if ($controllerError !== null || $inputError !== null || $notFoundMessage !== null): ?>
+                <tr>
+                  <td colspan="5" style="text-align:center;">No hay convenios archivados disponibles.</td>
+                </tr>
+              <?php elseif ($conveniosArchivados === []): ?>
+                <tr>
+                  <td colspan="5" style="text-align:center;">Esta empresa aún no tiene convenios archivados.</td>
+                </tr>
+              <?php else: ?>
+                <?php foreach ($conveniosArchivados as $convenioArchivado): ?>
+                  <?php
+                  $archivoIdLabel = (string) ($convenioArchivado['id_label'] ?? '#');
+                  $convenioOriginalLabel = (string) ($convenioArchivado['convenio_original_label'] ?? 'N/A');
+                  $fechaArchivoLabel = (string) ($convenioArchivado['fecha_archivo_label'] ?? 'Sin fecha');
+                  $motivoLabel = (string) ($convenioArchivado['motivo_label'] ?? '—');
+                  $archivoViewUrl = isset($convenioArchivado['view_url']) ? (string) $convenioArchivado['view_url'] : null;
+                  ?>
+                  <tr>
+                    <td><?php echo htmlspecialchars($archivoIdLabel, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($convenioOriginalLabel, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($fechaArchivoLabel, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td><?php echo htmlspecialchars($motivoLabel, ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td>
+                      <?php if ($archivoViewUrl !== null): ?>
+                        <a href="<?php echo htmlspecialchars($archivoViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️ Ver</a>
+                      <?php endif; ?>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       <section class="card">
         <header>🕒 Bitácora / Historial</header>

@@ -49,6 +49,7 @@ if (!function_exists('empresaEditHandler')) {
             $empresa = $controller->getEmpresaById($viewData['empresaId']);
             $formOriginal = empresaHydrateForm(empresaFormDefaults(), $empresa);
             $viewData['formData'] = $formOriginal;
+            $estatusOriginal = empresaNormalizeStatus($formOriginal['estatus'] ?? null);
         } catch (\RuntimeException $exception) {
             $viewData['loadError'] = $exception->getMessage();
 
@@ -60,7 +61,116 @@ if (!function_exists('empresaEditHandler')) {
         }
 
         $viewData['formData'] = empresaEditSanitizeInput($_POST);
+        $lockFields = isset($_POST['lock_fields']) && (string) $_POST['lock_fields'] === '1';
+
+        if (
+            $lockFields &&
+            isset($formOriginal) &&
+            isset($estatusOriginal) &&
+            in_array($estatusOriginal, ['Completada', 'Inactiva'], true)
+        ) {
+            foreach ($formOriginal as $field => $value) {
+                if ($field === 'estatus') {
+                    continue;
+                }
+
+                if (!array_key_exists($field, $viewData['formData']) || $viewData['formData'][$field] === '') {
+                    $viewData['formData'][$field] = is_string($value) ? $value : (string) $value;
+                }
+            }
+        }
         $viewData['errors'] = empresaEditValidateData($viewData['formData']);
+
+        $estatusNuevo = empresaNormalizeStatus($viewData['formData']['estatus'] ?? null);
+
+        if (
+            ($estatusOriginal ?? null) === 'Inactiva' &&
+            $estatusNuevo === 'Completada'
+        ) {
+            $viewData['errors'][] = 'Empresa inactiva no puede completarse.';
+        }
+
+        if (
+            $viewData['errors'] === [] &&
+            isset($estatusOriginal) &&
+            $estatusOriginal !== 'Activa' &&
+            $estatusNuevo === 'Activa'
+        ) {
+            try {
+                $tieneConvenioActivo = $controller->empresaHasConvenioActivo((int) $viewData['empresaId']);
+            } catch (\RuntimeException $exception) {
+                $viewData['errors'][] = $exception->getMessage();
+                $tieneConvenioActivo = null;
+            }
+
+            if ($tieneConvenioActivo === false && $viewData['errors'] === []) {
+                $viewData['errors'][] = 'Se requiere convenio activo para cambiar la empresa a estatus Activa.';
+            }
+        }
+
+        if (
+            $viewData['errors'] === [] &&
+            empresaStatusRequiresConvenioActivo($viewData['formData']['estatus'] ?? null)
+        ) {
+            try {
+                $tieneConvenioActivo = $controller->empresaHasConvenioActivo((int) $viewData['empresaId']);
+            } catch (\RuntimeException $exception) {
+                $viewData['errors'][] = $exception->getMessage();
+                $tieneConvenioActivo = null;
+            }
+
+            if ($tieneConvenioActivo === false && $viewData['errors'] === []) {
+                $viewData['errors'][] = 'Para marcar la empresa como Completada debe existir al menos un convenio en estatus Activa.';
+            }
+        }
+
+        if (
+            $viewData['errors'] === [] &&
+            empresaStatusRequiresMachoteAprobado($viewData['formData']['estatus'] ?? null)
+        ) {
+            try {
+                $machoteStatus = $controller->getLatestMachoteStatus((int) $viewData['empresaId']);
+            } catch (\RuntimeException $exception) {
+                $viewData['errors'][] = $exception->getMessage();
+                $machoteStatus = null;
+            }
+
+            if ($viewData['errors'] === [] && $machoteStatus !== null) {
+                $estatusMachote = $machoteStatus['estatus'] ?? null;
+                if (!empresaMachoteIsAprobado($estatusMachote)) {
+                    $viewData['errors'][] = 'Para marcar la empresa como Completada el machote debe estar en estatus Aprobado.';
+                }
+            }
+        }
+
+        if (
+            $viewData['errors'] === [] &&
+            empresaStatusRequiresConvenioActivo($viewData['formData']['estatus'] ?? null)
+        ) {
+            $tipoEmpresa = empresaNormalizeRegimenFiscal($viewData['formData']['regimen_fiscal'] ?? '');
+
+            if ($tipoEmpresa === '' && isset($formOriginal['regimen_fiscal'])) {
+                $tipoEmpresa = empresaNormalizeRegimenFiscal($formOriginal['regimen_fiscal']);
+            }
+
+            $tipoEmpresa = $tipoEmpresa !== '' ? $tipoEmpresa : null;
+
+            try {
+                $documentosStats = $controller->getDocumentosStats((int) $viewData['empresaId'], $tipoEmpresa);
+            } catch (\RuntimeException $exception) {
+                $viewData['errors'][] = $exception->getMessage();
+                $documentosStats = null;
+            }
+
+            if (
+                $viewData['errors'] === [] &&
+                ($documentosStats === null ||
+                 $documentosStats['total'] === 0 ||
+                 $documentosStats['porcentaje'] < 100)
+            ) {
+                $viewData['errors'][] = 'Para marcar la empresa como Completada todos los documentos asignados deben estar aprobados (progreso 100%).';
+            }
+        }
 
         $detallesAuditoria = isset($formOriginal)
             ? auditoriaBuildCambios($formOriginal, $viewData['formData'], empresaEditAuditFieldLabels())

@@ -34,6 +34,9 @@ $errors = $handlerResult['errors'];
 $successMessage = $handlerResult['successMessage'];
 $controllerError = $handlerResult['controllerError'];
 $notFoundMessage = $handlerResult['notFoundMessage'];
+$documentoArchivado = $document !== null && isset($document['estatus'])
+  ? (strcasecmp(trim((string)$document['estatus']), 'Archivado') === 0)
+  : false;
 
 $empresaId = $document !== null && isset($document['empresa_id']) ? (int) $document['empresa_id'] : null;
 $tipoGlobalId = $document !== null && isset($document['tipo_global_id']) ? (int) $document['tipo_global_id'] : null;
@@ -90,6 +93,15 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
       <?php endif; ?>
 
       <?php if ($document !== null): ?>
+        <?php if ($documentoArchivado): ?>
+          <section class="card">
+            <div class="content">
+              <div class="alert warning" role="alert">
+                Este documento est&aacute; en estatus <strong>Archivado</strong>; la revisi&oacute;n est&aacute; en solo lectura.
+              </div>
+            </div>
+          </section>
+        <?php endif; ?>
         <section class="card">
           <header>Resumen</header>
           <div class="content">
@@ -203,7 +215,7 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
 
               <div class="field">
                 <label for="estatus">Nuevo estatus</label>
-                <select id="estatus" name="estatus" required>
+                <select id="estatus" name="estatus" required <?php echo $documentoArchivado ? "disabled" : ""; ?>>
                   <option value="">Selecciona un estatus</option>
                   <?php foreach ($statusOptions as $value => $label): ?>
                     <option value="<?php echo htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8'); ?>"
@@ -216,12 +228,12 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
 
               <div class="field full">
                 <label for="observacion">Observaciones</label>
-                <textarea id="observacion" name="observacion" rows="4" placeholder="Escribe observaciones o motivos..."><?php echo htmlspecialchars($formData['observacion'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+                <textarea id="observacion" name="observacion" rows="4" placeholder="Escribe observaciones o motivos..." <?php echo $documentoArchivado ? "disabled" : ""; ?>><?php echo htmlspecialchars($formData['observacion'], ENT_QUOTES, 'UTF-8'); ?></textarea>
                 <small class="text-muted">Máximo 500 caracteres. Obligatorio si el documento será rechazado.</small>
               </div>
 
               <div class="actions full">
-                <button type="submit" class="btn primary">Guardar revisión</button>
+                <button type="submit" class="btn primary" <?php echo $documentoArchivado ? "disabled" : ""; ?>>Guardar revisi&oacute;n</button>
               </div>
             </form>
           </div>
@@ -246,3 +258,4 @@ $tipoOrigen = $document['tipo_origen'] ?? 'global';
 <?php endif; ?>
 
 </html>
+

@@ -24,6 +24,17 @@ $errors = $handlerResult['errors'];
 $successMessage = $handlerResult['successMessage'];
 $controllerError = $handlerResult['controllerError'];
 $savedDocument = $handlerResult['savedDocument'];
+
+$selectedEmpresaStatus = '';
+if ($formData['empresa_id'] !== '') {
+    foreach ($empresas as $empresa) {
+        if ((string) ($empresa['id'] ?? '') === $formData['empresa_id']) {
+            $selectedEmpresaStatus = (string) ($empresa['estatus'] ?? '');
+            break;
+        }
+    }
+}
+$empresaIsCompletada = strcasecmp(trim($selectedEmpresaStatus), 'Completada') === 0;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -62,6 +73,12 @@ $savedDocument = $handlerResult['savedDocument'];
       <section class="card">
         <header>Datos del Documento</header>
         <div class="content">
+          <?php if ($empresaIsCompletada): ?>
+            <div class="alert error" role="alert">
+              No se pueden subir documentos porque la empresa seleccionada estA? en estatus <strong>Completada</strong>.
+            </div>
+          <?php endif; ?>
+
           <p class="text-muted">
             Selecciona la empresa, define el origen (global o personalizado) y carga el archivo correspondiente.
           </p>
@@ -113,10 +130,19 @@ $savedDocument = $handlerResult['savedDocument'];
                     <?php
                     $empresaId = isset($empresa['id']) ? (int) $empresa['id'] : 0;
                     $empresaNombre = isset($empresa['nombre']) ? (string) $empresa['nombre'] : '';
+                    $empresaStatusLabel = isset($empresa['estatus']) ? (string) $empresa['estatus'] : '';
+                    $isOptionCompletada = strcasecmp(trim($empresaStatusLabel), 'Completada') === 0;
                     ?>
                     <option value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>"
-                      <?php echo $formData['empresa_id'] === (string) $empresaId ? 'selected' : ''; ?>>
-                      <?php echo htmlspecialchars($empresaNombre !== '' ? $empresaNombre : 'Empresa #' . $empresaId, ENT_QUOTES, 'UTF-8'); ?>
+                      <?php echo $formData['empresa_id'] === (string) $empresaId ? 'selected' : ''; ?>
+                      data-estatus="<?php echo htmlspecialchars($empresaStatusLabel, ENT_QUOTES, 'UTF-8'); ?>">
+                      <?php
+                      $optionLabel = $empresaNombre !== '' ? $empresaNombre : 'Empresa #' . $empresaId;
+                      if ($isOptionCompletada) {
+                          $optionLabel .= ' (Completada)';
+                      }
+                      echo htmlspecialchars($optionLabel, ENT_QUOTES, 'UTF-8');
+                      ?>
                     </option>
                   <?php endforeach; ?>
                 </select>
@@ -194,7 +220,7 @@ $savedDocument = $handlerResult['savedDocument'];
               <div class="field col-span-2">
                 <label for="archivo" class="required">Archivo *</label>
                 <div class="dropzone">
-                  <input type="file" id="archivo" name="archivo" accept="application/pdf,image/*" required />
+                  <input type="file" id="archivo" name="archivo" accept="application/pdf,image/*" required <?php echo $empresaIsCompletada ? 'disabled' : ''; ?> />
                   <div>Arrastra tu archivo aqu&iacute; o haz clic para seleccionar</div>
                   <div class="file-hint">Formatos permitidos: PDF o imagen (JPG/PNG). Tama&ntilde;o m&aacute;ximo 10 MB.</div>
                 </div>
@@ -213,7 +239,7 @@ $savedDocument = $handlerResult['savedDocument'];
 
             <div class="actions form-actions">
               <a href="documento_list.php<?php echo $formData['empresa_id'] !== '' ? '?empresa=' . urlencode($formData['empresa_id']) : ''; ?>" class="btn secondary">Cancelar</a>
-              <button type="submit" class="btn primary">Guardar y subir</button>
+              <button type="submit" class="btn primary" <?php echo $empresaIsCompletada ? 'disabled' : ''; ?>>Guardar y subir</button>
             </div>
           </form>
         </div>

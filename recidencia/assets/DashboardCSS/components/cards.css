@@ -1,0 +1,62 @@
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 18px 16px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  color: var(--ink-800);
+}
+
+.card.emphasis {
+  background: linear-gradient(145deg, rgba(0, 51, 102, 0.08) 0%, rgba(45, 185, 128, 0.08) 100%), var(--panel);
+  border-color: rgba(0, 51, 102, 0.18);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 18px;
+  margin: 0;
+  color: var(--ink-800);
+}
+
+.card-subtitle {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.stat .number {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary-700);
+}
+
+.stat .label {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
+}

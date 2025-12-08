@@ -76,8 +76,7 @@ class MachoteViewController
 
         $puedeComentar = $this->puedeAgregarComentarios(
             $convenio['estatus'] ?? null,
-            $machote['confirmado'],
-            $estadoMachote
+            $machote['confirmado']
         );
         $puedeConfirmar = !$machote['confirmado'] && (int) ($resumen['pendientes'] ?? 0) === 0;
 
@@ -139,16 +138,16 @@ class MachoteViewController
         }
     }
 
-    private function puedeAgregarComentarios(?string $estatusConvenio, bool $machoteConfirmado, ?string $estatusMachote = null): bool
+    private function puedeAgregarComentarios(?string $estatusConvenio, bool $machoteConfirmado): bool
     {
         if ($machoteConfirmado) {
             return false;
         }
 
-        return $this->isEstatusEnRevision($estatusConvenio) || $this->isEstatusEnRevision($estatusMachote);
+        return $this->isConvenioActivo($estatusConvenio);
     }
 
-    private function isEstatusEnRevision(?string $estatus): bool
+    private function isConvenioActivo(?string $estatus): bool
     {
         $estatusNormalizado = $this->normalizeEstatus($estatus);
 
@@ -156,11 +155,11 @@ class MachoteViewController
             return false;
         }
 
-        if (str_contains($estatusNormalizado, 'revisi')) {
+        if (str_contains($estatusNormalizado, 'activa')) {
             return true;
         }
 
-        return str_contains($estatusNormalizado, 'reabiert');
+        return str_contains($estatusNormalizado, 'revisi');
     }
 
     private function normalizeEstatus(?string $estatus): ?string
@@ -174,6 +173,8 @@ class MachoteViewController
         if ($estatus === '') {
             return null;
         }
+
+        $estatus = str_replace(['á', 'é', 'í', 'ó', 'ú'], ['a', 'e', 'i', 'o', 'u'], $estatus);
 
         return function_exists('mb_strtolower')
             ? mb_strtolower($estatus, 'UTF-8')

@@ -55,6 +55,15 @@ class ConvenioAddController
         }
     }
 
+    public function folioExists(string $folio): bool
+    {
+        try {
+            return $this->model->folioExists($folio);
+        } catch (PDOException $exception) {
+            throw new RuntimeException('No se pudo validar el folio del convenio.', 0, $exception);
+        }
+    }
+
     /**
      * @param array<string, mixed> $post
      * @param array<string, mixed> $files

@@ -29,6 +29,7 @@ class ConvenioModel
             SELECT c.id,
                    c.empresa_id,
                    e.nombre AS empresa_nombre,
+                   e.estatus AS empresa_estatus,
                    e.numero_control AS empresa_numero_control,
                    c.folio,
                    c.estatus,
@@ -153,6 +154,24 @@ class ConvenioModel
         return (bool) $statement->fetchColumn();
     }
 
+    public function folioExists(string $folio, ?int $excludeConvenioId = null): bool
+    {
+        $sql = 'SELECT 1 FROM rp_convenio WHERE folio = :folio';
+        $params = [':folio' => $folio];
+
+        if ($excludeConvenioId !== null) {
+            $sql .= ' AND id <> :id';
+            $params[':id'] = $excludeConvenioId;
+        }
+
+        $sql .= ' LIMIT 1';
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute($params);
+
+        return (bool) $statement->fetchColumn();
+    }
+
     /**
      * @param array<string, mixed> $data
      */
@@ -240,6 +259,17 @@ class ConvenioModel
 
     public function deactivate(int $id, ?string $motivo = null): bool
     {
+        $record = $this->fetchById($id);
+
+        if ($record === null) {
+            return false;
+        }
+
+        $empresaEstatus = isset($record['empresa_estatus']) ? trim((string) $record['empresa_estatus']) : '';
+        if (strcasecmp($empresaEstatus, 'Completada') === 0) {
+            throw new \RuntimeException('No se puede desactivar el convenio porque la empresa está en estatus Completada.');
+        }
+
         $motivo = $motivo !== null ? trim($motivo) : null;
 
         if ($motivo === '') {

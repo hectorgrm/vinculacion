@@ -282,47 +282,51 @@
     border-radius: 999px;
     font-weight: 700;
     font-size: 12px;
+    background: var(--chip);
+    color: var(--primary);
+    border: 1px solid transparent;
 }
 
+.badge.badge--warn,
 .badge.pendiente {
-    background: var(--warning-600);
-    color: #fff;
-    border: 1px solid var(--warning-700);
+    background: var(--warning-100);
+    color: var(--warning-700);
+    border-color: var(--warning-300);
 }
 
-.badge.aprobado {
-    background: var(--success-200);
-    color: var(--success-900);
-    border: 1px solid var(--success-600);
-}
-
-.badge.revision {
-    background: #bcd8f0;
-    color: #fff;
-    border: 1px solid var(--primary-600);
-}
+.badge.badge--success,
+.badge.aprobado,
 .badge.ok {
-    background: #bcd8f0;
-    color: #fff;
-    border: 1px solid var(--primary-600);
+    background: var(--success-100);
+    color: var(--success-700);
+    border-color: var(--success-200);
 }
 
+.badge.badge--info,
+.badge.revision,
 .badge.en_revision {
-    background: var(--primary-700);
-    color: #fff;
-    border: 1px solid var(--primary-800);
+    background: var(--surface-info);
+    color: var(--primary-700);
+    border-color: var(--primary-500);
+}
+
+.badge.badge--danger {
+    background: var(--danger-100);
+    color: var(--danger-700);
+    border-color: var(--danger-200);
+}
+
+.badge.badge--neutral,
+.badge.obligatorio-no {
+    background: var(--surface-subtle);
+    color: var(--muted-strong);
+    border-color: var(--border);
 }
 
 .badge.obligatorio-si {
-    background: var(--success-200);
-    color: #fff;
-    border: 1px solid var(--success-600);
-}
-
-.badge.obligatorio-no {
-    background: #d8dee9;
-    color: #fff;
-    border: 1px solid var(--muted-strong);
+    background: var(--success-50);
+    color: var(--success-700);
+    border-color: var(--success-200);
 }
 
 .actions {

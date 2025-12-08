@@ -30,6 +30,8 @@ $statusMessage = $handlerResult['statusMessage'] ?? null;
 $empresaNombre = is_array($empresa) ? (string) ($empresa['nombre_label'] ?? ($empresa['nombre'] ?? 'Sin datos')) : 'Sin datos';
 $empresaRfc = is_array($empresa) ? (string) ($empresa['rfc_label'] ?? ($empresa['rfc'] ?? 'N/A')) : 'N/A';
 $regimenFiscal = is_array($empresa) ? (string) ($empresa['regimen_label'] ?? ($empresa['regimen_fiscal'] ?? '')) : '';
+$empresaEstatus = is_array($empresa) ? (string) ($empresa['estatus'] ?? '') : '';
+$empresaIsCompletada = strcasecmp(trim($empresaEstatus), 'Completada') === 0;
 $empresaIdQuery = $empresaId !== null ? (string) $empresaId : '';
 
 $statsTotal = (int) ($stats['total'] ?? 0);
@@ -49,10 +51,9 @@ $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . ur
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Documentacion de Empresa - Residencias Profesionales</title>
+  <title>Documentación de Empresa - Residencias Profesionales</title>
 
   <link rel="stylesheet" href="../../assets/css/modules/documentotipo/empresadocumentotipolist.css" />
-  <link rel="stylesheet" href="../../assets/css/modules/empresa.css" />
 </head>
 
 <body>
@@ -70,7 +71,9 @@ $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . ur
           <?php if ($empresaIdQuery !== ''): ?>
             <a href="<?php echo htmlspecialchars($backUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">Volver</a>
           <?php endif; ?>
-          <a href="<?php echo htmlspecialchars($addDocumentUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">Agregar documento individual</a>
+          <?php if (!$empresaIsCompletada): ?>
+            <a href="<?php echo htmlspecialchars($addDocumentUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">Agregar documento individual</a>
+          <?php endif; ?>
         </div>
       </header>
 
@@ -90,12 +93,12 @@ $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . ur
           <?php if ($errorMessage !== null || ($statusMessage !== null && $errorMessage === null)): ?>
             <div class="message-stack">
               <?php if ($errorMessage !== null): ?>
-                <div class="alert error" role="alert">
+                <div class="alert alert-error" role="alert">
                   <?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?>
                 </div>
               <?php endif; ?>
               <?php if ($statusMessage !== null && $errorMessage === null): ?>
-                <div class="alert success" role="status">
+                <div class="alert alert-success" role="status">
                   <?php echo htmlspecialchars($statusMessage, ENT_QUOTES, 'UTF-8'); ?>
                 </div>
               <?php endif; ?>
@@ -157,15 +160,47 @@ $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . ur
                     $rowClassAttr = $rowClass !== '' ? ' class="' . htmlspecialchars($rowClass, ENT_QUOTES, 'UTF-8') . '"' : '';
                     $nombre = isset($doc['nombre']) ? (string) $doc['nombre'] : 'Documento';
                     $descripcion = isset($doc['descripcion']) ? trim((string) $doc['descripcion']) : '';
-                    $estatusValue = isset($doc['estatus']) ? strtolower((string) $doc['estatus']) : 'pendiente';
+                    $estatusValue = isset($doc['estatus']) ? strtolower(trim((string) $doc['estatus'])) : 'pendiente';
+                    $estatusNormalized = str_replace([' ', 'ó', 'á'], ['_', 'o', 'a'], $estatusValue);
                     $estatusLabel = isset($doc['estatus_label']) ? (string) $doc['estatus_label'] : 'Pendiente';
-                    $badgeClass = isset($doc['badge_class']) ? (string) $doc['badge_class'] : 'badge pendiente';
+                    $badgeClass = isset($doc['badge_class']) ? trim((string) $doc['badge_class']) : '';
+                    if ($badgeClass === '') {
+                        switch ($estatusNormalized) {
+                            case 'aprobado':
+                            case 'ok':
+                                $badgeClass = 'badge badge--success';
+                                break;
+                            case 'revision':
+                            case 'en_revision':
+                                $badgeClass = 'badge badge--info';
+                                break;
+                            case 'rechazado':
+                            case 'cancelado':
+                            case 'archivado':
+                                $badgeClass = 'badge badge--danger';
+                                break;
+                            default:
+                                $badgeClass = 'badge badge--warn';
+                        }
+                    } elseif (strpos($badgeClass, 'badge') === false) {
+                        $badgeClass = 'badge ' . $badgeClass;
+                    }
+                    $isAprobado = in_array($estatusNormalized, ['aprobado', 'ok'], true);
+                    $isRevision = in_array($estatusNormalized, ['revision', 'en_revision'], true);
                     $ultimaActualizacionLabel = isset($doc['ultima_actualizacion_label']) ? (string) $doc['ultima_actualizacion_label'] : '';
                     $observacion = isset($doc['observacion']) ? trim((string) $doc['observacion']) : '';
                     $origen = isset($doc['origen']) ? (string) $doc['origen'] : 'global';
                     $origenLabel = $origen === 'personalizado' ? 'Personalizado' : 'Global';
                     $obligatorioLabel = isset($doc['obligatorio_label']) ? (string) $doc['obligatorio_label'] : 'No';
-                    $obligatorioBadge = isset($doc['obligatorio_badge_class']) ? (string) $doc['obligatorio_badge_class'] : 'badge pendiente';
+                    $obligatorioBadge = isset($doc['obligatorio_badge_class']) ? trim((string) $doc['obligatorio_badge_class']) : '';
+                    $obligatorioNormalized = strtolower(str_replace(['í', ' '], ['i', ''], $obligatorioLabel));
+                    if ($obligatorioBadge === '') {
+                        $obligatorioBadge = $obligatorioNormalized === 'si'
+                            ? 'badge badge--success obligatorio-si'
+                            : 'badge badge--neutral obligatorio-no';
+                    } elseif (strpos($obligatorioBadge, 'badge') === false) {
+                        $obligatorioBadge = 'badge ' . $obligatorioBadge;
+                    }
                     $ruta = isset($doc['ruta']) ? trim((string) $doc['ruta']) : '';
                     $ruta = $ruta !== '' ? $ruta : null;
                     $archivoNombre = isset($doc['archivo_nombre']) ? trim((string) $doc['archivo_nombre']) : '';
@@ -262,24 +297,26 @@ $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . ur
                             <?php if ($ruta !== null): ?>
                               <a href="<?php echo htmlspecialchars($ruta, ENT_QUOTES, 'UTF-8'); ?>" class="btn small" target="_blank" rel="noopener noreferrer">Ver</a>
                             <?php endif; ?>
-                            <?php if (trim($uploadUrl) !== '' && $estatusValue !== 'aprobado' && $estatusValue !== 'revision'): ?>
+                            <?php if (!$empresaIsCompletada && trim($uploadUrl) !== '' && !$isAprobado && !$isRevision): ?>
                               <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">Subir</a>
                             <?php endif; ?>
-                            <?php if ($estatusValue === 'aprobado' && $detalleUrl !== null): ?>
+                            <?php if ($isAprobado && $detalleUrl !== null): ?>
                               <a href="<?php echo htmlspecialchars($detalleUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">Detalle</a>
                             <?php endif; ?>
-                            <?php if ($estatusValue === 'revision' && $reviewUrl !== null): ?>
+                            <?php if (!$empresaIsCompletada && $isRevision && $reviewUrl !== null): ?>
                               <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">Revisar</a>
                             <?php endif; ?>
                           <?php else: ?>
-                            <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary"><?php echo htmlspecialchars($uploadLabel, ENT_QUOTES, 'UTF-8'); ?></a>
+                            <?php if (!$empresaIsCompletada): ?>
+                              <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary"><?php echo htmlspecialchars($uploadLabel, ENT_QUOTES, 'UTF-8'); ?></a>
+                            <?php endif; ?>
                             <?php if ($detalleUrl !== null): ?>
                               <a href="<?php echo htmlspecialchars($detalleUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Detalle</a>
                             <?php endif; ?>
-                            <?php if ($reviewUrl !== null && $estatusValue !== 'aprobado'): ?>
+                            <?php if (!$empresaIsCompletada && $reviewUrl !== null && !$isAprobado): ?>
                               <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Revisar</a>
                             <?php endif; ?>
-                            <?php if ($origen === 'personalizado' && $editTipoUrl !== null): ?>
+                            <?php if (!$empresaIsCompletada && $origen === 'personalizado' && $editTipoUrl !== null): ?>
                               <a href="<?php echo htmlspecialchars($editTipoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">Editar tipo</a>
                               <?php if ($deleteTipoUrl !== null): ?>
                                 <a href="<?php echo htmlspecialchars($deleteTipoUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small danger">Eliminar tipo</a>
@@ -299,7 +336,9 @@ $backUrl = '../empresa/empresa_view.php' . ($empresaIdQuery !== '' ? '?id=' . ur
             <?php if ($empresaIdQuery !== ''): ?>
               <a href="<?php echo htmlspecialchars($backUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">Volver a la empresa</a>
             <?php endif; ?>
-            <a href="<?php echo htmlspecialchars($addDocumentUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">Agregar documento individual</a>
+            <?php if (!$empresaIsCompletada): ?>
+              <a href="<?php echo htmlspecialchars($addDocumentUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">Agregar documento individual</a>
+            <?php endif; ?>
           </div>
         </div>
       </section>

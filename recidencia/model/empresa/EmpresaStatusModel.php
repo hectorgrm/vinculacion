@@ -65,6 +65,7 @@ class EmpresaStatusModel
                 UPDATE rp_machote_revision
                    SET estado = 'cancelado'
                  WHERE empresa_id = :id
+                   AND estado != 'acordado'
             SQL;
             $this->pdo->prepare($sqlMachoteRevision)->execute([':id' => $empresaId]);
 
@@ -74,20 +75,23 @@ class EmpresaStatusModel
                  WHERE empresa_id = :id
                    AND estatus != 'concluido'
             SQL;
-            $this->pdo->prepare($sqlAsignaciones)->execute([':id' => $empresaId]);
+            $statementAsignaciones = $this->pdo->prepare($sqlAsignaciones);
+            $statementAsignaciones->execute([':id' => $empresaId]);
 
             $this->pdo->commit();
 
             $conveniosActualizados = $statementConvenios->rowCount();
             $documentosActualizados = $statementDocumentos->rowCount();
             $accesosActualizados = $statementPortal->rowCount();
+            $asignacionesActualizadas = $statementAsignaciones->rowCount();
 
             empresaRegistrarEventoDesactivacion(
                 $empresaId,
                 $byUserId,
                 $conveniosActualizados,
                 $documentosActualizados,
-                $accesosActualizados
+                $accesosActualizados,
+                $asignacionesActualizadas
             );
 
             return true;
@@ -111,17 +115,6 @@ class EmpresaStatusModel
             $statementEmpresa = $this->pdo->prepare($sqlEmpresa);
             $statementEmpresa->execute([':id' => $empresaId]);
 
-            $sqlConvenios = <<<'SQL'
-                UPDATE rp_convenio
-                   SET estatus = CASE
-                       WHEN estatus = 'Inactiva' THEN 'En revisión'
-                       ELSE estatus
-                   END
-                 WHERE empresa_id = :id
-            SQL;
-            $statementConvenios = $this->pdo->prepare($sqlConvenios);
-            $statementConvenios->execute([':id' => $empresaId]);
-
             $sqlPortal = <<<'SQL'
                 UPDATE rp_portal_acceso
                    SET activo = 1
@@ -130,31 +123,12 @@ class EmpresaStatusModel
             $statementPortal = $this->pdo->prepare($sqlPortal);
             $statementPortal->execute([':id' => $empresaId]);
 
-            $sqlMachoteRevision = <<<'SQL'
-                UPDATE rp_machote_revision
-                   SET estado = 'en_revision'
-                 WHERE empresa_id = :id
-                   AND estado = 'cancelado'
-            SQL;
-            $this->pdo->prepare($sqlMachoteRevision)->execute([':id' => $empresaId]);
-
-            $sqlAsignaciones = <<<'SQL'
-                UPDATE rp_asignacion
-                   SET estatus = 'en_curso'
-                 WHERE empresa_id = :id
-                   AND estatus = 'cancelado'
-            SQL;
-            $this->pdo->prepare($sqlAsignaciones)->execute([':id' => $empresaId]);
-
             $this->pdo->commit();
-
-            $conveniosActualizados = $statementConvenios->rowCount();
             $accesosActualizados = $statementPortal->rowCount();
 
             empresaRegistrarEventoReactivacion(
                 $empresaId,
                 $byUserId,
-                $conveniosActualizados,
                 $accesosActualizados
             );
 

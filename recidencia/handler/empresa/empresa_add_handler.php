@@ -44,6 +44,14 @@ if (!function_exists('empresaAddHandler')) {
             return $viewData;
         }
 
+        if (
+            empresaStatusRequiresConvenioActivo($viewData['formData']['estatus'] ?? null)
+        ) {
+            $viewData['errors'][] = 'Para colocar la empresa en estatus Completada primero registra un convenio en estatus Activa.';
+
+            return $viewData;
+        }
+
         $duplicateErrors = $controller->duplicateFieldErrors($viewData['formData']);
 
         if ($duplicateErrors !== []) {

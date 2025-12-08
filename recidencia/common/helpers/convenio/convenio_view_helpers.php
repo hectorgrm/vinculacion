@@ -39,7 +39,9 @@ if (!function_exists('convenio_prepare_view_metadata')) {
      *     machoteCreadoLabel: string,
      *     machoteActualizadoLabel: string,
      *     machoteBloqueado: bool,
-     *     machoteEstatus: ?string
+     *     machoteEstatus: ?string,
+     *     empresaEstatus: ?string,
+     *     empresaEsCompletada: bool
      * }
      */
     function convenio_prepare_view_metadata(?array $convenio): array
@@ -78,6 +80,8 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             'machoteActualizadoLabel' => 'N/D',
             'machoteBloqueado' => false,
             'machoteEstatus' => null,
+            'empresaEstatus' => null,
+            'empresaEsCompletada' => false,
         ];
 
         if ($convenio === null) {
@@ -117,6 +121,14 @@ if (!function_exists('convenio_prepare_view_metadata')) {
             $metadata['downloadUrl'] = $borradorUrl;
             $metadata['previewUrl'] = $borradorUrl;
             $metadata['downloadLabel'] = 'Ver PDF borrador';
+        }
+
+        $empresaEstatus = isset($convenio['empresa_estatus'])
+            ? trim((string) $convenio['empresa_estatus'])
+            : '';
+        if ($empresaEstatus !== '') {
+            $metadata['empresaEstatus'] = $empresaEstatus;
+            $metadata['empresaEsCompletada'] = strcasecmp($empresaEstatus, 'Completada') === 0;
         }
 
         $diasRestantes = $convenio['dias_restantes'] ?? null;

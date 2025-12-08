@@ -53,6 +53,21 @@ if (!function_exists('documentoUploadHandler')) {
             ? $controller->getTiposPersonalizados($selectedEmpresaId)
             : [];
 
+        $selectedEmpresaStatus = null;
+        if ($selectedEmpresaId !== null) {
+            foreach ($viewData['empresas'] as $empresaRow) {
+                if ((int) ($empresaRow['id'] ?? 0) === $selectedEmpresaId) {
+                    $selectedEmpresaStatus = isset($empresaRow['estatus']) ? (string) $empresaRow['estatus'] : null;
+                    break;
+                }
+            }
+        }
+
+        if ($selectedEmpresaStatus !== null && documentoNormalizeStatus($selectedEmpresaStatus) === 'Completada') {
+            $viewData['errors'][] = 'No se pueden subir documentos para empresas en estatus Completada.';
+            return $viewData;
+        }
+
         $fileInfo = documentoUploadNormalizeFile($_FILES['archivo'] ?? null);
 
         $errors = documentoUploadValidateData(

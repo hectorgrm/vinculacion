@@ -9,7 +9,8 @@ if (!function_exists('empresaViewDefaults')) {
      * @return array{
      *     empresaId: ?int,
      *     empresa: ?array<string, mixed>,
- *     conveniosActivos: array<int, array<string, mixed>>,
+*     conveniosActivos: array<int, array<string, mixed>>,
+ *     conveniosArchivados: array<int, array<string, mixed>>,
  *     estudiantes: array<int, array<string, mixed>>,
  *     controllerError: ?string,
  *     notFoundMessage: ?string,
@@ -24,6 +25,7 @@ if (!function_exists('empresaViewDefaults')) {
             'empresaId' => null,
             'empresa' => null,
             'conveniosActivos' => [],
+            'conveniosArchivados' => [],
             'estudiantes' => [],
             'portalAccess' => null,
             'documentos' => [],
@@ -600,6 +602,50 @@ if (!function_exists('empresaViewDecorateConvenio')) {
         }
 
         return $convenio;
+    }
+}
+
+if (!function_exists('empresaViewDecorateConvenioArchivado')) {
+    /**
+     * @param array<string, mixed> $convenio
+     * @return array<string, mixed>
+     */
+    function empresaViewDecorateConvenioArchivado(array $convenio): array
+    {
+        $convenio['id_label'] = isset($convenio['id']) ? '#' . (string) $convenio['id'] : '#';
+        $convenio['convenio_original_label'] = isset($convenio['convenio_id_original'])
+            ? '#' . (string) $convenio['convenio_id_original']
+            : 'N/A';
+        $convenio['fecha_archivo_label'] = empresaViewFormatDateTime($convenio['fecha_archivo'] ?? null, 'Sin fecha');
+        $convenio['motivo_label'] = empresaViewValueOrDefault($convenio['motivo'] ?? null, '—');
+
+        if (isset($convenio['id'])) {
+            $id = (int) $convenio['id'];
+            $convenio['view_url'] = '../convenio/convenio_archivado.php?id=' . urlencode((string) $id);
+        }
+
+        return $convenio;
+    }
+}
+
+if (!function_exists('empresaViewDecorateConveniosArchivados')) {
+    /**
+     * @param array<int, array<string, mixed>> $convenios
+     * @return array<int, array<string, mixed>>
+     */
+    function empresaViewDecorateConveniosArchivados(array $convenios): array
+    {
+        $decorated = [];
+
+        foreach ($convenios as $convenio) {
+            if (!is_array($convenio)) {
+                continue;
+            }
+
+            $decorated[] = empresaViewDecorateConvenioArchivado($convenio);
+        }
+
+        return $decorated;
     }
 }
 

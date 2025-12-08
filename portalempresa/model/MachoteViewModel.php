@@ -122,10 +122,24 @@ class MachoteViewModel
         ];
     }
 
-    public function addComentario(int $machoteId, int $empresaId, string $clausula, string $comentario, ?int $usuarioId = null): bool
+        public function addComentario(int $machoteId, int $empresaId, string $clausula, string $comentario, ?int $usuarioId = null): bool
     {
         if (!$this->machoteBelongsToEmpresa($machoteId, $empresaId)) {
             throw new RuntimeException('No es posible agregar comentarios a este machote.');
+        }
+
+        $estado = $this->fetchEstadoMachote($machoteId, $empresaId);
+
+        if ($estado === null || (int) ($estado['confirmacion_empresa'] ?? 0) === 1) {
+            throw new RuntimeException('No se pueden agregar comentarios en este momento.');
+        }
+
+        if ($this->isEmpresaInactiva($estado['empresa_estatus'] ?? null)) {
+            throw new RuntimeException('Convenio ya no activo');
+        }
+
+        if (!$this->estatusConvenioActivo($estado['convenio_estatus'] ?? null)) {
+            throw new RuntimeException('El convenio estA? inactivo para comentarios.');
         }
 
         $sql = <<<'SQL'
@@ -148,6 +162,24 @@ class MachoteViewModel
     {
         if (!$this->machoteBelongsToEmpresa($machoteId, $empresaId)) {
             throw new RuntimeException('No puedes confirmar este machote.');
+        }
+
+        $estado = $this->fetchEstadoMachote($machoteId, $empresaId);
+
+        if ($estado === null) {
+            throw new RuntimeException('No se pudo validar el estado del convenio.');
+        }
+
+        if ((int) ($estado['confirmacion_empresa'] ?? 0) === 1) {
+            return true;
+        }
+
+        if ($this->isEmpresaInactiva($estado['empresa_estatus'] ?? null)) {
+            throw new RuntimeException('Flujo de machote no permitido');
+        }
+
+        if (!$this->estatusConvenioActivo($estado['convenio_estatus'] ?? null)) {
+            throw new RuntimeException('El convenio no permite confirmar el machote.');
         }
 
         $sql = <<<'SQL'
@@ -180,5 +212,71 @@ class MachoteViewModel
         ]);
 
         return $statement->fetchColumn() !== false;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function fetchEstadoMachote(int $machoteId, ?int $empresaId = null): ?array
+    {
+        $sql = <<<'SQL'
+            SELECT m.confirmacion_empresa,
+                   c.estatus AS convenio_estatus,
+                   e.estatus AS empresa_estatus
+            FROM rp_convenio_machote AS m
+            INNER JOIN rp_convenio AS c ON c.id = m.convenio_id
+            INNER JOIN rp_empresa  AS e ON e.id = c.empresa_id
+            WHERE m.id = :machote_id
+        SQL;
+
+        $params = [':machote_id' => $machoteId];
+
+        if ($empresaId !== null) {
+            $sql .= ' AND c.empresa_id = :empresa_id';
+            $params[':empresa_id'] = $empresaId;
+        }
+
+        $sql .= ' LIMIT 1';
+
+        $statement = $this->connection->prepare($sql);
+        $statement->execute($params);
+
+        $record = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $record !== false ? $record : null;
+    }
+
+    private function estatusConvenioActivo(?string $estatus): bool
+    {
+        $normalizado = $this->normalizarEstatus($estatus);
+
+        if ($normalizado === '') {
+            return false;
+        }
+
+        if (str_contains($normalizado, 'activa')) {
+            return true;
+        }
+
+        return str_contains($normalizado, 'revisi');
+    }
+
+    private function isEmpresaInactiva(?string $estatus): bool
+    {
+        $normalizado = $this->normalizarEstatus($estatus);
+
+        return $normalizado === 'inactiva';
+    }
+
+    private function normalizarEstatus(?string $estatus): string
+    {
+        if ($estatus === null) {
+            return '';
+        }
+
+        $clean = str_replace(['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú'], ['a', 'e', 'i', 'o', 'u', 'a', 'e', 'i', 'o', 'u'], (string) $estatus);
+        $clean = function_exists('mb_strtolower') ? mb_strtolower($clean, 'UTF-8') : strtolower($clean);
+
+        return trim($clean);
     }
 }

@@ -41,6 +41,11 @@ class DocumentoDeleteModel
                 throw new RuntimeException('El documento solicitado no existe.', 404);
             }
 
+            $empresaEstatus = isset($document['empresa_estatus']) ? trim((string) $document['empresa_estatus']) : '';
+            if (strcasecmp($empresaEstatus, 'Completada') === 0) {
+                throw new RuntimeException('No se pueden eliminar documentos de empresas en estatus Completada.', 403);
+            }
+
             $deleteSql = 'DELETE FROM rp_empresa_doc WHERE id = :id LIMIT 1';
             $statement = $this->pdo->prepare($deleteSql);
             $statement->bindValue(':id', $documentId, PDO::PARAM_INT);
@@ -71,6 +76,7 @@ class DocumentoDeleteModel
             SELECT d.id,
                    d.empresa_id,
                    e.nombre AS empresa_nombre,
+                   e.estatus AS empresa_estatus,
                    d.tipo_global_id,
                    d.tipo_personalizado_id,
                    tg.nombre AS tipo_global_nombre,

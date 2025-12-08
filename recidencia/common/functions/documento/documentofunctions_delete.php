@@ -228,6 +228,7 @@ if (!function_exists('documentoDeleteErrorMessages')) {
             'controller' => 'No se pudo preparar la eliminacion del documento.',
             'not_found' => 'El documento solicitado no existe o ya fue eliminado.',
             'delete_failed' => 'No se pudo eliminar el documento. Intenta otra vez.',
+            'empresa_completada' => 'No se pueden eliminar documentos de empresas en estatus Completada.',
             'method_not_allowed' => 'El metodo de envio no es valido para esta operacion.',
         ];
     }

@@ -50,12 +50,20 @@ $machoteCreadoLabel = $metadata['machoteCreadoLabel'];
 $machoteActualizadoLabel = $metadata['machoteActualizadoLabel'];
 $machoteBloqueado = $metadata['machoteBloqueado'];
 $machoteEstatus = $metadata['machoteEstatus'];
+$empresaEsCompletada = $metadata['empresaEsCompletada'] ?? false;
+$convenioEstatus = isset($convenio['estatus']) ? (string) $convenio['estatus'] : '';
+$convenioEstatusGeneral = isset($convenio['estatus_general']) ? (string) $convenio['estatus_general'] : '';
+$convenioArchivado = strcasecmp(trim($convenioEstatus), 'Archivado') === 0
+    || strcasecmp(trim($convenioEstatusGeneral), 'Archivado') === 0;
+$convenioEsActiva = strcasecmp(trim($convenioEstatus), 'Activa') === 0;
 
 $machoteStatusParam = isset($_GET['machote_status']) ? (string) $_GET['machote_status'] : null;
 $machoteErrorParam = isset($_GET['machote_error']) ? (string) $_GET['machote_error'] : null;
 $uploadStatusParam = isset($_GET['upload_status']) ? (string) $_GET['upload_status'] : null;
 $uploadErrorParam = isset($_GET['upload_error']) ? (string) $_GET['upload_error'] : null;
 $uploadErrorDetailParam = isset($_GET['upload_error_detail']) ? (string) $_GET['upload_error_detail'] : null;
+$activateStatusParam = isset($_GET['activate_status']) ? (string) $_GET['activate_status'] : null;
+$activateErrorParam = isset($_GET['activate_error']) ? (string) $_GET['activate_error'] : null;
 
 $uploadSuccessMessage = null;
 if ($uploadStatusParam === 'success') {
@@ -65,6 +73,13 @@ if ($uploadStatusParam === 'success') {
 $machoteSuccessMessage = null;
 if ($machoteStatusParam === 'created') {
     $machoteSuccessMessage = 'Se generó el machote del convenio a partir de la plantilla institucional.';
+}
+
+$activateSuccessMessage = null;
+if ($activateStatusParam === 'success') {
+    $activateSuccessMessage = 'El convenio se activó correctamente.';
+} elseif ($activateStatusParam === 'already_active') {
+    $activateSuccessMessage = 'El convenio ya estaba en estatus Activa.';
 }
 
 $machoteErrorMessage = null;
@@ -89,7 +104,7 @@ switch ($uploadErrorParam) {
         $uploadErrorMessage = 'La peticion de carga no es valida.';
         break;
     case 'missing_id':
-        $uploadErrorMessage = 'No se encontro el convenio para adjuntar el archivo.';
+        $uploadErrorMessage = 'No se encontró el convenio para adjuntar el archivo.';
         break;
     case 'controller_unavailable':
         $uploadErrorMessage = 'No se pudo conectar para guardar el archivo del convenio.';
@@ -101,7 +116,7 @@ switch ($uploadErrorParam) {
         $uploadErrorMessage = 'La empresa del convenio no coincide con la solicitud enviada.';
         break;
     case 'wrong_status':
-        $uploadErrorMessage = 'Solo se pueden adjuntar archivos cuando el convenio esta En Revision.';
+        $uploadErrorMessage = 'Solo se pueden adjuntar archivos cuando el convenio está En Revisión.';
         break;
     case 'no_file':
         $uploadErrorMessage = 'Selecciona un archivo PDF para subir.';
@@ -111,6 +126,31 @@ switch ($uploadErrorParam) {
         break;
     case 'save_failed':
         $uploadErrorMessage = 'No se pudo guardar el archivo del convenio.';
+        break;
+}
+
+$activateErrorMessage = null;
+switch ($activateErrorParam) {
+    case 'invalid_request':
+        $activateErrorMessage = 'La solicitud para activar el convenio no es válida.';
+        break;
+    case 'missing_id':
+        $activateErrorMessage = 'No se encontró el convenio solicitado.';
+        break;
+    case 'controller_unavailable':
+        $activateErrorMessage = 'No se pudo conectar para actualizar el convenio.';
+        break;
+    case 'not_found':
+        $activateErrorMessage = 'El convenio indicado no existe.';
+        break;
+    case 'empresa_mismatch':
+        $activateErrorMessage = 'La empresa enviada no coincide con el convenio.';
+        break;
+    case 'missing_file':
+        $activateErrorMessage = 'Se requiere un archivo firmado antes de activar el convenio.';
+        break;
+    case 'save_failed':
+        $activateErrorMessage = 'No se pudo guardar el cambio de estatus. Intenta nuevamente.';
         break;
 }
 
@@ -177,10 +217,12 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                 <div class="top-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
                     <?php if ($empresaUrl !== null): ?>
                         <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn secondary">⬅️ Volver a empresa</a>
-                    <?php endif; ?>
-                    <?php if ($convenioId !== null): ?>
-                        <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn">✏️
-                            Editar</a>
+                    <?php endif; ?>                    <?php if ($convenioId !== null): ?>
+                        <?php if ($convenioArchivado): ?>
+                            <span class="btn" style="pointer-events:none;opacity:0.6;">Editar</span>
+                        <?php else: ?>
+                            <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn">✏️ Editar</a>
+                        <?php endif; ?>
                     <?php endif; ?>
                     <?php if ($downloadUrl !== null): ?>
                         <a href="<?php echo htmlspecialchars($downloadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn"
@@ -265,6 +307,26 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                     <div class="content">
                         <div class="alert alert-warning" role="alert">
                             <?php echo htmlspecialchars($uploadErrorMessage, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($activateSuccessMessage !== null): ?>
+                <section class="card">
+                    <div class="content">
+                        <div class="alert alert-success" role="status">
+                            <?php echo htmlspecialchars($activateSuccessMessage, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($activateErrorMessage !== null): ?>
+                <section class="card">
+                    <div class="content">
+                        <div class="alert alert-warning" role="alert">
+                            <?php echo htmlspecialchars($activateErrorMessage, ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                     </div>
                 </section>
@@ -364,7 +426,7 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                                 <a href="<?php echo htmlspecialchars($empresaUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn">🏢 Ver
                                     empresa</a>
                             <?php endif; ?>
-                            <?php if ($convenioPuedeSubir && $convenioId !== null): ?>
+                            <?php if ($convenioPuedeSubir && $convenioId !== null && !$convenioArchivado): ?>
                                 <form action="../../handler/convenio/convenio_upload_handler.php" method="post"
                                     enctype="multipart/form-data"
                                     style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
@@ -383,7 +445,17 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                                     <span>Archivo final del convenio registrado.</span>
                                 </div>
                             <?php endif; ?>
-                        </div>
+                        
+                            <?php if ($convenioTieneFirmado && !$convenioArchivado && !$convenioEsActiva && $convenioId !== null): ?>
+                                <form action="../../handler/convenio/convenio_activate_handler.php" method="post" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                                    <input type="hidden" name="convenio_id" value="<?php echo htmlspecialchars((string) $convenioId, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php if ($empresaId !== null): ?>
+                                        <input type="hidden" name="empresa_id" value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php endif; ?>
+                                    <button type="submit" class="btn primary">Activar convenio</button>
+                                </form>
+                            <?php endif; ?>
+</div>
                         <div class="form-group" style="margin-top: 16px;">
                             <?php if ($machoteChildId !== null && $machoteEditUrl !== null): ?>
                                 <div class="machote-summary" style="display:flex; flex-direction:column; gap:8px;">
@@ -400,7 +472,7 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                                         <?php endif; ?>
                                     </div>
                                     <div class="actions" style="display:flex; gap:12px; flex-wrap:wrap;">
-                                        <?php if ($machoteBloqueado): ?>
+                                        <?php if ($convenioArchivado || $machoteBloqueado): ?>
                                             <button class="btn" type="button" disabled
                                                 title="El machote ya fue confirmado por la empresa. Reabre la revisión para volver a editarlo.">✏️
                                                 Editar machote</button>
@@ -422,7 +494,7 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                                             desde la vista de comentarios para habilitar la edición.</p>
                                     <?php endif; ?>
                                 </div>
-                            <?php elseif ($machoteGenerateUrl !== null): ?>
+                            <?php elseif ($machoteGenerateUrl !== null && !$convenioArchivado): ?>
                                 <a class="btn btn-outline"
                                     href="<?php echo htmlspecialchars($machoteGenerateUrl, ENT_QUOTES, 'UTF-8'); ?>">
                                     📄 Generar machote desde plantilla global
@@ -558,10 +630,20 @@ $convenioPuedeSubir = $convenioEnRevision && !$convenioTieneFirmado;
                 <section class="card">
                     <div class="content actions">
                         <?php if ($convenioId !== null): ?>
-                            <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">✏️
-                                Editar Convenio</a>
-                            <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>"
-                                class="btn danger">🗑️ Eliminar Convenio</a>
+                            <?php if ($convenioArchivado): ?>
+                                <span class="btn primary" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Editar Convenio</span>
+                                <span class="btn danger" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Desactivar Convenio</span>
+                            <?php else: ?>
+                                <a href="convenio_edit.php?id=<?php echo urlencode((string) $convenioId); ?>" class="btn primary">
+                                    Editar Convenio</a>
+                                <?php if (!$empresaEsCompletada): ?>
+                                    <a href="convenio_delete.php?id=<?php echo urlencode((string) $convenioId); ?>"
+                                        class="btn danger">Desactivar Convenio</a>
+                                <?php else: ?>
+                                    <span class="btn danger" aria-disabled="true" style="opacity:0.6; pointer-events:none;">Desactivar
+                                        Convenio</span>
+                                <?php endif; ?>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 </section>

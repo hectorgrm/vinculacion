@@ -100,6 +100,32 @@ class EmpresaViewModel
     /**
      * @return array<int, array<string, mixed>>
      */
+    public function findArchivadosByEmpresaId(int $empresaId): array
+    {
+        $sql = <<<'SQL'
+            SELECT id,
+                   empresa_id,
+                   convenio_id_original,
+                   fecha_archivo,
+                   motivo
+              FROM rp_convenio_archivado
+             WHERE empresa_id = :empresa_id
+             ORDER BY fecha_archivo DESC,
+                      id DESC
+        SQL;
+
+        $statement = $this->pdo->prepare($sql);
+        $statement->execute([':empresa_id' => $empresaId]);
+
+        /** @var array<int, array<string, mixed>> $records */
+        $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $records;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findEstudiantesByEmpresa(int $empresaId): array
     {
         $sql = <<<'SQL'
@@ -183,15 +209,16 @@ class EmpresaViewModel
                            ranked.observacion,
                            ranked.creado_en,
                            ranked.actualizado_en
-                      FROM (
-                            SELECT d.*,
-                                   ROW_NUMBER() OVER (
-                                       PARTITION BY d.tipo_global_id
-                                       ORDER BY d.actualizado_en DESC, d.id DESC
-                                   ) AS rn
-                              FROM rp_empresa_doc AS d
-                             WHERE d.empresa_id = :empresa_id
-                               AND d.tipo_global_id IS NOT NULL
+                     FROM (
+                           SELECT d.*,
+                                  ROW_NUMBER() OVER (
+                                      PARTITION BY d.tipo_global_id
+                                      ORDER BY d.actualizado_en DESC, d.id DESC
+                                  ) AS rn
+                             FROM rp_empresa_doc AS d
+                            WHERE d.empresa_id = :empresa_id
+                              AND d.tipo_global_id IS NOT NULL
+                              AND (d.estatus IS NULL OR d.estatus <> 'Archivado')
                          ) AS ranked
                      WHERE ranked.rn = 1
               ) AS doc ON doc.tipo_global_id = t.id
@@ -246,15 +273,16 @@ class EmpresaViewModel
                            ranked.observacion,
                            ranked.creado_en,
                            ranked.actualizado_en
-                      FROM (
-                            SELECT d.*,
-                                   ROW_NUMBER() OVER (
-                                       PARTITION BY d.tipo_personalizado_id
-                                       ORDER BY d.actualizado_en DESC, d.id DESC
-                                   ) AS rn
-                              FROM rp_empresa_doc AS d
-                             WHERE d.empresa_id = :empresa_id
-                               AND d.tipo_personalizado_id IS NOT NULL
+                     FROM (
+                           SELECT d.*,
+                                  ROW_NUMBER() OVER (
+                                      PARTITION BY d.tipo_personalizado_id
+                                      ORDER BY d.actualizado_en DESC, d.id DESC
+                                  ) AS rn
+                             FROM rp_empresa_doc AS d
+                            WHERE d.empresa_id = :empresa_id
+                              AND d.tipo_personalizado_id IS NOT NULL
+                              AND (d.estatus IS NULL OR d.estatus <> 'Archivado')
                          ) AS ranked
                      WHERE ranked.rn = 1
               ) AS doc ON doc.tipo_personalizado_id = tipo.id
@@ -300,6 +328,7 @@ class EmpresaViewModel
               FROM rp_convenio_machote AS cm
               INNER JOIN rp_convenio AS c ON c.id = cm.convenio_id
              WHERE c.empresa_id = :empresa_id
+               AND c.estatus IN ('Activa', 'En revisiA3n', 'En revisión', 'Suspendida')
              ORDER BY cm.actualizado_en DESC, cm.id DESC
              LIMIT 1
         SQL;

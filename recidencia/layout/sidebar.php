@@ -5,7 +5,8 @@
   </div>
 
   <nav class="nav">
-    <a href="../../index.php">🏠 Dashboard</a>
+    <!-- <a href="../../index.php">🏠 Dashboard</a> -->
+    <a href="../dashboard/dashboard.php"> 🏠 Dashboard</a>
     <a href="../empresa/empresa_list.php">🏢 Empresas</a>
     <a href="../convenio/convenio_list.php">📑 Convenios</a>
     <a href="../documentos/documento_list.php">📂 Documentos</a>
