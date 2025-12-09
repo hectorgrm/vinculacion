@@ -62,6 +62,13 @@ $machoteEstatus = $machoteResumen['estatus'] ?? $machoteResumen['estatus_general
 $machoteActualizado = $machoteResumen['actualizado_en'] ?? $machoteResumen['updated_at'] ?? ($machoteResumen['fecha_actualizacion'] ?? 'N/D');
 $machoteCreado = $machoteResumen['creado_en'] ?? $machoteResumen['created_at'] ?? ($machoteResumen['fecha_creacion'] ?? 'N/D');
 $machoteResponsable = $machoteResumen['responsable'] ?? $machoteResumen['responsable_academico'] ?? ($machoteResumen['usuario'] ?? 'No registrado');
+$machoteContenido = '';
+if ($machoteResumen !== []) {
+    $machoteContenido = (string) ($machoteResumen['contenido_html'] ?? $machoteResumen['contenido'] ?? '');
+    if ($machoteContenido === '' && isset($machoteResumen['html'])) {
+        $machoteContenido = (string) $machoteResumen['html'];
+    }
+}
 $machoteTieneDatos = is_array($snapshotMachote) && $snapshotMachote !== [];
 $revisionesCount = is_array($snapshotRevisiones) ? count($snapshotRevisiones) : 0;
 $revisionMsgsCount = is_array($snapshotRevisionMsgs) ? count($snapshotRevisionMsgs) : 0;
@@ -76,270 +83,6 @@ $comentariosCount = is_array($snapshotComentarios) ? count($snapshotComentarios)
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Convenio Archivado | Residencias Profesionales</title>
   <link rel="stylesheet" href="../../assets/css/modules/convenio/convenioarchiva.css" />
-  <style>
-    .accordion {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .accordion-item {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--panel);
-      overflow: hidden;
-    }
-
-    .accordion-header {
-      width: 100%;
-      text-align: left;
-      padding: 14px 16px;
-      background: var(--panel-strong);
-      font-weight: bold;
-      cursor: pointer;
-      border: none;
-    }
-
-    .accordion-body {
-      padding: 16px;
-      display: none;
-    }
-
-    .accordion-item.open .accordion-body {
-      display: block;
-    }
-
-    .machote-wrap {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .machote-hero {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      background: linear-gradient(120deg, #eef3f9 0%, #f9fbff 60%, #eef5ff 100%);
-      padding: 18px 20px;
-      box-shadow: var(--shadow-sm);
-      display: grid;
-      gap: 8px;
-    }
-
-    .machote-hero h3 {
-      margin: 0;
-      color: var(--ink);
-      font-size: 1.35rem;
-    }
-
-    .machote-hero p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .machote-tags {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .machote-tag {
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-weight: 700;
-      color: var(--ink);
-      font-size: 13px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .machote-tag.neutral {
-      background: #f8fafc;
-    }
-
-    .machote-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 12px;
-    }
-
-    .machote-stat {
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px 14px;
-      box-shadow: var(--shadow-sm);
-      display: grid;
-      gap: 4px;
-    }
-
-    .machote-stat small {
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    .machote-stat strong {
-      font-size: 1.1rem;
-      color: var(--ink);
-    }
-
-    .machote-stat span {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .machote-panels {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 14px;
-    }
-
-    .panel-card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: #ffffff;
-      box-shadow: var(--shadow-sm);
-      display: grid;
-      overflow: hidden;
-    }
-
-    .panel-card header {
-      padding: 14px 16px;
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      font-weight: 800;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .panel-card .body {
-      padding: 14px 16px;
-      display: grid;
-      gap: 10px;
-    }
-
-    .mini-meta {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 8px 12px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .mini-meta strong {
-      color: var(--ink);
-    }
-
-    .mini-timeline {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: grid;
-      gap: 12px;
-    }
-
-    .mini-timeline li {
-      display: grid;
-      grid-template-columns: 16px 1fr;
-      gap: 10px;
-      align-items: start;
-    }
-
-    .mini-timeline .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--primary);
-      margin-top: 4px;
-    }
-
-    .mini-timeline .title {
-      margin: 0;
-      font-weight: 800;
-      color: var(--ink);
-    }
-
-    .mini-timeline .meta {
-      margin: 2px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .file-chips {
-      display: grid;
-      gap: 8px;
-    }
-
-    .file-chip {
-      border: 1px dashed var(--border);
-      background: var(--panel);
-      padding: 10px 12px;
-      border-radius: var(--radius-md);
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .file-chip span {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    details.raw-block {
-      border: 1px dashed var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
-      background: var(--panel);
-    }
-
-    details.raw-block summary {
-      cursor: pointer;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .muted {
-      color: var(--muted);
-    }
-
-    .html-preview {
-      max-height: 420px;
-      overflow: auto;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: #ffffff;
-      box-shadow: var(--shadow-sm);
-      line-height: 1.6;
-      color: var(--ink);
-    }
-
-    .html-preview p {
-      margin: 0 0 10px;
-    }
-
-    .html-preview table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 6px;
-    }
-
-    .html-preview th,
-    .html-preview td {
-      border: 1px solid var(--border);
-      padding: 6px;
-      vertical-align: top;
-    }
-
-    .html-preview strong {
-      color: var(--ink);
-    }
-  </style>
 </head>
 
 <body>
@@ -482,6 +225,24 @@ $comentariosCount = is_array($snapshotComentarios) ? count($snapshotComentarios)
 
                   <div class="machote-panels">
                     <div class="panel-card">
+                      <header>Contenido HTML</header>
+                      <div class="body">
+                        <?php if ($machoteContenido !== ''): ?>
+                          <?php
+                          $machoteDecoded = html_entity_decode($machoteContenido, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                          $machoteSafe = strip_tags(
+                              $machoteDecoded,
+                              '<p><br><strong><b><em><i><u><ul><ol><li><table><thead><tbody><tr><td><th><figure><span><div>'
+                          );
+                          ?>
+                          <div class="html-preview"><?php echo $machoteSafe; ?></div>
+                        <?php else: ?>
+                          <p class="muted">Sin contenido HTML guardado en el snapshot.</p>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+
+                    <div class="panel-card">
                       <header>Detalle del machote</header>
                       <div class="body">
                         <?php if ($machoteTieneDatos): ?>
@@ -499,7 +260,9 @@ $comentariosCount = is_array($snapshotComentarios) ? count($snapshotComentarios)
                         <?php endif; ?>
                       </div>
                     </div>
+                  </div>
 
+                  <div class="machote-panels">
                     <div class="panel-card">
                       <header>Revisiones</header>
                       <div class="body">
@@ -511,9 +274,7 @@ $comentariosCount = is_array($snapshotComentarios) ? count($snapshotComentarios)
                         <?php endif; ?>
                       </div>
                     </div>
-                  </div>
 
-                  <div class="machote-panels">
                     <div class="panel-card">
                       <header>Mensajes de revisión</header>
                       <div class="body">
@@ -548,7 +309,9 @@ $comentariosCount = is_array($snapshotComentarios) ? count($snapshotComentarios)
                         <?php endif; ?>
                       </div>
                     </div>
+                  </div>
 
+                  <div class="machote-panels">
                     <div class="panel-card">
                       <header>Archivos de revisión</header>
                       <div class="body">
@@ -574,16 +337,16 @@ $comentariosCount = is_array($snapshotComentarios) ? count($snapshotComentarios)
                         <?php endif; ?>
                       </div>
                     </div>
-                  </div>
 
-                  <div class="panel-card">
-                    <header>Comentarios</header>
-                    <div class="body">
-                      <?php if (is_array($snapshotComentarios) && $snapshotComentarios !== []): ?>
-                        <?php echo renderSnapshotTable(is_array($snapshotComentarios) ? $snapshotComentarios : []); ?>
-                      <?php else: ?>
-                        <p class="muted">Sin comentarios adicionales en este archivo.</p>
-                      <?php endif; ?>
+                    <div class="panel-card">
+                      <header>Comentarios</header>
+                      <div class="body">
+                        <?php if (is_array($snapshotComentarios) && $snapshotComentarios !== []): ?>
+                          <?php echo renderSnapshotTable(is_array($snapshotComentarios) ? $snapshotComentarios : []); ?>
+                        <?php else: ?>
+                          <p class="muted">Sin comentarios adicionales en este archivo.</p>
+                        <?php endif; ?>
+                      </div>
                     </div>
                   </div>
                 </div>

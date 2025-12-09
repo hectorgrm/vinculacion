@@ -1,37 +1,51 @@
 <?php
 declare(strict_types=1);
 
-// Datos de ejemplo (sustituir por datos reales del handler)
-$id           = $_GET['id'] ?? 901;
-$empresaId    = 45;
-$empresa      = "Casa del Barrio";
-$email        = "admin@casadelbarrio.mx";
-$rol          = "empresa_admin";
-$estatus      = "activo";        // activo | bloqueado | inactivo
-$tfa          = 0;               // 1 = sí, 0 = no
-$ultimoAcceso = "2025-10-01 11:23";
-$pwdExpira    = "2026-01-31";
-$intentos     = 0;
-$notas        = "Acceso principal de la empresa para revisión de convenios y documentos.";
-$creado       = "2025-09-15 09:02";
-$actualizado  = "2025-09-30 14:41";
+/**
+ * @var array{
+ *     portalId: ?int,
+ *     portal: ?array<string, mixed>,
+ *     empresa: ?array<string, mixed>,
+ *     errors: array<int, string>
+ * } $handlerResult
+ */
+$handlerResult = require __DIR__ . '/../../handler/portalacceso/portal_view_handler.php';
 
-$badge = '<span class="badge err">Desconocido</span>';
-if ($estatus === 'activo') {
-  $badge = '<span class="badge ok">Activo</span>';
-} elseif ($estatus === 'bloqueado') {
-  $badge = '<span class="badge warn">Bloqueado</span>';
-} elseif ($estatus === 'inactivo') {
-  $badge = '<span class="badge err">Inactivo</span>';
+$portalId = $handlerResult['portalId'];
+$portal = $handlerResult['portal'];
+$empresa = $handlerResult['empresa'];
+$viewErrors = $handlerResult['errors'] ?? [];
+$successMessage = $handlerResult['successMessage'] ?? null;
+$actionError = $handlerResult['actionError'] ?? null;
+
+$isValid = $portal !== null && !in_array('invalid_id', $viewErrors, true);
+
+$token = $isValid && isset($portal['token']) ? (string) $portal['token'] : '';
+$nip = $isValid && isset($portal['nip']) ? (string) $portal['nip'] : '';
+$nipLabel = $isValid && isset($portal['nip_label']) ? (string) $portal['nip_label'] : ($nip !== '' ? $nip : 'No asignado');
+$statusLabel = $isValid && isset($portal['status_label']) ? (string) $portal['status_label'] : 'Sin estatus';
+$statusClass = $isValid && isset($portal['status_class']) ? (string) $portal['status_class'] : 'badge secondary';
+$expiracionLabel = $isValid && isset($portal['expiracion_label']) ? (string) $portal['expiracion_label'] : 'Sin fecha';
+$creadoEnLabel = $isValid && isset($portal['creado_en_label']) ? (string) $portal['creado_en_label'] : 'Sin fecha';
+$activo = $isValid && isset($portal['activo']) ? (bool) $portal['activo'] : false;
+$empresaId = is_array($empresa) && isset($empresa['id']) ? $empresa['id'] : null;
+$empresaLabel = is_array($empresa) && isset($empresa['label']) && $empresa['label'] !== null
+    ? (string) $empresa['label']
+    : 'Sin empresa';
+$expiracionValue = '';
+
+if ($isValid && isset($portal['expiracion']) && $portal['expiracion'] !== null) {
+    $timestamp = strtotime((string) $portal['expiracion']);
+    $expiracionValue = $timestamp !== false ? date('Y-m-d\TH:i', $timestamp) : '';
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Detalle del Acceso - Residencias Profesionales</title>
-
+  <title>Ver acceso - Portal Empresa</title>
   <link rel="stylesheet" href="../../assets/css/modules/portalacceso/portalview.css" />
 </head>
 
@@ -41,102 +55,135 @@ if ($estatus === 'activo') {
 
     <main class="main">
       <header class="topbar">
-        <div class="page-titles">
+        <div>
           <p class="eyebrow">Portal de acceso</p>
-          <h2>Detalle del Acceso</h2>
-          <p class="lead">Consulta la información del usuario de acceso y gestiona su estado.</p>
+          <h2>Detalle de acceso</h2>
+          <p class="lead">Consulta el token, NIP y estatus del portal asignado a la empresa correspondiente.</p>
           <nav class="breadcrumb">
             <a href="../../index.php">Inicio</a>
-            <span>›</span>
-            <a href="portal_list.php">Portal de Acceso</a>
-            <span>›</span>
+            <span>&gt;</span>
+            <a href="portal_list.php">Portal</a>
+            <span>&gt;</span>
             <span>Ver</span>
           </nav>
         </div>
+
         <div class="actions">
-          <a class="btn" href="portal_edit.php?id=<?php echo htmlspecialchars((string) $id, ENT_QUOTES, 'UTF-8'); ?>">Editar</a>
-          <a class="btn warn" href="portal_reset.php?id=<?php echo htmlspecialchars((string) $id, ENT_QUOTES, 'UTF-8'); ?>">Reset contraseña</a>
-          <?php if ($estatus === 'activo'): ?>
-            <a class="btn warn" href="portal_toggle.php?id=<?php echo htmlspecialchars((string) $id, ENT_QUOTES, 'UTF-8'); ?>&to=bloquear">Bloquear</a>
-          <?php elseif ($estatus === 'bloqueado'): ?>
-            <a class="btn" href="portal_toggle.php?id=<?php echo htmlspecialchars((string) $id, ENT_QUOTES, 'UTF-8'); ?>&to=activar">Activar</a>
-          <?php endif; ?>
-          <a class="btn danger" href="portal_delete.php?id=<?php echo htmlspecialchars((string) $id, ENT_QUOTES, 'UTF-8'); ?>">Eliminar</a>
+          <a class="btn secondary" href="portal_list.php">Volver a la lista</a>
         </div>
       </header>
 
-      <section class="card">
-        <header>Información del Acceso</header>
-        <div class="content">
-          <div class="info-grid">
-            <div class="info-item emphasize">
-              <label>Empresa</label>
-              <a class="btn" href="../empresa/empresa_view.php?id=<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">
-                <?php echo htmlspecialchars($empresa, ENT_QUOTES, 'UTF-8'); ?>
-              </a>
+      <?php if ($successMessage !== null || $actionError !== null || $viewErrors !== []): ?>
+        <div class="message-stack">
+          <?php if ($successMessage !== null): ?>
+            <div class="alert success"><?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?></div>
+          <?php endif; ?>
+
+          <?php if ($actionError !== null): ?>
+            <div class="alert error"><?php echo htmlspecialchars($actionError, ENT_QUOTES, 'UTF-8'); ?></div>
+          <?php endif; ?>
+
+          <?php if (in_array('invalid_id', $viewErrors, true)): ?>
+            <div class="alert alert-error">El identificador proporcionado no es v&aacute;lido.</div>
+          <?php endif; ?>
+
+          <?php if (in_array('database_error', $viewErrors, true)): ?>
+            <div class="alert alert-error">Ocurri&oacute; un problema al consultar la base de datos. Intenta nuevamente m&aacute;s tarde.</div>
+          <?php endif; ?>
+
+          <?php if (in_array('not_found', $viewErrors, true) && !in_array('invalid_id', $viewErrors, true)): ?>
+            <div class="alert alert-warning">No se encontr&oacute; un acceso al portal con el identificador solicitado.</div>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if ($isValid): ?>
+        <section class="card">
+          <header>
+            <span>Datos del acceso</span>
+            <span class="<?php echo htmlspecialchars($statusClass, ENT_QUOTES, 'UTF-8'); ?>">
+              <?php echo htmlspecialchars($statusLabel, ENT_QUOTES, 'UTF-8'); ?>
+            </span>
+          </header>
+
+          <div class="content">
+            <form class="form" action="portal_view_action.php?id=<?php echo urlencode((string) $portalId); ?>" method="post" autocomplete="off">
+              <div class="form-grid">
+                <div class="field">
+                  <label>Empresa</label>
+                  <div>
+                    <?php if ($empresaId !== null): ?>
+                      <a class="btn secondary" href="../empresa/empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>">
+                        <?php echo htmlspecialchars($empresaLabel, ENT_QUOTES, 'UTF-8'); ?>
+                      </a>
+                    <?php else: ?>
+                      <?php echo htmlspecialchars($empresaLabel, ENT_QUOTES, 'UTF-8'); ?>
+                    <?php endif; ?>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label>Token</label>
+                  <input type="text" value="<?php echo htmlspecialchars($token, ENT_QUOTES, 'UTF-8'); ?>" readonly>
+                </div>
+
+                <div class="field">
+                  <label for="nip">NIP</label>
+                  <input id="nip" name="nip" type="text" pattern="[0-9]{4,6}" maxlength="6"
+                    value="<?php echo htmlspecialchars($nip, ENT_QUOTES, 'UTF-8'); ?>"
+                    placeholder="Ingresa un NIP nuevo (4-6 dígitos)">
+                </div>
+
+                <div class="field">
+                  <label for="expiracion">Expiraci&oacute;n</label>
+                  <input id="expiracion" name="expiracion" type="datetime-local"
+                    value="<?php echo htmlspecialchars($expiracionValue, ENT_QUOTES, 'UTF-8'); ?>">
+                  <div class="hint">Usa esta fecha para extender o limitar la vigencia.</div>
+                </div>
+
+                <div class="switch-row">
+                  <div>
+                    <strong>Acceso activo</strong><br>
+                    <span>Desact&iacute;valo para bloquear el ingreso inmediatamente.</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" name="activo" <?php echo $activo ? 'checked' : ''; ?>>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <div style="grid-column: span 2; display:flex; gap:10px; flex-wrap:wrap;">
+                  <button name="action" value="regenerate" class="btn outline">🔄 Regenerar token</button>
+                  <button name="action" value="save" class="btn primary">Guardar cambios</button>
+                </div>
+              </div>
+            </form>
+
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Expiraci&oacute;n actual</label>
+                <div><?php echo htmlspecialchars($expiracionLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+              </div>
+              <div class="info-item">
+                <label>Creado en</label>
+                <div><?php echo htmlspecialchars($creadoEnLabel, ENT_QUOTES, 'UTF-8'); ?></div>
+              </div>
+              <div class="info-item">
+                <label>ID de acceso</label>
+                <div>#<?php echo htmlspecialchars((string) $portalId, ENT_QUOTES, 'UTF-8'); ?></div>
+              </div>
             </div>
 
-            <div class="info-item">
-              <label>Correo (usuario)</label>
-              <div><?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?></div>
-            </div>
-
-            <div class="info-item">
-              <label>Rol</label>
-              <div><?php echo htmlspecialchars($rol, ENT_QUOTES, 'UTF-8'); ?></div>
-            </div>
-
-            <div class="info-item">
-              <label>Estatus</label>
-              <div><?php echo $badge; ?></div>
-            </div>
-
-            <div class="info-item">
-              <label>Autenticación 2FA</label>
-              <div><?php echo $tfa ? 'Habilitado' : 'Deshabilitado'; ?></div>
-            </div>
-
-            <div class="info-item">
-              <label>Último acceso</label>
-              <div><?php echo $ultimoAcceso !== '' ? htmlspecialchars($ultimoAcceso, ENT_QUOTES, 'UTF-8') : '<em>Sin registro</em>'; ?></div>
-            </div>
-
-            <div class="info-item">
-              <label>Intentos fallidos</label>
-              <div><?php echo htmlspecialchars((string) $intentos, ENT_QUOTES, 'UTF-8'); ?></div>
-            </div>
-
-            <div class="info-item">
-              <label>Expiración de contraseña</label>
-              <div><?php echo $pwdExpira !== '' ? htmlspecialchars($pwdExpira, ENT_QUOTES, 'UTF-8') : '<em>No establecido</em>'; ?></div>
-            </div>
-
-            <div class="info-item">
-              <label>Fecha de creación</label>
-              <div><?php echo htmlspecialchars($creado, ENT_QUOTES, 'UTF-8'); ?></div>
-            </div>
-
-            <div class="info-item">
-              <label>Última actualización</label>
-              <div><?php echo htmlspecialchars($actualizado, ENT_QUOTES, 'UTF-8'); ?></div>
-            </div>
-
-            <div class="info-item" style="grid-column: span 2;">
-              <label>Notas</label>
-              <div><?php echo $notas !== '' ? htmlspecialchars($notas, ENT_QUOTES, 'UTF-8') : '<em>Sin notas registradas</em>'; ?></div>
-            </div>
+            <form action="portal_view_action.php?id=<?php echo urlencode((string) $portalId); ?>" method="post" onsubmit="return confirm('¿Seguro que deseas eliminar este acceso?');">
+              <input type="hidden" name="action" value="delete">
+              <div class="actions tight" style="justify-content:flex-end; margin-top:12px;">
+                <a class="btn secondary" href="portal_list.php">Regresar</a>
+                <button class="btn danger" type="submit">Eliminar acceso</button>
+              </div>
+            </form>
           </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <header>Accesos rápidos</header>
-        <div class="content actions">
-          <a class="btn" href="../empresa/empresa_view.php?id=<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?>">Ver empresa</a>
-          <a class="btn" href="portal_edit.php?id=<?php echo htmlspecialchars((string) $id, ENT_QUOTES, 'UTF-8'); ?>">Editar</a>
-          <a class="btn" href="portal_list.php">Volver al listado</a>
-        </div>
-      </section>
+        </section>
+      <?php endif; ?>
     </main>
   </div>
 </body>
