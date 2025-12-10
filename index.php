@@ -17,9 +17,8 @@
             <h2>Empresa </h2>
             <a href="portalempresa/view/index.php" class="btn btn-rec">Ingresar</a>
         </div>
-        <div class="card">
-            <h2>Servicio Social</h2>
-            <a href="common/login.php?module=serviciosocial" class="btn btn-ss">Ingresar</a>
+        <div class="section-divider">
+            <span>Face 2</span>
         </div>
         <div class="card">
             <h2>Servicio Social ADMIN</h2>

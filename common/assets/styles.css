@@ -81,6 +81,26 @@ h1::after {
     transition: 0.3s ease;
 }
 
+.section-divider {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #243353;
+    text-transform: uppercase;
+}
+
+.section-divider::before,
+.section-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(32,75,255,0.25), rgba(0,187,143,0.25));
+}
+
 /* ====== TARJETAS DE MÓDULO ====== */
 .card {
     background: #ffffff;
