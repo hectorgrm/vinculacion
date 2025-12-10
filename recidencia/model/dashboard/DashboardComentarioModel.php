@@ -25,16 +25,16 @@ class DashboardComentarioModel
     {
         $sql = <<<'SQL'
             SELECT
-                (SELECT COUNT(*) FROM rp_machote_revision WHERE estado = 'en_revision') AS revisiones,
-                COUNT(msg.id) AS total,
-                SUM(CASE WHEN msg.estatus = 'abierto' THEN 1 ELSE 0 END)   AS abiertos,
-                SUM(CASE WHEN msg.estatus = 'resuelto' THEN 1 ELSE 0 END)  AS resueltos,
-                SUM(CASE WHEN msg.estatus = 'Archivado' THEN 1 ELSE 0 END) AS archivados
-            FROM rp_machote_revision AS r
-            LEFT JOIN rp_machote_revision_msg AS msg
-                ON msg.revision_id = r.id
-                AND msg.estatus IN ('abierto', 'resuelto', 'Archivado')
-            WHERE r.estado = 'en_revision'
+                (SELECT COUNT(*) FROM rp_convenio_machote WHERE LOWER(estatus) LIKE 'en revisi%') AS revisiones,
+                COUNT(c.id) AS total,
+                SUM(CASE WHEN LOWER(c.estatus) = 'pendiente' THEN 1 ELSE 0 END) AS abiertos,
+                SUM(CASE WHEN LOWER(c.estatus) = 'resuelto' THEN 1 ELSE 0 END)  AS resueltos,
+                SUM(CASE WHEN LOWER(c.estatus) = 'archivado' THEN 1 ELSE 0 END) AS archivados
+            FROM rp_convenio_machote AS m
+            LEFT JOIN rp_machote_comentario AS c
+                ON c.machote_id = m.id
+                AND LOWER(c.estatus) IN ('pendiente', 'resuelto', 'archivado')
+            WHERE LOWER(m.estatus) LIKE 'en revisi%'
         SQL;
 
         $statement = $this->pdo->query($sql);
@@ -57,27 +57,29 @@ class DashboardComentarioModel
     {
         $sql = <<<'SQL'
             SELECT
-                r.id AS revision_id,
-                r.estado,
-                r.machote_version,
+                m.id AS machote_id,
+                m.id AS revision_id,
+                'en_revision' AS estado,
+                m.version_local AS machote_version,
                 e.nombre AS empresa_nombre,
-                COALESCE(SUM(CASE WHEN msg.estatus = 'abierto' THEN 1 ELSE 0 END), 0)   AS abiertos,
-                COALESCE(SUM(CASE WHEN msg.estatus = 'resuelto' THEN 1 ELSE 0 END), 0)  AS resueltos,
-                COALESCE(SUM(CASE WHEN msg.estatus = 'Archivado' THEN 1 ELSE 0 END), 0) AS archivados,
-                COUNT(msg.id) AS total,
+                COALESCE(SUM(CASE WHEN LOWER(c.estatus) = 'pendiente' THEN 1 ELSE 0 END), 0)   AS abiertos,
+                COALESCE(SUM(CASE WHEN LOWER(c.estatus) = 'resuelto' THEN 1 ELSE 0 END), 0)    AS resueltos,
+                COALESCE(SUM(CASE WHEN LOWER(c.estatus) = 'archivado' THEN 1 ELSE 0 END), 0)   AS archivados,
+                COUNT(c.id) AS total,
                 CASE
-                    WHEN COUNT(msg.id) > 0 THEN ROUND(SUM(CASE WHEN msg.estatus = 'resuelto' THEN 1 ELSE 0 END) / COUNT(msg.id) * 100)
+                    WHEN COUNT(c.id) > 0 THEN ROUND(SUM(CASE WHEN LOWER(c.estatus) = 'resuelto' THEN 1 ELSE 0 END) / COUNT(c.id) * 100)
                     ELSE 0
                 END AS progreso,
-                MAX(msg.actualizado_en) AS actualizado_en
-            FROM rp_machote_revision AS r
-            INNER JOIN rp_empresa AS e ON e.id = r.empresa_id
-            LEFT JOIN rp_machote_revision_msg AS msg
-                ON msg.revision_id = r.id
-                AND msg.estatus IN ('abierto', 'resuelto', 'Archivado')
-            WHERE r.estado = 'en_revision'
-            GROUP BY r.id, e.nombre, r.machote_version, r.estado
-            ORDER BY actualizado_en DESC, r.id DESC
+                COALESCE(MAX(c.creado_en), m.actualizado_en, m.creado_en) AS actualizado_en
+            FROM rp_convenio_machote AS m
+            INNER JOIN rp_convenio AS cv ON cv.id = m.convenio_id
+            INNER JOIN rp_empresa AS e ON e.id = cv.empresa_id
+            LEFT JOIN rp_machote_comentario AS c
+                ON c.machote_id = m.id
+                AND LOWER(c.estatus) IN ('pendiente', 'resuelto', 'archivado')
+            WHERE LOWER(m.estatus) LIKE 'en revisi%'
+            GROUP BY m.id, m.version_local, m.estatus, e.nombre, m.actualizado_en, m.creado_en
+            ORDER BY actualizado_en DESC, m.id DESC
             LIMIT :limit
         SQL;
 
@@ -96,19 +98,20 @@ class DashboardComentarioModel
     {
         $sql = <<<'SQL'
             SELECT
-                msg.id,
-                msg.revision_id,
-                msg.asunto,
-                msg.estatus,
-                msg.actualizado_en,
-                r.machote_version,
+                c.id,
+                m.id AS revision_id,
+                c.asunto,
+                c.estatus,
+                c.creado_en AS actualizado_en,
+                m.version_local AS machote_version,
                 e.nombre AS empresa_nombre
-            FROM rp_machote_revision_msg AS msg
-            INNER JOIN rp_machote_revision AS r ON r.id = msg.revision_id
-            INNER JOIN rp_empresa AS e ON e.id = r.empresa_id
-            WHERE r.estado = 'en_revision'
-              AND msg.estatus IN ('abierto', 'resuelto')
-            ORDER BY msg.actualizado_en DESC, msg.id DESC
+            FROM rp_machote_comentario AS c
+            INNER JOIN rp_convenio_machote AS m ON m.id = c.machote_id
+            INNER JOIN rp_convenio AS cv ON cv.id = m.convenio_id
+            INNER JOIN rp_empresa AS e ON e.id = cv.empresa_id
+            WHERE LOWER(m.estatus) LIKE 'en revisi%'
+              AND LOWER(c.estatus) IN ('pendiente', 'resuelto')
+            ORDER BY actualizado_en DESC, c.id DESC
             LIMIT :limit
         SQL;
 

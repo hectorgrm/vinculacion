@@ -26,9 +26,9 @@ class DashboardDocumentoModel
         $sql = <<<'SQL'
             SELECT
                 COUNT(*) AS total,
-                SUM(CASE WHEN estatus = 'aprobado' THEN 1 ELSE 0 END)                        AS aprobados,
-                SUM(CASE WHEN estatus IN ('pendiente', 'revision', 'rechazado') THEN 1 ELSE 0 END) AS pendientes,
-                SUM(CASE WHEN estatus = 'revision' THEN 1 ELSE 0 END)                         AS revision
+                SUM(CASE WHEN LOWER(estatus) = 'aprobado' THEN 1 ELSE 0 END)                                    AS aprobados,
+                SUM(CASE WHEN LOWER(estatus) IN ('pendiente', 'revision', 'rechazado') THEN 1 ELSE 0 END)       AS pendientes,
+                SUM(CASE WHEN LOWER(estatus) IN ('revision', 'pendiente') THEN 1 ELSE 0 END)                    AS revision
             FROM rp_empresa_doc
         SQL;
 
@@ -60,7 +60,7 @@ class DashboardDocumentoModel
               JOIN rp_empresa AS e ON e.id = d.empresa_id
               LEFT JOIN rp_documento_tipo AS tg ON tg.id = d.tipo_global_id
               LEFT JOIN rp_documento_tipo_empresa AS tp ON tp.id = d.tipo_personalizado_id
-             WHERE d.estatus = 'revision'
+             WHERE LOWER(d.estatus) IN ('revision', 'pendiente')
              ORDER BY d.actualizado_en DESC, d.id DESC
              LIMIT :limit
         SQL;
