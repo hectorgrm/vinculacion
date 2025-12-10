@@ -241,50 +241,10 @@ if (!empty($_GET['reabrir_error'])) {
       </section>
 
       <!-- Split: Editor + Previsualización + Comentarios -->
-      <section class="split">
-        <div class="split-preview-row">
-          <div class="split-preview-col">
-            <!-- Editor -->
-            <div class="card editor-card">
-              <header>Documento a revisar (HTML editable)</header>
-              <div class="content">
-                <?php if ($machoteBloqueado): ?>
-                  <p class="readonly-note"><?= htmlspecialchars($bloqueoMensaje) ?></p>
-                <?php endif; ?>
-                <form id="machote-editor-form" method="POST" action="../../handler/machote/machote_update_handler.php">
-                  <input type="hidden" name="id" value="<?= (int) $machoteId ?>">
-                  <input type="hidden" name="redirect" value="machote_revisar">
-                  <textarea id="editor" name="contenido" rows="24"><?= $contenidoHtml ?></textarea>
+      <section class="split" id="machote-workspace">
 
-                  <div class="editor-actions">
-                    <button class="btn" type="button" onclick="togglePreview()">Vista limpia</button>
-                    <button class="btn primary" type="submit" <?= $machoteBloqueado ? 'disabled' : '' ?>>Guardar cambios</button>
-                    <a class="btn" target="_blank" rel="noopener"
-                       href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>">Previsualizar PDF</a>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-
-          <div class="split-preview-col">
-            <div class="card preview-card">
-              <header>Vista previa viva</header>
-              <div class="content">
-                <?php if (isset($machote['contenido_preview'])): ?>
-                  <div class="preview-box">
-                    <?= $machote['contenido_preview'] ?>
-                  </div>
-                <?php else: ?>
-                  <p class="empty-note">Aún no se ha generado contenido previo.</p>
-                <?php endif; ?>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Comentarios -->
-        <div class="card comments-card">
+              <!-- Comentarios -->
+        <div class="card comments-card panel">
           <header style="display:flex;justify-content:space-between;align-items:center;">
             <span>Comentarios</span>
             <div class="filters">
@@ -394,6 +354,45 @@ if (!empty($_GET['reabrir_error'])) {
             </div>
           </div>
         </div>
+
+
+        <!-- Editor -->
+        <div class="card editor-card panel">
+          <header>Documento a revisar (HTML editable)</header>
+          <div class="content">
+            <?php if ($machoteBloqueado): ?>
+              <p class="readonly-note"><?= htmlspecialchars($bloqueoMensaje) ?></p>
+            <?php endif; ?>
+            <form id="machote-editor-form" method="POST" action="../../handler/machote/machote_update_handler.php">
+              <input type="hidden" name="id" value="<?= (int) $machoteId ?>">
+              <input type="hidden" name="redirect" value="machote_revisar">
+              <textarea id="editor" name="contenido" rows="24"><?= $contenidoHtml ?></textarea>
+
+              <div class="editor-actions">
+                <button class="btn" type="button" onclick="togglePreview()">Vista limpia</button>
+                <button class="btn primary" type="submit" <?= $machoteBloqueado ? 'disabled' : '' ?>>Guardar cambios</button>
+                <a class="btn" target="_blank" rel="noopener"
+                   href="../../handler/machote/machote_generate_pdf.php?id=<?= (int) $machoteId ?>">Previsualizar PDF</a>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Vista previa -->
+        <div class="card preview-card panel">
+          <header>Vista previa viva</header>
+          <div class="content">
+            <?php if (isset($machote['contenido_preview'])): ?>
+              <div class="preview-box">
+                <?= $machote['contenido_preview'] ?>
+              </div>
+            <?php else: ?>
+              <p class="empty-note">Aún no se ha generado contenido previo.</p>
+            <?php endif; ?>
+          </div>
+        </div>
+
+
       </section>
 
       <footer class="hint">
@@ -467,15 +466,8 @@ if (!empty($_GET['reabrir_error'])) {
   <style>
     /* Reduce hints visuales de CKEditor cuando activas "Vista limpia" */
     .cke_editable.preview-clean *{ outline: none !important; }
-    .split-preview-row {
-      display: flex;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
-    }
-    .split-preview-col {
-      flex: 1;
-      min-width: 320px;
+    #machote-workspace {
+      scrollbar-gutter: stable both-axis;
     }
     .preview-card .content {
       padding: 0.75rem 1rem 1rem;
