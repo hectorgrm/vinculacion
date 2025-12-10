@@ -47,6 +47,7 @@ class EstudianteListModel
             "    e.matricula,",
             "    e.carrera,",
             "    e.estatus,",
+            "    e.empresa_id,",
             "    emp.nombre AS empresa_nombre,",
             "    c.folio AS convenio_folio",
             'FROM rp_estudiante e',

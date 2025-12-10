@@ -76,7 +76,7 @@ if ($isValid && isset($portal['expiracion']) && $portal['expiracion'] !== null) 
       <?php if ($successMessage !== null || $actionError !== null || $viewErrors !== []): ?>
         <div class="message-stack">
           <?php if ($successMessage !== null): ?>
-            <div class="alert success"><?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="alert success"><?php echo htmlspecialchars((string) $successMessage, ENT_QUOTES, 'UTF-8'); ?></div>
           <?php endif; ?>
 
           <?php if ($actionError !== null): ?>

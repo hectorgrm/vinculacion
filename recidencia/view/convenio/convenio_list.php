@@ -94,10 +94,20 @@ $errorMessage = $handlerResult['errorMessage'];
                     <?php
                       $estatusConvenio = isset($convenio['estatus']) ? (string) $convenio['estatus'] : '';
                       $convenioArchivado = strcasecmp(trim($estatusConvenio), 'Archivado') === 0;
+                      $empresaNombre = convenioValueOrDefault($convenio['empresa_nombre'] ?? null);
+                      $empresaId = isset($convenio['empresa_id']) ? (int) $convenio['empresa_id'] : null;
                     ?>
                     <tr>
                       <td><?php echo htmlspecialchars((string) ($convenio['id'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['empresa_nombre'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td>
+                        <?php if ($empresaId !== null && $empresaId > 0): ?>
+                          <a class="btn small secondary" href="../empresa/empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>">
+                            <?php echo htmlspecialchars($empresaNombre, ENT_QUOTES, 'UTF-8'); ?>
+                          </a>
+                        <?php else: ?>
+                          <?php echo htmlspecialchars($empresaNombre, ENT_QUOTES, 'UTF-8'); ?>
+                        <?php endif; ?>
+                      </td>
                       <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['empresa_numero_control'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars(convenioValueOrDefault($convenio['folio'] ?? null), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><span class="<?php echo convenioRenderBadgeClass($convenio['estatus'] ?? null); ?>">

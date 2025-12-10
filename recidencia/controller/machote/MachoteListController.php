@@ -27,6 +27,7 @@ class MachoteListController
         $machotesFormateados = array_map(static function ($m) {
             return [
                 'id' => $m['id'],
+                'empresa_id' => isset($m['empresa_id']) ? (int) $m['empresa_id'] : null,
                 'empresa' => $m['empresa_nombre'],
                 'version' => $m['machote_version'],
                 'fecha' => machote_format_date($m['fecha']),

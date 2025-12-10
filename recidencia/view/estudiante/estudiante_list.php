@@ -96,12 +96,24 @@ require __DIR__ . '/../../handler/estudiante/estudiante_list_handler.php';
                 </tr>
               <?php else: ?>
                 <?php foreach ($estudiantes as $estudiante): ?>
-                  <?php $estudianteId = (int) ($estudiante['id'] ?? 0); ?>
+                  <?php
+                    $estudianteId = (int) ($estudiante['id'] ?? 0);
+                    $empresaId = isset($estudiante['empresa_id']) ? (int) $estudiante['empresa_id'] : null;
+                    $empresaNombre = htmlspecialchars((string) ($estudiante['empresa_nombre'] ?? ''), ENT_QUOTES, 'UTF-8');
+                  ?>
                   <tr>
                     <td><?php echo htmlspecialchars((string) ($estudiante['nombre_completo'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars((string) ($estudiante['matricula'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars((string) ($estudiante['carrera'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><?php echo htmlspecialchars((string) ($estudiante['empresa_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td>
+                      <?php if ($empresaId !== null && $empresaId > 0): ?>
+                        <a class="btn small secondary" href="../empresa/empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>">
+                          <?php echo $empresaNombre; ?>
+                        </a>
+                      <?php else: ?>
+                        <?php echo $empresaNombre; ?>
+                      <?php endif; ?>
+                    </td>
                     <td><?php echo htmlspecialchars((string) ($estudiante['convenio_folio'] ?? 'Sin folio'), ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><span class="<?php echo htmlspecialchars((string) ($estudiante['estatus_badge_class'] ?? 'badge'), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) ($estudiante['estatus_badge_label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></span></td>
                     <td class="actions-cell">
