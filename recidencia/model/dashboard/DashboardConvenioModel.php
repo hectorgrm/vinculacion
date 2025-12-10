@@ -26,10 +26,10 @@ class DashboardConvenioModel
         $sql = <<<'SQL'
             SELECT
                 COUNT(*) AS total,
-                SUM(CASE WHEN estatus = 'Activa' THEN 1 ELSE 0 END)       AS activos,
-                SUM(CASE WHEN estatus = 'En revisión' THEN 1 ELSE 0 END)  AS revision,
-                SUM(CASE WHEN estatus = 'Archivado' THEN 1 ELSE 0 END)    AS archivados,
-                SUM(CASE WHEN estatus = 'Completado' THEN 1 ELSE 0 END)   AS completados
+                SUM(CASE WHEN LOWER(estatus) LIKE 'activa%' THEN 1 ELSE 0 END)    AS activos,
+                SUM(CASE WHEN LOWER(estatus) LIKE 'en revisi%' THEN 1 ELSE 0 END) AS revision,
+                SUM(CASE WHEN LOWER(estatus) LIKE 'archiv%' THEN 1 ELSE 0 END)    AS archivados,
+                SUM(CASE WHEN LOWER(estatus) LIKE 'complet%' THEN 1 ELSE 0 END)   AS completados
             FROM rp_convenio
         SQL;
 

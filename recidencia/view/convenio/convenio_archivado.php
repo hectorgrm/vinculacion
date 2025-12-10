@@ -55,6 +55,25 @@ $snapshotMetadata = [];
 if ($snapshotMetadataRaw !== [] && is_array($snapshotMetadataRaw)) {
     $snapshotMetadata = array_values($snapshotMetadataRaw) === $snapshotMetadataRaw ? $snapshotMetadataRaw : [$snapshotMetadataRaw];
 }
+$machoteResumen = is_array($snapshotMachote) && $snapshotMachote !== [] ? (array) ($snapshotMachote[0] ?? []) : [];
+$machoteNombre = $machoteResumen['titulo'] ?? $machoteResumen['nombre'] ?? 'Machote institucional';
+$machoteVersion = $machoteResumen['version'] ?? $machoteResumen['version_actual'] ?? ($machoteResumen['folio'] ?? 'N/D');
+$machoteEstatus = $machoteResumen['estatus'] ?? $machoteResumen['estatus_general'] ?? 'Sin estatus';
+$machoteActualizado = $machoteResumen['actualizado_en'] ?? $machoteResumen['updated_at'] ?? ($machoteResumen['fecha_actualizacion'] ?? 'N/D');
+$machoteCreado = $machoteResumen['creado_en'] ?? $machoteResumen['created_at'] ?? ($machoteResumen['fecha_creacion'] ?? 'N/D');
+$machoteResponsable = $machoteResumen['responsable'] ?? $machoteResumen['responsable_academico'] ?? ($machoteResumen['usuario'] ?? 'No registrado');
+$machoteContenido = '';
+if ($machoteResumen !== []) {
+    $machoteContenido = (string) ($machoteResumen['contenido_html'] ?? $machoteResumen['contenido'] ?? '');
+    if ($machoteContenido === '' && isset($machoteResumen['html'])) {
+        $machoteContenido = (string) $machoteResumen['html'];
+    }
+}
+$machoteTieneDatos = is_array($snapshotMachote) && $snapshotMachote !== [];
+$revisionesCount = is_array($snapshotRevisiones) ? count($snapshotRevisiones) : 0;
+$revisionMsgsCount = is_array($snapshotRevisionMsgs) ? count($snapshotRevisionMsgs) : 0;
+$revisionFilesCount = is_array($snapshotRevisionFiles) ? count($snapshotRevisionFiles) : 0;
+$comentariosCount = is_array($snapshotComentarios) ? count($snapshotComentarios) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -64,39 +83,6 @@ if ($snapshotMetadataRaw !== [] && is_array($snapshotMetadataRaw)) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Convenio Archivado | Residencias Profesionales</title>
   <link rel="stylesheet" href="../../assets/css/modules/convenio/convenioarchiva.css" />
-  <style>
-    .accordion {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .accordion-item {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--panel);
-      overflow: hidden;
-    }
-
-    .accordion-header {
-      width: 100%;
-      text-align: left;
-      padding: 14px 16px;
-      background: var(--panel-strong);
-      font-weight: bold;
-      cursor: pointer;
-      border: none;
-    }
-
-    .accordion-body {
-      padding: 16px;
-      display: none;
-    }
-
-    .accordion-item.open .accordion-body {
-      display: block;
-    }
-  </style>
 </head>
 
 <body>
@@ -200,22 +186,170 @@ if ($snapshotMetadataRaw !== [] && is_array($snapshotMetadataRaw)) {
             </div>
 
             <div class="accordion-item">
-              <button class="accordion-header">📝 Machote y Revisiones</button>
+              <button class="accordion-header">📝 Machote y revisiones</button>
               <div class="accordion-body">
-                <h4>Machote</h4>
-                <?php echo renderSnapshotTable(is_array($snapshotMachote) ? $snapshotMachote : []); ?>
+                <div class="machote-wrap">
+                  <div class="machote-hero">
+                    <p class="eyebrow">Machote congelado</p>
+                    <h3><?php echo htmlspecialchars((string) $machoteNombre, ENT_QUOTES, 'UTF-8'); ?></h3>
+                    <p>Versión <?php echo htmlspecialchars((string) $machoteVersion, ENT_QUOTES, 'UTF-8'); ?> guardada al momento del archivado.</p>
+                    <div class="machote-tags">
+                      <span class="machote-tag neutral">Estatus: <?php echo htmlspecialchars((string) $machoteEstatus, ENT_QUOTES, 'UTF-8'); ?></span>
+                      <span class="machote-tag">Responsable: <?php echo htmlspecialchars((string) $machoteResponsable, ENT_QUOTES, 'UTF-8'); ?></span>
+                      <span class="machote-tag">Actualizado: <?php echo htmlspecialchars((string) $machoteActualizado, ENT_QUOTES, 'UTF-8'); ?></span>
+                    </div>
+                  </div>
 
-                <h4>Revisiones</h4>
-                <?php echo renderSnapshotTable(is_array($snapshotRevisiones) ? $snapshotRevisiones : []); ?>
+                  <div class="machote-stats">
+                    <div class="machote-stat">
+                      <small>Revisiones</small>
+                      <strong><?php echo htmlspecialchars((string) $revisionesCount, ENT_QUOTES, 'UTF-8'); ?></strong>
+                      <span>Registros en el historial de ajustes.</span>
+                    </div>
+                    <div class="machote-stat">
+                      <small>Mensajes</small>
+                      <strong><?php echo htmlspecialchars((string) $revisionMsgsCount, ENT_QUOTES, 'UTF-8'); ?></strong>
+                      <span>Comentarios intercambiados durante la revisión.</span>
+                    </div>
+                    <div class="machote-stat">
+                      <small>Archivos</small>
+                      <strong><?php echo htmlspecialchars((string) $revisionFilesCount, ENT_QUOTES, 'UTF-8'); ?></strong>
+                      <span>Adjuntos revisados o cargados.</span>
+                    </div>
+                    <div class="machote-stat">
+                      <small>Comentarios</small>
+                      <strong><?php echo htmlspecialchars((string) $comentariosCount, ENT_QUOTES, 'UTF-8'); ?></strong>
+                      <span>Notas generales sobre el convenio.</span>
+                    </div>
+                  </div>
 
-                <h4>Mensajes de Revisión</h4>
-                <?php echo renderSnapshotTable(is_array($snapshotRevisionMsgs) ? $snapshotRevisionMsgs : []); ?>
+                  <div class="machote-panels">
+                    <div class="panel-card">
+                      <header>Contenido HTML</header>
+                      <div class="body">
+                        <?php if ($machoteContenido !== ''): ?>
+                          <?php
+                          $machoteDecoded = html_entity_decode($machoteContenido, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                          $machoteSafe = strip_tags(
+                              $machoteDecoded,
+                              '<p><br><strong><b><em><i><u><ul><ol><li><table><thead><tbody><tr><td><th><figure><span><div>'
+                          );
+                          ?>
+                          <div class="html-preview"><?php echo $machoteSafe; ?></div>
+                        <?php else: ?>
+                          <p class="muted">Sin contenido HTML guardado en el snapshot.</p>
+                        <?php endif; ?>
+                      </div>
+                    </div>
 
-                <h4>Archivos de Revisión</h4>
-                <?php echo renderSnapshotTable(is_array($snapshotRevisionFiles) ? $snapshotRevisionFiles : []); ?>
+                    <div class="panel-card">
+                      <header>Detalle del machote</header>
+                      <div class="body">
+                        <?php if ($machoteTieneDatos): ?>
+                          <div class="mini-meta">
+                            <div><strong>Creado:</strong> <?php echo htmlspecialchars((string) $machoteCreado, ENT_QUOTES, 'UTF-8'); ?></div>
+                            <div><strong>Actualizado:</strong> <?php echo htmlspecialchars((string) $machoteActualizado, ENT_QUOTES, 'UTF-8'); ?></div>
+                            <div><strong>Responsable:</strong> <?php echo htmlspecialchars((string) $machoteResponsable, ENT_QUOTES, 'UTF-8'); ?></div>
+                          </div>
+                          <details class="raw-block">
+                            <summary>Ver tabla completa</summary>
+                            <?php echo renderSnapshotTable(is_array($snapshotMachote) ? $snapshotMachote : []); ?>
+                          </details>
+                        <?php else: ?>
+                          <p class="muted">No se encontraron datos del machote en el snapshot.</p>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+                  </div>
 
-                <h4>Comentarios</h4>
-                <?php echo renderSnapshotTable(is_array($snapshotComentarios) ? $snapshotComentarios : []); ?>
+                  <div class="machote-panels">
+                    <div class="panel-card">
+                      <header>Revisiones</header>
+                      <div class="body">
+                        <?php if ($revisionesCount > 0): ?>
+                          <p class="muted">Historial de ajustes registrados en el machote.</p>
+                          <?php echo renderSnapshotTable(is_array($snapshotRevisiones) ? $snapshotRevisiones : []); ?>
+                        <?php else: ?>
+                          <p class="muted">Sin revisiones registradas en el snapshot.</p>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+
+                    <div class="panel-card">
+                      <header>Mensajes de revisión</header>
+                      <div class="body">
+                        <?php if (is_array($snapshotRevisionMsgs) && $snapshotRevisionMsgs !== []): ?>
+                          <ul class="mini-timeline">
+                            <?php foreach (array_slice($snapshotRevisionMsgs, 0, 4) as $revisionMensaje): ?>
+                              <?php
+                              $mensajeTexto = $revisionMensaje['mensaje'] ?? $revisionMensaje['comentario'] ?? $revisionMensaje['contenido'] ?? 'Mensaje sin texto';
+                              $mensajeAutor = $revisionMensaje['autor'] ?? $revisionMensaje['usuario'] ?? $revisionMensaje['creado_por'] ?? 'Autor no registrado';
+                              $mensajeFecha = $revisionMensaje['creado_en'] ?? $revisionMensaje['created_at'] ?? $revisionMensaje['fecha'] ?? '';
+                              ?>
+                              <li>
+                                <span class="dot"></span>
+                                <div>
+                                  <p class="title"><?php echo htmlspecialchars((string) $mensajeTexto, ENT_QUOTES, 'UTF-8'); ?></p>
+                                  <p class="meta">
+                                    <?php echo htmlspecialchars((string) $mensajeAutor, ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php if ($mensajeFecha !== ''): ?>
+                                      · <?php echo htmlspecialchars((string) $mensajeFecha, ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php endif; ?>
+                                  </p>
+                                </div>
+                              </li>
+                            <?php endforeach; ?>
+                          </ul>
+                          <details class="raw-block">
+                            <summary>Ver todos los mensajes en tabla</summary>
+                            <?php echo renderSnapshotTable(is_array($snapshotRevisionMsgs) ? $snapshotRevisionMsgs : []); ?>
+                          </details>
+                        <?php else: ?>
+                          <p class="muted">No hay mensajes asociados a las revisiones.</p>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="machote-panels">
+                    <div class="panel-card">
+                      <header>Archivos de revisión</header>
+                      <div class="body">
+                        <?php if (is_array($snapshotRevisionFiles) && $snapshotRevisionFiles !== []): ?>
+                          <div class="file-chips">
+                            <?php foreach ($snapshotRevisionFiles as $revisionFile): ?>
+                              <?php
+                              $archivoLabel = $revisionFile['nombre_original'] ?? $revisionFile['nombre'] ?? $revisionFile['archivo'] ?? 'Archivo adjunto';
+                              $archivoFecha = $revisionFile['creado_en'] ?? $revisionFile['created_at'] ?? $revisionFile['fecha'] ?? '';
+                              ?>
+                              <div class="file-chip">
+                                <strong><?php echo htmlspecialchars((string) $archivoLabel, ENT_QUOTES, 'UTF-8'); ?></strong>
+                                <span><?php echo htmlspecialchars((string) ($archivoFecha !== '' ? $archivoFecha : 'Fecha no disponible'), ENT_QUOTES, 'UTF-8'); ?></span>
+                              </div>
+                            <?php endforeach; ?>
+                          </div>
+                          <details class="raw-block">
+                            <summary>Ver tabla completa</summary>
+                            <?php echo renderSnapshotTable(is_array($snapshotRevisionFiles) ? $snapshotRevisionFiles : []); ?>
+                          </details>
+                        <?php else: ?>
+                          <p class="muted">No hay archivos cargados para estas revisiones.</p>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+
+                    <div class="panel-card">
+                      <header>Comentarios</header>
+                      <div class="body">
+                        <?php if (is_array($snapshotComentarios) && $snapshotComentarios !== []): ?>
+                          <?php echo renderSnapshotTable(is_array($snapshotComentarios) ? $snapshotComentarios : []); ?>
+                        <?php else: ?>
+                          <p class="muted">Sin comentarios adicionales en este archivo.</p>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 

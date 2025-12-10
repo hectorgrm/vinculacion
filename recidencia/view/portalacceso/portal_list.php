@@ -135,9 +135,6 @@ $errorMessage = $handlerResult['errorMessage'];
                       <td><?php echo htmlspecialchars($creadoEn, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td class="actions">
                         <a class="btn small secondary" href="portal_view.php?id=<?php echo urlencode($portalId); ?>">Ver</a>
-                        <a class="btn small" href="portal_edit.php?id=<?php echo urlencode($portalId); ?>">Editar</a>
-                        <a class="btn small" href="portal_toggle.php?id=<?php echo urlencode($portalId); ?>&amp;to=<?php echo urlencode($toggleTo); ?>"><?php echo $toggleLabel; ?></a>
-                        <a class="btn small danger" href="portal_delete.php?id=<?php echo urlencode($portalId); ?>">Eliminar</a>
                       </td>
                     </tr>
                   <?php endforeach; ?>

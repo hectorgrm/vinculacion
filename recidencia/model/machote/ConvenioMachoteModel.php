@@ -25,6 +25,7 @@ class ConvenioMachoteModel
         $sql = "
             SELECT
                 m.id,
+                e.id AS empresa_id,
                 e.nombre AS empresa_nombre,
                 m.version_local AS machote_version,
                 DATE_FORMAT(m.creado_en, '%Y-%m-%d') AS fecha,

@@ -6,6 +6,7 @@ namespace Residencia\Controller\Machote;
 
 require_once __DIR__ . '/../../model/machote/MachoteConfirmModel.php';
 require_once __DIR__ . '/../../common/functions/auditoria/auditoriafunctions.php';
+require_once __DIR__ . '/../../common/helpers/machote/machote_placeholders_helper.php';
 
 use Residencia\Model\Machote\MachoteConfirmModel;
 use RuntimeException;
@@ -53,7 +54,19 @@ final class MachoteConfirmController
             ];
         }
 
-        $this->model->confirmarMachote($machoteId);
+        $template = (string) ($machote['contenido_html'] ?? '');
+        $empresa = [
+            'nombre' => $machote['empresa_nombre'] ?? '',
+            'representante' => $machote['empresa_representante'] ?? '',
+            'cargo_representante' => $machote['empresa_cargo'] ?? '',
+            'direccion' => $machote['empresa_direccion'] ?? '',
+            'municipio' => $machote['empresa_municipio'] ?? '',
+            'estado' => $machote['empresa_estado'] ?? '',
+            'cp' => $machote['empresa_cp'] ?? '',
+        ];
+        $finalHtml = renderMachoteConEmpresa($template, $empresa);
+
+        $this->model->confirmarMachote($machoteId, $finalHtml);
         $this->registrarAuditoriaConfirmacion($machote, $empresaId);
 
         return ['status' => 'confirmed'];

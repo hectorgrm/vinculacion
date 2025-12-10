@@ -16,6 +16,7 @@ declare(strict_types=1);
 // ===============================================================
 require_once __DIR__ . '/../../../common/model/db.php';
 require_once __DIR__ . '/../../model/convenio/ConvenioMachoteModel.php';
+require_once __DIR__ . '/../../common/helpers/machote/machote_placeholders_helper.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Common\Model\Database;
@@ -42,7 +43,8 @@ if (!$machote) {
     exit('⚠️ Machote no encontrado.');
 }
 
-$contenido = (string) ($machote['contenido_html'] ?? '');
+$empresa = $model->getEmpresaByMachote($machoteId) ?? [];
+$contenido = renderMachoteConEmpresa((string) ($machote['contenido_html'] ?? ''), $empresa);
 $convenioId = (int) ($machote['convenio_id'] ?? 0);
 
 // ===============================================================

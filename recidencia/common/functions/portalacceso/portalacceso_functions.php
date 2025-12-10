@@ -264,3 +264,48 @@ if (!function_exists('portalAccessPrepareForPersistence')) {
         ];
     }
 }
+
+if (!function_exists('portalAccessGenerateToken')) {
+    function portalAccessGenerateToken(): string
+    {
+        $bytes = random_bytes(16);
+        $bytes[6] = chr((ord($bytes[6]) & 0x0f) | 0x40); // versión 4
+        $bytes[8] = chr((ord($bytes[8]) & 0x3f) | 0x80); // variante RFC 4122
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($bytes), 4));
+    }
+}
+
+if (!function_exists('portalAccessGenerateNip')) {
+    function portalAccessGenerateNip(): string
+    {
+        $number = random_int(0, 999999);
+        return str_pad((string) $number, 6, '0', STR_PAD_LEFT);
+    }
+}
+
+if (!function_exists('portalAccessIsValidNip')) {
+    function portalAccessIsValidNip(string $nip): bool
+    {
+        return preg_match('/^[0-9]{4,6}$/', $nip) === 1;
+    }
+}
+
+if (!function_exists('portalAccessNormalizeExpirationForDb')) {
+    function portalAccessNormalizeExpirationForDb(string $value): ?string
+    {
+        $value = portalAccessSanitizeExpiration($value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        $dateTime = \DateTime::createFromFormat('Y-m-d\TH:i', $value);
+
+        if ($dateTime instanceof \DateTime) {
+            return $dateTime->format('Y-m-d H:i:s');
+        }
+
+        return null;
+    }
+}

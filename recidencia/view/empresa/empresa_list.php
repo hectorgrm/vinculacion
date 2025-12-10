@@ -119,7 +119,16 @@ require __DIR__ . '/../../handler/empresa/empresa_list_handler.php';
                     <tr>
                       <td><?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['numero_control'] ?? '-'), ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><?php echo htmlspecialchars((string) $empresaNombre, ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td>
+                        <?php if ($empresaId !== '' && (int) $empresaId > 0): ?>
+                          <a class="btn small secondary"
+                            href="empresa_view.php?id=<?php echo urlencode((string) $empresaId); ?>">
+                            <?php echo htmlspecialchars((string) $empresaNombre, ENT_QUOTES, 'UTF-8'); ?>
+                          </a>
+                        <?php else: ?>
+                          <?php echo htmlspecialchars((string) $empresaNombre, ENT_QUOTES, 'UTF-8'); ?>
+                        <?php endif; ?>
+                      </td>
                       <td><?php echo htmlspecialchars((string) ($empresa['rfc'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>

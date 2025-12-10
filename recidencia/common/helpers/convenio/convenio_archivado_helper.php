@@ -32,6 +32,22 @@ function renderSnapshotTable(array $rows): string
             if (is_array($value)) {
                 $value = json_encode($value, JSON_UNESCAPED_UNICODE);
             }
+            if (is_string($value)) {
+                $trimmed = trim($value);
+                $looksLikeHtml = stripos($trimmed, '<p') !== false
+                    || stripos($trimmed, '<br') !== false
+                    || strpos($trimmed, '&lt;') !== false
+                    || strpos($trimmed, '</') !== false;
+                if ($looksLikeHtml) {
+                    $decoded = html_entity_decode($trimmed, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    $safe = strip_tags(
+                        $decoded,
+                        '<p><br><strong><b><em><i><u><ul><ol><li><table><thead><tbody><tr><td><th><figure><span><div>'
+                    );
+                    $html .= '<td><div class="html-preview">' . $safe . '</div></td>';
+                    continue;
+                }
+            }
             $html .= '<td>' . htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') . '</td>';
         }
         $html .= '</tr>';

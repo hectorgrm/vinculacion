@@ -70,9 +70,21 @@ $searchTerm = $search ?? '';
                 </thead>
                 <tbody>
                   <?php foreach ($machotes as $index => $machote) : ?>
+                    <?php
+                      $empresaNombre = htmlspecialchars($machote['empresa'] ?? '-', ENT_QUOTES, 'UTF-8');
+                      $empresaId = isset($machote['empresa_id']) ? (int) $machote['empresa_id'] : null;
+                    ?>
                     <tr>
                       <td><?= $index + 1; ?></td>
-                      <td><?= htmlspecialchars($machote['empresa'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                      <td>
+                        <?php if ($empresaId !== null && $empresaId > 0): ?>
+                          <a class="btn small secondary" href="../empresa/empresa_view.php?id=<?= urlencode((string)$empresaId); ?>">
+                            <?= $empresaNombre; ?>
+                          </a>
+                        <?php else: ?>
+                          <?= $empresaNombre; ?>
+                        <?php endif; ?>
+                      </td>
                       <td><?= htmlspecialchars($machote['version'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?= htmlspecialchars($machote['fecha'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?= $machote['badge'] ?? '<span class="badge gris">&mdash;</span>'; ?></td>

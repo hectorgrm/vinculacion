@@ -46,7 +46,13 @@ class MachoteViewModel
                 c.observaciones            AS convenio_observaciones,
                 e.id                       AS empresa_id,
                 e.nombre                   AS empresa_nombre,
-                e.logo_path                AS empresa_logo
+                e.logo_path                AS empresa_logo,
+                e.representante            AS empresa_representante,
+                e.cargo_representante      AS empresa_cargo,
+                e.direccion                AS empresa_direccion,
+                e.municipio                AS empresa_municipio,
+                e.estado                   AS empresa_estado,
+                e.cp                       AS empresa_cp
             FROM rp_convenio_machote AS m
             INNER JOIN rp_convenio AS c ON c.id = m.convenio_id
             INNER JOIN rp_empresa  AS e ON e.id = c.empresa_id

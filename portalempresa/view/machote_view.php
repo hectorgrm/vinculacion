@@ -91,48 +91,22 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
       </div>
     </div>
 
-    <!-- Documento -->
-    <div class="card doc-card">
-      <header>Documento a revisar - <?= htmlspecialchars($versionMachote) ?></header>
+    <!-- Versión viva -->
+    <div class="card preview-card">
+      <header>Versión viva</header>
       <div class="content">
-        <div class="doc-shell">
-          <?php if ($documento['has_pdf'] && !empty($documento['pdf_embed_url'])): ?>
-            <div class="doc-surface doc-surface-pdf">
-              <iframe
-                src="<?= htmlspecialchars((string) $documento['pdf_embed_url']) ?>"
-                title="Machote PDF"
-                class="doc-iframe"
-              ></iframe>
-            </div>
-
-            <div class="doc-toolbar">
-              <a class="btn" href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>" target="_blank">Ver en pestaña</a>
-              <a class="btn" download href="<?= htmlspecialchars((string) $documento['pdf_url']) ?>">Descargar PDF</a>
-            </div>
-
-            <?php if (!empty($documento['fuente'])): ?>
-              <p class="doc-note">Fuente: <?= htmlspecialchars((string) $documento['fuente']) ?></p>
-            <?php endif; ?>
-
-          <?php elseif ($documento['has_html'] && !empty($documento['html'])): ?>
-            <div class="doc-surface doc-surface-html">
-              <div class="doc-html">
-                <?= $documento['html'] ?>
-              </div>
-            </div>
-            <p class="doc-note">
-              Mostrando version editable actual registrada por Vinculacion.
-            </p>
-
-          <?php else: ?>
-            <div class="doc-empty">
-              <p>
-                No hay documento disponible para mostrar.
-                Es posible que Vinculacion aun no haya generado el machote hijo.
-              </p>
-            </div>
-          <?php endif; ?>
-        </div>
+        <?php if (!empty($machote['contenido_preview'])): ?>
+          <div class="preview-box">
+            <?= $machote['contenido_preview'] ?>
+          </div>
+          <p class="doc-note">
+            Esta versión viva refleja los datos actuales de tu empresa mientras el machote está en revisión.
+          </p>
+        <?php else: ?>
+          <div class="doc-empty">
+            <p>La versión viva aún no está disponible; estamos esperando a que Vinculación genere el machote hijo.</p>
+          </div>
+        <?php endif; ?>
       </div>
     </div>
 
@@ -270,3 +244,4 @@ $flashMessages = machoteViewBuildFlashMessages($_GET ?? []);
   });
 </script>
 </html>
+

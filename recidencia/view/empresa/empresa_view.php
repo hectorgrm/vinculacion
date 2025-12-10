@@ -16,6 +16,7 @@ declare(strict_types=1);
 $handlerResult = require __DIR__ . '/../../handler/empresa/empresa_view_handler.php';
 $auditoriaHandlerResult = require __DIR__ . '/../../handler/empresa/empresa_auditoria_handler.php';
 require_once __DIR__ . '/../../common/helpers/empresa/empresa_view_helper.php';
+require_once __DIR__ . '/../../common/helpers/empty_state_helper.php';
 
 $preparedData = empresaViewTemplateHelper($handlerResult, $auditoriaHandlerResult);
 
@@ -32,8 +33,8 @@ $documentosStats = $preparedData['documentosStats'] ?? [];
 $documentosGestionUrl = $preparedData['documentosGestionUrl'] ?? null;
 $machoteData = $preparedData['machoteData'] ?? null;
 $machoteGenerateUrl = isset($preparedData['machoteGenerateUrl']) && is_string($preparedData['machoteGenerateUrl'])
-    ? $preparedData['machoteGenerateUrl']
-    : null;
+  ? $preparedData['machoteGenerateUrl']
+  : null;
 $auditoriaItems = $preparedData['auditoriaItems'] ?? [];
 $auditoriaControllerError = $preparedData['auditoriaControllerError'] ?? null;
 $auditoriaInputError = $preparedData['auditoriaInputError'] ?? null;
@@ -79,6 +80,7 @@ $portalAccessActionsEnabled = $preparedData['portalAccessActionsEnabled'] ?? fal
 $portalAccessDisabledReason = $preparedData['portalAccessDisabledReason'] ?? null;
 $empresaIsActiva = $preparedData['empresaIsActiva'] ?? false;
 $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? false;
+$empresaTieneConvenioActiva = $preparedData['empresaTieneConvenioActiva'] ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -106,8 +108,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
           <?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>
         </div>
         <div id="empresa-success-toast"
-             data-toast-message="<?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>"
-             hidden></div>
+          data-toast-message="<?php echo htmlspecialchars($successMessage, ENT_QUOTES, 'UTF-8'); ?>" hidden></div>
       <?php endif; ?>
 
       <?php if ($empresaIsInactiva): ?>
@@ -115,98 +116,149 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
           La empresa está en estatus <strong>Inactiva</strong>. Los datos se muestran en modo solo lectura.
         </div>
       <?php endif; ?>
-  <!-- 🏢 Banner con logotipo y lápiz -->
-  <section class="empresa-banner">
-    <div class="empresa-brand">
-      <div class="empresa-logo" data-logo-container>
-        <?php if ($logoUrl !== null) : ?>
-          <img src="<?php echo htmlspecialchars($logoUrl, ENT_QUOTES, 'UTF-8'); ?>"
-               alt="<?php echo htmlspecialchars($logoAltText, ENT_QUOTES, 'UTF-8'); ?>"
-               class="empresa-logo__image"
-               data-logo-image>
-        <?php else : ?>
-          <div class="empresa-placeholder" data-logo-placeholder aria-hidden="true">🏢</div>
-        <?php endif; ?>
+      <?php if (!$empresaIsActiva && !$empresaTieneConvenioActivo): ?>
+        <?php emptyStateRender('guide_activar_empresa', [
+          'nuevoConvenioUrl' => $nuevoConvenioUrl,
+          'empresaEditUrl' => $empresaEditUrl,
+        ]); ?>
+      <?php endif; ?>
+      <!-- 🏢 Banner con logotipo y lápiz -->
+      <section class="empresa-banner">
+        <div class="empresa-brand">
+          <div class="empresa-logo" data-logo-container>
+            <?php if ($logoUrl !== null): ?>
+              <img src="<?php echo htmlspecialchars($logoUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                alt="<?php echo htmlspecialchars($logoAltText, ENT_QUOTES, 'UTF-8'); ?>" class="empresa-logo__image"
+                data-logo-image>
+            <?php else: ?>
+              <div class="empresa-placeholder" data-logo-placeholder aria-hidden="true">🏢</div>
+            <?php endif; ?>
 
-        <?php if ($canUploadLogo) : ?>
-          <form id="logo-upload-form"
-                class="logo-upload-form"
-                action="<?php echo htmlspecialchars($logoUploadAction, ENT_QUOTES, 'UTF-8'); ?>"
-                method="post"
+            <?php if ($canUploadLogo): ?>
+              <form id="logo-upload-form" class="logo-upload-form"
+                action="<?php echo htmlspecialchars($logoUploadAction, ENT_QUOTES, 'UTF-8'); ?>" method="post"
                 enctype="multipart/form-data"
                 data-logo-base-url="<?php echo htmlspecialchars($logoBaseUrl, ENT_QUOTES, 'UTF-8'); ?>"
                 data-logo-alt="<?php echo htmlspecialchars($logoAltText, ENT_QUOTES, 'UTF-8'); ?>">
-            <input type="hidden" name="empresa_id" value="<?php echo htmlspecialchars($empresaIdQuery, ENT_QUOTES, 'UTF-8'); ?>">
-            <label for="logo-upload-input"
-                   class="upload-btn"
-                   id="logo-upload-button"
-                   title="Cambiar logotipo"
-                   data-logo-button>
-              ✏️
-              <input type="file"
-                     name="logo"
-                     id="logo-upload-input"
-                     accept="image/png,image/jpeg"
-                     data-logo-input>
-            </label>
-          </form>
-        <?php endif; ?>
-      </div>
+                <input type="hidden" name="empresa_id"
+                  value="<?php echo htmlspecialchars($empresaIdQuery, ENT_QUOTES, 'UTF-8'); ?>">
+                <label for="logo-upload-input" class="upload-btn" id="logo-upload-button" title="Cambiar logotipo"
+                  data-logo-button>
+                  ✏️
+                  <input type="file" name="logo" id="logo-upload-input" accept="image/png,image/jpeg" data-logo-input>
+                </label>
+              </form>
+            <?php endif; ?>
+          </div>
 
-      <div class="empresa-titles">
-        <h1><?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></h1>
-        <p><?php echo htmlspecialchars($empresaSubtitulo, ENT_QUOTES, 'UTF-8'); ?></p>
-      </div>
-    </div>
+          <div class="empresa-titles">
+            <h1><?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></h1>
+            <p><?php echo htmlspecialchars($empresaSubtitulo, ENT_QUOTES, 'UTF-8'); ?></p>
+          </div>
+        </div>
 
-    <div class="empresa-actions">
-      <a href="empresa_list.php" class="btn secondary">⬅ Volver</a>
-    </div>
-  </section>
+        <div class="empresa-actions">
+          <a href="empresa_list.php" class="btn secondary">⬅ Volver</a>
+        </div>
+      </section>
 
-  <?php if ($canUploadLogo) : ?>
-    <div id="logo-upload-feedback" class="logo-upload-feedback" aria-live="polite" hidden></div>
+      <?php if ($canUploadLogo): ?>
+        <div id="logo-upload-feedback" class="logo-upload-feedback" aria-live="polite" hidden></div>
 
-    <p class="empresa-logo-hint">
-      💡 <strong>Tip:</strong> Haz clic en el lápiz para seleccionar una imagen PNG o JPG.
-      El logotipo se actualizará al instante sin recargar la página.
-    </p>
-  <?php endif; ?>
+        <p class="empresa-logo-hint">
+          💡 <strong>Tip:</strong> Haz clic en el lápiz para seleccionar una imagen PNG o JPG.
+          El logotipo se actualizará al instante sin recargar la página.
+        </p>
+      <?php endif; ?>
 
 
       <!-- 🏢 Información General -->
       <section class="card">
         <header>🏢 Información General de la Empresa</header>
         <div class="content empresa-info">
-          <?php if ($controllerError !== null || $inputError !== null || $notFoundMessage !== null) : ?>
+          <?php if ($controllerError !== null || $inputError !== null || $notFoundMessage !== null): ?>
             <div class="alert error" role="alert">
               <?php
               $message = $controllerError ?? $inputError ?? $notFoundMessage ?? 'No se pudo cargar la información de la empresa.';
               echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
               ?>
             </div>
-          <?php else : ?>
+          <?php else: ?>
             <div class="info-grid">
               <div><strong>Nombre:</strong> <?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></div>
               <div><strong>RFC:</strong> <?php echo htmlspecialchars($rfc, ENT_QUOTES, 'UTF-8'); ?></div>
-              <div><strong>Representante Legal:</strong> <?php echo htmlspecialchars($representante, ENT_QUOTES, 'UTF-8'); ?></div>
+              <div><strong>Representante Legal:</strong>
+                <?php echo htmlspecialchars($representante, ENT_QUOTES, 'UTF-8'); ?></div>
               <div><strong>Teléfono:</strong> <?php echo htmlspecialchars($telefono, ENT_QUOTES, 'UTF-8'); ?></div>
               <div><strong>Correo:</strong> <?php echo htmlspecialchars($correo, ENT_QUOTES, 'UTF-8'); ?></div>
-              <div><strong>Estatus:</strong> <span class="<?php echo htmlspecialchars($estatusClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($estatusLabel, ENT_QUOTES, 'UTF-8'); ?></span></div>
-              <div><strong>Fecha de Registro:</strong> <?php echo htmlspecialchars($creadoEn, ENT_QUOTES, 'UTF-8'); ?></div>
-              <div><strong>Última actualización:</strong> <?php echo htmlspecialchars($actualizadoEn, ENT_QUOTES, 'UTF-8'); ?></div>
+              <div><strong>Estatus:</strong> <span
+                  class="<?php echo htmlspecialchars($estatusClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($estatusLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+              </div>
+              <div><strong>Fecha de Registro:</strong> <?php echo htmlspecialchars($creadoEn, ENT_QUOTES, 'UTF-8'); ?>
+              </div>
+              <div><strong>Última actualización:</strong>
+                <?php echo htmlspecialchars($actualizadoEn, ENT_QUOTES, 'UTF-8'); ?></div>
             </div>
           <?php endif; ?>
           <div class="actions actions--end">
             <a href="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>" class="btn">✏️ Editar</a>
+            <?php if ($empresaTieneConvenioActiva && !$empresaIsActiva && !$empresaIsReadOnly && is_array($empresa)): ?>
+              <form method="post" action="empresa_edit.php?id=<?php echo urlencode((string) $empresaId); ?>"
+                style="display:inline;">
+                <input type="hidden" name="numero_control"
+                  value="<?php echo htmlspecialchars((string) ($empresa['numero_control'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="nombre"
+                  value="<?php echo htmlspecialchars((string) ($empresa['nombre'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="rfc"
+                  value="<?php echo htmlspecialchars((string) ($empresa['rfc'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="representante"
+                  value="<?php echo htmlspecialchars((string) ($empresa['representante'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="cargo_representante"
+                  value="<?php echo htmlspecialchars((string) ($empresa['cargo_representante'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="sector"
+                  value="<?php echo htmlspecialchars((string) ($empresa['sector'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="sitio_web"
+                  value="<?php echo htmlspecialchars((string) ($empresa['sitio_web'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="contacto_nombre"
+                  value="<?php echo htmlspecialchars((string) ($empresa['contacto_nombre'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="contacto_email"
+                  value="<?php echo htmlspecialchars((string) ($empresa['contacto_email'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="telefono"
+                  value="<?php echo htmlspecialchars((string) ($empresa['telefono'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="estado"
+                  value="<?php echo htmlspecialchars((string) ($empresa['estado'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="municipio"
+                  value="<?php echo htmlspecialchars((string) ($empresa['municipio'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="cp"
+                  value="<?php echo htmlspecialchars((string) ($empresa['cp'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="direccion"
+                  value="<?php echo htmlspecialchars((string) ($empresa['direccion'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="estatus" value="Activa">
+                <input type="hidden" name="regimen_fiscal"
+                  value="<?php echo htmlspecialchars((string) ($empresa['regimen_fiscal'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="notas"
+                  value="<?php echo htmlspecialchars((string) ($empresa['notas'] ?? ''), ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="empresa_id"
+                  value="<?php echo htmlspecialchars((string) $empresaId, ENT_QUOTES, "UTF-8"); ?>">
+                <input type="hidden" name="redirect_to_view" value="1">
+                <button type="submit" class="btn success">Activar</button>
+              </form>
+            <?php endif; ?>
           </div>
         </div>
+
       </section>
 
       <!-- 📜 Convenios asociados -->
       <section class="card">
         <header>📜 Convenios activos, en revisión o suspendidos</header>
         <div class="content">
+          <?php if (!$empresaTieneConvenioActivo && $conveniosActivos !== []): ?>
+            <?php emptyStateRender('guide_activar_empresa', [
+              'nuevoConvenioUrl' => $nuevoConvenioUrl,
+              'empresaEditUrl' => $empresaEditUrl,
+            ]); ?>
+          <?php endif; ?>
           <table>
             <thead>
               <tr>
@@ -221,11 +273,31 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
             <tbody>
               <?php if ($controllerError !== null || $inputError !== null || $notFoundMessage !== null): ?>
                 <tr>
-                  <td colspan="6" style="text-align:center;">No hay datos de convenios disponibles.</td>
+                  <td colspan="6" class="table-empty">
+                    <div class="empty-state">
+                      <div class="empty-state__icon">📄</div>
+                      <?php emptyStateRender('empty_no_convenios', [
+  'empresaIsReadOnly' => $empresaIsReadOnly,
+  'nuevoConvenioUrl' => $nuevoConvenioUrl,
+  'empresaEditUrl' => $empresaEditUrl,
+]); ?>
+                  </td>
                 </tr>
               <?php elseif ($conveniosActivos === []): ?>
                 <tr>
-                  <td colspan="6" style="text-align:center;">No existen convenios activos, en revisión o suspendidos registrados para esta empresa.</td>
+                  <td colspan="6" class="table-empty">
+                    <div class="empty-state">
+                      <div class="empty-state__icon">🗂️</div>
+                      <div class="empty-state__content">
+                        <h4>No hay convenios activos</h4>
+                                                <p>Registra un convenio, sube el archivo firmado y marca su estatus como <strong>Activa</strong> para habilitar el proceso de residencia y la activaciA3n de la empresa.</p>
+                        <?php if (!$empresaIsReadOnly): ?>
+                          <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                            class="btn primary">➕ Registrar convenio</a>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               <?php else: ?>
                 <?php foreach ($conveniosActivos as $convenio): ?>
@@ -251,10 +323,11 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                     </td>
                     <td>
                       <?php if ($convenioViewUrl !== null): ?>
-                        <a href="<?php echo htmlspecialchars($convenioViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️ Ver</a>
+                        <a href="<?php echo htmlspecialchars($convenioViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️Ver/🗃️Subir Convenio</a>
                       <?php endif; ?>
                       <?php if ($convenioEditUrl !== null && !$empresaIsReadOnly): ?>
-                        <a href="<?php echo htmlspecialchars($convenioEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">✏️ Editar</a>
+                        <a href="<?php echo htmlspecialchars($convenioEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">✏️
+                          Editar</a>
                       <?php endif; ?>
                     </td>
                   </tr>
@@ -265,7 +338,8 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
 
           <?php if (!$empresaTieneConvenioActivo && !$empresaIsReadOnly): ?>
             <div class="actions" style="margin-top:16px; justify-content:flex-end;">
-              <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Nuevo Convenio</a>
+              <a href="<?php echo htmlspecialchars($nuevoConvenioUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕
+                Nuevo Convenio</a>
             </div>
           <?php endif; ?>
         </div>
@@ -277,19 +351,18 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
       <section class="card">
         <header>💬 Revisión de Machote</header>
         <div class="content">
-          <?php if ($machoteData === null) : ?>
+          <?php if ($machoteData === null): ?>
             <p style="margin:0; color:#475569;">
               Esta empresa aún no tiene un machote registrado o se encuentra en preparación.
             </p>
             <?php if ($machoteGenerateUrl !== null): ?>
               <div class="actions" style="margin-top:12px; justify-content:flex-start;">
-                <a class="btn btn-outline"
-                   href="<?php echo htmlspecialchars($machoteGenerateUrl, ENT_QUOTES, 'UTF-8'); ?>">
+                <a class="btn btn-outline" href="<?php echo htmlspecialchars($machoteGenerateUrl, ENT_QUOTES, 'UTF-8'); ?>">
                   📄 Generar machote desde plantilla global
                 </a>
               </div>
             <?php endif; ?>
-          <?php else : ?>
+          <?php else: ?>
             <section class="kpis">
               <div class="kpi">
                 <h4>Comentarios abiertos</h4>
@@ -312,7 +385,8 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               <div class="kpi">
                 <h4>Estado</h4>
                 <div>
-                  <span class="badge <?php echo htmlspecialchars((string) ($machoteData['estado_class'] ?? 'pendiente'), ENT_QUOTES, 'UTF-8'); ?>">
+                  <span
+                    class="badge <?php echo htmlspecialchars((string) ($machoteData['estado_class'] ?? 'pendiente'), ENT_QUOTES, 'UTF-8'); ?>">
                     <?php echo htmlspecialchars((string) ($machoteData['estado'] ?? 'Pendiente'), ENT_QUOTES, 'UTF-8'); ?>
                   </span>
                 </div>
@@ -320,14 +394,15 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
             </section>
 
             <div class="actions" style="margin-top:16px; justify-content:flex-start;">
-              <a href="../machote/machote_revisar.php?id=<?php echo (int) ($machoteData['id'] ?? 0); ?>" class="btn primary">
+              <a href="../machote/machote_revisar.php?id=<?php echo (int) ($machoteData['id'] ?? 0); ?>"
+                class="btn primary">
                 Ir al Machote / Comentarios
               </a>
             </div>
           <?php endif; ?>
         </div>
       </section>
-      
+
 
       <!-- 📂 Documentación Legal -->
       <section class="card">
@@ -343,33 +418,39 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                 <span class="stat-icon">📄</span>
                 <div class="stat-body">
                   <span class="stat-label">Documentos requeridos</span>
-                  <span class="stat-value"><?php echo htmlspecialchars((string) $docsTotal, ENT_QUOTES, 'UTF-8'); ?></span>
+                  <span
+                    class="stat-value"><?php echo htmlspecialchars((string) $docsTotal, ENT_QUOTES, 'UTF-8'); ?></span>
                 </div>
               </div>
               <div class="docs-stat">
                 <span class="stat-icon">📤</span>
                 <div class="stat-body">
                   <span class="stat-label">Subidos</span>
-                  <span class="stat-value"><?php echo htmlspecialchars((string) $docsSubidos, ENT_QUOTES, 'UTF-8'); ?></span>
+                  <span
+                    class="stat-value"><?php echo htmlspecialchars((string) $docsSubidos, ENT_QUOTES, 'UTF-8'); ?></span>
                 </div>
               </div>
               <div class="docs-stat">
                 <span class="stat-icon">✅</span>
                 <div class="stat-body">
                   <span class="stat-label">Aprobados</span>
-                  <span class="stat-value"><?php echo htmlspecialchars((string) $docsAprobados, ENT_QUOTES, 'UTF-8'); ?></span>
+                  <span
+                    class="stat-value"><?php echo htmlspecialchars((string) $docsAprobados, ENT_QUOTES, 'UTF-8'); ?></span>
                 </div>
               </div>
             </div>
             <div class="docs-progress">
               <div class="progress-heading">
                 <span class="progress-label">Progreso general</span>
-                <span class="progress-value"><?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>%</span>
+                <span
+                  class="progress-value"><?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>%</span>
               </div>
               <div class="progress-track">
-                <div class="progress-fill" style="width:<?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>%;"></div>
+                <div class="progress-fill"
+                  style="width:<?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>%;"></div>
               </div>
-              <small class="progress-meta"><?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>% completado</small>
+              <small class="progress-meta"><?php echo htmlspecialchars((string) $progreso, ENT_QUOTES, 'UTF-8'); ?>%
+                completado</small>
             </div>
           </div>
 
@@ -384,15 +465,28 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               </tr>
             </thead>
             <tbody>
-              <?php if ($documentos === []) : ?>
+              <?php if ($documentos === []): ?>
                 <tr>
-                  <td colspan="4" style="text-align:center;">No hay documentos configurados para esta empresa.</td>
+                  <td colspan="4" class="table-empty">
+                    <div class="empty-state">
+                      <div class="empty-state__icon">📂</div>
+                      <div class="empty-state__content">
+                        <h4>Aún no hay documentos configurados</h4>
+                        <p>Define los documentos requeridos para controlar el avance y las aprobaciones de esta empresa.
+                        </p>
+                        <?php if ($documentosGestionUrl !== null && $documentosGestionUrl !== '' && !$empresaIsReadOnly): ?>
+                          <a href="<?php echo htmlspecialchars($documentosGestionUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                            class="btn primary">📁 Gestionar Documentos</a>
+                        <?php endif; ?>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
-              <?php else : ?>
-                <?php foreach ($documentos as $documento) : ?>
+              <?php else: ?>
+                <?php foreach ($documentos as $documento): ?>
                   <?php
                   if (!is_array($documento)) {
-                      continue;
+                    continue;
                   }
 
                   $documentoNombre = (string) ($documento['nombre'] ?? 'Documento');
@@ -408,36 +502,44 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                   $accionPrefix = $accionVariant === 'view' ? '📄 ' : '📁 ';
                   $accionAttrs = $accionVariant === 'view' ? ' target="_blank" rel="noopener noreferrer"' : '';
                   $uploadUrl = isset($documento['upload_url']) && is_string($documento['upload_url'])
-                      ? trim($documento['upload_url'])
-                      : '';
+                    ? trim($documento['upload_url'])
+                    : '';
                   $detailUrl = isset($documento['detail_url']) && is_string($documento['detail_url'])
-                      ? trim($documento['detail_url'])
-                      : '';
+                    ? trim($documento['detail_url'])
+                    : '';
                   $reviewUrl = isset($documento['review_url']) && is_string($documento['review_url'])
-                      ? trim($documento['review_url'])
-                      : '';
+                    ? trim($documento['review_url'])
+                    : '';
                   ?>
                   <tr>
-                  <td>
-                    <?php echo htmlspecialchars($documentoNombre, ENT_QUOTES, 'UTF-8'); ?>
-                    <?php if ($documentoOpcional) : ?>
-                      <span class="badge secondary">Opcional</span>
-                    <?php endif; ?>
-                  </td>
-                    <td><span class="<?php echo htmlspecialchars($documentoEstadoClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($documentoEstadoLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
-                    <td><?php echo htmlspecialchars($documentoActualizado !== '' ? $documentoActualizado : '—', ENT_QUOTES, 'UTF-8'); ?></td>
+                    <td>
+                      <?php echo htmlspecialchars($documentoNombre, ENT_QUOTES, 'UTF-8'); ?>
+                      <?php if ($documentoOpcional): ?>
+                        <span class="badge secondary">Opcional</span>
+                      <?php endif; ?>
+                    </td>
+                    <td><span
+                        class="<?php echo htmlspecialchars($documentoEstadoClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($documentoEstadoLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                    </td>
+                    <td>
+                      <?php echo htmlspecialchars($documentoActualizado !== '' ? $documentoActualizado : '—', ENT_QUOTES, 'UTF-8'); ?>
+                    </td>
                     <td class="doc-actions">
-                      <?php if ($accionUrl !== '') : ?>
-                        <a href="<?php echo htmlspecialchars($accionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($accionClass, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $accionAttrs; ?>><?php echo htmlspecialchars($accionPrefix . $accionLabel, ENT_QUOTES, 'UTF-8'); ?></a>
+                      <?php if ($accionUrl !== ''): ?>
+                        <a href="<?php echo htmlspecialchars($accionUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                          class="<?php echo htmlspecialchars($accionClass, ENT_QUOTES, 'UTF-8'); ?>" <?php echo $accionAttrs; ?>><?php echo htmlspecialchars($accionPrefix . $accionLabel, ENT_QUOTES, 'UTF-8'); ?></a>
                       <?php endif; ?>
-                      <?php if (!$empresaIsReadOnly && $accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision') : ?>
-                        <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">📁 Subir</a>
+                      <?php if (!$empresaIsReadOnly && $accionVariant === 'view' && $uploadUrl !== '' && $documentoEstatus !== 'aprobado' && $documentoEstatus !== 'revision'): ?>
+                        <a href="<?php echo htmlspecialchars($uploadUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                          class="btn small primary">📁 Subir</a>
                       <?php endif; ?>
-                      <?php if ($documentoEstatus === 'aprobado' && $detailUrl !== '') : ?>
-                        <a href="<?php echo htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">🔍 Detalle</a>
+                      <?php if ($documentoEstatus === 'aprobado' && $detailUrl !== ''): ?>
+                        <a href="<?php echo htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                          class="btn small primary">🔍 Detalle</a>
                       <?php endif; ?>
-                      <?php if (!$empresaIsReadOnly && in_array($documentoEstatus, ['revision', 'pendiente'], true) && $reviewUrl !== '') : ?>
-                        <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small primary">📝 Revisar</a>
+                      <?php if (!$empresaIsReadOnly && in_array($documentoEstatus, ['revision', 'pendiente'], true) && $reviewUrl !== ''): ?>
+                        <a href="<?php echo htmlspecialchars($reviewUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                          class="btn small primary">📝 Revisar</a>
                       <?php endif; ?>
                     </td>
                   </tr>
@@ -446,16 +548,17 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
             </tbody>
           </table>
 
-          
+
           <!-- 🔗 Acción principal -->
-          <?php if ($documentosGestionUrl !== null && $documentosGestionUrl !== '' && !$empresaIsReadOnly) : ?>
+          <?php if ($documentosGestionUrl !== null && $documentosGestionUrl !== '' && !$empresaIsReadOnly): ?>
             <div class="actions" style="margin-top:16px; justify-content:flex-end;">
-              <a href="<?php echo htmlspecialchars($documentosGestionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📁 Gestionar Documentos</a>
+              <a href="<?php echo htmlspecialchars($documentosGestionUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">📁
+                Gestionar Documentos</a>
             </div>
           <?php endif; ?>
         </div>
 
-        
+
       </section>
 
 
@@ -469,9 +572,11 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               <span class="subtitle">Listado de estudiantes con estatus activo o finalizado.</span>
             </div>
             <?php if ($empresaIsEnRevision || $empresaIsCompletada || $empresaIsInactiva): ?>
-              <span class="section-note" style="color:#dc2626;">No es posible agregar estudiantes cuando la empresa está en revisión, inactiva o completada.</span>
+              <span class="section-note" style="color:#dc2626;">No es posible agregar estudiantes cuando la empresa está
+                en revisión, inactiva o completada.</span>
             <?php else: ?>
-              <a href="<?php echo htmlspecialchars($nuevoEstudianteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕ Agregar estudiante</a>
+              <a href="<?php echo htmlspecialchars($nuevoEstudianteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">➕
+                Agregar estudiante</a>
             <?php endif; ?>
           </div>
 
@@ -487,15 +592,27 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                 </tr>
               </thead>
               <tbody>
-                <?php if (!is_array($estudiantes) || $estudiantes === []) : ?>
+                <?php if (!is_array($estudiantes) || $estudiantes === []): ?>
                   <tr>
-                    <td colspan="5" style="text-align:center;">Aún no hay estudiantes vinculados a esta empresa.</td>
+                    <td colspan="5" class="table-empty">
+                      <div class="empty-state">
+                        <div class="empty-state__icon">🎓</div>
+                        <div class="empty-state__content">
+                          <h4>Sin estudiantes vinculados</h4>
+                          <p>Registra estudiantes para dar seguimiento a sus residencias y generar su documentación.</p>
+                          <?php if (!($empresaIsEnRevision || $empresaIsCompletada || $empresaIsInactiva)): ?>
+                            <a href="<?php echo htmlspecialchars($nuevoEstudianteUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                              class="btn primary">➕ Agregar estudiante</a>
+                          <?php endif; ?>
+                        </div>
+                      </div>
+                    </td>
                   </tr>
-                <?php else : ?>
-                  <?php foreach ($estudiantes as $estudiante) : ?>
+                <?php else: ?>
+                  <?php foreach ($estudiantes as $estudiante): ?>
                     <?php
                     if (!is_array($estudiante)) {
-                        continue;
+                      continue;
                     }
 
                     $nombreEstudiante = (string) ($estudiante['nombre_completo'] ?? 'Sin nombre');
@@ -510,7 +627,9 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                       <td><?php echo htmlspecialchars($matricula, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars($carrera, ENT_QUOTES, 'UTF-8'); ?></td>
                       <td><?php echo htmlspecialchars($convenioLabel, ENT_QUOTES, 'UTF-8'); ?></td>
-                      <td><span class="<?php echo htmlspecialchars($resultadoClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($resultadoLabel, ENT_QUOTES, 'UTF-8'); ?></span></td>
+                      <td><span
+                          class="<?php echo htmlspecialchars($resultadoClass, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($resultadoLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                      </td>
                     </tr>
                   <?php endforeach; ?>
                 <?php endif; ?>
@@ -527,34 +646,39 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
             <span class="portal-subtitle">Control del token y NIP asignado a la empresa</span>
           </div>
 
-          <?php if (!$portalAccessExists) : ?>
-            <?php if ($portalAccessActionsEnabled && is_string($portalAccessCreateUrl) && $portalAccessCreateUrl !== '') : ?>
-              <a class="portal-btn-create" href="<?php echo htmlspecialchars($portalAccessCreateUrl, ENT_QUOTES, 'UTF-8'); ?>">Crear acceso</a>
-            <?php else : ?>
-              <button class="portal-btn-create" type="button" disabled title="<?php echo htmlspecialchars($portalAccessDisabledReason ?? 'La empresa debe estar activa para generar accesos.', ENT_QUOTES, 'UTF-8'); ?>">Crear acceso</button>
+          <?php if (!$portalAccessExists): ?>
+            <?php if ($portalAccessActionsEnabled && is_string($portalAccessCreateUrl) && $portalAccessCreateUrl !== ''): ?>
+              <a class="portal-btn-create"
+                href="<?php echo htmlspecialchars($portalAccessCreateUrl, ENT_QUOTES, 'UTF-8'); ?>">Crear acceso</a>
+            <?php else: ?>
+              <button class="portal-btn-create" type="button" disabled
+                title="<?php echo htmlspecialchars($portalAccessDisabledReason ?? 'La empresa debe estar activa para generar accesos.', ENT_QUOTES, 'UTF-8'); ?>">Crear
+                acceso</button>
             <?php endif; ?>
           <?php endif; ?>
         </div>
 
-        <?php if (!$empresaIsActiva && !$empresaIsEnRevision) : ?>
-          <p class="portal-note">Para generar o modificar accesos, la empresa debe contar con estatus <strong>Activo</strong> o <strong>En revisión</strong>.</p>
+        <?php if (!$empresaIsActiva && !$empresaIsEnRevision): ?>
+          <p class="portal-note">Para generar o modificar accesos, la empresa debe contar con estatus
+            <strong>Activo</strong> o <strong>En revisión</strong>.</p>
         <?php endif; ?>
 
-        <?php if (!$portalAccessExists) : ?>
+        <?php if (!$portalAccessExists): ?>
           <div class="portal-empty">
             Esta empresa aún no tiene un acceso generado para su portal.
           </div>
-        <?php else : ?>
+        <?php else: ?>
           <?php
           $portalDisabledTitle = $portalAccessDisabledReason ?? 'Acción no disponible.';
           $portalToken = isset($portalAccess['token']) && $portalAccess['token'] !== ''
-              ? (string) $portalAccess['token']
-              : '—';
+            ? (string) $portalAccess['token']
+            : '—';
           ?>
           <div class="portal-info">
             <div class="portal-item">
               <span class="label">ID acceso:</span>
-              <span class="value"><?php echo htmlspecialchars((string) $portalAccess['id'], ENT_QUOTES, 'UTF-8'); ?></span>
+              <span
+                class="value"><?php echo htmlspecialchars((string) $portalAccess['id'], ENT_QUOTES, 'UTF-8'); ?></span>
             </div>
 
             <div class="portal-item">
@@ -564,43 +688,52 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
 
             <div class="portal-item">
               <span class="label">NIP:</span>
-              <span class="value"><?php echo htmlspecialchars((string) ($portalAccess['nip'] ?? '—'), ENT_QUOTES, 'UTF-8'); ?></span>
+              <span
+                class="value"><?php echo htmlspecialchars((string) ($portalAccess['nip'] ?? '—'), ENT_QUOTES, 'UTF-8'); ?></span>
             </div>
 
             <div class="portal-item">
               <span class="label">Estatus:</span>
-              <span class="<?php echo htmlspecialchars((string) ($portalAccess['estatus_badge_class'] ?? 'badge badge-inactive'), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) ($portalAccess['estatus_label'] ?? '—'), ENT_QUOTES, 'UTF-8'); ?></span>
+              <span
+                class="<?php echo htmlspecialchars((string) ($portalAccess['estatus_badge_class'] ?? 'badge badge-inactive'), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) ($portalAccess['estatus_label'] ?? '—'), ENT_QUOTES, 'UTF-8'); ?></span>
             </div>
 
             <div class="portal-item">
               <span class="label">Creado en:</span>
-              <span class="value"><?php echo htmlspecialchars((string) ($portalAccess['creado_en'] ?? '—'), ENT_QUOTES, 'UTF-8'); ?></span>
+              <span
+                class="value"><?php echo htmlspecialchars((string) ($portalAccess['creado_en'] ?? '—'), ENT_QUOTES, 'UTF-8'); ?></span>
             </div>
 
             <div class="portal-actions">
-              <?php if ($portalAccessViewUrl !== null && $portalAccessActionsEnabled) : ?>
-                <a class="portal-btn small" href="<?php echo htmlspecialchars($portalAccessViewUrl, ENT_QUOTES, 'UTF-8'); ?>">👁 Ver</a>
-              <?php else : ?>
-                <button class="portal-btn small" type="button" disabled title="<?php echo htmlspecialchars($portalDisabledTitle, ENT_QUOTES, 'UTF-8'); ?>">👁 Ver</button>
+              <?php if ($portalAccessViewUrl !== null && $portalAccessActionsEnabled): ?>
+                <a class="portal-btn small"
+                  href="<?php echo htmlspecialchars($portalAccessViewUrl, ENT_QUOTES, 'UTF-8'); ?>">👁 Ver</a>
+              <?php else: ?>
+                <button class="portal-btn small" type="button" disabled
+                  title="<?php echo htmlspecialchars($portalDisabledTitle, ENT_QUOTES, 'UTF-8'); ?>">👁 Ver</button>
               <?php endif; ?>
 
-              <?php if ($portalAccessEditUrl !== null && $portalAccessActionsEnabled) : ?>
-                <a class="portal-btn small" href="<?php echo htmlspecialchars($portalAccessEditUrl, ENT_QUOTES, 'UTF-8'); ?>">✏ Editar</a>
-              <?php else : ?>
-                <button class="portal-btn small" type="button" disabled title="<?php echo htmlspecialchars($portalDisabledTitle, ENT_QUOTES, 'UTF-8'); ?>">✏ Editar</button>
+              <?php if ($portalAccessEditUrl !== null && $portalAccessActionsEnabled): ?>
+                <a class="portal-btn small"
+                  href="<?php echo htmlspecialchars($portalAccessEditUrl, ENT_QUOTES, 'UTF-8'); ?>">✏ Editar</a>
+              <?php else: ?>
+                <button class="portal-btn small" type="button" disabled
+                  title="<?php echo htmlspecialchars($portalDisabledTitle, ENT_QUOTES, 'UTF-8'); ?>">✏ Editar</button>
               <?php endif; ?>
 
-              <?php if ($portalAccessDeleteUrl !== null && $portalAccessActionsEnabled) : ?>
-                <a class="portal-btn small danger" href="<?php echo htmlspecialchars($portalAccessDeleteUrl, ENT_QUOTES, 'UTF-8'); ?>">🗑 Eliminar</a>
-              <?php else : ?>
-                <button class="portal-btn small danger" type="button" disabled title="<?php echo htmlspecialchars($portalDisabledTitle, ENT_QUOTES, 'UTF-8'); ?>">🗑 Eliminar</button>
+              <?php if ($portalAccessDeleteUrl !== null && $portalAccessActionsEnabled): ?>
+                <a class="portal-btn small danger"
+                  href="<?php echo htmlspecialchars($portalAccessDeleteUrl, ENT_QUOTES, 'UTF-8'); ?>">🗑 Eliminar</a>
+              <?php else: ?>
+                <button class="portal-btn small danger" type="button" disabled
+                  title="<?php echo htmlspecialchars($portalDisabledTitle, ENT_QUOTES, 'UTF-8'); ?>">🗑 Eliminar</button>
               <?php endif; ?>
             </div>
           </div>
         <?php endif; ?>
       </section>
 
-            <!-- 🗂️ Convenios archivados -->
+      <!-- 🗂️ Convenios archivados -->
       <section class="card">
         <header>🗂️ Convenios archivados (solo lectura)</header>
         <div class="content">
@@ -639,7 +772,8 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                     <td><?php echo htmlspecialchars($motivoLabel, ENT_QUOTES, 'UTF-8'); ?></td>
                     <td>
                       <?php if ($archivoViewUrl !== null): ?>
-                        <a href="<?php echo htmlspecialchars($archivoViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️ Ver</a>
+                        <a href="<?php echo htmlspecialchars($archivoViewUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn small">👁️
+                          Ver</a>
                       <?php endif; ?>
                     </td>
                   </tr>
@@ -654,7 +788,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
         <header>🕒 Bitácora / Historial</header>
         <div class="content">
 
-          <?php if ($auditoriaControllerError !== null || $auditoriaInputError !== null) : ?>
+          <?php if ($auditoriaControllerError !== null || $auditoriaInputError !== null): ?>
             <div class="alert error" role="alert">
               <?php
               $message = $auditoriaControllerError
@@ -664,10 +798,10 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               ?>
             </div>
 
-          <?php elseif ($auditoriaItems === []) : ?>
+          <?php elseif ($auditoriaItems === []): ?>
             <p style="margin:0;">No se han registrado movimientos de auditoría para esta empresa.</p>
 
-          <?php else : ?>
+          <?php else: ?>
             <div class="audit-table-wrapper" aria-label="Historial de auditoría">
               <table class="audit-table">
                 <thead>
@@ -678,36 +812,39 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                   </tr>
                 </thead>
                 <tbody>
-                  <?php foreach ($auditoriaItems as $item) : ?>
-                  <?php
-                  if (!is_array($item)) {
+                  <?php foreach ($auditoriaItems as $item): ?>
+                    <?php
+                    if (!is_array($item)) {
                       continue;
-                  }
+                    }
 
-                  $fecha = htmlspecialchars((string) ($item['fecha'] ?? '—'), ENT_QUOTES, 'UTF-8');
-                  $mensaje = htmlspecialchars((string) ($item['mensaje'] ?? 'Acción registrada'), ENT_QUOTES, 'UTF-8');
-                  $actorNombre = htmlspecialchars((string) ($item['actor_label'] ?? '—'), ENT_QUOTES, 'UTF-8');
-                  $detalleItems = isset($item['detalles']) && is_array($item['detalles']) ? $item['detalles'] : [];
-                  ?>
+                    $fecha = htmlspecialchars((string) ($item['fecha'] ?? '—'), ENT_QUOTES, 'UTF-8');
+                    $mensaje = htmlspecialchars((string) ($item['mensaje'] ?? 'Acción registrada'), ENT_QUOTES, 'UTF-8');
+                    $actorNombre = htmlspecialchars((string) ($item['actor_label'] ?? '—'), ENT_QUOTES, 'UTF-8');
+                    $detalleItems = isset($item['detalles']) && is_array($item['detalles']) ? $item['detalles'] : [];
+                    ?>
                     <tr>
                       <td><?php echo $fecha; ?></td>
                       <td><?php echo $actorNombre; ?></td>
                       <td>
                         <div class="audit-event">
                           <div class="audit-event__message"><?php echo $mensaje; ?></div>
-                          <?php if ($detalleItems !== []) : ?>
+                          <?php if ($detalleItems !== []): ?>
                             <ul class="audit-details">
-                              <?php foreach ($detalleItems as $detalle) : ?>
+                              <?php foreach ($detalleItems as $detalle): ?>
                                 <li>
-                                  <span class="audit-details__field"><?php echo htmlspecialchars($detalle['label'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                  <span
+                                    class="audit-details__field"><?php echo htmlspecialchars($detalle['label'], ENT_QUOTES, 'UTF-8'); ?></span>
                                   <div class="audit-details__values">
-                                    <span><strong>Antes:</strong> <?php echo htmlspecialchars($detalle['antes'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                    <span><strong>Ahora:</strong> <?php echo htmlspecialchars($detalle['despues'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <span><strong>Antes:</strong>
+                                      <?php echo htmlspecialchars($detalle['antes'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <span><strong>Ahora:</strong>
+                                      <?php echo htmlspecialchars($detalle['despues'], ENT_QUOTES, 'UTF-8'); ?></span>
                                   </div>
                                 </li>
                               <?php endforeach; ?>
                             </ul>
-                          <?php else : ?>
+                          <?php else: ?>
                             <p class="audit-details__empty">Este evento no registró cambios detallados.</p>
                           <?php endif; ?>
                         </div>
@@ -717,7 +854,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
                 </tbody>
               </table>
             </div>
-            <?php if ($auditoriaHasOverflow) : ?>
+            <?php if ($auditoriaHasOverflow): ?>
               <p style="margin-top:8px; color:#555;">
                 Se muestran aproximadamente <?php echo $auditoriaVisibleLimit; ?> registros a la vez.
                 Desplázate dentro de la tabla para ver los <?php echo count($auditoriaItems); ?> movimientos registrados.
@@ -731,12 +868,14 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
       <!-- 🔧 Acciones -->
       <section class="card">
         <div class="content actions" style="justify-content:flex-end;">
-          <a href="<?php echo htmlspecialchars($empresaEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">✏️ Editar Empresa</a>
-          <a href="<?php echo htmlspecialchars($empresaDeleteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn danger">🗑️ Eliminar Empresa</a>
+          <a href="<?php echo htmlspecialchars($empresaEditUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn primary">✏️ Editar
+            Empresa</a>
+          <a href="<?php echo htmlspecialchars($empresaDeleteUrl, ENT_QUOTES, 'UTF-8'); ?>" class="btn danger">🗑️
+            Eliminar Empresa</a>
         </div>
       </section>
 
-      <?php if ($canUploadLogo) : ?>
+      <?php if ($canUploadLogo): ?>
         <script>
           (() => {
             const form = document.getElementById('logo-upload-form');
@@ -763,11 +902,21 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               return base.endsWith('/') ? base : `${base}/`;
             };
 
+            let hideFeedbackTimeout = null;
+
+            const clearFeedbackTimeout = () => {
+              if (hideFeedbackTimeout) {
+                clearTimeout(hideFeedbackTimeout);
+                hideFeedbackTimeout = null;
+              }
+            };
+
             const setMessage = (message, type) => {
               if (!feedback) {
                 return;
               }
 
+              clearFeedbackTimeout();
               feedback.textContent = message || '';
               feedback.hidden = !message;
               feedback.classList.remove('logo-upload-feedback--success', 'logo-upload-feedback--error');
@@ -777,6 +926,12 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
               }
 
               feedback.classList.add(type === 'success' ? 'logo-upload-feedback--success' : 'logo-upload-feedback--error');
+
+              if (type === 'success') {
+                hideFeedbackTimeout = setTimeout(() => {
+                  setMessage('', '');
+                }, 5000);
+              }
             };
 
             const setLoading = (isLoading) => {
@@ -916,7 +1071,7 @@ $empresaTieneConvenioActivo = $preparedData['empresaTieneConvenioActivo'] ?? fal
 
         setTimeout(function () {
           alertEl.remove();
-        }, 5000);
+        }, 3000);
       });
     </script>
   <?php endif; ?>
